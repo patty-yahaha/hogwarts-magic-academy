@@ -640,7 +640,6 @@
             renderMenu();
             updateEnergyDisplay();
             initStars();
-            initEnergyDecay(); // 启动精力值下降计时器
             updateLanguage();
         }
 
@@ -649,7 +648,7 @@
             const playerDataStr = localStorage.getItem('hogwartsPlayer');
             if (playerDataStr) {
                 const playerData = JSON.parse(playerDataStr);
-                coins = playerData.cumulativeCoins || 0;
+                coins = playerData.coins || 0;
             } else {
                 coins = 0;
             }
@@ -667,59 +666,6 @@
         function saveEnergy() {
             localStorage.setItem('playerEnergy', energy.toString());
         }
-
-        // ========== 精力值随时间下降机制 ==========
-        let energyDecayTimer = null;
-        let lastActivityTime = Date.now();
-        let isEnergyDecayActive = true;
-
-        // 记录用户活动
-        function recordActivity() {
-            lastActivityTime = Date.now();
-            // 如果之前停止了，恢复精力值下降
-            if (!isEnergyDecayActive) {
-                isEnergyDecayActive = true;
-                console.log('用户活动恢复，精力值继续下降');
-            }
-        }
-
-        // 检查是否超过15分钟无操作
-        function checkInactivity() {
-            const inactiveTime = Date.now() - lastActivityTime;
-            const fifteenMinutes = 15 * 60 * 1000; // 15分钟 = 900000毫秒
-
-            if (inactiveTime >= fifteenMinutes && isEnergyDecayActive) {
-                isEnergyDecayActive = false;
-                console.log('用户15分钟无操作，精力值停止下降');
-            }
-        }
-
-        function initEnergyDecay() {
-            // 精力值每分钟下降1，但需要检查是否超过15分钟无操作
-            energyDecayTimer = setInterval(() => {
-                checkInactivity(); // 检查是否超过15分钟无操作
-
-                if (isEnergyDecayActive && energy > 0) {
-                    energy = Math.max(0, energy - 1);
-                    saveEnergy();
-                    updateEnergyDisplay();
-                    console.log(`精力值下降: ${energy} / ${maxEnergy}`);
-                }
-            }, 60000); // 60000毫秒 = 1分钟
-        }
-
-        // 监听用户活动事件
-        ['click', 'keydown', 'scroll', 'touchstart', 'mousemove'].forEach(event => {
-            document.addEventListener(event, recordActivity, { passive: true });
-        });
-
-        // 页面卸载时清除定时器
-        window.addEventListener('beforeunload', () => {
-            if (energyDecayTimer) {
-                clearInterval(energyDecayTimer);
-            }
-            saveEnergy(); // 退出时保存精力值
-        });
 
         function loadAvatar() {
             const playerDataStr = localStorage.getItem('hogwartsPlayer');

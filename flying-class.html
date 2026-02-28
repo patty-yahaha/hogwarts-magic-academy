@@ -1076,9 +1076,30 @@
             coins = savedCoins ? parseInt(savedCoins) : 0;
             updateCoinDisplay();
 
-            // 读取好感度
-            const savedAffection = localStorage.getItem('flyingClassAffection');
-            affection = savedAffection ? parseInt(savedAffection) : 0;
+            // 读取好感度 - 优先从导师专区读取，回退到单独存储的值
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            let mentorAffection = null;
+            try {
+                const savedMentorData = localStorage.getItem(mentorAffectionKey);
+                if (savedMentorData) {
+                    const mentorData = JSON.parse(savedMentorData);
+                    if (mentorData['hooch'] !== undefined && mentorData['hooch'] !== null) {
+                        mentorAffection = mentorData['hooch'];
+                    }
+                }
+            } catch (e) {
+                console.error('Error reading mentor affection data:', e);
+            }
+
+            if (mentorAffection !== null) {
+                affection = mentorAffection;
+                console.log('[飞行课] 从导师专区读取霍琦夫人好感度:', affection);
+            } else {
+                // 回退到单独存储的值
+                const savedAffection = localStorage.getItem('flyingClassAffection');
+                affection = savedAffection ? parseInt(savedAffection) : 0;
+                console.log('[飞行课] 从单独存储读取霍琦夫人好感度:', affection);
+            }
             updateAffectionDisplay();
 
             // 读取表现不佳次数统计
@@ -1106,9 +1127,27 @@
             document.getElementById('affectionValue').textContent = affection;
         }
 
+        // 同步好感度到导师专区
+        function syncAffectionToMentorZone() {
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            let data = {};
+            try {
+                const savedData = localStorage.getItem(mentorAffectionKey);
+                if (savedData) {
+                    data = JSON.parse(savedData);
+                }
+            } catch (e) {
+                console.error('Error parsing mentor affection data:', e);
+            }
+            data['hooch'] = affection;
+            localStorage.setItem(mentorAffectionKey, JSON.stringify(data));
+            console.log('[飞行课] 同步霍琦夫人好感度到导师专区:', affection);
+        }
+
         // 保存好感度
         function saveAffection() {
             localStorage.setItem('flyingClassAffection', affection.toString());
+            syncAffectionToMentorZone();
         }
 
         // 更新金币显示
@@ -1669,10 +1708,12 @@
                 // 每5次表现不佳减少好感度
                 if (poorPerformanceCount % 5 === 0) {
                     affection = Math.max(0, affection - 1);
-                    saveAffection();
-                    updateAffectionDisplay();
                 }
             }
+
+            // 始终保存好感度到导师专区（确保同步）
+            saveAffection();
+            updateAffectionDisplay();
 
             // 更新累计金币（用于等级计算）
             updateCumulativeCoins(earnedCoins);
@@ -1875,5 +1916,6 @@
         // 每分钟更新一次时间显示
         setInterval(updateDailyTimeDisplay, 60000);
     </script>
+    <script src="draggable-coin.js"></script>
 </body>
 </html>

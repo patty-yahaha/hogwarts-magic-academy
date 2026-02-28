@@ -451,7 +451,10 @@
     <div class="coin-display">
         <span class="coin-icon">🪙</span>
         <span class="coin-amount" id="coinAmount">0</span>
-        <span class="coin-label">金加隆</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+            <span class="label-en">Galleons</span>
+        </span>
     </div>
 
     <div class="container">
@@ -567,7 +570,7 @@
             },
             {
                 id: 'silver_arrow',
-                icon: '🏹',
+                icon: '✨🧹',
                 name: { zh: '银箭', en: 'Silver Arrow' },
                 description: { zh: '银色流光设计，速度适中。', en: 'Silver glowing design, moderate speed.' },
                 price: 200,
@@ -1000,6 +1003,5 @@
         }
 
         init();
-    </script>
-</body>
-</html>
+    <script src="draggable-coin.js"></script>
+    <script>

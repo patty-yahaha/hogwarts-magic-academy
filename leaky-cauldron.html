@@ -274,10 +274,13 @@
     <div class="magic-particles"></div>
 
     <!-- 金币显示 -->
-    <div class="coin-display" style="background: linear-gradient(135deg, rgba(46, 139, 87, 0.3), rgba(35, 110, 70, 0.4)); border-color: #2e8b57;">
+    <div class="coin-display">
         <span class="coin-icon">🪙</span>
         <span class="coin-amount" id="coinAmount">0</span>
-        <span class="coin-label">金加隆</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+            <span class="label-en">Galleons</span>
+        </span>
     </div>
 
     <!-- 金币双倍效果横幅 -->
@@ -654,5 +657,6 @@
         renderItems();
         createMagicParticles();
     </script>
+    <script src="draggable-coin.js"></script>
 </body>
 </html>

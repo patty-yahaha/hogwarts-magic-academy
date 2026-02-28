@@ -227,101 +227,6 @@
                 transform: translateY(-50px) scale(1.5);
             }
         }
-
-        /* 里程碑成就 */
-        .achievements-section {
-            margin-top: 30px;
-            padding: 25px;
-            background: linear-gradient(145deg, rgba(20, 15, 30, 0.9), rgba(10, 10, 20, 0.95));
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 15px;
-        }
-
-        .achievements-title {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 1.5rem;
-            color: #d4af37;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .achievement-item {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(212, 175, 55, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .achievement-item.unlocked {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(10, 20, 40, 0.95));
-            border-color: #d4af37;
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
-        }
-
-        .achievement-item.locked {
-            opacity: 0.4;
-            filter: grayscale(1);
-        }
-
-        .achievement-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .achievement-name {
-            font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-            color: #d4af37;
-            margin-bottom: 5px;
-        }
-
-        .achievement-reward {
-            font-size: 0.8rem;
-            color: #8b7355;
-        }
-
-        .claim-btn {
-            background: linear-gradient(135deg, #d4af37, #c9a830);
-            color: #1a0f00;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .claim-btn:hover {
-            background: linear-gradient(135deg, #f0d060, #d4af37);
-            transform: scale(1.05);
-        }
-
-        .claim-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #8b7355;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
     </style>
 </head>
 <body>
@@ -358,14 +263,6 @@
                     <p class="empty-en">Loading mentor data...</p>
                 </div>
             </div>
-
-            <div class="achievements-section" id="achievementsSection" style="display: none;">
-                <h3 class="achievements-title">
-                    <span class="title-zh">🏆 好感度里程碑</span>
-                    <span class="title-en">🏆 Affection Milestones</span>
-                </h3>
-                <div class="achievements-grid" id="achievementsGrid"></div>
-            </div>
         </div>
     </div>
 
@@ -376,7 +273,6 @@
         // 老师数据配置
         const MENTORS_DATA_KEY = 'hogwarts_teachers_data';
         const MENTOR_AFFECTION_KEY = 'hogwarts_mentor_affection';
-        const MENTOR_ACHIEVEMENTS_KEY = 'hogwarts_mentor_achievements';
         const MENTOR_LETTERS_KEY = 'hogwarts_mentor_letters';
 
         // 老师列表 - 只保留三位核心导师
@@ -386,9 +282,9 @@
                 nameZh: '麦格教授',
                 nameEn: 'Professor McGonagall',
                 avatar: '👨‍🏫',
-                badge: '变形术',
-                description: '严厉但公正的变形术教授',
-                course: 'web-learning'  // 网页学习区
+                badge: '语言课',
+                description: '严厉但公正的语言课导师',
+                course: 'learning-zone'  // 网页学习区
             },
             {
                 id: 'hooch',
@@ -410,21 +306,6 @@
             }
         ];
 
-        // 好感度里程碑
-        const MILESTONES = [
-            { affection: 10, rewardType: 'avatar', icon: '🎭', name: '初识恩师', description: '好感度达到10' },
-            { affection: 30, rewardType: 'frame', icon: '⭐', name: '良师益友', description: '好感度达到30' },
-            { affection: 50, rewardType: 'avatar', icon: '👑', name: '桃李满门', description: '好感度达到50' },
-            { affection: 70, rewardType: 'frame', icon: '👑', name: '德高望重', description: '好感度达到70' },
-            { affection: 100, rewardType: 'special', icon: '🏆', name: '名师高徒', description: '好感度达到100' }
-        ];
-
-        // 随机头像列表
-        const AVATAR_REWARDS = ['🧙', '🧙‍♂️', '🧝', '👩', '🧙‍♀️', '🧛', '🧛‍♂️', '🧜', '🧜‍♀️'];
-
-        // 随机头像框
-        const FRAME_REWARDS = ['✨金色光环✨', '🌟闪耀之星🌟', '🔮神秘符文🔮', '💫魔法结界💫'];
-
         // 获取老师好感度数据
         function getMentorAffectionData() {
             const data = localStorage.getItem(MENTOR_AFFECTION_KEY);
@@ -439,25 +320,6 @@
         // 保存老师好感度数据
         function saveMentorAffectionData(data) {
             localStorage.setItem(MENTOR_AFFECTION_KEY, JSON.stringify(data));
-        }
-
-        // 获取成就数据
-        function getAchievementsData() {
-            const data = localStorage.getItem(MENTOR_ACHIEVEMENTS_KEY);
-            if (!data) {
-                const initialData = {
-                    unlocked: [],
-                    claimed: []
-                };
-                localStorage.setItem(MENTOR_ACHIEVEMENTS_KEY, JSON.stringify(initialData));
-                return initialData;
-            }
-            return JSON.parse(data);
-        }
-
-        // 保存成就数据
-        function saveAchievementsData(data) {
-            localStorage.setItem(MENTOR_ACHIEVEMENTS_KEY, JSON.stringify(data));
         }
 
         // 获取信件数据
@@ -497,32 +359,6 @@
             letters.push(letter);
             saveMentorLettersData(letters);
             return true;
-        }
-
-        // 检查并解锁成就
-        function checkAndUnlockAchievements() {
-            const achievements = getAchievementsData();
-
-            const newlyUnlocked = [];
-
-            MILESTONES.forEach(milestone => {
-                const isUnlocked = achievements.unlocked.includes(milestone.affection);
-                if (!isUnlocked) {
-                    // 检查是否有任何老师达到这个好感度
-                    const hasTeacherAtLevel = verifyMilestoneCondition(milestone.affection);
-                    if (hasTeacherAtLevel) {
-                        achievements.unlocked.push(milestone.affection);
-                        newlyUnlocked.push(milestone);
-                    }
-                }
-            });
-
-            if (newlyUnlocked.length > 0) {
-                saveAchievementsData(achievements);
-                return newlyUnlocked;
-            }
-
-            return [];
         }
 
         // 渲染老师列表
@@ -607,135 +443,6 @@
             }
         }
 
-        // 渲染成就
-        function renderAchievements() {
-            const achievements = getAchievementsData();
-            const grid = document.getElementById('achievementsGrid');
-
-            grid.innerHTML = MILESTONES.map(milestone => {
-                // 实时验证是否真正达到条件
-                const isUnlocked = verifyMilestoneCondition(milestone.affection);
-                const isClaimed = achievements.claimed.includes(milestone.affection);
-
-                const rewardText = currentLang === 'zh' ?
-                    `奖励: ${milestone.rewardType === 'avatar' ? '随机头像' : milestone.rewardType === 'frame' ? '随机头像框' : '特殊奖励'}` :
-                    `Reward: ${milestone.rewardType === 'avatar' ? 'Random Avatar' : milestone.rewardType === 'frame' ? 'Random Frame' : 'Special Reward'}`;
-
-                return `
-                    <div class="achievement-item ${isUnlocked ? 'unlocked' : 'locked'}">
-                        <div class="achievement-icon">${milestone.icon}</div>
-                        <div class="achievement-name">
-                            <span class="name-zh">${milestone.name}</span>
-                            <span class="name-en" style="display: ${currentLang === 'zh' ? 'none' : 'inline'}; font-size: 0.8rem;">${milestone.description}</span>
-                        </div>
-                        <div class="achievement-reward">${rewardText}</div>
-                        ${isUnlocked && !isClaimed ? `
-                            <button class="claim-btn" onclick="claimAchievement(${milestone.affection})">
-                                <span class="btn-zh">领取</span>
-                                <span class="btn-en">Claim</span>
-                            </button>
-                        ` : isClaimed ? `
-                            <div style="color: #4caf50; font-size: 0.8rem; margin-top: 10px;">
-                                <span class="claimed-zh">✓ 已领取</span>
-                                <span class="claimed-en" style="display: ${currentLang === 'zh' ? 'none' : 'inline'};">✓ Claimed</span>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            }).join('');
-
-            // 计算实际解锁的里程碑数量（使用实时验证）
-            const actuallyUnlockedCount = MILESTONES.filter(m => verifyMilestoneCondition(m.affection)).length;
-
-            const section = document.getElementById('achievementsSection');
-            section.style.display = actuallyUnlockedCount > 0 ? 'block' : 'none';
-        }
-
-        // 验证里程碑是否真正达到条件
-        function verifyMilestoneCondition(affectionLevel) {
-            const affectionData = getMentorAffectionData();
-            // 检查是否有任何老师真正达到这个好感度
-            return Object.values(affectionData).some(a => a >= affectionLevel);
-        }
-
-        // 清理错误的解锁数据（修复已解锁但实际未达到条件的情况）
-        function cleanupIncorrectlyUnlockedMilestones() {
-            const achievements = getAchievementsData();
-            const needsCleanup = [];
-
-            achievements.unlocked.forEach(affectionLevel => {
-                if (!verifyMilestoneCondition(affectionLevel)) {
-                    needsCleanup.push(affectionLevel);
-                }
-            });
-
-            if (needsCleanup.length > 0) {
-                achievements.unlocked = achievements.unlocked.filter(level => !needsCleanup.includes(level));
-                achievements.claimed = achievements.claimed.filter(level => !needsCleanup.includes(level));
-                saveAchievementsData(achievements);
-                console.log('已清理错误的里程碑解锁数据:', needsCleanup);
-            }
-        }
-
-        // 领取成就奖励
-        function claimAchievement(milestone) {
-            const achievements = getAchievementsData();
-
-            // 检查是否真正达到条件
-            if (!verifyMilestoneCondition(milestone)) {
-                alert(currentLang === 'zh' ?
-                    `还需要提升老师的好感度才能领取此奖励！\n需要好感度: ${milestone}` :
-                    `Need to raise mentor's affection to claim this reward!\nRequired affection: ${milestone}`);
-                return;
-            }
-
-            // 添加到解锁列表（如果不在里面）
-            if (!achievements.unlocked.includes(milestone)) {
-                achievements.unlocked.push(milestone);
-                saveAchievementsData(achievements);
-            }
-
-            if (achievements.claimed.includes(milestone)) return;
-
-            // 随机生成奖励
-            let reward;
-            if (milestone.rewardType === 'avatar') {
-                reward = {
-                    type: 'avatar',
-                    icon: AVATAR_REWARDS[Math.floor(Math.random() * AVATAR_REWARDS.length)],
-                    name: '头像'
-                };
-            } else if (milestone.rewardType === 'frame') {
-                reward = {
-                    type: 'frame',
-                    icon: FRAME_REWARDS[Math.floor(Math.random() * FRAME_REWARDS.length)],
-                    name: '头像框'
-                };
-            } else {
-                reward = {
-                    type: 'special',
-                    icon: '👑',
-                    name: '特殊奖励'
-                };
-            }
-
-            // 添加到背包（通过localStorage存储）
-            const inventory = JSON.parse(localStorage.getItem('hogwartsInventory') || '[]');
-            inventory.push({
-                id: Date.now(),
-                ...reward,
-                source: 'mentor_achievement'
-            });
-            localStorage.setItem('hogwartsInventory', JSON.stringify(inventory));
-
-            // 标记为已领取
-            achievements.claimed.push(milestone);
-            saveAchievementsData(achievements);
-
-            // 重新渲染
-            renderAchievements();
-        }
-
         // 检查老师信件触发
         function checkMentorLetters() {
             const affectionData = getMentorAffectionData();
@@ -804,7 +511,6 @@
         // 语言更新
         function updateLanguage() {
             renderTeachers();
-            renderAchievements();
         }
 
         // 返回
@@ -818,18 +524,15 @@
 
         // 初始化
         function init() {
-            // 清理错误的里程碑解锁数据
-            cleanupIncorrectlyUnlockedMilestones();
+            // 清理旧的里程碑成就数据
+            localStorage.removeItem('hogwarts_mentor_achievements');
 
             renderTeachers();
-            renderAchievements();
             checkMentorLetters();
-            checkAndUnlockAchievements();
             updateLanguage();
 
             // 每分钟检查一次
             setInterval(() => {
-                checkAndUnlockAchievements();
                 checkMentorLetters();
             }, 60000);
 
@@ -837,6 +540,28 @@
             document.addEventListener('languageChanged', () => {
                 currentLang = localStorage.getItem('siteLanguage') || 'zh';
                 updateLanguage();
+            });
+
+            // 监听 localStorage 变化，实时更新好感度显示
+            window.addEventListener('storage', (e) => {
+                if (e.key === MENTOR_AFFECTION_KEY) {
+                    renderTeachers();
+                    console.log('[导师专区] 检测到好感度数据变化，重新渲染');
+                }
+            });
+
+            // 监听页面可见性变化（当用户从其他标签页返回时重新渲染）
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    renderTeachers();
+                    console.log('[导师专区] 页面可见性变化，重新渲染老师列表');
+                }
+            });
+
+            // 监听页面焦点变化
+            window.addEventListener('focus', () => {
+                renderTeachers();
+                console.log('[导师专区] 页面获得焦点，重新渲染老师列表');
             });
         }
 

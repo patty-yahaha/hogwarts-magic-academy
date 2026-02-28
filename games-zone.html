@@ -126,6 +126,29 @@
             line-height: 1.4;
         }
 
+        /* 紫色发光商店按钮 - 奥利凡德、神奇动物商店、三把扫帚 */
+        .house-item.purple-glow {
+            border-color: #9370db !important;
+            box-shadow: 0 0 25px rgba(147, 112, 219, 0.6), inset 0 0 10px rgba(147, 112, 219, 0.2) !important;
+        }
+
+        .house-item.purple-glow:hover {
+            border-color: #8a2be2 !important;
+            box-shadow: 0 0 40px rgba(138, 43, 226, 0.8), inset 0 0 15px rgba(138, 43, 226, 0.3) !important;
+        }
+
+        .house-item.purple-glow .house-icon {
+            filter: drop-shadow(0 0 15px rgba(147, 112, 219, 0.8));
+        }
+
+        .house-item.purple-glow .house-name-zh {
+            color: #dda0dd;
+        }
+
+        .house-item.purple-glow .house-name-en {
+            color: #ba55d3;
+        }
+
         /* 主房子标签 */
         .main-house-tag {
             position: absolute;
@@ -442,7 +465,7 @@
                 <!-- 主区域 - 各个商店 -->
                 <div class="village-main-section">
                     <!-- 奥利凡德 -->
-                    <div class="house-item" onclick="openOllivanders()">
+                    <div class="house-item purple-glow" onclick="openOllivanders()">
                         <div class="house-icon">🪄</div>
                         <div class="house-name-zh">奥利凡德</div>
                         <div class="house-name-en">Ollivanders</div>
@@ -453,7 +476,7 @@
                     </div>
 
                     <!-- 神奇动物商店 -->
-                    <div class="house-item" onclick="openMagicalMenagerie()">
+                    <div class="house-item purple-glow" onclick="openMagicalMenagerie()">
                         <div class="house-icon">🐾</div>
                         <div class="house-name-zh">神奇动物商店</div>
                         <div class="house-name-en">Magical Menagerie</div>
@@ -464,7 +487,7 @@
                     </div>
 
                     <!-- 三把扫帚 -->
-                    <div class="house-item" onclick="openThreeBroomsticks()">
+                    <div class="house-item purple-glow" onclick="openThreeBroomsticks()">
                         <div class="house-icon">🧹</div>
                         <div class="house-name-zh">三把扫帚</div>
                         <div class="house-name-en">Three Broomsticks</div>

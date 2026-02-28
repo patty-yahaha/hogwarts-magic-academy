@@ -245,10 +245,13 @@
     <div class="magic-particles"></div>
 
     <!-- 金币显示 -->
-    <div class="coin-display" style="background: linear-gradient(135deg, rgba(221, 160, 221, 0.3), rgba(138, 43, 226, 0.4)); border-color: #dda0dd;">
+    <div class="coin-display">
         <span class="coin-icon">🪙</span>
         <span class="coin-amount" id="coinAmount">0</span>
-        <span class="coin-label">金加隆</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+            <span class="label-en">Galleons</span>
+        </span>
     </div>
 
     <div class="shop-container">
@@ -279,7 +282,7 @@
             {
                 id: 'black_robe',
                 name: '黑袍',
-                icon: '🧛',
+                icon: '👔',
                 description: '学生们的基础校袍，哈利初次在摩金夫人的长袍店试穿的就是这种用别针别起测量身长的黑袍。',
                 price: 80,
                 rare: false
@@ -287,7 +290,7 @@
             {
                 id: 'quidditch_robe',
                 name: '魁地奇长袍',
-                icon: '🧤',
+                icon: '🦺',
                 description: '魁地奇比赛时的专用队服，例如哈利所在的格兰芬多队穿着"猩红色长袍"；马尔福所在的斯莱特林队穿着"绿色袍子"；而罗恩最喜爱的查德里火炮队则穿着"橙黄色长袍"。',
                 price: 300,
                 rare: false
@@ -295,7 +298,7 @@
             {
                 id: 'old_school_robe',
                 name: '旧校袍',
-                icon: '🧝',
+                icon: '🧣',
                 description: '韦斯莱家因为经济原因，金妮只能去旧货铺买别人穿过的旧袍子。',
                 price: 50,
                 rare: false
@@ -303,7 +306,7 @@
             {
                 id: 'formal_robe',
                 name: '礼服长袍',
-                icon: '🧞',
+                icon: '🥻',
                 description: '霍格沃茨高年级学生在正式场合必须穿着的服装。',
                 price: 250,
                 rare: false
@@ -311,7 +314,7 @@
             {
                 id: 'harry_formal_robe',
                 name: '哈利的礼服长袍',
-                icon: '👔',
+                icon: '👗',
                 description: '这是一件深绿色的长袍，没有花边，样式和普通校袍差不多，韦斯莱夫人认为这非常衬托哈利眼睛的颜色。',
                 price: 500,
                 rare: false
@@ -319,7 +322,7 @@
             {
                 id: 'ron_formal_robe',
                 name: '罗恩的礼服长袍',
-                icon: '🧟',
+                icon: '👘',
                 description: '由于是买的二手货，这件长袍是一件酱紫色的天鹅绒长裙，领口镶着发霉的荷叶边，袖口上也有相配的花边，马尔福嘲笑它停留在十八世纪九十年代的审美。',
                 price: 150,
                 rare: false
@@ -327,7 +330,7 @@
             {
                 id: 'emerald_green_robe',
                 name: '翠绿色长袍',
-                icon: '🧠',
+                icon: '🧤',
                 description: '麦格教授在一年级新生入学时穿着的严厉装束。',
                 price: 200,
                 rare: false
@@ -335,7 +338,7 @@
             {
                 id: 'purple_red_robe',
                 name: '紫衣 / 紫红色长袍',
-                icon: '🧡',
+                icon: '🥋',
                 description: '长袍店老板摩金夫人穿的衣服；吉德罗·洛哈特在决斗俱乐部时也穿着光彩照人的紫红色长袍。',
                 price: 350,
                 rare: false
@@ -343,7 +346,7 @@
             {
                 id: 'aquamarine_robe',
                 name: '水绿色长袍',
-                icon: '🧢',
+                icon: '👙',
                 description: '吉德罗·洛哈特在开学晚宴上的装扮。',
                 price: 350,
                 rare: false
@@ -351,7 +354,7 @@
             {
                 id: 'worn_torn_robe',
                 name: '旧袍子（破旧长袍）',
-                icon: '🧣',
+                icon: '👖',
                 description: '卢平教授初次登场和上课时穿着的衣服，打着补丁、松松垮垮且毛了边。',
                 price: 40,
                 rare: false
@@ -359,7 +362,7 @@
             {
                 id: 'white_robe',
                 name: '白色长袍',
-                icon: '🧤',
+                icon: '👚',
                 description: '三位非洲男巫师在魁地奇世界杯营地上穿着的服装。',
                 price: 200,
                 rare: false
@@ -367,7 +370,7 @@
             {
                 id: 'gold_trimmed_robe',
                 name: '镶金边黑色天鹅绒长袍',
-                icon: '👑',
+                icon: '🧥',
                 description: '保加利亚魔法部部长看比赛时穿着的华丽服饰。',
                 price: 800,
                 rare: true
@@ -375,7 +378,7 @@
             {
                 id: 'muggle_disguise',
                 name: '麻瓜伪装服',
-                icon: '🧒',
+                icon: '👕',
                 description: '魔法部员工为了伪装成麻瓜弄出的奇葩搭配，如粗花呢西服配高统橡皮套鞋、苏格兰褶裥短裙配南美披风；还有老巫师阿尔奇坚持穿的印花长睡衣。',
                 price: 150,
                 rare: false
@@ -391,7 +394,7 @@
             {
                 id: 'invisibility_cloak',
                 name: '隐形斗篷 (Invisibility Cloak)',
-                icon: '🌟',
+                icon: '🧥',
                 description: '哈利继承自父亲的宝物，是一种像液体般银光闪闪、比丝还要光滑的奇妙织物，穿上后全身会完全隐形。',
                 price: 1000,
                 rare: true
@@ -407,7 +410,7 @@
             {
                 id: 'south_american_cloak',
                 name: '南美披风',
-                icon: '🧨',
+                icon: '🩳',
                 description: '魁地奇世界杯营地上，一名魔法部员工随意套在苏格兰短裙外的服饰。',
                 price: 120,
                 rare: false
@@ -550,5 +553,6 @@
         renderRobes();
         createMagicParticles();
     </script>
+    <script src="draggable-coin.js"></script>
 </body>
 </html>
