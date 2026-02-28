@@ -349,7 +349,6 @@
 
             <!-- 摩金夫人长袍店 -->
             <div class="shop-card malkin" onclick="openShop('malkin')">
-                <span class="shop-badge">即将推出</span>
                 <div class="shop-icon">👗</div>
                 <div class="shop-name-zh">摩金夫人</div>
                 <div class="shop-name-en">Madam Malkin's Robes</div>
@@ -384,6 +383,8 @@
                     window.location.href = 'honeydukes.html';
                 } else if (shopType === 'broomstix') {
                     window.location.href = 'broomsticks.html';
+                } else if (shopType === 'malkin') {
+                    window.location.href = 'madam-malkins.html';
                 } else {
                     alert('该商店即将推出，敬请期待！\nThis shop is coming soon!');
                 }

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摩金夫人长袍店 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .shop-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .shop-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #dda0dd;
+            text-shadow: 0 0 30px rgba(221, 160, 221, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .shop-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8a2be2;
+            font-style: italic;
+        }
+
+        .robes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .robe-card {
+            background: linear-gradient(145deg, rgba(30, 15, 45, 0.95), rgba(20, 10, 30, 0.98));
+            border: 3px solid rgba(221, 160, 221, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .robe-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(221, 160, 221, 0.1) 0%, transparent 70%);
+            animation: robeMagic 15s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes robeMagic {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .robe-card:hover {
+            transform: translateY(-8px);
+            border-color: #dda0dd;
+            box-shadow: 0 15px 40px rgba(221, 160, 221, 0.3);
+        }
+
+        .robe-card.owned {
+            border-color: #4caf50;
+            background: linear-gradient(145deg, rgba(46, 125, 50, 0.15), rgba(27, 94, 32, 0.2));
+        }
+
+        .robe-card.owned::after {
+            content: '✓ 已拥有';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .robe-card.rare {
+            border-color: #ffd700;
+            box-shadow: 0 5px 25px rgba(255, 215, 0, 0.2);
+        }
+
+        .robe-card.rare::before {
+            content: '★ 稀有';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #1a0f00;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .robe-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 0 15px rgba(221, 160, 221, 0.5));
+        }
+
+        .robe-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #dda0dd;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        .robe-description {
+            font-size: 0.95rem;
+            color: #b899e0;
+            line-height: 1.6;
+            flex: 1;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .robe-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .price-tag {
+            background: linear-gradient(135deg, rgba(221, 160, 221, 0.2), rgba(138, 43, 226, 0.3));
+            border: 2px solid #dda0dd;
+            border-radius: 12px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .price-tag.owned {
+            border-color: #4caf50;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(46, 125, 50, 0.3));
+        }
+
+        .price-icon {
+            font-size: 1.5rem;
+        }
+
+        .price-amount {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #dda0dd;
+        }
+
+        .price-tag.owned .price-amount {
+            color: #4caf50;
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #dda0dd, #8a2be2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover {
+            background: linear-gradient(135deg, #8a2be2, #6a5acd);
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .buy-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .buy-btn.owned {
+            background: #4caf50;
+            cursor: default;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #8a2be2;
+            font-size: 1.2rem;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 900px) {
+            .shop-title {
+                font-size: 2rem;
+            }
+
+            .robes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display" style="background: linear-gradient(135deg, rgba(221, 160, 221, 0.3), rgba(138, 43, 226, 0.4)); border-color: #dda0dd;">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">金加隆</span>
+    </div>
+
+    <div class="shop-container">
+        <div class="shop-header">
+            <h1 class="shop-title">👗 摩金夫人长袍店 👗</h1>
+            <p class="shop-subtitle">Madam Malkin's Robes for All Occasions</p>
+        </div>
+
+        <div class="robes-grid" id="robesGrid">
+            <div class="empty-state">
+                <div class="empty-icon">🪄</div>
+                <div>正在加载商品...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 长袍数据
+        const ROBES = [
+            {
+                id: 'plain_work_robe',
+                name: '素面工作袍（黑色）',
+                icon: '🧥',
+                description: '霍格沃茨一年级新生的必备制服，每人需要准备三套。',
+                price: 100,
+                rare: false
+            },
+            {
+                id: 'black_robe',
+                name: '黑袍',
+                icon: '🧛',
+                description: '学生们的基础校袍，哈利初次在摩金夫人的长袍店试穿的就是这种用别针别起测量身长的黑袍。',
+                price: 80,
+                rare: false
+            },
+            {
+                id: 'quidditch_robe',
+                name: '魁地奇长袍',
+                icon: '🧤',
+                description: '魁地奇比赛时的专用队服，例如哈利所在的格兰芬多队穿着"猩红色长袍"；马尔福所在的斯莱特林队穿着"绿色袍子"；而罗恩最喜爱的查德里火炮队则穿着"橙黄色长袍"。',
+                price: 300,
+                rare: false
+            },
+            {
+                id: 'old_school_robe',
+                name: '旧校袍',
+                icon: '🧝',
+                description: '韦斯莱家因为经济原因，金妮只能去旧货铺买别人穿过的旧袍子。',
+                price: 50,
+                rare: false
+            },
+            {
+                id: 'formal_robe',
+                name: '礼服长袍',
+                icon: '🧞',
+                description: '霍格沃茨高年级学生在正式场合必须穿着的服装。',
+                price: 250,
+                rare: false
+            },
+            {
+                id: 'harry_formal_robe',
+                name: '哈利的礼服长袍',
+                icon: '👔',
+                description: '这是一件深绿色的长袍，没有花边，样式和普通校袍差不多，韦斯莱夫人认为这非常衬托哈利眼睛的颜色。',
+                price: 500,
+                rare: false
+            },
+            {
+                id: 'ron_formal_robe',
+                name: '罗恩的礼服长袍',
+                icon: '🧟',
+                description: '由于是买的二手货，这件长袍是一件酱紫色的天鹅绒长裙，领口镶着发霉的荷叶边，袖口上也有相配的花边，马尔福嘲笑它停留在十八世纪九十年代的审美。',
+                price: 150,
+                rare: false
+            },
+            {
+                id: 'emerald_green_robe',
+                name: '翠绿色长袍',
+                icon: '🧠',
+                description: '麦格教授在一年级新生入学时穿着的严厉装束。',
+                price: 200,
+                rare: false
+            },
+            {
+                id: 'purple_red_robe',
+                name: '紫衣 / 紫红色长袍',
+                icon: '🧡',
+                description: '长袍店老板摩金夫人穿的衣服；吉德罗·洛哈特在决斗俱乐部时也穿着光彩照人的紫红色长袍。',
+                price: 350,
+                rare: false
+            },
+            {
+                id: 'aquamarine_robe',
+                name: '水绿色长袍',
+                icon: '🧢',
+                description: '吉德罗·洛哈特在开学晚宴上的装扮。',
+                price: 350,
+                rare: false
+            },
+            {
+                id: 'worn_torn_robe',
+                name: '旧袍子（破旧长袍）',
+                icon: '🧣',
+                description: '卢平教授初次登场和上课时穿着的衣服，打着补丁、松松垮垮且毛了边。',
+                price: 40,
+                rare: false
+            },
+            {
+                id: 'white_robe',
+                name: '白色长袍',
+                icon: '🧤',
+                description: '三位非洲男巫师在魁地奇世界杯营地上穿着的服装。',
+                price: 200,
+                rare: false
+            },
+            {
+                id: 'gold_trimmed_robe',
+                name: '镶金边黑色天鹅绒长袍',
+                icon: '👑',
+                description: '保加利亚魔法部部长看比赛时穿着的华丽服饰。',
+                price: 800,
+                rare: true
+            },
+            {
+                id: 'muggle_disguise',
+                name: '麻瓜伪装服',
+                icon: '🧒',
+                description: '魔法部员工为了伪装成麻瓜弄出的奇葩搭配，如粗花呢西服配高统橡皮套鞋、苏格兰褶裥短裙配南美披风；还有老巫师阿尔奇坚持穿的印花长睡衣。',
+                price: 150,
+                rare: false
+            },
+            {
+                id: 'winter_cloak',
+                name: '冬用斗篷（黑色，银扣）',
+                icon: '🧦',
+                description: '霍格沃茨新生必备的御寒衣物。',
+                price: 180,
+                rare: false
+            },
+            {
+                id: 'invisibility_cloak',
+                name: '隐形斗篷 (Invisibility Cloak)',
+                icon: '🌟',
+                description: '哈利继承自父亲的宝物，是一种像液体般银光闪闪、比丝还要光滑的奇妙织物，穿上后全身会完全隐形。',
+                price: 1000,
+                rare: true
+            },
+            {
+                id: 'fur_cloak',
+                name: '毛皮斗篷',
+                icon: '🧧',
+                description: '德姆斯特朗魔法学校的校服配置，因为该校位于非常寒冷的北部地区。',
+                price: 600,
+                rare: false
+            },
+            {
+                id: 'south_american_cloak',
+                name: '南美披风',
+                icon: '🧨',
+                description: '魁地奇世界杯营地上，一名魔法部员工随意套在苏格兰短裙外的服饰。',
+                price: 120,
+                rare: false
+            },
+            {
+                id: 'garlic_scarf',
+                name: '大围巾',
+                icon: '🧣',
+                description: '奇洛教授常年戴在头上的装饰，带有大蒜味，他自称是非洲王子送的礼物。',
+                price: 30,
+                rare: false
+            }
+        ];
+
+        const INVENTORY_KEY = 'hogwartsInventory';
+        const COINS_KEY = 'hogwartsCoins';
+
+        // 获取金币数量
+        function getCoins() {
+            return parseInt(localStorage.getItem(COINS_KEY) || '0');
+        }
+
+        // 更新金币显示
+        function updateCoinDisplay() {
+            document.getElementById('coinAmount').textContent = getCoins();
+        }
+
+        // 获取背包
+        function getInventory() {
+            const data = localStorage.getItem(INVENTORY_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // 保存背包
+        function saveInventory(inventory) {
+            localStorage.setItem(INVENTORY_KEY, JSON.stringify(inventory));
+        }
+
+        // 检查是否拥有
+        function hasItem(itemId) {
+            const inventory = getInventory();
+            return inventory.some(item => item.id === itemId);
+        }
+
+        // 购买长袍
+        function buyRobe(robeId) {
+            const robe = ROBES.find(r => r.id === robeId);
+            if (!robe) return;
+
+            const coins = getCoins();
+
+            if (coins < robe.price) {
+                alert(`金币不足！\n需要 ${robe.price} 金加隆，当前只有 ${coins} 金加隆。`);
+                return;
+            }
+
+            if (confirm(`确定要购买「${robe.name}」吗？\n价格：${robe.price} 金加隆`)) {
+                // 扣除金币
+                const newCoins = coins - robe.price;
+                localStorage.setItem(COINS_KEY, newCoins.toString());
+
+                // 添加到背包
+                const inventory = getInventory();
+                inventory.push({
+                    id: robe.id,
+                    name: robe.name,
+                    icon: robe.icon,
+                    description: robe.description,
+                    price: robe.price,
+                    purchaseDate: new Date().toISOString(),
+                    type: 'robe'
+                });
+                saveInventory(inventory);
+
+                // 更新显示
+                updateCoinDisplay();
+                renderRobes();
+
+                alert(`购买成功！\n你获得了「${robe.name}」`);
+            }
+        }
+
+        // 渲染长袍列表
+        function renderRobes() {
+            const container = document.getElementById('robesGrid');
+            const inventory = getInventory();
+
+            container.innerHTML = ROBES.map(robe => {
+                const owned = inventory.some(item => item.id === robe.id);
+                const coins = getCoins();
+                const canAfford = coins >= robe.price;
+
+                return `
+                    <div class="robe-card ${owned ? 'owned' : ''} ${robe.rare ? 'rare' : ''}">
+                        <div class="robe-icon">${robe.icon}</div>
+                        <div class="robe-name">${robe.name}</div>
+                        <div class="robe-description">${robe.description}</div>
+                        <div class="robe-price">
+                            <div class="price-tag ${owned ? 'owned' : ''}">
+                                <span class="price-icon">${owned ? '✓' : '🪙'}</span>
+                                <span class="price-amount">${owned ? '已拥有' : robe.price}</span>
+                            </div>
+                            <button class="buy-btn ${owned ? 'owned' : ''}"
+                                    ${owned ? 'disabled' : ''}
+                                    onclick="${owned ? '' : `buyRobe('${robe.id}')`}"
+                                    ${!canAfford && !owned ? 'disabled' : ''}>
+                                ${owned ? '已拥有' : '购买'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            if (!container) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'diagon-alley.html';
+            }, 500);
+        }
+
+        // 初始化
+        updateCoinDisplay();
+        renderRobes();
+        createMagicParticles();
+    </script>
+</body>
+</html>
