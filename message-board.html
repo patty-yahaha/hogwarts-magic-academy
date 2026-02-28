@@ -690,13 +690,17 @@
                 const messagesList = document.getElementById('messagesList');
 
                 try {
+                    console.log('🔄 开始加载留言...');
                     const { data: messages, error } = await supabase
                         .from('messages')
                         .select('*')
                         .order('created_at', { ascending: false })
                         .limit(50);
 
+                    console.log('📊 查询结果:', { messages, error });
+
                     if (error) {
+                        console.error('❌ 查询错误:', error);
                         if (error.code === '42P01') {
                             // 表不存在
                             messagesList.innerHTML = `
@@ -716,9 +720,12 @@
                     }
 
                     if (!messages || messages.length === 0) {
+                        console.log('📭 没有留言，显示空状态');
                         showEmptyState();
                         return;
                     }
+
+                    console.log(`✅ 加载了 ${messages.length} 条留言`);
 
                     // 获取每条消息的点赞数
                     const messagesWithLikes = await Promise.all(
