@@ -370,14 +370,6 @@
                     <span class="cat-zh">📅 每日</span>
                     <span class="cat-en">📅 Daily</span>
                 </button>
-                <button class="quest-category" data-category="weekly" onclick="filterQuests('weekly')">
-                    <span class="cat-zh">📆 每周</span>
-                    <span class="cat-en">📆 Weekly</span>
-                </button>
-                <button class="quest-category" data-category="special" onclick="filterQuests('special')">
-                    <span class="cat-zh">⭐ 特殊</span>
-                    <span class="cat-en">⭐ Special</span>
-                </button>
             </div>
 
             <!-- 任务列表 -->
@@ -402,128 +394,36 @@
                         zh: '在魔法语言区学习15分钟',
                         en: 'Study 15 minutes in World Languages'
                     },
-                    reward: { zh: '任务奖励', en: 'Task Reward' },
+                    reward: { zh: '', en: '' },
                     type: 'study_time',
                     target: 15,
                     getProgress: () => parseInt(localStorage.getItem('todayStudyTime') || '0')
                 },
                 {
-                    id: 'daily_flying_20',
+                    id: 'daily_flying_10',
                     icon: '🧹',
                     name: { zh: '飞行练习', en: 'Flying Practice' },
                     description: {
-                        zh: '在飞行课中通过20根石柱',
-                        en: 'Pass 20 pillars in Flying Class'
+                        zh: '在飞行课中连续通过10根石柱',
+                        en: 'Pass 10 pillars continuously in Flying Class'
                     },
-                    reward: { zh: '任务奖励', en: 'Task Reward' },
-                    type: 'flying_score',
-                    target: 20,
-                    getProgress: () => parseInt(localStorage.getItem('dailyFlyingPillars') || '0')
+                    reward: { zh: '', en: '' },
+                    type: 'flying_consecutive',
+                    target: 10,
+                    getProgress: () => parseInt(localStorage.getItem('dailyFlyingConsecutive') || '0')
                 },
                 {
-                    id: 'daily_potions_30',
+                    id: 'daily_potions_5',
                     icon: '⚗️',
                     name: { zh: '魔药制作', en: 'Potion Brewing' },
                     description: {
-                        zh: '在魔药课中成功制作30个药水',
-                        en: 'Brew 30 potions successfully'
+                        zh: '在魔药课中成功制作5个药水',
+                        en: 'Brew 5 potions successfully'
                     },
-                    reward: { zh: '任务奖励', en: 'Task Reward' },
+                    reward: { zh: '', en: '' },
                     type: 'potions_count',
-                    target: 30,
-                    getProgress: () => parseInt(localStorage.getItem('dailyPotionsCount') || '0')
-                }
-            ],
-            weekly: [
-                {
-                    id: 'weekly_study_2hours',
-                    icon: '📖',
-                    name: { zh: '学霸周', en: 'Scholar Week' },
-                    description: {
-                        zh: '一周内累计学习2小时',
-                        en: 'Study 2 hours total in a week'
-                    },
-                    reward: { zh: '100 金加隆', en: '100 Galleons' },
-                    type: 'study_time_weekly',
-                    target: 120,
-                    getProgress: () => parseInt(localStorage.getItem('weeklyStudyTime') || '0')
-                },
-                {
-                    id: 'weekly_flying_100',
-                    icon: '✈️',
-                    name: { zh: '飞行达人', en: 'Flying Expert' },
-                    description: {
-                        zh: '一周内飞行课累计通过100根石柱',
-                        en: 'Pass 100 pillars in Flying Class this week'
-                    },
-                    reward: { zh: '75 金加隆 + 2个飞天扫帚碎片', en: '75 Galleons + 2 Broom Fragments' },
-                    type: 'flying_score_weekly',
-                    target: 100,
-                    getProgress: () => parseInt(localStorage.getItem('weeklyFlyingPillars') || '0')
-                },
-                {
-                    id: 'weekly_quiz_perfect',
-                    icon: '🏆',
-                    name: { zh: '完美周', en: 'Perfect Week' },
-                    description: {
-                        zh: '一周内获得1次满分测验',
-                        en: 'Get 1 perfect quiz score in a week'
-                    },
-                    reward: { zh: '1个随机头像框', en: '1 Random Avatar Frame' },
-                    type: 'perfect_quiz_weekly',
-                    target: 1,
-                    getProgress: () => parseInt(localStorage.getItem('weeklyPerfectQuiz') || '0')
-                }
-            ],
-            special: [
-                {
-                    id: 'special_collect_owls',
-                    icon: '🦉',
-                    name: { zh: '猫头鹰收藏家', en: 'Owl Collector' },
-                    description: {
-                        zh: '在神奇动物商店收集5种不同的猫头鹰',
-                        en: 'Collect 5 different owls from Magical Menagerie'
-                    },
-                    reward: { zh: '50 金加隆 + 特殊头像', en: '50 Galleons + Special Avatar' },
-                    type: 'collect_owls',
                     target: 5,
-                    getProgress: () => {
-                        const ownedPets = JSON.parse(localStorage.getItem('ownedPets') || '[]');
-                        const owlTypes = ['雪鸮', '褐林鸮', '鸣角鸮', '灰林鸮', '谷仓猫头鹰'];
-                        return ownedPets.filter(p => owlTypes.includes(p.name)).length;
-                    }
-                },
-                {
-                    id: 'special_coins_1000',
-                    icon: '💰',
-                    name: { zh: '小有积蓄', en: 'Getting Rich' },
-                    description: {
-                        zh: '累计拥有1000金加隆',
-                        en: 'Accumulate 1000 Galleons total'
-                    },
-                    reward: { zh: '250 金加隆', en: '250 Galleons' },
-                    type: 'total_coins',
-                    target: 1000,
-                    getProgress: () => {
-                        const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
-                        return playerData.cumulativeCoins || 0;
-                    }
-                },
-                {
-                    id: 'special_achievements_10',
-                    icon: '🎖️',
-                    name: { zh: '成就达人', en: 'Achievement Master' },
-                    description: {
-                        zh: '解锁10个成就',
-                        en: 'Unlock 10 achievements'
-                    },
-                    reward: { zh: '光轮2001扫帚兑换券', en: 'Nimbus 2001 Broom Voucher' },
-                    type: 'achievements_count',
-                    target: 10,
-                    getProgress: () => {
-                        // 这里简化处理，实际应该检查真正的成就数量
-                        return parseInt(localStorage.getItem('unlockedAchievementsCount') || '0');
-                    }
+                    getProgress: () => parseInt(localStorage.getItem('dailyPotionsCount') || '0')
                 }
             ]
         };
@@ -532,15 +432,6 @@
         function getTodayDate() {
             const today = new Date();
             return today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        }
-
-        // 获取本周开始日期
-        function getWeekStart() {
-            const now = new Date();
-            const day = now.getDay();
-            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-            const weekStart = new Date(now.setDate(diff));
-            return weekStart.getFullYear() + '-' + (weekStart.getMonth() + 1) + '-' + weekStart.getDate();
         }
 
         // 检查是否需要重置每日任务
@@ -552,77 +443,37 @@
                 // 新的一天，重置每日任务进度
                 localStorage.setItem('lastQuestCheckDate', today);
                 localStorage.removeItem('dailyStudyTime');
-                localStorage.removeItem('dailyFlyingPillars');
+                localStorage.removeItem('dailyFlyingConsecutive');
                 localStorage.removeItem('dailyPotionsCount');
                 localStorage.removeItem('bundleRewardClaimed');
             }
 
             // 一次性初始化：为老玩家同步飞行进度
-            if (!localStorage.getItem('questSystemInitialized')) {
+            if (!localStorage.getItem('flyingConsecutiveInitialized')) {
                 const flyingHighScore = parseInt(localStorage.getItem('flyingClassHighScore') || '0');
                 if (flyingHighScore > 0) {
-                    // 设置今日进度为历史最高分（让老玩家能完成任务）
-                    localStorage.setItem('dailyFlyingPillars', flyingHighScore.toString());
+                    // 设置今日进度为历史最高分（让老玩家能完成任务，最多10）
+                    localStorage.setItem('dailyFlyingConsecutive', Math.min(flyingHighScore, 10).toString());
                 }
-                localStorage.setItem('questSystemInitialized', 'true');
-            }
-        }
-
-        // 检查是否需要重置每周任务
-        function checkWeeklyReset() {
-            const lastWeek = localStorage.getItem('lastQuestCheckWeek');
-            const weekStart = getWeekStart();
-
-            if (lastWeek !== weekStart) {
-                // 新的一周，重置每周任务进度
-                localStorage.setItem('lastQuestCheckWeek', weekStart);
-                localStorage.removeItem('weeklyStudyTime');
-                localStorage.removeItem('weeklyFlyingPillars');
-                localStorage.removeItem('weeklyPerfectQuiz');
+                localStorage.setItem('flyingConsecutiveInitialized', 'true');
             }
         }
 
         // 获取任务完成状态
         function getQuestCompleted() {
             const today = getTodayDate();
-            const weekStart = getWeekStart();
-
             const completedDaily = JSON.parse(localStorage.getItem('completedQuestsDaily') || '{}');
-            const completedWeekly = JSON.parse(localStorage.getItem('completedQuestsWeekly') || '{}');
-            const completedSpecial = JSON.parse(localStorage.getItem('completedQuestsSpecial') || '{}');
-
-            return {
-                daily: completedDaily[today] || [],
-                weekly: completedWeekly[weekStart] || [],
-                special: completedSpecial
-            };
+            return completedDaily[today] || [];
         }
 
         // 保存任务完成状态
-        function saveQuestCompleted(category, questId) {
+        function saveQuestCompleted(questId) {
             const today = getTodayDate();
-            const weekStart = getWeekStart();
-
-            if (category === 'daily') {
-                const completed = JSON.parse(localStorage.getItem('completedQuestsDaily') || '{}');
-                if (!completed[today]) completed[today] = [];
-                if (!completed[today].includes(questId)) {
-                    completed[today].push(questId);
-                    localStorage.setItem('completedQuestsDaily', JSON.stringify(completed));
-                }
-            } else if (category === 'weekly') {
-                const completed = JSON.parse(localStorage.getItem('completedQuestsWeekly') || '{}');
-                if (!completed[weekStart]) completed[weekStart] = [];
-                if (!completed[weekStart].includes(questId)) {
-                    completed[weekStart].push(questId);
-                    localStorage.setItem('completedQuestsWeekly', JSON.stringify(completed));
-                }
-            } else if (category === 'special') {
-                const completed = JSON.parse(localStorage.getItem('completedQuestsSpecial') || '{}');
-                if (!completed.includes(questId)) {
-                    completed.push(questId);
-                    localStorage.setItem('completedQuestsSpecial', JSON.stringify(completed));
-                }
+            const completed = JSON.parse(localStorage.getItem('completedQuestsDaily') || '{}');
+            if (!completed[today]) completed[today] = [];
+            if (!completed[today].includes(questId)) {
+                completed[today].push(questId);
+                localStorage.setItem('completedQuestsDaily', JSON.stringify(completed));
             }
         }
 
@@ -634,14 +485,13 @@
 
             // 检查是否所有每日任务都已完成
             const bundleClaimed = localStorage.getItem('bundleRewardClaimed') === 'true';
-            const allDailyCompleted = currentCategory === 'daily' &&
-                quests.every(q => completed[currentCategory].includes(q.id) || q.getProgress() >= q.target);
+            const allDailyCompleted = quests.every(q => completed.includes(q.id) || q.getProgress() >= q.target);
 
             // 显示/隐藏打包奖励横幅
             const bundleReward = document.getElementById('bundleReward');
             const bundleClaimBtn = document.getElementById('bundleClaimBtn');
 
-            if (currentCategory === 'daily' && bundleReward) {
+            if (bundleReward) {
                 if (allDailyCompleted && !bundleClaimed) {
                     bundleReward.classList.add('show');
                     bundleClaimBtn.disabled = false;
@@ -663,7 +513,7 @@
             }
 
             container.innerHTML = quests.map(quest => {
-                const isCompleted = completed[currentCategory].includes(quest.id);
+                const isCompleted = completed.includes(quest.id);
                 const progress = Math.min(quest.getProgress(), quest.target);
                 const progressPercent = Math.floor((progress / quest.target) * 100);
 
@@ -676,12 +526,6 @@
                             <span class="desc-zh">${quest.description.zh}</span>
                             <span class="desc-en">${quest.description.en}</span>
                         </div>
-                        <div class="quest-reward">
-                            <span class="quest-reward-text">
-                                <span class="reward-zh">🎁 ${quest.reward.zh}</span>
-                                <span class="reward-en">🎁 ${quest.reward.en}</span>
-                            </span>
-                        </div>
                         <div class="quest-progress">
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${progressPercent}%"></div>
@@ -691,35 +535,16 @@
                                 <span class="progress-en">${progress} / ${quest.target}</span>
                             </div>
                         </div>
-                        ${currentCategory === 'daily' ? `
-                            ${isCompleted ? `
-                                <button class="quest-btn" disabled>
-                                    <span class="btn-zh">已完成 ✓</span>
-                                    <span class="btn-en">Completed ✓</span>
-                                </button>
-                            ` : `
-                                <button class="quest-btn" disabled>
-                                    <span class="btn-zh">进行中...</span>
-                                    <span class="btn-en">In Progress...</span>
-                                </button>
-                            `}
+                        ${isCompleted ? `
+                            <button class="quest-btn" disabled>
+                                <span class="btn-zh">已完成 ✓</span>
+                                <span class="btn-en">Completed ✓</span>
+                            </button>
                         ` : `
-                            ${!isCompleted && progressPercent >= 100 ? `
-                                <button class="quest-btn claim-btn" onclick="claimQuest('${quest.id}')">
-                                    <span class="btn-zh">领取奖励</span>
-                                    <span class="btn-en">Claim Reward</span>
-                                </button>
-                            ` : isCompleted ? `
-                                <button class="quest-btn" disabled>
-                                    <span class="btn-zh">已完成 ✓</span>
-                                    <span class="btn-en">Completed ✓</span>
-                                </button>
-                            ` : `
-                                <button class="quest-btn" disabled>
-                                    <span class="btn-zh">进行中...</span>
-                                    <span class="btn-en">In Progress...</span>
-                                </button>
-                            `}
+                            <button class="quest-btn" disabled>
+                                <span class="btn-zh">进行中...</span>
+                                <span class="btn-en">In Progress...</span>
+                            </button>
                         `}
                     </div>
                 `;
@@ -729,15 +554,6 @@
         // 过滤任务
         function filterQuests(category) {
             currentCategory = category;
-
-            // 更新分类按钮状态
-            document.querySelectorAll('.quest-category').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.category === category) {
-                    btn.classList.add('active');
-                }
-            });
-
             renderQuests();
         }
 
@@ -758,32 +574,6 @@
             }
 
             localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
-        }
-
-        // 领取任务奖励
-        function claimQuest(questId) {
-            const quests = QUESTS[currentCategory];
-            const quest = quests.find(q => q.id === questId);
-
-            if (!quest) return;
-
-            // 给予奖励
-            const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
-            // 这里简化处理，实际应该根据任务类型给予不同奖励
-            const rewardCoins = parseInt(quest.reward.zh.match(/\d+/)[0]) || 30;
-            localStorage.setItem('hogwartsCoins', (currentCoins + rewardCoins).toString());
-
-            // 更新累计金币（用于等级计算）
-            updateCumulativeCoins(rewardCoins);
-
-            // 标记任务已完成
-            saveQuestCompleted(currentCategory, questId);
-
-            alert(currentLang === 'zh' ?
-                `🎉 恭喜完成！\n\n你获得了：${quest.reward.zh}` :
-                `🎉 Congratulations!\n\nYou received: ${quest.reward.en}`);
-
-            renderQuests();
         }
 
         // 领取打包奖励
@@ -841,7 +631,6 @@
 
             // 检查任务重置
             checkDailyReset();
-            checkWeeklyReset();
 
             // 渲染任务列表
             renderQuests();
