@@ -217,6 +217,47 @@
             margin-top: 15px;
         }
 
+        /* 金币双倍效果提示 */
+        .coin-boost-banner {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd700, #ff9500);
+            color: #1a0f00;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            animation: boostPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes boostPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+
+        .coin-boost-banner.active {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .boost-icon {
+            font-size: 1.3rem;
+        }
+
+        .boost-timer {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 900px) {
             .pub-title {
                 font-size: 1.8rem;
@@ -237,6 +278,16 @@
         <span class="coin-icon">🪙</span>
         <span class="coin-amount" id="coinAmount">0</span>
         <span class="coin-label">金加隆</span>
+    </div>
+
+    <!-- 金币双倍效果横幅 -->
+    <div class="coin-boost-banner" id="coinBoostBanner">
+        <span class="boost-icon">✨</span>
+        <span>
+            <span class="title-text-zh">金币双倍生效中</span>
+            <span class="title-text-en">2x Coins Active</span>
+        </span>
+        <span class="boost-timer" id="boostTimer">05:00</span>
     </div>
 
     <div class="container">
@@ -297,7 +348,7 @@
         let currentLang = localStorage.getItem('siteLanguage') || 'zh';
         let currentCategory = 'drinks';
 
-        // 饮品类数据
+        // 饮品类数据 - 添加 boostDuration（双倍效果持续时间，分钟）
         const DRINKS = [
             {
                 id: 'butterbeer',
@@ -306,7 +357,8 @@
                 icon: '🍺',
                 description: '酒吧角落里的老太婆们曾拿着小杯喝这种酒。',
                 descriptionEn: 'The old ladies in the corner used to drink from small cups.',
-                price: 80
+                price: 80,
+                boostDuration: 5  // 5分钟双倍金币
             },
             {
                 id: 'beer',
@@ -315,7 +367,8 @@
                 icon: '🍻',
                 description: '酒吧老板汤姆曾询问魔法部部长福吉是否需要。',
                 descriptionEn: 'Tom once asked Minister Fudge if he needed anything.',
-                price: 50
+                price: 50,
+                boostDuration: 3  // 3分钟双倍金币
             },
             {
                 id: 'mead',
@@ -324,7 +377,8 @@
                 icon: '🍵',
                 description: '酒吧老板汤姆曾询问魔法部部长福吉是否需要。',
                 descriptionEn: 'Tom once asked Minister Fudge if he needed anything.',
-                price: 65
+                price: 65,
+                boostDuration: 4  // 4分钟双倍金币
             },
             {
                 id: 'tea',
@@ -333,11 +387,12 @@
                 icon: '☕',
                 description: '福吉曾点过一罐茶，由老板汤姆用托盘端来。',
                 descriptionEn: 'Fudge once ordered a pot of tea, served by Tom on a tray.',
-                price: 40
+                price: 40,
+                boostDuration: 3  // 3分钟双倍金币
             }
         ];
 
-        // 食物类数据
+        // 食物类数据 - 添加 boostDuration（双倍效果持续时间，分钟）
         const FOODS = [
             {
                 id: 'roast_pie',
@@ -346,7 +401,8 @@
                 icon: '🥧',
                 description: '老板汤姆曾为福吉和哈利端来，福吉在上面抹了黄油。',
                 descriptionEn: 'Tom once served Fudge and Harry, with butter on top.',
-                price: 120
+                price: 120,
+                boostDuration: 8  // 8分钟双倍金币
             },
             {
                 id: 'liver',
@@ -355,7 +411,8 @@
                 icon: '🥓',
                 description: '哈利曾目睹一名形迹可疑的人在早餐时点了一碟子生肝。',
                 descriptionEn: 'Harry once saw a suspicious-looking person order liver at breakfast.',
-                price: 85
+                price: 85,
+                boostDuration: 5  // 5分钟双倍金币
             },
             {
                 id: 'regular_breakfast',
@@ -364,12 +421,16 @@
                 icon: '🍳',
                 description: '哈利在破釜酒吧住宿期间，每天早晨固定食用的餐点。',
                 descriptionEn: 'During Harry\'s stay at Leaky Cauldron, he ate this every morning.',
-                price: 100
+                price: 100,
+                boostDuration: 6  // 6分钟双倍金币
             }
         ];
 
         const INVENTORY_KEY = 'hogwartsInventory';
         const COINS_KEY = 'hogwartsCoins';
+        const COIN_BOOST_KEY = 'coinBoostEffect'; // 金币双倍效果
+        const ENERGY_KEY = 'hogwartsEnergy'; // 精力值
+        const ENERGY_MAX = 100; // 最大精力值
 
         // 获取金币
         function getCoins() {
@@ -379,6 +440,32 @@
         // 更新金币显示
         function updateCoinDisplay() {
             document.getElementById('coinAmount').textContent = getCoins();
+        }
+
+        // 获取精力值
+        function getEnergy() {
+            const saved = localStorage.getItem(ENERGY_KEY);
+            return saved !== null ? parseInt(saved) : ENERGY_MAX;
+        }
+
+        // 增加精力值
+        function increaseEnergy(amount) {
+            const current = getEnergy();
+            const newEnergy = Math.min(current + amount, ENERGY_MAX);
+            localStorage.setItem(ENERGY_KEY, newEnergy.toString());
+        }
+
+        // 消耗精力值
+        function useEnergy(amount) {
+            const current = getEnergy();
+            const newEnergy = Math.max(0, current - amount);
+            localStorage.setItem(ENERGY_KEY, newEnergy.toString());
+            return newEnergy > 0; // 返回是否还有剩余精力
+        }
+
+        // 获取精力值百分比
+        function getEnergyPercent() {
+            return Math.round((getEnergy() / ENERGY_MAX) * 100);
         }
 
         // 获取背包
@@ -396,6 +483,54 @@
         function hasItem(itemId) {
             const inventory = getInventory();
             return inventory.some(item => item.id === itemId);
+        }
+
+        // 获取金币双倍效果数据
+        function getCoinBoostData() {
+            const data = localStorage.getItem(COIN_BOOST_KEY);
+            if (!data) {
+                return { active: false, startTime: 0, duration: 0 };
+            }
+            return JSON.parse(data);
+        }
+
+        // 保存金币双倍效果数据
+        function saveCoinBoostData(data) {
+            localStorage.setItem(COIN_BOOST_KEY, JSON.stringify(data));
+        }
+
+        // 激活金币双倍效果
+        function activateCoinBoost(durationMinutes) {
+            const boostData = {
+                active: true,
+                startTime: Date.now(),
+                duration: durationMinutes * 60 * 1000  // 转换为毫秒
+            };
+            saveCoinBoostData(boostData);
+        }
+
+        // 检查金币双倍效果是否生效
+        function isCoinBoostActive() {
+            const boostData = getCoinBoostData();
+            if (!boostData.active) return false;
+
+            const elapsed = Date.now() - boostData.startTime;
+            if (elapsed >= boostData.duration) {
+                // 效果已过期
+                saveCoinBoostData({ active: false, startTime: 0, duration: 0 });
+                return false;
+            }
+            return true;
+        }
+
+        // 获取双倍效果剩余时间（秒）
+        function getCoinBoostRemainingTime() {
+            const boostData = getCoinBoostData();
+            if (!boostData.active) return 0;
+
+            const elapsed = Date.now() - boostData.startTime;
+            const remaining = Math.max(0, boostData.duration - elapsed);
+            return Math.ceil(remaining / 1000);
         }
 
         // 切换分类
@@ -416,21 +551,18 @@
             const grid = document.getElementById('itemsGrid');
 
             grid.innerHTML = items.map(item => {
-                const owned = hasItem(item.id);
-
                 return `
-                    <div class="menu-item ${owned ? 'owned' : ''}" onclick="${owned ? '' : `orderItem('${item.id}')`}">
-                        ${owned ? `<div class="owned-badge">✓ 已拥有</div>` : ''}
+                    <div class="menu-item" onclick="orderItem('${item.id}')">
                         <div class="item-icon">${item.icon}</div>
                         <div class="item-name">${currentLang === 'zh' ? item.name : item.nameEn}</div>
                         <div class="item-description">${currentLang === 'zh' ? item.description : item.descriptionEn}</div>
                         <div class="item-price">
-                            <span class="price-icon">${owned ? '🪙' : '💰'}</span>
-                            <span class="price-amount">${owned ? '已购买' : item.price}</span>
+                            <span class="price-icon">💰</span>
+                            <span class="price-amount">${item.price}</span>
                         </div>
                         <div class="item-actions">
-                            <button class="order-btn ${owned ? 'owned' : ''}" ${owned ? 'disabled' : ''} onclick="${owned ? '' : `orderItem('${item.id}')`}">
-                                ${owned ? (currentLang === 'zh' ? '已享用' : 'Enjoyed') : (currentLang === 'zh' ? '点餐' : 'Order')}
+                            <button class="order-btn" onclick="orderItem('${item.id}')">
+                                ${currentLang === 'zh' ? '点餐' : 'Order'}
                             </button>
                         </div>
                     </div>
@@ -438,7 +570,7 @@
             }).join('');
         }
 
-        // 点餐
+        // 点餐 - 直接食用，增加金币双倍效果
         function orderItem(itemId) {
             const items = currentCategory === 'drinks' ? DRINKS : FOODS;
             const item = items.find(i => i.id === itemId);
@@ -452,33 +584,21 @@
                 return;
             }
 
-            if (confirm(currentLang === 'zh' ? '确定要购买「' + item.name + '」吗？\n价格：' + item.price + ' 金加隆' : 'Are you sure you want to buy "' + (currentLang === 'zh' ? item.name : item.nameEn) + '"?\nPrice: ' + item.price + ' Galleons')) {
-                // 扣除金币
-                const newCoins = coins - item.price;
-                localStorage.setItem(COINS_KEY, newCoins.toString());
+            const itemName = currentLang === 'zh' ? item.name : item.nameEn;
+            const priceText = item.price + ' 金加隆';
 
-                // 添加到背包
-                const inventory = getInventory();
-                inventory.push({
-                    id: item.id,
-                    name: item.name,
-                    nameEn: item.nameEn,
-                    icon: item.icon,
-                    description: item.description,
-                    descriptionEn: item.descriptionEn,
-                    price: item.price,
-                    purchaseDate: new Date().toISOString(),
-                    type: currentCategory === 'drinks' ? 'drink' : 'food',
-                    source: 'leaky_cauldron'
-                });
-                saveInventory(inventory);
+            // 直接食用 - 激活金币双倍效果
+            const newCoins = coins - item.price;
+            localStorage.setItem(COINS_KEY, newCoins.toString());
 
-                // 更新显示
-                updateCoinDisplay();
-                renderItems();
+            // 激活双倍效果
+            activateCoinBoost(item.boostDuration);
 
-                alert(currentLang === 'zh' ? '购买成功！\n你获得了「' + item.name + '」' : 'Purchased successfully!\nYou got "' + (currentLang === 'zh' ? item.name : item.nameEn) + '"!');
-            }
+            updateCoinDisplay();
+
+            alert(currentLang === 'zh' ?
+                `享用「${itemName}」！\n已激活 ${item.boostDuration} 分钟的金币双倍效果！` :
+                `Enjoyed "${itemName}"!\n${item.boostDuration} minutes coin boost activated!`);
         }
 
         // 语言切换
@@ -487,6 +607,22 @@
             document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
 
             document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ? '← 返回' : '← Back';
+        }
+
+        // 更新双倍效果显示
+        function updateCoinBoostDisplay() {
+            const banner = document.getElementById('coinBoostBanner');
+            const timerEl = document.getElementById('boostTimer');
+
+            if (isCoinBoostActive()) {
+                banner.classList.add('active');
+                const remaining = getCoinBoostRemainingTime();
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                banner.classList.remove('active');
+            }
         }
 
         // 返回
