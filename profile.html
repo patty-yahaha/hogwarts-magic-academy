@@ -1266,11 +1266,26 @@
             // 统计背包中每个物品的购买数量
             const inventoryCount = {};
             playerData.inventory.forEach(item => {
-                inventoryCount[item.nameZh] = (inventoryCount[item.nameZh] || 0) + 1;
+                if (item.type !== 'decoration') {  // 装饰品不计入数量统计
+                    inventoryCount[item.nameZh] = (inventoryCount[item.nameZh] || 0) + 1;
+                }
             });
 
             container.innerHTML = playerData.inventory.map((item, index) => {
                 const itemName = item.nameZh;
+                const isDecoration = item.type === 'decoration';
+
+                // 装饰品不需要数量限制
+                if (isDecoration) {
+                    return `
+                        <div class="room-inventory-item" draggable="true" data-index="${index}">
+                            <div class="room-inventory-icon">${item.icon}</div>
+                            <div class="room-inventory-name">${itemName}</div>
+                            <span class="placed-status" style="color: #9b59b6;">🎨 装饰品</span>
+                        </div>
+                    `;
+                }
+
                 const placedCount = placedItemCount[itemName] || 0;
                 const totalCount = inventoryCount[itemName] || 1;
 
@@ -1314,6 +1329,70 @@
         function handleInventoryDragEnd(e) {
             e.target.classList.remove('dragging');
             draggedItem = null;
+        }
+
+        // 添加装饰品到房间
+        function addDecorationToRoom(decorationItem, x, y, roomRect) {
+            const roomArea = document.getElementById('roomArea');
+
+            // 初始化 roomDecorations 数组
+            if (!playerData.roomDecorations) {
+                playerData.roomDecorations = [];
+            }
+
+            // 创建装饰品对象
+            const decoration = {
+                id: decorationItem.decorationId,
+                icon: decorationItem.icon,
+                nameZh: decorationItem.name,
+                nameEn: decorationItem.nameEn,
+                x: Math.max(0, Math.min(x, roomRect.width - 50)),
+                y: Math.max(0, Math.min(y, roomRect.height - 50))
+            };
+
+            // 检查是否已存在（避免重复）
+            if (!playerData.roomDecorations.find(d => d.id === decoration.id)) {
+                playerData.roomDecorations.push(decoration);
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+
+                // 创建装饰品元素
+                createRoomDecorationElement(decoration);
+
+                console.log('✅ 装饰品已添加到房间:', decoration.nameZh);
+            } else {
+                console.log('⚠️ 装饰品已在房间中:', decoration.nameZh);
+            }
+        }
+
+        // 创建房间装饰品元素
+        function createRoomDecorationElement(decoration) {
+            const roomArea = document.getElementById('roomArea');
+
+            const decorEl = document.createElement('div');
+            decorEl.id = `decoration-${decoration.id}`;
+            decorEl.className = 'room-decoration';
+            decorEl.innerHTML = decoration.icon;
+            decorEl.setAttribute('data-id', decoration.id);
+            decorEl.title = decoration.nameZh;
+
+            // 设置位置
+            decorEl.style.cssText = `
+                position: absolute;
+                left: ${decoration.x}px;
+                top: ${decoration.y}px;
+                font-size: 40px;
+                cursor: move;
+                z-index: 100;
+                user-select: none;
+                filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+                transition: transform 0.2s ease;
+            `;
+
+            // 添加到房间区域
+            roomArea.appendChild(decorEl);
+
+            // 使其可拖动
+            makeElementDraggable(decorEl, decoration.id, roomArea);
         }
 
         // 加载房间中的物品
@@ -1591,24 +1670,30 @@
                     const x = e.clientX - rect.left - 25; // 居中
                     const y = e.clientY - rect.top - 25;
 
-                    // 创建房间物品
-                    const roomItem = {
-                        id: nextItemId++,
-                        icon: draggedItem.icon,
-                        name: draggedItem.nameZh,
-                        x: Math.max(0, Math.min(x, rect.width - 50)),
-                        y: Math.max(0, Math.min(y, rect.height - 50))
-                    };
+                    // 检查是否是装饰品
+                    if (draggedItem.type === 'decoration') {
+                        // 添加装饰品到房间
+                        addDecorationToRoom(draggedItem, x, y, rect);
+                    } else {
+                        // 创建普通房间物品
+                        const roomItem = {
+                            id: nextItemId++,
+                            icon: draggedItem.icon,
+                            name: draggedItem.nameZh,
+                            x: Math.max(0, Math.min(x, rect.width - 50)),
+                            y: Math.max(0, Math.min(y, rect.height - 50))
+                        };
 
-                    // 添加到房间数据
-                    playerData.room.items.push(roomItem);
-                    savePlayerData();
+                        // 添加到房间数据
+                        playerData.room.items.push(roomItem);
+                        savePlayerData();
 
-                    // 创建元素
-                    createRoomItemElement(roomItem);
+                        // 创建元素
+                        createRoomItemElement(roomItem);
 
-                    // 重新加载背包列表（物品保留在背包中，可多次放置）
-                    loadRoomInventory();
+                        // 重新加载背包列表（物品保留在背包中，可多次放置）
+                        loadRoomInventory();
+                    }
                 }
             });
 
@@ -1680,44 +1765,13 @@
             const roomRect = roomArea.getBoundingClientRect();
 
             savedPlayerData.roomDecorations.forEach(decoration => {
-                const decorEl = document.createElement('div');
-                decorEl.id = `decoration-${decoration.id}`;
-                decorEl.className = 'room-decoration';
-                decorEl.innerHTML = decoration.icon;
-                decorEl.setAttribute('data-id', decoration.id);
-                decorEl.title = decoration.nameZh;
-
-                // 使用保存的位置，或随机位置（相对于房间区域）
-                let posX, posY;
-                if (savedPlayerData.decorationPositions && savedPlayerData.decorationPositions[decoration.id]) {
-                    posX = savedPlayerData.decorationPositions[decoration.id].left;
-                    posY = savedPlayerData.decorationPositions[decoration.id].top;
-                } else {
-                    // 限制在房间范围内随机位置
-                    const maxX = roomRect.width - 60;
-                    const maxY = roomRect.height - 60;
-                    posX = Math.max(20, Math.random() * maxX);
-                    posY = Math.max(20, Math.random() * maxY);
+                // 如果装饰品有保存的位置，使用它；否则使用随机位置
+                if (!decoration.x || !decoration.y) {
+                    decoration.x = Math.max(20, Math.random() * (roomRect.width - 60));
+                    decoration.y = Math.max(20, Math.random() * (roomRect.height - 60));
                 }
 
-                decorEl.style.cssText = `
-                    position: absolute !important;
-                    left: ${posX}px !important;
-                    top: ${posY}px !important;
-                    font-size: 40px;
-                    cursor: move;
-                    z-index: 100 !important;
-                    user-select: none;
-                    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
-                    transition: transform 0.2s ease;
-                    pointer-events: auto !important;
-                    display: block !important;
-                    visibility: visible !important;
-                `;
-
-                // 添加到房间区域而不是 body
-                roomArea.appendChild(decorEl);
-                makeElementDraggable(decorEl, decoration.id, roomArea);
+                createRoomDecorationElement(decoration);
             });
 
             console.log('装饰品加载完成，DOM 中数量:', document.querySelectorAll('.room-decoration').length);
@@ -1789,18 +1843,17 @@
                 isDragging = false;
                 element.style.transform = 'scale(1)';
 
-                // 保存位置
-                const position = {
-                    left: element.offsetLeft,
-                    top: element.offsetTop
-                };
-
+                // 保存装饰品位置到装饰品对象本身
                 const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
-                if (!playerData.decorationPositions) {
-                    playerData.decorationPositions = {};
+                if (playerData.roomDecorations) {
+                    const decoration = playerData.roomDecorations.find(d => d.id === id);
+                    if (decoration) {
+                        decoration.x = element.offsetLeft;
+                        decoration.y = element.offsetTop;
+                        localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+                        console.log('✅ 装饰品位置已保存:', decoration.nameZh, `(${decoration.x}, ${decoration.y})`);
+                    }
                 }
-                playerData.decorationPositions[id] = position;
-                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
 
                 document.removeEventListener('mousemove', onDrag);
                 document.removeEventListener('mouseup', stopDrag);
