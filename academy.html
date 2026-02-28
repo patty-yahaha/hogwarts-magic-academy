@@ -1334,8 +1334,13 @@
                 playerData.roomDecorations.push(decoration);
                 localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
 
-                // 立即在房间中创建可拖动的装饰品
-                createDraggableDecoration(decoration);
+                // 只在当前页面是 academy.html 时才创建 DOM 元素
+                // 如果用户在其他页面领取，装饰品会被保存但不会立即显示
+                // 返回 academy.html 时会自动显示
+                if (window.location.pathname.endsWith('academy.html') ||
+                    window.location.pathname.endsWith('/')) {
+                    createDraggableDecoration(decoration);
+                }
             }
         }
 
@@ -1467,6 +1472,12 @@
 
         // 加载并显示所有已保存的房间装饰
         function loadRoomDecorations() {
+            // 只在 academy.html 页面加载装饰品
+            if (!window.location.pathname.endsWith('academy.html') &&
+                !window.location.pathname.endsWith('/')) {
+                return;
+            }
+
             const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
             if (!playerData.roomDecorations) return;
 
