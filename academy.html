@@ -927,9 +927,6 @@
             }
         }
 
-        // 调用函数确保测试邮件存在
-        ensureTestMailExists();
-
         // ==================== 邮件系统 ====================
 
         // 邮件类型定义
@@ -938,6 +935,11 @@
                 icon: '🎁',
                 nameZh: '物品奖励',
                 nameEn: 'Item Reward'
+            },
+            REWARD: {
+                icon: '🎁',
+                nameZh: '奖励邮件',
+                nameEn: 'Reward Mail'
             },
             INVENTORY: {
                 icon: '🎒',
@@ -979,6 +981,9 @@
             { id: 'house_banner', icon: '🚩', nameZh: '学院旗帜', nameEn: 'House Banner' },
             { id: 'remembrall', icon: '🔴', nameZh: '记忆球', nameEn: 'Remembrall' }
         ];
+
+        // 调用函数确保测试邮件存在（在 LETTER_TYPES 和 ROOM_DECORATIONS 定义之后）
+        ensureTestMailExists();
 
         // 获取所有邮件
         function getLetters() {
