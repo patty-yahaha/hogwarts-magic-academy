@@ -394,22 +394,31 @@
         </div>
 
         <!-- 调试信息 -->
-        <div id="debug-info" style="position: fixed; top: 10px; right: 10px; background: white; color: black; padding: 15px; border: 3px solid red; border-radius: 5px; font-size: 14px; z-index: 99999; max-width: 300px; max-height: 300px; overflow-y: auto; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
-            <div style="color: red; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid red; padding-bottom: 5px;">🔍 调试信息</div>
-        </div>
+        <div id="debug-info" style="position: fixed; top: 10px; right: 10px; background: white; color: black; padding: 15px; border: 3px solid red; border-radius: 5px; font-size: 14px; z-index: 99999; max-width: 300px; max-height: 300px; overflow-y: auto; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>
     </div>
 
     <script>
-        // 页面加载测试
-        alert('页面已加载！');
+        // 页面加载测试 - 显示所有 localStorage 内容
+        const allStorage = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            allStorage[key] = localStorage.getItem(key);
+        }
+        alert('页面已加载！\n\n所有 localStorage 内容：\n' + JSON.stringify(allStorage, null, 2));
 
         // 更新调试信息
         function addDebugInfo(message) {
             const debugDiv = document.getElementById('debug-info');
             if (debugDiv) {
                 const time = new Date().toLocaleTimeString();
-                debugDiv.innerHTML += `<div style="color: black; margin-top: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">[${time}] ${message}</div>`;
-                debugDiv.scrollTop = debugDiv.scrollHeight; // 自动滚动到底部
+                const p = document.createElement('p');
+                p.textContent = `[${time}] ${message}`;
+                p.style.color = 'black';
+                p.style.marginTop = '8px';
+                p.style.borderBottom = '1px dashed #ccc';
+                p.style.paddingBottom = '5px';
+                debugDiv.appendChild(p);
+                debugDiv.scrollTop = debugDiv.scrollHeight;
             }
         }
     </script>
