@@ -615,16 +615,28 @@
             // 加载用户点赞记录
             async function loadUserLikes() {
                 try {
-                    const { data, error } = await supabase
+                    let query = supabase
                         .from('message_likes')
-                        .select('message_id')
-                        .eq('user_id', currentUser.id);
+                        .select('message_id');
+
+                    // 根据用户类型使用不同的查询条件
+                    if (currentUser.isGuest) {
+                        // 游客：暂时不加载点赞记录（因为没有 user_id）
+                        likedMessages = new Set();
+                        return;
+                    } else {
+                        // 登录用户：使用 user_id 查询
+                        query = query.eq('user_id', currentUser.id);
+                    }
+
+                    const { data, error } = await query;
 
                     if (!error && data) {
                         likedMessages = new Set(data.map(item => item.message_id));
                     }
                 } catch (error) {
                     console.error('Error loading likes:', error);
+                    likedMessages = new Set();
                 }
             }
 
@@ -846,6 +858,18 @@
 
             // 点赞/取消点赞
             window.toggleLike = async function(messageId) {
+                // 检查是否是游客
+                if (currentUser.isGuest) {
+                    showError(currentLang === 'zh' ? '游客无法点赞，请先登录' : 'Guests cannot like, please login first');
+                    return;
+                }
+
+                // 检查是否有有效的用户 ID
+                if (!currentUser.id || currentUser.id.startsWith('guest_')) {
+                    showError(currentLang === 'zh' ? '请先登录后再点赞' : 'Please login before liking');
+                    return;
+                }
+
                 const isLiked = likedMessages.has(messageId);
 
                 try {
@@ -859,6 +883,10 @@
 
                         if (!error) {
                             likedMessages.delete(messageId);
+                        } else {
+                            console.error('Unlike error:', error);
+                            showError((currentLang === 'zh' ? '取消点赞失败：' : 'Unlike failed: ') + error.message);
+                            return;
                         }
                     } else {
                         // 点赞
@@ -866,12 +894,15 @@
                             .from('message_likes')
                             .insert([{
                                 message_id: messageId,
-                                user_id: currentUser.id,
-                                is_guest_liker: currentUser.isGuest
+                                user_id: currentUser.id
                             }]);
 
                         if (!error) {
                             likedMessages.add(messageId);
+                        } else {
+                            console.error('Like error:', error);
+                            showError((currentLang === 'zh' ? '点赞失败：' : 'Like failed: ') + error.message);
+                            return;
                         }
                     }
 
