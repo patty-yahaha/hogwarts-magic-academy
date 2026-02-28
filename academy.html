@@ -1770,6 +1770,44 @@
             // 检查完成后更新用户状态栏
             updateUserStatusBar();
 
+            // 自动生成一封测试礼品邮件（仅第一次）
+            const testLetterSent = localStorage.getItem('testLetterSent');
+            if (!testLetterSent) {
+                setTimeout(() => {
+                    const decoration = ROOM_DECORATIONS[Math.floor(Math.random() * ROOM_DECORATIONS.length)];
+                    const testLetter = {
+                        id: 'welcome_gift_' + Date.now(),
+                        type: 'ITEM',
+                        title: {
+                            zh: `🎁 欢迎礼物 - ${decoration.nameZh}`,
+                            en: `🎁 Welcome Gift - ${decoration.nameEn}`
+                        },
+                        body: {
+                            zh: `亲爱的同学，\n\n欢迎来到霍格沃茨魔法学院！\n\n为了庆祝你的到来，我们为你准备了一份特别的礼物：\n\n${decoration.icon} ${decoration.nameZh}\n\n这个装饰品会放在你的魔法房间里，你可以随意拖动它来装饰你的空间！\n\n祝你在这里度过一段美好的魔法时光！\n\n你的，霍格沃茨猫头鹰邮局`,
+                            en: `Dear Student,\n\nWelcome to Hogwarts School of Witchcraft and Wizardry!\n\nTo celebrate your arrival, we have prepared a special gift for you:\n\n${decoration.icon} ${decoration.nameEn}\n\nThis decoration will be placed in your magical room. You can drag it around to decorate your space!\n\nWe hope you have a wonderful time here!\n\nYours, Hogwarts Owl Post Office`
+                        },
+                        date: new Date().toISOString(),
+                        read: false,
+                        reward: {
+                            type: 'decoration',
+                            item: decoration
+                        }
+                    };
+
+                    // 添加到邮件列表
+                    let letters = getLetters();
+                    letters.unshift(testLetter);
+                    saveLetters(letters);
+                    updateMailBadge();
+
+                    // 显示通知
+                    showNewLetterNotification(testLetter);
+
+                    // 标记已发送
+                    localStorage.setItem('testLetterSent', 'true');
+                }, 2000); // 2秒后显示
+            }
+
             // 页面加载时尝试生成新邮件（基于概率）
             const weekCount = getWeekLetterCount();
             if (weekCount < 3) {
@@ -1779,7 +1817,7 @@
                         // 显示通知
                         showNewLetterNotification(newLetter);
                     }
-                }, 3000); // 3秒后检查
+                }, 5000); // 5秒后检查（避免与测试邮件冲突）
             }
         });
 
