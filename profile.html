@@ -1008,6 +1008,9 @@
                 savePlayerData();
             }
 
+            // 加载房间装饰品（邮件领取的）
+            loadRoomDecorations();
+
             // 初始化玩家位置
             if (!playerData.playerPosition) {
                 playerData.playerPosition = { x: 380, y:300 }; // 房间中心
@@ -1635,6 +1638,164 @@
                 particle.style.top = Math.random() * 100 + '%';
                 particle.style.animationDelay = Math.random() * 5 + 's';
                 container.appendChild(particle);
+            }
+        }
+
+        // ==================== 房间装饰品系统 ====================
+        // 房间装饰品列表
+        const ROOM_DECORATIONS = [
+            { id: 'magic_lamp', icon: '🪔', nameZh: '魔法油灯', nameEn: 'Magic Lamp' },
+            { id: 'crystal_ball', icon: '🔮', nameZh: '水晶球摆件', nameEn: 'Crystal Ball Decor' },
+            { id: 'owl_feather', icon: '🪶', nameZh: '猫头鹰羽毛', nameEn: 'Owl Feather' },
+            { id: 'golden_snitch', icon: '🥎', nameZh: '金色飞贼模型', nameEn: 'Golden Snitch Model' },
+            { id: 'spell_book', icon: '📕', nameZh: '古老咒语书', nameEn: 'Ancient Spell Book' },
+            { id: 'potion_bottle', icon: '🧪', nameZh: '彩色魔药瓶', nameEn: 'Colored Potion Bottle' },
+            { id: 'magic_wand_display', icon: '🪄', nameZh: '魔杖展示架', nameEn: 'Wand Display' },
+            { id: 'house_banner', icon: '🚩', nameZh: '学院旗帜', nameEn: 'House Banner' },
+            { id: 'moving_portrait', icon: '🖼️', nameZh: '会动的肖像画', nameEn: 'Moving Portrait' },
+            { id: 'remembrall', icon: '🔴', nameZh: '记忆球', nameEn: 'Remembrall' }
+        ];
+
+        // 加载并显示所有已保存的房间装饰
+        function loadRoomDecorations() {
+            console.log('开始加载房间装饰品');
+
+            const savedPlayerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+            if (!savedPlayerData.roomDecorations) {
+                console.log('没有保存的装饰品');
+                return;
+            }
+
+            console.log('找到装饰品数量:', savedPlayerData.roomDecorations.length);
+
+            savedPlayerData.roomDecorations.forEach(decoration => {
+                // 检查是否已存在
+                if (document.getElementById(`decoration-${decoration.id}`)) {
+                    return;
+                }
+
+                const decorEl = document.createElement('div');
+                decorEl.id = `decoration-${decoration.id}`;
+                decorEl.className = 'room-decoration';
+                decorEl.innerHTML = decoration.icon;
+                decorEl.setAttribute('data-id', decoration.id);
+                decorEl.title = decoration.nameZh;
+
+                // 使用保存的位置，或随机位置
+                let posX, posY;
+                if (savedPlayerData.decorationPositions && savedPlayerData.decorationPositions[decoration.id]) {
+                    posX = savedPlayerData.decorationPositions[decoration.id].left;
+                    posY = savedPlayerData.decorationPositions[decoration.id].top;
+                } else {
+                    const maxX = window.innerWidth - 80;
+                    const maxY = window.innerHeight - 100;
+                    posX = Math.max(100, Math.random() * maxX);
+                    posY = Math.max(120, Math.random() * maxY);
+                }
+
+                decorEl.style.cssText = `
+                    position: fixed !important;
+                    left: ${posX}px !important;
+                    top: ${posY}px !important;
+                    font-size: 40px;
+                    cursor: move;
+                    z-index: 10000 !important;
+                    user-select: none;
+                    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+                    transition: transform 0.2s ease;
+                    pointer-events: auto !important;
+                    display: block !important;
+                    visibility: visible !important;
+                `;
+
+                document.body.appendChild(decorEl);
+                makeElementDraggable(decorEl, decoration.id);
+            });
+
+            console.log('装饰品加载完成，DOM 中数量:', document.querySelectorAll('.room-decoration').length);
+        }
+
+        // 使元素可拖动
+        function makeElementDraggable(element, id) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            element.addEventListener('mousedown', startDrag);
+            element.addEventListener('touchstart', startDrag, { passive: false });
+
+            function startDrag(e) {
+                e.preventDefault();
+                isDragging = true;
+                element.style.transform = 'scale(1.2)';
+
+                if (e.type === 'touchstart') {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                } else {
+                    startX = e.clientX;
+                    startY = e.clientY;
+                }
+
+                initialX = element.offsetLeft;
+                initialY = element.offsetTop;
+
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchmove', onDrag, { passive: false });
+                document.addEventListener('touchend', stopDrag);
+            }
+
+            function onDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+
+                let currentX, currentY;
+                if (e.type === 'touchmove') {
+                    currentX = e.touches[0].clientX;
+                    currentY = e.touches[0].clientY;
+                } else {
+                    currentX = e.clientX;
+                    currentY = e.clientY;
+                }
+
+                const deltaX = currentX - startX;
+                const deltaY = currentY - startY;
+                let newX = initialX + deltaX;
+                let newY = initialY + deltaY;
+
+                // 边界限制
+                const maxX = window.innerWidth - element.offsetWidth;
+                const maxY = window.innerHeight - element.offsetHeight;
+
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
+
+                element.style.left = newX + 'px';
+                element.style.top = newY + 'px';
+            }
+
+            function stopDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                element.style.transform = 'scale(1)';
+
+                // 保存位置
+                const position = {
+                    left: element.offsetLeft,
+                    top: element.offsetTop
+                };
+
+                const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                if (!playerData.decorationPositions) {
+                    playerData.decorationPositions = {};
+                }
+                playerData.decorationPositions[id] = position;
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchmove', onDrag);
+                document.removeEventListener('touchend', stopDrag);
             }
         }
 

@@ -1334,11 +1334,11 @@
                 playerData.roomDecorations.push(decoration);
                 localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
 
-                // 检查是否在 academy.html 页面（使用 includes 而不是 endsWith）
-                const isInAcademy = window.location.pathname.includes('academy.html');
-                console.log('添加装饰品:', decoration.nameZh, '当前在 academy.html:', isInAcademy, '路径:', window.location.pathname);
+                // 检查是否在 profile.html 页面（魔法房间）
+                const isInProfile = window.location.pathname.includes('profile.html');
+                console.log('添加装饰品:', decoration.nameZh, '当前在 profile.html:', isInProfile, '路径:', window.location.pathname);
 
-                if (isInAcademy) {
+                if (isInProfile) {
                     createDraggableDecoration(decoration);
                 }
             }
@@ -1482,9 +1482,9 @@
 
         // 加载并显示所有已保存的房间装饰
         function loadRoomDecorations() {
-            // 只在 academy.html 页面加载装饰品
-            if (!window.location.pathname.includes('academy.html')) {
-                console.log('不在 academy.html，跳过加载装饰品');
+            // 只在 profile.html 页面加载装饰品（魔法房间）
+            if (!window.location.pathname.includes('profile.html')) {
+                console.log('不在 profile.html，跳过加载装饰品');
                 return;
             }
 
@@ -1821,8 +1821,8 @@
                             en: `🎁 Welcome Gift - ${decoration.nameEn}`
                         },
                         body: {
-                            zh: `亲爱的同学，\n\n欢迎来到霍格沃茨魔法学院！\n\n为了庆祝你的到来，我们为你准备了一份特别的礼物：\n\n${decoration.icon} ${decoration.nameZh}\n\n这个装饰品会放在你的魔法房间里，你可以随意拖动它来装饰你的空间！\n\n祝你在这里度过一段美好的魔法时光！\n\n你的，霍格沃茨猫头鹰邮局`,
-                            en: `Dear Student,\n\nWelcome to Hogwarts School of Witchcraft and Wizardry!\n\nTo celebrate your arrival, we have prepared a special gift for you:\n\n${decoration.icon} ${decoration.nameEn}\n\nThis decoration will be placed in your magical room. You can drag it around to decorate your space!\n\nWe hope you have a wonderful time here!\n\nYours, Hogwarts Owl Post Office`
+                            zh: `亲爱的同学，\n\n欢迎来到霍格沃茨魔法学院！\n\n为了庆祝你的到来，我们为你准备了一份特别的礼物：\n\n${decoration.icon} ${decoration.nameZh}\n\n点击"领取奖励"后，这个装饰品会出现在你的个人资料页面（魔法房间）中。前往个人资料页面即可看到并拖动装饰你的房间！\n\n祝你在这里度过一段美好的魔法时光！\n\n你的，霍格沃茨猫头鹰邮局`,
+                            en: `Dear Student,\n\nWelcome to Hogwarts School of Witchcraft and Wizardry!\n\nTo celebrate your arrival, we have prepared a special gift for you:\n\n${decoration.icon} ${decoration.nameEn}\n\nAfter claiming the reward, this decoration will appear in your Profile page (Magical Room). Go to Profile to see and drag it to decorate your room!\n\nWe hope you have a wonderful time here!\n\nYours, Hogwarts Owl Post Office`
                         },
                         date: new Date().toISOString(),
                         read: false,
