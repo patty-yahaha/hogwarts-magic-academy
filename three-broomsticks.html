@@ -644,14 +644,8 @@
         }
 
         function loadCoins() {
-            // 从 hogwartsPlayer 对象中读取金币
-            const playerDataStr = localStorage.getItem('hogwartsPlayer');
-            if (playerDataStr) {
-                const playerData = JSON.parse(playerDataStr);
-                coins = playerData.coins || 0;
-            } else {
-                coins = 0;
-            }
+            // 直接从 hogwartsCoins 读取当前金币数量（与其他页面保持一致）
+            coins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
             document.getElementById('coinAmount').textContent = coins;
         }
 
@@ -785,10 +779,11 @@
                 return;
             }
 
-            // 扣除金币 - 更新到 hogwartsPlayer 对象
+            // 扣除金币 - 同时更新 hogwartsCoins 和 hogwartsPlayer
             coins = currentCoins - item.price;
+            localStorage.setItem('hogwartsCoins', coins.toString()); // 与其他页面保持一致
             playerData.coins = coins;
-            playerData.cumulativeCoins = coins;
+            playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + item.price; // 累计增加，不是覆盖
             localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
             document.getElementById('coinAmount').textContent = coins;
 
