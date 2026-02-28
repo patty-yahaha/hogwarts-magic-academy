@@ -1334,11 +1334,11 @@
                 playerData.roomDecorations.push(decoration);
                 localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
 
-                // 只在当前页面是 academy.html 时才创建 DOM 元素
-                // 如果用户在其他页面领取，装饰品会被保存但不会立即显示
-                // 返回 academy.html 时会自动显示
-                if (window.location.pathname.endsWith('academy.html') ||
-                    window.location.pathname.endsWith('/')) {
+                // 检查是否在 academy.html 页面（使用 includes 而不是 endsWith）
+                const isInAcademy = window.location.pathname.includes('academy.html');
+                console.log('添加装饰品:', decoration.nameZh, '当前在 academy.html:', isInAcademy, '路径:', window.location.pathname);
+
+                if (isInAcademy) {
                     createDraggableDecoration(decoration);
                 }
             }
@@ -1348,8 +1348,11 @@
         function createDraggableDecoration(decoration) {
             // 检查是否已存在DOM元素
             if (document.getElementById(`decoration-${decoration.id}`)) {
+                console.log('装饰品已存在，跳过:', decoration.id);
                 return;
             }
+
+            console.log('创建装饰品 DOM 元素:', decoration.nameZh);
 
             // 创建装饰品元素
             const decorEl = document.createElement('div');
@@ -1361,26 +1364,33 @@
             decorEl.setAttribute('data-name-en', decoration.nameEn);
             decorEl.title = currentLang === 'zh' ? decoration.nameZh : decoration.nameEn;
 
-            // 设置初始位置（随机位置）
-            const maxX = window.innerWidth - 60;
-            const maxY = window.innerHeight - 60;
-            const randomX = Math.max(50, Math.random() * maxX);
-            const randomY = Math.max(100, Math.random() * maxY);
+            // 设置初始位置（随机位置，但避开导航栏区域）
+            const maxX = window.innerWidth - 80;
+            const maxY = window.innerHeight - 100;
+            const randomX = Math.max(100, Math.random() * maxX);
+            const randomY = Math.max(120, Math.random() * maxY);
 
             decorEl.style.cssText = `
-                position: fixed;
-                left: ${randomX}px;
-                top: ${randomY}px;
+                position: fixed !important;
+                left: ${randomX}px !important;
+                top: ${randomY}px !important;
                 font-size: 40px;
                 cursor: move;
-                z-index: 50;
+                z-index: 10000 !important;
                 user-select: none;
                 filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
                 transition: transform 0.2s ease;
+                pointer-events: auto !important;
+                display: block !important;
+                visibility: visible !important;
             `;
+
+            console.log('装饰品元素样式:', decorEl.style.cssText);
 
             // 添加到页面
             document.body.appendChild(decorEl);
+
+            console.log('装饰品已添加到 DOM，当前装饰品数量:', document.querySelectorAll('.room-decoration').length);
 
             // 实现拖动功能
             makeElementDraggable(decorEl, decoration.id);
@@ -1473,15 +1483,27 @@
         // 加载并显示所有已保存的房间装饰
         function loadRoomDecorations() {
             // 只在 academy.html 页面加载装饰品
-            if (!window.location.pathname.endsWith('academy.html') &&
-                !window.location.pathname.endsWith('/')) {
+            if (!window.location.pathname.includes('academy.html')) {
+                console.log('不在 academy.html，跳过加载装饰品');
                 return;
             }
 
+            console.log('开始加载房间装饰品');
+
             const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
-            if (!playerData.roomDecorations) return;
+            if (!playerData.roomDecorations) {
+                console.log('没有保存的装饰品');
+                return;
+            }
+
+            console.log('找到装饰品数量:', playerData.roomDecorations.length);
 
             playerData.roomDecorations.forEach(decoration => {
+                // 检查是否已存在
+                if (document.getElementById(`decoration-${decoration.id}`)) {
+                    return;
+                }
+
                 const decorEl = document.createElement('div');
                 decorEl.id = `decoration-${decoration.id}`;
                 decorEl.className = 'room-decoration';
@@ -1495,27 +1517,32 @@
                     posX = playerData.decorationPositions[decoration.id].left;
                     posY = playerData.decorationPositions[decoration.id].top;
                 } else {
-                    const maxX = window.innerWidth - 60;
-                    const maxY = window.innerHeight - 60;
-                    posX = Math.max(50, Math.random() * maxX);
-                    posY = Math.max(100, Math.random() * maxY);
+                    const maxX = window.innerWidth - 80;
+                    const maxY = window.innerHeight - 100;
+                    posX = Math.max(100, Math.random() * maxX);
+                    posY = Math.max(120, Math.random() * maxY);
                 }
 
                 decorEl.style.cssText = `
-                    position: fixed;
-                    left: ${posX}px;
-                    top: ${posY}px;
+                    position: fixed !important;
+                    left: ${posX}px !important;
+                    top: ${posY}px !important;
                     font-size: 40px;
                     cursor: move;
-                    z-index: 50;
+                    z-index: 10000 !important;
                     user-select: none;
                     filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
                     transition: transform 0.2s ease;
+                    pointer-events: auto !important;
+                    display: block !important;
+                    visibility: visible !important;
                 `;
 
                 document.body.appendChild(decorEl);
                 makeElementDraggable(decorEl, decoration.id);
             });
+
+            console.log('装饰品加载完成，DOM 中数量:', document.querySelectorAll('.room-decoration').length);
         }
 
         // 格式化日期
