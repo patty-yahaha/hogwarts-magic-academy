@@ -459,6 +459,7 @@
 
                 if (isGuest || !currentUserId) {
                     console.log('用户未登录');
+                    alert('用户未登录，需要先登录才能查看排行榜');
                     container.innerHTML = `
                         <div class="login-prompt">
                             <div class="lang-zh">请先登录查看排行榜</div>
