@@ -341,7 +341,6 @@
 
             <!-- 扫帚商店 -->
             <div class="shop-card broomstix" onclick="openShop('broomstix')">
-                <span class="shop-badge">即将推出</span>
                 <div class="shop-icon">🧹</div>
                 <div class="shop-name-zh">Broomstix</div>
                 <div class="shop-name-en">Quality Quidditch Supplies</div>
@@ -378,15 +377,17 @@
 
         // 打开商店
         function openShop(shopType) {
-            if (shopType === 'honeydukes') {
-                document.body.style.opacity = '0';
-                document.body.style.transition = 'opacity 0.5s ease-in-out';
-                setTimeout(() => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                if (shopType === 'honeydukes') {
                     window.location.href = 'honeydukes.html';
-                }, 500);
-            } else {
-                alert('该商店即将推出，敬请期待！\nThis shop is coming soon!');
-            }
+                } else if (shopType === 'broomstix') {
+                    window.location.href = 'broomsticks.html';
+                } else {
+                    alert('该商店即将推出，敬请期待！\nThis shop is coming soon!');
+                }
+            }, 500);
         }
 
         // 返回

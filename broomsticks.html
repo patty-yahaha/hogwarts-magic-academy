@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞天扫帚专卖店 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .broomsticks-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .shop-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+            margin-bottom: 10px;
+        }
+
+        .shop-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #8b7355;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        /* 碎片显示 */
+        .fragments-display {
+            background: linear-gradient(145deg, rgba(139, 69, 19, 0.3), rgba(10, 20, 40, 0.98));
+            border: 3px solid #8b4513;
+            border-radius: 15px;
+            padding: 15px 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .fragment-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px rgba(139, 69, 19, 0.8));
+        }
+
+        .fragment-count {
+            font-size: 1.8rem;
+            color: #deb887;
+            font-weight: bold;
+            font-family: 'Cinzel Decorative', cursive;
+        }
+
+        /* 扫帚网格 */
+        .broomsticks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 30px;
+        }
+
+        /* 扫帚卡片 */
+        .broom-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 4px solid #8b4513;
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .broom-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(139, 69, 19, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .broom-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 已装备标识 */
+        .equipped-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-family: 'Cinzel', serif;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.6);
+        }
+
+        /* 稀有度标签 */
+        .rarity-tag {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: 5;
+        }
+
+        .rarity-common {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .rarity-uncommon {
+            background: linear-gradient(135deg, #5dade2, #3498db);
+            color: white;
+        }
+
+        .rarity-rare {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        .rarity-epic {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            animation: epicGlow 2s ease-in-out infinite;
+        }
+
+        .rarity-legendary {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            animation: legendaryGlow 1.5s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+        }
+
+        @keyframes epicGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(243, 156, 18, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(243, 156, 18, 0.7); }
+        }
+
+        @keyframes legendaryGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.6); }
+            50% { box-shadow: 0 0 35px rgba(231, 76, 60, 0.9); }
+        }
+
+        /* 扫帚图标 */
+        .broom-icon {
+            font-size: 5rem;
+            text-align: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .broom-card.rare .broom-icon {
+            filter: drop-shadow(0 0 15px rgba(155, 89, 182, 0.5));
+        }
+
+        .broom-card.epic .broom-icon {
+            filter: drop-shadow(0 0 20px rgba(243, 156, 18, 0.7)) brightness(1.2);
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        .broom-card.legendary .broom-icon {
+            filter: drop-shadow(0 0 25px rgba(231, 76, 60, 0.9)) brightness(1.3);
+            animation: legendaryIconFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-5px) rotate(2deg); }
+        }
+
+        @keyframes legendaryIconFloat {
+            0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 25px rgba(231, 76, 60, 0.9)) brightness(1.3); }
+            50% { transform: translateY(-8px) scale(1.05); filter: drop-shadow(0 0 40px rgba(231, 76, 60, 1)) brightness(1.5); }
+        }
+
+        .broom-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .broom-name-en {
+            font-size: 1rem;
+            color: #c9a227;
+            margin-bottom: 10px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .broom-card.legendary .broom-name-zh {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .broom-card.epic .broom-name-zh {
+            color: #ff9500;
+            text-shadow: 0 0 8px rgba(255, 149, 0, 0.6);
+        }
+
+        /* 性能属性 */
+        .broom-stats {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .stat-label {
+            color: #a08050;
+        }
+
+        .stat-value {
+            font-weight: bold;
+        }
+
+        .stat-value.speed-1 { color: #95a5a6; }
+        .stat-value.speed-2 { color: #5dade2; }
+        .stat-value.speed-3 { color: #9b59b6; }
+        .stat-value.speed-4 { color: #f39c12; }
+        .stat-value.speed-5 { color: #e74c3c; }
+
+        .stat-value.stability-1 { color: #95a5a6; }
+        .stat-value.stability-2 { color: #5dade2; }
+        .stat-value.stability-3 { color: #9b59b6; }
+        .stat-value.stability-4 { color: #f39c12; }
+        .stat-value.stability-5 { color: #e74c3c; }
+
+        /* 价格和购买按钮 */
+        .broom-footer {
+            margin-top: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .price-coin {
+            font-size: 1.3rem;
+        }
+
+        .price-amount {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .buy-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #8b4513, #a0522d);
+            border: 2px solid #deb887;
+            color: #deb887;
+            padding: 12px 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, #a0522d, #cd853f);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(222, 184, 135, 0.5);
+        }
+
+        .buy-btn:disabled {
+            background: linear-gradient(145deg, #444, #555);
+            border-color: #666;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .buy-btn.equipped {
+            background: linear-gradient(145deg, #27ae60, #2ecc71);
+            border-color: #27ae60;
+            color: white;
+        }
+
+        /* 语言切换 */
+        .stat-label-en, .broom-name-en {
+            display: none;
+        }
+
+        body.lang-en .stat-label-zh, body.lang-en .broom-name-zh {
+            display: none;
+        }
+
+        body.lang-en .stat-label-en, body.lang-en .broom-name-en {
+            display: block !important;
+        }
+
+        body.lang-zh .stat-label-en, body.lang-zh .broom-name-en {
+            display: none;
+        }
+
+        body.lang-zh .stat-label-zh, body.lang-zh .broom-name-zh {
+            display: block !important;
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+
+        /* 装备的扫帚显示 */
+        .equipped-section {
+            background: linear-gradient(145deg, rgba(39, 174, 96, 0.2), rgba(10, 20, 40, 0.98));
+            border: 3px solid #27ae60;
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .equipped-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+
+        .equipped-broom {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .equipped-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 0 15px rgba(39, 174, 96, 0.6));
+        }
+
+        .equipped-info {
+            text-align: left;
+        }
+
+        .equipped-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .equipped-bonus {
+            font-size: 0.95rem;
+            color: #a08050;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 1024px) {
+            .broomsticks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .broomsticks-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .shop-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">金加隆</span>
+    </div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">飞天扫帚专卖店</span>
+                <span class="title-text-en">Broomsticks Shop</span>
+            </h1>
+        </header>
+
+        <div class="broomsticks-container">
+            <!-- 商店标题 -->
+            <div class="header-section">
+                <h2 class="shop-title">🧹 Quality Quidditch Supplies 🧹</h2>
+                <p class="shop-subtitle">
+                    <span class="subtitle-zh">对角巷最顶级的飞天扫帚专卖店</span>
+                    <span class="subtitle-en">The finest broomstick shop in Diagon Alley</span>
+                </p>
+
+                <!-- 碎片显示 -->
+                <div class="fragments-display">
+                    <span class="fragment-icon">💎</span>
+                    <span class="fragment-count" id="fragmentCount">0</span>
+                    <span class="stat-label-zh">飞天扫帚碎片</span>
+                    <span class="stat-label-en">Broom Fragments</span>
+                    <span style="color: #c9a227; font-size: 0.9rem; margin-left: 10px;">
+                        <span class="stat-label-zh">(50碎片=500金加隆券)</span>
+                        <span class="stat-label-en">(50=500 Galleon Voucher)</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 已装备的扫帚 -->
+            <div class="equipped-section" id="equippedSection">
+                <h3 class="equipped-title">
+                    <span class="title-zh">⚔️ 当前装备</span>
+                    <span class="title-en">⚔️ Currently Equipped</span>
+                </h3>
+                <div class="equipped-broom" id="equippedBroom">
+                    <span class="stat-label-zh">尚未装备任何扫帚</span>
+                    <span class="stat-label-en">No broom equipped yet</span>
+                </div>
+            </div>
+
+            <!-- 扫帚列表 -->
+            <div class="broomsticks-grid" id="broomsticksGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        // 15把飞天扫帚
+        const BROOMSTICKS = [
+            // 入门级 (50-150)
+            {
+                id: 'void_rider',
+                icon: '🧹',
+                name: { zh: '虚空穿梭者', en: 'Void Rider' },
+                description: { zh: '最基础的经济型扫帚，适合初学者。', en: 'Basic economy broom, perfect for beginners.' },
+                price: 50,
+                speed: 1,
+                stability: 1,
+                rarity: 'common',
+                bonus: { zh: '无特殊效果', en: 'No special effect' }
+            },
+            {
+                id: 'tinderblast',
+                icon: '🧹',
+                name: { zh: '蹄形飞箭', en: 'Tinderblast' },
+                description: { zh: '经典的入门级扫帚，价格实惠。', en: 'Classic entry-level broom, affordable price.' },
+                price: 120,
+                speed: 1,
+                stability: 2,
+                rarity: 'common',
+                bonus: { zh: '无特殊效果', en: 'No special effect' }
+            },
+            {
+                id: 'twigger_90',
+                icon: '🧹',
+                name: { zh: '双头秃鹰', en: 'Twigger 90' },
+                description: { zh: '稳定可靠的入门选择。', en: 'Stable and reliable entry choice.' },
+                price: 140,
+                speed: 2,
+                stability: 1,
+                rarity: 'common',
+                bonus: { zh: '轻微加速', en: 'Slight speed boost' }
+            },
+            // 普及级 (200-400)
+            {
+                id: 'moontrimmer',
+                icon: '🌙🧹',
+                name: { zh: '月之梦', en: 'Moontrimmer' },
+                description: { zh: '夜间飞行时更加稳定，性价比高。', en: 'More stable during night flights, great value.' },
+                price: 180,
+                speed: 2,
+                stability: 2,
+                rarity: 'uncommon',
+                bonus: { zh: '夜间+1稳定性', en: '+1 Stability at night' }
+            },
+            {
+                id: 'silver_arrow',
+                icon: '🏹',
+                name: { zh: '银箭', en: 'Silver Arrow' },
+                description: { zh: '银色流光设计，速度适中。', en: 'Silver glowing design, moderate speed.' },
+                price: 200,
+                speed: 3,
+                stability: 2,
+                rarity: 'uncommon',
+                bonus: { zh: '银色光效', en: 'Silver glow effect' }
+            },
+            {
+                id: 'comet_260',
+                icon: '☄️🧹',
+                name: { zh: '彗星260', en: 'Comet 260' },
+                description: { zh: '彗星系列经典型号，深受喜爱。', en: 'Classic Comet model, widely loved.' },
+                price: 250,
+                speed: 3,
+                stability: 3,
+                rarity: 'uncommon',
+                bonus: { zh: '彗星尾迹', en: 'Comet trail effect' }
+            },
+            // 高级 (500-800)
+            {
+                id: 'comet_290',
+                icon: '☄️🧹✨',
+                name: { zh: '彗星290', en: 'Comet 290' },
+                description: { zh: '彗星系列升级版，附带震动棒。', en: 'Upgraded Comet model with vibration stick.' },
+                price: 350,
+                speed: 3,
+                stability: 3,
+                rarity: 'rare',
+                bonus: { zh: '震动尾迹特效', en: 'Vibration trail effect' }
+            },
+            {
+                id: 'cleansweep_5',
+                icon: '🧹💨',
+                name: { zh: '清光轮5', en: 'Cleansweep 5' },
+                description: { zh: '经典比赛级扫帚，性能优秀。', en: 'Classic tournament broom, excellent performance.' },
+                price: 550,
+                speed: 4,
+                stability: 3,
+                rarity: 'rare',
+                bonus: { zh: '流风特效', en: 'Wind stream effect' }
+            },
+            {
+                id: 'nimbus_200',
+                icon: '🌟🧹',
+                name: { zh: '光轮200', en: 'Nimbus 200' },
+                description: { zh: '光轮系列入门款，金色闪耀。', en: 'Entry Nimbus model, golden shine.' },
+                price: 600,
+                speed: 4,
+                stability: 4,
+                rarity: 'rare',
+                bonus: { zh: '金色光晕', en: 'Golden aura' }
+            },
+            // 专业级 (900-1300)
+            {
+                id: 'cleansweep_7',
+                icon: '🧹✨🌈',
+                name: { zh: '清光轮7', en: 'Cleansweep 7' },
+                description: { zh: '清光轮系列旗舰型号，极速且稳定。', en: 'Flagship Cleansweep model, fast and stable.' },
+                price: 900,
+                speed: 4,
+                stability: 5,
+                rarity: 'epic',
+                bonus: { zh: '彩虹尾迹', en: 'Rainbow trail effect' }
+            },
+            {
+                id: 'nimbus_1000',
+                icon: '🌟🌟🧹',
+                name: { zh: '光轮1000', en: 'Nimbus 1000' },
+                description: { zh: '光轮系列中端型号，金色更加耀眼。', en: 'Mid-range Nimbus model, even brighter gold.' },
+                price: 1000,
+                speed: 5,
+                stability: 4,
+                rarity: 'epic',
+                bonus: { zh: '星光璀璨', en: 'Brilliant starlight' }
+            },
+            {
+                id: 'firebolt',
+                icon: '🔥🧹⚡',
+                name: { zh: '火弩箭', en: 'Firebolt' },
+                description: { zh: '传奇的比赛级扫帚，魁地奇队专用。', en: 'Legendary tournament broom, Quidditch team exclusive.' },
+                price: 1200,
+                speed: 5,
+                stability: 5,
+                rarity: 'epic',
+                bonus: { zh: '火焰尾迹', en: 'Flame trail effect' }
+            },
+            // 传奇级 (1500-2000)
+            {
+                id: 'thunder_storm',
+                icon: '⛈🧹💎',
+                name: { zh: '暴风雨使者', en: 'Thunder Storm' },
+                description: { zh: '突破性的极速设计，追求极致速度。', en: 'Breakthrough speed design, pursuing ultimate speed.' },
+                price: 1500,
+                speed: 5,
+                stability: 4,
+                rarity: 'legendary',
+                bonus: { zh: '雷电环绕', en: 'Lightning aura' }
+            },
+            {
+                id: 'nimbus_2000',
+                icon: '🌟✨🌟🧹✨🌟',
+                name: { zh: '光轮2000', en: 'Nimbus 2000' },
+                description: { zh: '光轮系列的终极之作，金色耀眼光芒万丈！', en: 'Ultimate Nimbus creation, golden radiance everywhere!' },
+                price: 1800,
+                speed: 5,
+                stability: 5,
+                rarity: 'legendary',
+                bonus: { zh: '金色光芒+速度', en: 'Golden radiance + speed' }
+            },
+            {
+                id: 'phoenix_dream',
+                icon: '🔥🧹🌟✨💫',
+                name: { zh: '凤凰梦幻', en: 'Phoenix Dream' },
+                description: { zh: '融合凤凰羽毛魔法，世界上最顶级的扫帚！', en: 'Fused with phoenix feather magic, world\'s top broom!' },
+                price: 2000,
+                speed: 5,
+                stability: 5,
+                rarity: 'legendary',
+                bonus: { zh: '凤凰火焰特效', en: 'Phoenix flame effect' }
+            }
+        ];
+
+        // 稀有度配置
+        const RARITY_CONFIG = {
+            common: {
+                label: { zh: '普通', en: 'Common' },
+                borderColor: '#95a5a6'
+            },
+            uncommon: {
+                label: { zh: '优秀', en: 'Uncommon' },
+                borderColor: '#5dade2'
+            },
+            rare: {
+                label: { zh: '稀有', en: 'Rare' },
+                borderColor: '#9b59b6'
+            },
+            epic: {
+                label: { zh: '史诗', en: 'Epic' },
+                borderColor: '#f39c12'
+            },
+            legendary: {
+                label: { zh: '传奇', en: 'Legendary' },
+                borderColor: '#e74c3c'
+            }
+        };
+
+        // 获取玩家数据
+        function getPlayerData() {
+            return JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+        }
+
+        // 获取金币
+        function getCoins() {
+            return parseInt(localStorage.getItem('hogwartsCoins') || '0');
+        }
+
+        // 获取碎片
+        function getFragments() {
+            return parseInt(localStorage.getItem('broomFragments') || '0');
+        }
+
+        // 获取已拥有的扫帚
+        function getOwnedBrooms() {
+            return JSON.parse(localStorage.getItem('ownedBrooms') || '[]');
+        }
+
+        // 获取当前装备的扫帚
+        function getEquippedBroom() {
+            const playerData = getPlayerData();
+            return playerData.equippedBroom || null;
+        }
+
+        // 初始化金币和碎片显示
+        function initDisplay() {
+            document.getElementById('coinAmount').textContent = getCoins();
+            document.getElementById('fragmentCount').textContent = getFragments();
+            updateEquippedBroom();
+        }
+
+        // 更新装备的扫帚显示
+        function updateEquippedBroom() {
+            const equippedBroom = getEquippedBroom();
+            const equippedSection = document.getElementById('equippedSection');
+            const equippedBroomEl = document.getElementById('equippedBroom');
+
+            if (equippedBroom) {
+                const broom = BROOMSTICKS.find(b => b.id === equippedBroom);
+                if (broom) {
+                    equippedBroomEl.innerHTML = `
+                        <div class="equipped-icon">${broom.icon}</div>
+                        <div class="equipped-info">
+                            <div class="equipped-name">${currentLang === 'zh' ? broom.name.zh : broom.name.en}</div>
+                            <div class="equipped-bonus">
+                                <span class="stat-label-zh">速度: ${'⭐'.repeat(broom.speed)} 稳定性: ${'⭐'.repeat(broom.stability)}</span>
+                                <span class="stat-label-en">Speed: ${'⭐'.repeat(broom.speed)} Stability: ${'⭐'.repeat(broom.stability)}</span>
+                            </div>
+                            <div style="color: #27ae60; margin-top: 5px;">
+                                <span class="stat-label-zh">✨ ${broom.bonus.zh}</span>
+                                <span class="stat-label-en">✨ ${broom.bonus.en}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                equippedBroomEl.innerHTML = `
+                    <span class="stat-label-zh">尚未装备任何扫帚</span>
+                    <span class="stat-label-en">No broom equipped yet</span>
+                `;
+            }
+        }
+
+        // 渲染扫帚列表
+        function renderBroomsticks() {
+            const grid = document.getElementById('broomsticksGrid');
+            const ownedBrooms = getOwnedBrooms();
+            const equippedBroom = getEquippedBroom();
+
+            grid.innerHTML = BROOMSTICKS.map(broom => {
+                const isOwned = ownedBrooms.includes(broom.id);
+                const isEquipped = equippedBroom === broom.id;
+                const rarity = RARITY_CONFIG[broom.rarity];
+
+                return `
+                    <div class="broom-card ${broom.rarity}" data-id="${broom.id}">
+                        ${isEquipped ? '<span class="equipped-badge">已装备 / Equipped</span>' : ''}
+                        <span class="rarity-tag rarity-${broom.rarity}">${rarity.label[currentLang] || rarity.label.zh}</span>
+                        <div class="broom-icon">${broom.icon}</div>
+                        <div class="broom-name-zh">${broom.name.zh}</div>
+                        <div class="broom-name-en">${broom.name.en}</div>
+                        <div style="text-align: center; color: #a08050; margin-bottom: 10px; position: relative; z-index: 1;">
+                            <span class="stat-label-zh">${broom.description.zh}</span>
+                            <span class="stat-label-en">${broom.description.en}</span>
+                        </div>
+                        <div class="broom-stats">
+                            <div class="stat-row">
+                                <span class="stat-label stat-label-zh">速度</span>
+                                <span class="stat-label stat-label-en">Speed</span>
+                                <span class="stat-value speed-${broom.speed}">${'⭐'.repeat(broom.speed)}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label stat-label-zh">稳定性</span>
+                                <span class="stat-label stat-label-en">Stability</span>
+                                <span class="stat-value stability-${broom.stability}">${'⭐'.repeat(broom.stability)}</span>
+                            </div>
+                            <div class="stat-row" style="margin-bottom: 0;">
+                                <span class="stat-label stat-label-zh">特效</span>
+                                <span class="stat-label stat-label-en">Effect</span>
+                                <span class="stat-value" style="color: #d4af37;">
+                                    <span class="stat-label-zh">✨ ${broom.bonus.zh}</span>
+                                    <span class="stat-label-en">✨ ${broom.bonus.en}</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="broom-footer">
+                            <div class="price">
+                                <span class="price-coin">🪙</span>
+                                <span class="price-amount">${broom.price}</span>
+                            </div>
+                            ${isEquipped ? `
+                                <button class="buy-btn equipped" disabled>
+                                    <span class="stat-label-zh">已装备 ✓</span>
+                                    <span class="stat-label-en">Equipped ✓</span>
+                                </button>
+                            ` : isOwned ? `
+                                <button class="buy-btn" onclick="equipBroom('${broom.id}')">
+                                    <span class="stat-label-zh">装备</span>
+                                    <span class="stat-label-en">Equip</span>
+                                </button>
+                            ` : `
+                                <button class="buy-btn" onclick="buyBroom('${broom.id}')">
+                                    <span class="stat-label-zh">购买</span>
+                                    <span class="stat-label-en">Buy</span>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 购买扫帚
+        function buyBroom(broomId) {
+            const broom = BROOMSTICKS.find(b => b.id === broomId);
+            if (!broom) return;
+
+            const coins = getCoins();
+            if (coins < broom.price) {
+                alert(currentLang === 'zh' ?
+                    `金币不足！\n\n需要: ${broom.price} 金加隆\n当前: ${coins} 金加隆` :
+                    `Not enough coins!\n\nNeeded: ${broom.price} Galleons\nCurrent: ${coins} Galleons`);
+                return;
+            }
+
+            if (confirm(currentLang === 'zh' ?
+                `确定购买 ${broom.name.zh} 吗？\n\n价格: ${broom.price} 金加隆\n\n${broom.description.zh}` :
+                `Buy ${broom.name.en}?\n\nPrice: ${broom.price} Galleons\n\n${broom.description.en}`)) {
+                // 扣除金币
+                localStorage.setItem('hogwartsCoins', (coins - broom.price).toString());
+
+                // 添加到已拥有列表
+                const ownedBrooms = getOwnedBrooms();
+                if (!ownedBrooms.includes(broomId)) {
+                    ownedBrooms.push(broomId);
+                    localStorage.setItem('ownedBrooms', JSON.stringify(ownedBrooms));
+                }
+
+                // 更新累计金币
+                const playerData = getPlayerData();
+                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + broom.price;
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+
+                alert(currentLang === 'zh' ?
+                    `🎉 购买成功！\n\n你获得了: ${broom.name.zh}` :
+                    `🎉 Purchase successful!\n\nYou received: ${broom.name.en}`);
+
+                initDisplay();
+                renderBroomsticks();
+            }
+        }
+
+        // 装备扫帚
+        function equipBroom(broomId) {
+            const broom = BROOMSTICKS.find(b => b.id === broomId);
+            if (!broom) return;
+
+            const playerData = getPlayerData();
+            playerData.equippedBroom = broomId;
+            playerData.broomSpeed = broom.speed;
+            playerData.broomStability = broom.stability;
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+
+            // 同时保存到飞行课游戏状态
+            const flyingState = JSON.parse(localStorage.getItem('flyingGameState') || '{}');
+            flyingState.equippedBroom = {
+                id: broomId,
+                name: broom.name,
+                icon: broom.icon,
+                speed: broom.speed,
+                stability: broom.stability,
+                bonus: broom.bonus
+            };
+            localStorage.setItem('flyingGameState', JSON.stringify(flyingState));
+
+            alert(currentLang === 'zh' ?
+                `⚔️ 装备成功！\n\n当前装备: ${broom.name.zh}\n速度: ${broom.speed} | 稳定性: ${broom.stability}` :
+                `⚔️ Equipped successfully!\n\nCurrent: ${broom.name.en}\nSpeed: ${broom.speed} | Stability: ${broom.stability}`);
+
+            initDisplay();
+            renderBroomsticks();
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'diagon-alley.html';
+            }, 500);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 初始化
+        function init() {
+            // 设置body语言类
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            // 更新返回按钮
+            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ? '← 返回' : '← Back';
+
+            initDisplay();
+            renderBroomsticks();
+        }
+
+        init();
+    </script>
+</body>
+</html>
