@@ -117,6 +117,42 @@
             font-style: italic;
         }
 
+        /* 角标 */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #ff4757, #f44336);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            font-family: 'Cinzel', serif;
+            box-shadow: 0 0 10px rgba(255, 71, 87, 0.6);
+            animation: badgePulse 2s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        .notification-badge.hidden {
+            display: none;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(255, 71, 87, 0.6);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 71, 87, 0.8);
+            }
+        }
+
         /* 火堆装饰 */
         .campfire-decoration {
             position: fixed;
@@ -519,6 +555,7 @@
 
                 <!-- 巫师留言板（原聊天大厅） -->
                 <div class="camp-section-btn" onclick="openMessageBoard()">
+                    <div class="notification-badge hidden" id="messageBoardBadge">0</div>
                     <div class="section-icon">📝</div>
                     <div class="section-title-zh">巫师留言板</div>
                     <div class="section-title-en">Message Board</div>
@@ -591,9 +628,36 @@
             document.body.style.transition = 'opacity 0.8s ease-in-out';
             // 标记已访问营地
             localStorage.setItem('campLastVisitDate', new Date().toDateString());
+            // 清除留言板角标
+            clearMessageBoardBadge();
             setTimeout(() => {
                 window.location.href = 'message-board.html';
             }, 800);
+        }
+
+        // 更新留言板角标
+        function updateMessageBoardBadge(count) {
+            const badge = document.getElementById('messageBoardBadge');
+            if (!badge) return;
+
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            // 保存到本地存储
+            localStorage.setItem('messageBoardUnread', count.toString());
+        }
+
+        // 清除留言板角标
+        function clearMessageBoardBadge() {
+            const badge = document.getElementById('messageBoardBadge');
+            if (badge) {
+                badge.classList.add('hidden');
+            }
+            localStorage.setItem('messageBoardUnread', '0');
         }
 
         function openTradeMarket() {
@@ -637,7 +701,15 @@
                 container.appendChild(particle);
             }
         }
+
+        // 初始化留言板角标
+        function initMessageBoardBadge() {
+            const unreadCount = parseInt(localStorage.getItem('messageBoardUnread') || '0');
+            updateMessageBoardBadge(unreadCount);
+        }
+
         createMagicParticles();
+        initMessageBoardBadge();
 
         // 初始化语言
         updateLanguage();
