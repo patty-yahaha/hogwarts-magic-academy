@@ -644,8 +644,11 @@
                 `;
             }).join('');
 
+            // 计算实际解锁的里程碑数量（使用实时验证）
+            const actuallyUnlockedCount = MILESTONES.filter(m => verifyMilestoneCondition(m.affection)).length;
+
             const section = document.getElementById('achievementsSection');
-            section.style.display = achievements.unlocked.length > 0 ? 'block' : 'none';
+            section.style.display = actuallyUnlockedCount > 0 ? 'block' : 'none';
         }
 
         // 验证里程碑是否真正达到条件
