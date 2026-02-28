@@ -1125,11 +1125,11 @@
             };
 
             if (type === 'ITEM') {
-                // 物品奖励邮件
+                // 物品奖励邮件（装饰品）
                 const decoration = ROOM_DECORATIONS[Math.floor(Math.random() * ROOM_DECORATIONS.length)];
                 const itemReward = {
                     type: 'decoration',
-                    item: decoration
+                    decoration: decoration  // 使用 decoration 字段而不是 item
                 };
 
                 const itemTemplates = [
@@ -1165,14 +1165,14 @@
                 // 记忆球特殊邮件 - 奖励添加到背包
                 const remembrall = ROOM_DECORATIONS.find(d => d.id === 'remembrall');
                 const itemReward = {
-                    type: 'inventory',
-                    item: remembrall
+                    type: 'decoration',  // 改为 decoration 类型
+                    decoration: remembrall  // 使用 decoration 字段
                 };
 
-                letter.title = { zh: '发现记忆球！', en: 'Remembrall Found!' };
+                letter.title = { zh: '🔴 发现记忆球！', en: '🔴 Remembrall Found!' };
                 letter.body = {
-                    zh: '亲爱的同学，\n\n有人在礼堂长凳上发现了一个写着你名字的记忆球，它现在正通体通红！\n\n这意味着你有什么重要的事情忘记了...\n\n不过别担心，记忆球现在归你了，放入背包好好保管吧！\n\n你的，霍格沃茨猫头鹰',
-                    en: 'Dear Student,\n\nSomeone found a Remembrall with your name on it in the Great Hall, and it\'s glowing bright red!\n\nThis means you\'ve forgotten something important...\n\nBut don\'t worry, the Remembrall is yours now. Keep it safe in your inventory!\n\nYours, Hogwarts Owl'
+                    zh: '亲爱的同学，\n\n有人在礼堂长凳上发现了一个写着你名字的记忆球，它现在正通体通红！\n\n这意味着你有什么重要的事情忘记了...\n\n不过别担心，记忆球现在归你了，已经添加到道具背包！去个人资料 → 房间标签把它拖到房间吧！\n\n你的，霍格沃茨猫头鹰',
+                    en: 'Dear Student,\n\nSomeone found a Remembrall with your name on it in the Great Hall, and it\'s glowing bright red!\n\nThis means you\'ve forgotten something important...\n\nBut don\'t worry, the Remembrall is yours now. It\'s been added to your inventory! Go to Profile → Room Tab and drag it to your room!\n\nYours, Hogwarts Owl'
                 };
                 letter.reward = itemReward;
 
@@ -1405,7 +1405,7 @@
             // 创建装饰品道具对象
             const decorationItem = {
                 id: `decoration_${decoration.id}`,
-                name: decoration.nameZh,
+                nameZh: decoration.nameZh,
                 nameEn: decoration.nameEn,
                 icon: decoration.icon,
                 type: 'decoration',
