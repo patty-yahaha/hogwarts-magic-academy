@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>巫师任务公告栏 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .quest-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .quest-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .quest-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .quest-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        /* 任务分类 */
+        .quest-categories {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .quest-category {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            color: #d4af37;
+            padding: 12px 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quest-category:hover {
+            border-color: #d4af37;
+            transform: translateY(-3px);
+        }
+
+        .quest-category.active {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.3), rgba(10, 20, 40, 0.98));
+            border-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 任务列表 */
+        .quest-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .quest-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .quest-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .quest-card.completed {
+            border-color: #27ae60;
+            opacity: 0.8;
+        }
+
+        .quest-card.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .quest-type {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .quest-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .quest-name-en {
+            font-size: 0.9rem;
+            color: #c9a227;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .quest-description {
+            font-size: 0.9rem;
+            color: #a08050;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            min-height: 60px;
+        }
+
+        .quest-reward {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .quest-reward-text {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .quest-progress {
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f4e4ba);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #a08050;
+        }
+
+        .quest-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a3e;
+            padding: 12px 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quest-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .quest-btn:disabled {
+            background: linear-gradient(145deg, #666, #888);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .quest-btn.claim-btn {
+            background: linear-gradient(145deg, #27ae60, #2ecc71);
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b7355;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        /* 每日任务横幅 */
+        .daily-banner {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.2), rgba(10, 20, 40, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .daily-banner-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .daily-reset-time {
+            color: #a08050;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .quest-title {
+                font-size: 2rem;
+            }
+
+            .quest-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">巫师任务公告栏</span>
+                <span class="title-text-en">Quest Board</span>
+            </h1>
+        </header>
+
+        <div class="quest-container">
+            <!-- 标题 -->
+            <div class="quest-header">
+                <h2 class="quest-title">
+                    <span class="title-zh">📜 巫师任务公告栏 📜</span>
+                    <span class="title-en">📜 Wizard Quest Board 📜</span>
+                </h2>
+                <p class="quest-subtitle">
+                    <span class="subtitle-zh">完成任务获取丰厚奖励</span>
+                    <span class="subtitle-en">Complete Quests for Rich Rewards</span>
+                </p>
+            </div>
+
+            <!-- 每日任务横幅 -->
+            <div class="daily-banner">
+                <h3 class="daily-banner-title">
+                    <span class="banner-zh">📅 每日任务</span>
+                    <span class="banner-en">📅 Daily Quests</span>
+                </h3>
+                <p class="daily-reset-time">
+                    <span class="reset-zh">重置时间：每天 00:00</span>
+                    <span class="reset-en">Resets at: 00:00 Daily</span>
+                </p>
+            </div>
+
+            <!-- 任务分类 -->
+            <div class="quest-categories">
+                <button class="quest-category active" data-category="daily" onclick="filterQuests('daily')">
+                    <span class="cat-zh">📅 每日</span>
+                    <span class="cat-en">📅 Daily</span>
+                </button>
+                <button class="quest-category" data-category="weekly" onclick="filterQuests('weekly')">
+                    <span class="cat-zh">📆 每周</span>
+                    <span class="cat-en">📆 Weekly</span>
+                </button>
+                <button class="quest-category" data-category="special" onclick="filterQuests('special')">
+                    <span class="cat-zh">⭐ 特殊</span>
+                    <span class="cat-en">⭐ Special</span>
+                </button>
+            </div>
+
+            <!-- 任务列表 -->
+            <div class="quest-list" id="questList"></div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+        let currentCategory = 'daily';
+
+        // 任务定义
+        const QUESTS = {
+            daily: [
+                {
+                    id: 'daily_study_15min',
+                    icon: '📚',
+                    name: { zh: '勤奋学习', en: 'Diligent Study' },
+                    description: {
+                        zh: '在魔法语言区学习15分钟',
+                        en: 'Study 15 minutes in World Languages'
+                    },
+                    reward: { zh: '15 金加隆', en: '15 Galleons' },
+                    type: 'study_time',
+                    target: 15,
+                    getProgress: () => parseInt(localStorage.getItem('todayStudyTime') || '0')
+                },
+                {
+                    id: 'daily_flying_20',
+                    icon: '🧹',
+                    name: { zh: '飞行练习', en: 'Flying Practice' },
+                    description: {
+                        zh: '在飞行课中通过20根石柱',
+                        en: 'Pass 20 pillars in Flying Class'
+                    },
+                    reward: { zh: '10 金加隆', en: '10 Galleons' },
+                    type: 'flying_score',
+                    target: 20,
+                    getProgress: () => parseInt(localStorage.getItem('dailyFlyingPillars') || '0')
+                },
+                {
+                    id: 'daily_potions_30',
+                    icon: '⚗️',
+                    name: { zh: '魔药制作', en: 'Potion Brewing' },
+                    description: {
+                        zh: '在魔药课中成功制作30个药水',
+                        en: 'Brew 30 potions successfully'
+                    },
+                    reward: { zh: '20 金加隆', en: '20 Galleons' },
+                    type: 'potions_count',
+                    target: 30,
+                    getProgress: () => parseInt(localStorage.getItem('dailyPotionsCount') || '0')
+                },
+                {
+                    id: 'daily_quiz_3',
+                    icon: '⚡',
+                    name: { zh: '知识测验', en: 'Knowledge Quiz' },
+                    description: {
+                        zh: '完成3次魔法测验',
+                        en: 'Complete 3 Magic Quizzes'
+                    },
+                    reward: { zh: '12 金加隆', en: '12 Galleons' },
+                    type: 'quiz_count',
+                    target: 3,
+                    getProgress: () => parseInt(localStorage.getItem('dailyQuizCount') || '0')
+                }
+            ],
+            weekly: [
+                {
+                    id: 'weekly_study_2hours',
+                    icon: '📖',
+                    name: { zh: '学霸周', en: 'Scholar Week' },
+                    description: {
+                        zh: '一周内累计学习2小时',
+                        en: 'Study 2 hours total in a week'
+                    },
+                    reward: { zh: '100 金加隆', en: '100 Galleons' },
+                    type: 'study_time_weekly',
+                    target: 120,
+                    getProgress: () => parseInt(localStorage.getItem('weeklyStudyTime') || '0')
+                },
+                {
+                    id: 'weekly_flying_100',
+                    icon: '✈️',
+                    name: { zh: '飞行达人', en: 'Flying Expert' },
+                    description: {
+                        zh: '一周内飞行课累计通过100根石柱',
+                        en: 'Pass 100 pillars in Flying Class this week'
+                    },
+                    reward: { zh: '75 金加隆 + 2个飞天扫帚碎片', en: '75 Galleons + 2 Broom Fragments' },
+                    type: 'flying_score_weekly',
+                    target: 100,
+                    getProgress: () => parseInt(localStorage.getItem('weeklyFlyingPillars') || '0')
+                },
+                {
+                    id: 'weekly_quiz_perfect',
+                    icon: '🏆',
+                    name: { zh: '完美周', en: 'Perfect Week' },
+                    description: {
+                        zh: '一周内获得1次满分测验',
+                        en: 'Get 1 perfect quiz score in a week'
+                    },
+                    reward: { zh: '1个随机头像框', en: '1 Random Avatar Frame' },
+                    type: 'perfect_quiz_weekly',
+                    target: 1,
+                    getProgress: () => parseInt(localStorage.getItem('weeklyPerfectQuiz') || '0')
+                }
+            ],
+            special: [
+                {
+                    id: 'special_collect_owls',
+                    icon: '🦉',
+                    name: { zh: '猫头鹰收藏家', en: 'Owl Collector' },
+                    description: {
+                        zh: '在神奇动物商店收集5种不同的猫头鹰',
+                        en: 'Collect 5 different owls from Magical Menagerie'
+                    },
+                    reward: { zh: '50 金加隆 + 特殊头像', en: '50 Galleons + Special Avatar' },
+                    type: 'collect_owls',
+                    target: 5,
+                    getProgress: () => {
+                        const ownedPets = JSON.parse(localStorage.getItem('ownedPets') || '[]');
+                        const owlTypes = ['雪鸮', '褐林鸮', '鸣角鸮', '灰林鸮', '谷仓猫头鹰'];
+                        return ownedPets.filter(p => owlTypes.includes(p.name)).length;
+                    }
+                },
+                {
+                    id: 'special_coins_1000',
+                    icon: '💰',
+                    name: { zh: '小有积蓄', en: 'Getting Rich' },
+                    description: {
+                        zh: '累计拥有1000金加隆',
+                        en: 'Accumulate 1000 Galleons total'
+                    },
+                    reward: { zh: '250 金加隆', en: '250 Galleons' },
+                    type: 'total_coins',
+                    target: 1000,
+                    getProgress: () => {
+                        const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                        return playerData.cumulativeCoins || 0;
+                    }
+                },
+                {
+                    id: 'special_achievements_10',
+                    icon: '🎖️',
+                    name: { zh: '成就达人', en: 'Achievement Master' },
+                    description: {
+                        zh: '解锁10个成就',
+                        en: 'Unlock 10 achievements'
+                    },
+                    reward: { zh: '光轮2001扫帚兑换券', en: 'Nimbus 2001 Broom Voucher' },
+                    type: 'achievements_count',
+                    target: 10,
+                    getProgress: () => {
+                        // 这里简化处理，实际应该检查真正的成就数量
+                        return parseInt(localStorage.getItem('unlockedAchievementsCount') || '0');
+                    }
+                }
+            ]
+        };
+
+        // 获取今日日期
+        function getTodayDate() {
+            const today = new Date();
+            return today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        }
+
+        // 获取本周开始日期
+        function getWeekStart() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            const weekStart = new Date(now.setDate(diff));
+            return weekStart.getFullYear() + '-' + (weekStart.getMonth() + 1) + '-' + weekStart.getDate();
+        }
+
+        // 检查是否需要重置每日任务
+        function checkDailyReset() {
+            const lastDate = localStorage.getItem('lastQuestCheckDate');
+            const today = getTodayDate();
+
+            if (lastDate !== today) {
+                // 新的一天，重置每日任务进度
+                localStorage.setItem('lastQuestCheckDate', today);
+                localStorage.removeItem('dailyStudyTime');
+                localStorage.removeItem('dailyFlyingPillars');
+                localStorage.removeItem('dailyPotionsCount');
+                localStorage.removeItem('dailyQuizCount');
+            }
+
+            // 一次性初始化：为老玩家同步飞行进度
+            if (!localStorage.getItem('questSystemInitialized')) {
+                const flyingHighScore = parseInt(localStorage.getItem('flyingClassHighScore') || '0');
+                if (flyingHighScore > 0) {
+                    // 设置今日进度为历史最高分（让老玩家能完成任务）
+                    localStorage.setItem('dailyFlyingPillars', flyingHighScore.toString());
+                }
+                localStorage.setItem('questSystemInitialized', 'true');
+            }
+        }
+
+        // 检查是否需要重置每周任务
+        function checkWeeklyReset() {
+            const lastWeek = localStorage.getItem('lastQuestCheckWeek');
+            const weekStart = getWeekStart();
+
+            if (lastWeek !== weekStart) {
+                // 新的一周，重置每周任务进度
+                localStorage.setItem('lastQuestCheckWeek', weekStart);
+                localStorage.removeItem('weeklyStudyTime');
+                localStorage.removeItem('weeklyFlyingPillars');
+                localStorage.removeItem('weeklyPerfectQuiz');
+            }
+        }
+
+        // 获取任务完成状态
+        function getQuestCompleted() {
+            const today = getTodayDate();
+            const weekStart = getWeekStart();
+
+            const completedDaily = JSON.parse(localStorage.getItem('completedQuestsDaily') || '{}');
+            const completedWeekly = JSON.parse(localStorage.getItem('completedQuestsWeekly') || '{}');
+            const completedSpecial = JSON.parse(localStorage.getItem('completedQuestsSpecial') || '{}');
+
+            return {
+                daily: completedDaily[today] || [],
+                weekly: completedWeekly[weekStart] || [],
+                special: completedSpecial
+            };
+        }
+
+        // 保存任务完成状态
+        function saveQuestCompleted(category, questId) {
+            const today = getTodayDate();
+            const weekStart = getWeekStart();
+
+            if (category === 'daily') {
+                const completed = JSON.parse(localStorage.getItem('completedQuestsDaily') || '{}');
+                if (!completed[today]) completed[today] = [];
+                if (!completed[today].includes(questId)) {
+                    completed[today].push(questId);
+                    localStorage.setItem('completedQuestsDaily', JSON.stringify(completed));
+                }
+            } else if (category === 'weekly') {
+                const completed = JSON.parse(localStorage.getItem('completedQuestsWeekly') || '{}');
+                if (!completed[weekStart]) completed[weekStart] = [];
+                if (!completed[weekStart].includes(questId)) {
+                    completed[weekStart].push(questId);
+                    localStorage.setItem('completedQuestsWeekly', JSON.stringify(completed));
+                }
+            } else if (category === 'special') {
+                const completed = JSON.parse(localStorage.getItem('completedQuestsSpecial') || '{}');
+                if (!completed.includes(questId)) {
+                    completed.push(questId);
+                    localStorage.setItem('completedQuestsSpecial', JSON.stringify(completed));
+                }
+            }
+        }
+
+        // 渲染任务列表
+        function renderQuests() {
+            const quests = QUESTS[currentCategory];
+            const container = document.getElementById('questList');
+            const completed = getQuestCompleted();
+
+            if (quests.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">📋</div>
+                        <p class="empty-state-text-zh">暂无任务</p>
+                        <p class="empty-state-text-en">No quests available</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = quests.map(quest => {
+                const isCompleted = completed[currentCategory].includes(quest.id);
+                const progress = Math.min(quest.getProgress(), quest.target);
+                const progressPercent = Math.floor((progress / quest.target) * 100);
+
+                return `
+                    <div class="quest-card ${isCompleted ? 'completed' : ''}">
+                        <div class="quest-type">${quest.icon}</div>
+                        <div class="quest-name-zh">${quest.name.zh}</div>
+                        <div class="quest-name-en">${quest.name.en}</div>
+                        <div class="quest-description">
+                            <span class="desc-zh">${quest.description.zh}</span>
+                            <span class="desc-en">${quest.description.en}</span>
+                        </div>
+                        <div class="quest-reward">
+                            <span class="quest-reward-text">
+                                <span class="reward-zh">🎁 ${quest.reward.zh}</span>
+                                <span class="reward-en">🎁 ${quest.reward.en}</span>
+                            </span>
+                        </div>
+                        <div class="quest-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span class="progress-zh">${progress} / ${quest.target}</span>
+                                <span class="progress-en">${progress} / ${quest.target}</span>
+                            </div>
+                        </div>
+                        ${!isCompleted && progressPercent >= 100 ? `
+                            <button class="quest-btn claim-btn" onclick="claimQuest('${quest.id}')">
+                                <span class="btn-zh">领取奖励</span>
+                                <span class="btn-en">Claim Reward</span>
+                            </button>
+                        ` : isCompleted ? `
+                            <button class="quest-btn" disabled>
+                                <span class="btn-zh">已完成 ✓</span>
+                                <span class="btn-en">Completed ✓</span>
+                            </button>
+                        ` : `
+                            <button class="quest-btn" disabled>
+                                <span class="btn-zh">进行中...</span>
+                                <span class="btn-en">In Progress...</span>
+                            </button>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 过滤任务
+        function filterQuests(category) {
+            currentCategory = category;
+
+            // 更新分类按钮状态
+            document.querySelectorAll('.quest-category').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.category === category) {
+                    btn.classList.add('active');
+                }
+            });
+
+            renderQuests();
+        }
+
+        // 更新累计金币（用于等级计算）
+        function updateCumulativeCoins(amount) {
+            let playerData = localStorage.getItem('hogwartsPlayer');
+            if (!playerData) {
+                playerData = {
+                    nickname: '魔法学徒',
+                    avatar: '🧙',
+                    cumulativeCoins: amount,
+                    inventory: [],
+                    level: 0
+                };
+            } else {
+                playerData = JSON.parse(playerData);
+                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
+            }
+
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+        }
+
+        // 领取任务奖励
+        function claimQuest(questId) {
+            const quests = QUESTS[currentCategory];
+            const quest = quests.find(q => q.id === questId);
+
+            if (!quest) return;
+
+            // 给予奖励
+            const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            // 这里简化处理，实际应该根据任务类型给予不同奖励
+            const rewardCoins = parseInt(quest.reward.zh.match(/\d+/)[0]) || 30;
+            localStorage.setItem('hogwartsCoins', (currentCoins + rewardCoins).toString());
+
+            // 更新累计金币（用于等级计算）
+            updateCumulativeCoins(rewardCoins);
+
+            // 标记任务已完成
+            saveQuestCompleted(currentCategory, questId);
+
+            alert(currentLang === 'zh' ?
+                `🎉 恭喜完成！\n\n你获得了：${quest.reward.zh}` :
+                `🎉 Congratulations!\n\nYou received: ${quest.reward.en}`);
+
+            renderQuests();
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 初始化
+        function init() {
+            // 设置body语言类
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            // 标记任务公告栏已访问（用于徽章显示）
+            localStorage.setItem('questLastVisitDate', new Date().toDateString());
+
+            // 检查任务重置
+            checkDailyReset();
+            checkWeeklyReset();
+
+            // 渲染任务列表
+            renderQuests();
+
+            // 更新返回按钮
+            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ? '← 返回' : '← Back';
+        }
+
+        init();
+    </script>
+</body>
+</html>

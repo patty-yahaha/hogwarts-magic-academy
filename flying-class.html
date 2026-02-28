@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔法飞行课 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* 游戏容器 */
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 星星背景 */
+        .stars-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* 游戏画布 */
+        #gameCanvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+
+        /* 老师好感度显示 */
+        .teacher-display {
+            position: fixed;
+            top: 20px;
+            left: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #9b59b6;
+            border-radius: 15px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .teacher-avatar {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 5px rgba(155, 89, 182, 0.6));
+        }
+
+        .affection-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .affection-label {
+            font-size: 0.75rem;
+            color: #9b59b6;
+            font-family: 'Cinzel', serif;
+        }
+
+        .affection-value {
+            font-size: 1.3rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .heart-icon {
+            margin-left: 5px;
+        }
+
+        /* 分数显示（游戏中） */
+        .score-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+            z-index: 100;
+            font-weight: bold;
+        }
+
+        /* 开始界面 */
+        .start-screen, .game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(10, 22, 40, 0.95);
+            z-index: 200;
+        }
+
+        .game-over-screen {
+            display: none;
+        }
+
+        .game-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+            margin-bottom: 20px;
+        }
+
+        .game-subtitle {
+            font-size: 1.2rem;
+            color: #a08050;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .instructions {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 25px 40px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .instruction-item {
+            color: #c9a830;
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+
+        .start-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a830);
+            color: #1a0f00;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.3rem;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        /* 每日游戏时间显示 */
+        .daily-time-display {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.8), rgba(20, 10, 5, 0.9));
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 15px;
+            padding: 12px 25px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .time-icon {
+            font-size: 1.3rem;
+        }
+
+        .time-text {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            color: #d4af37;
+        }
+
+        /* 游戏结束统计 */
+        .stats-container {
+            background: rgba(30, 20, 10, 0.9);
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px 50px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 1.3rem;
+        }
+
+        .stat-label {
+            color: #a08050;
+        }
+
+        .stat-value {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .stat-value.coins {
+            color: #ffd700;
+        }
+
+        .new-record {
+            color: #e74c3c;
+            font-size: 1rem;
+            margin-left: 10px;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 按钮容器 */
+        .button-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .restart-btn, .back-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a830);
+            color: #1a0f00;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .restart-btn:hover, .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+        }
+
+        .back-btn {
+            background: linear-gradient(145deg, #666, #888);
+        }
+
+        /* 扫帚选择模态框 */
+        .broom-selection-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 300;
+        }
+
+        .broom-selection-overlay.active {
+            display: flex;
+        }
+
+        .broom-selection-content {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.98), rgba(10, 20, 40, 0.99));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.4);
+        }
+
+        .broom-selection-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .broom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .broom-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .broom-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .broom-card.selected {
+            border-color: #27ae60;
+            box-shadow: 0 0 20px rgba(39, 174, 96, 0.5);
+        }
+
+        .broom-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .broom-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .broom-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .broom-name-en {
+            font-size: 0.85rem;
+            color: #c9a227;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .broom-stats {
+            font-size: 0.75rem;
+            color: #a08050;
+            line-height: 1.6;
+        }
+
+        .broom-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+            padding: 3px 8px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 5px;
+        }
+
+        .broom-stat-value {
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .broom-stat-value.positive {
+            color: #27ae60;
+        }
+
+        .broom-stat-value.negative {
+            color: #e74c3c;
+        }
+
+        .confirm-broom-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #d4af37, #c9a830);
+            border: none;
+            color: #1a0f00;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-broom-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        /* 当前装备的扫帚显示 */
+        .current-broom-display {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .current-broom-icon {
+            font-size: 2rem;
+        }
+
+        .current-broom-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .current-broom-label {
+            font-size: 0.7rem;
+            color: #a08050;
+            font-family: 'Cinzel', serif;
+        }
+
+        .current-broom-name {
+            font-size: 0.9rem;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        /* 语言切换 - 默认隐藏英文 */
+        .broom-name-en,
+        .label-en,
+        .name-en,
+        .title-en,
+        .subtitle-en {
+            display: none;
+        }
+
+        /* Body class based language switching */
+        body.lang-en .broom-name-en,
+        body.lang-en .label-en,
+        body.lang-en .name-en,
+        body.lang-en .title-en,
+        body.lang-en .subtitle-en {
+            display: block !important;
+        }
+
+        body.lang-en .broom-name-zh,
+        body.lang-en .label-zh,
+        body.lang-en .name-zh,
+        body.lang-en .title-zh,
+        body.lang-en .subtitle-zh {
+            display: none !important;
+        }
+
+        body.lang-zh .broom-name-zh,
+        body.lang-zh .label-zh,
+        body.lang-zh .name-zh,
+        body.lang-zh .title-zh,
+        body.lang-zh .subtitle-zh {
+            display: block !important;
+        }
+
+        body.lang-zh .broom-name-en,
+        body.lang-zh .label-en,
+        body.lang-zh .name-en,
+        body.lang-zh .title-en,
+        body.lang-zh .subtitle-en {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2rem;
+            }
+            .coin-display {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+            }
+            .coin-icon {
+                font-size: 1.3rem;
+            }
+            .coin-amount {
+                font-size: 1.2rem;
+            }
+
+            .teacher-display {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+            }
+            .teacher-avatar {
+                font-size: 1.8rem;
+            }
+            .affection-value {
+                font-size: 1rem;
+            }
+            .affection-label {
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- 星星背景 -->
+        <div class="stars-bg" id="starsBg"></div>
+
+        <!-- 金币显示 -->
+        <!-- 老师好感度显示 -->
+        <div class="teacher-display">
+            <span class="teacher-avatar">🧙‍♀️</span>
+            <div class="affection-info">
+                <span class="affection-label">
+                    <span class="label-zh">霍琦夫人好感度</span>
+                    <span class="label-en">Madam Hooch Affection</span>
+                </span>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div>
+                        <span class="affection-value" id="affectionValue">0</span>
+                        <span class="heart-icon">❤️</span>
+                    </div>
+                    <div style="color: #d4af37; font-size: 1.1rem;">
+                        🪙 +<span id="gameCoinsDisplay">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 金币显示 -->
+        <div class="coin-display">
+            <span class="coin-icon">🪙</span>
+            <span class="coin-amount" id="coinAmount">0</span>
+            <span class="coin-label">
+                <span class="label-zh">金加隆</span>
+                <span class="label-en">Galleons</span>
+            </span>
+        </div>
+
+        <!-- 游戏画布 -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- 游戏中分数 -->
+        <div class="score-display" id="scoreDisplay" style="display: none;">0</div>
+
+        <!-- 游戏中控制按钮 -->
+        <div id="gameControls" style="position: fixed; top: 80px; right: 20px; display: none; z-index: 9999; gap: 10px;">
+            <button onclick="pauseGame()" style="background: linear-gradient(145deg, #2a2a4a, #1a1a2e); border: 2px solid #d4af37; color: #d4af37; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-family: 'Cinzel', serif; transition: all 0.3s ease; z-index: 9999; position: relative; font-size: 1rem;">
+                <span class="btn-zh">暂停</span><span class="btn-en">Pause</span>
+            </button>
+            <button onclick="confirmExitGame()" style="background: linear-gradient(145deg, #666, #888); border: 2px solid #aaa; color: #fff; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-family: 'Cinzel', serif; transition: all 0.3s ease; z-index: 9999; position: relative; font-size: 1rem;">
+                <span class="btn-zh">退出</span><span class="btn-en">Exit</span>
+            </button>
+        </div>
+
+        <!-- 暂停界面 -->
+        <div class="game-over-screen" id="pauseScreen" style="display: none;">
+            <h1 class="game-title">
+                <span class="title-zh">⏸️ 游戏暂停 ⏸️</span>
+                <span class="title-en">⏸️ Game Paused ⏸️</span>
+            </h1>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-label">
+                        <span class="label-zh">当前分数：</span>
+                        <span class="label-en">Current Score:</span>
+                    </span>
+                    <span class="stat-value" id="pauseScore">0</span>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="restart-btn" onclick="resumeGame()">
+                    <span class="btn-zh">继续游戏</span>
+                    <span class="btn-en">Resume</span>
+                </button>
+                <button class="back-btn" onclick="confirmExitGame()">
+                    <span class="btn-zh">退出</span>
+                    <span class="btn-en">Exit</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 当前装备的扫帚显示 -->
+        <div class="current-broom-display" id="currentBroomDisplay">
+            <span class="current-broom-icon" id="currentBroomIcon">🧹</span>
+            <div class="current-broom-info">
+                <span class="current-broom-label">
+                    <span class="label-zh">当前扫帚</span>
+                    <span class="label-en">Current Broom</span>
+                </span>
+                <span class="current-broom-name" id="currentBroomName">
+                    <span class="name-zh">普通飞天扫帚</span>
+                    <span class="name-en">Nimbus Broomstick</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 扫帚选择模态框 -->
+        <div class="broom-selection-overlay" id="broomSelectionOverlay">
+            <div class="broom-selection-content">
+                <h2 class="broom-selection-title">
+                    <span class="title-zh">🧹 请选择你的飞天扫帚 🧹</span>
+                    <span class="title-en">🧹 Choose Your Broomstick 🧹</span>
+                </h2>
+                <div class="broom-grid" id="broomGrid"></div>
+                <button class="confirm-broom-btn" onclick="confirmBroomSelection()">
+                    <span class="btn-zh">确认选择</span>
+                    <span class="btn-en">Confirm Selection</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 开始界面 -->
+        <div class="start-screen" id="startScreen">
+            <h1 class="game-title">🧹 魔法飞行课 🧹</h1>
+            <p class="game-subtitle">
+                <span class="subtitle-zh">控制小巫师穿越魔法石柱</span>
+                <span class="subtitle-en">Navigate the Wizard Through Pillars</span>
+            </p>
+
+            <div class="instructions">
+                <div class="instruction-item">
+                    <span class="inst-zh">🎮 按住 <strong>空格键</strong> 向上飞行</span>
+                    <span class="inst-en">🎮 Hold <strong>SPACE</strong> to fly up</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="inst-zh">⬇️ 松开空格键会下落</span>
+                    <span class="inst-en">⬇️ Release to fall down</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="inst-zh">💰 每5根石柱获得金币奖励</span>
+                    <span class="inst-en">💰 Earn coins for every 5 pillars</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="inst-zh">⚠️ 碰到石柱或边界游戏结束</span>
+                    <span class="inst-en">⚠️ Avoid pillars and boundaries</span>
+                </div>
+            </div>
+
+            <!-- 每日游戏时间显示 -->
+            <div class="daily-time-display" id="dailyTimeDisplay">
+                <span class="time-icon">⏰</span>
+                <span class="time-text" id="timeRemaining">今日剩余时间：60 分钟</span>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">
+                <span class="btn-zh">开始飞行</span>
+                <span class="btn-en">Start Flying</span>
+            </button>
+        </div>
+
+        <!-- 游戏结束界面 -->
+        <div class="game-over-screen" id="gameOverScreen">
+            <h1 class="game-title">
+                <span class="title-zh">✨ 飞行结束 ✨</span>
+                <span class="title-en">✨ Flight Ended ✨</span>
+            </h1>
+
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-label">
+                        <span class="label-zh">本次得分</span>
+                        <span class="label-en">Score</span>
+                    </span>
+                    <span class="stat-value" id="finalScore">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">
+                        <span class="label-zh">获得金币</span>
+                        <span class="label-en">Coins Earned</span>
+                    </span>
+                    <span class="stat-value coins" id="coinsEarned">0 🪙</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">
+                        <span class="stat-zh">历史最高</span>
+                        <span class="stat-en">Best Score</span>
+                    </span>
+                    <span class="stat-value" id="highScore">0</span>
+                    <span class="new-record" id="newRecord" style="display: none;">
+                        <span class="record-zh">新纪录!</span>
+                        <span class="record-en">NEW!</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button class="restart-btn" onclick="restartGame()">
+                    <span class="btn-zh">再来一次</span>
+                    <span class="btn-en">Play Again</span>
+                </button>
+                <button class="back-btn" onclick="goBack()">
+                    <span class="btn-zh">返回</span>
+                    <span class="btn-en">Back</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // ==================== 飞天扫帚系统 ====================
+
+        // 所有可用的扫帚类型
+        const ALL_BROOMSTICKS = {
+            'normal_broom': {
+                id: 'normal_broom',
+                icon: '🧹',
+                name: { zh: '普通飞天扫帚', en: 'Nimbus Broomstick' },
+                stats: {
+                    speedBonus: 0,        // 速度加成（影响柱子移动速度）
+                    gapBonus: 0,          // 缝隙加成（影响柱子间隙大小）
+                    coinBonus: 0,         // 金币加成百分比
+                    affectionBonus: 0     // 好感度加成
+                }
+            },
+            'firebolt': {
+                id: 'firebolt',
+                icon: '🔥',
+                name: { zh: '火弩箭', en: 'Firebolt' },
+                stats: {
+                    speedBonus: 0.3,      // 柱子移动更慢，更容易躲避
+                    gapBonus: 20,         // 缝隙增加20像素
+                    coinBonus: 20,        // 金币+20%
+                    affectionBonus: 1     // 好感度增长+1
+                },
+                price: 500
+            },
+            'nimbus_2001': {
+                id: 'nimbus_2001',
+                icon: '✨',
+                name: { zh: '光轮2001', en: 'Nimbus 2001' },
+                stats: {
+                    speedBonus: 0.2,      // 柱子移动稍慢
+                    gapBonus: 10,         // 缝隙增加10像素
+                    coinBonus: 10,        // 金币+10%
+                    affectionBonus: 0     // 好感度无加成
+                },
+                price: 300
+            },
+            'cleansweep_11': {
+                id: 'cleansweep_11',
+                icon: '💫',
+                name: { zh: '火弩箭11号', en: 'Cleansweep Eleven' },
+                stats: {
+                    speedBonus: 0.15,     // 柱子移动稍慢
+                    gapBonus: 15,         // 缝隙增加15像素
+                    coinBonus: 5,         // 金币+5%
+                    affectionBonus: 0     // 好感度无加成
+                },
+                price: 200
+            },
+            'comet_260': {
+                id: 'comet_260',
+                icon: '🌟',
+                name: { zh: '彗星260', en: 'Comet 260' },
+                stats: {
+                    speedBonus: 0.1,      // 柱子移动稍微慢
+                    gapBonus: 8,          // 缝隙增加8像素
+                    coinBonus: 15,        // 金币+15%
+                    affectionBonus: 0     // 好感度无加成
+                },
+                price: 150
+            }
+        };
+
+        // 获取拥有的扫帚列表
+        function getOwnedBrooms() {
+            const saved = localStorage.getItem('ownedBroomsticks');
+            if (!saved) {
+                // 默认拥有普通扫帚
+                const defaultBrooms = ['normal_broom'];
+                localStorage.setItem('ownedBroomsticks', JSON.stringify(defaultBrooms));
+                return defaultBrooms;
+            }
+            return JSON.parse(saved);
+        }
+
+        // 保存拥有的扫帚列表
+        function saveOwnedBrooms(brooms) {
+            localStorage.setItem('ownedBroomsticks', JSON.stringify(brooms));
+        }
+
+        // 获取当前选择的扫帚
+        function getSelectedBroom() {
+            const saved = localStorage.getItem('selectedBroomstick');
+            if (saved) return saved;
+            return 'normal_broom'; // 默认普通扫帚
+        }
+
+        // 保存当前选择的扫帚
+        function saveSelectedBroom(broomId) {
+            localStorage.setItem('selectedBroomstick', broomid);
+        }
+
+        // 添加扫帚（通过兑换券或其他方式获得）
+        function addBroomstick(broomId) {
+            const owned = getOwnedBrooms();
+            if (!owned.includes(broomId)) {
+                owned.push(broomId);
+                saveOwnedBrooms(owned);
+                return true;
+            }
+            return false;
+        }
+
+        // 获取当前扫帚的属性
+        function getCurrentBroomStats() {
+            const broomId = getSelectedBroom();
+            const broom = ALL_BROOMSTICKS[broomId];
+            return broom ? broom.stats : ALL_BROOMSTICKS['normal_broom'].stats;
+        }
+
+        // 更新当前扫帚显示
+        function updateCurrentBroomDisplay() {
+            const broomId = getSelectedBroom();
+            const broom = ALL_BROOMSTICKS[broomId];
+
+            if (broom) {
+                document.getElementById('currentBroomIcon').textContent = broom.icon;
+                document.getElementById('currentBroomName').innerHTML = `
+                    <span class="name-zh">${broom.name.zh}</span>
+                    <span class="name-en">${broom.name.en}</span>
+                `;
+            }
+        }
+
+        // 显示扫帚选择界面
+        function showBroomSelection() {
+            const ownedBrooms = getOwnedBrooms();
+
+            // 如果只有1个扫帚，不显示选择界面
+            if (ownedBrooms.length < 2) {
+                startGameDirectly();
+                return;
+            }
+
+            const grid = document.getElementById('broomGrid');
+            const selectedBroom = getSelectedBroom();
+
+            grid.innerHTML = ownedBrooms.map(broomId => {
+                const broom = ALL_BROOMSTICKS[broomId];
+                const isSelected = broomId === selectedBroom;
+                const stats = broom.stats;
+
+                return `
+                    <div class="broom-card ${isSelected ? 'selected' : ''}" data-broom="${broomId}" onclick="selectBroom('${broomId}')">
+                        <div class="broom-icon">${broom.icon}</div>
+                        <div class="broom-name-zh">${broom.name.zh}</div>
+                        <div class="broom-name-en">${broom.name.en}</div>
+                        <div class="broom-stats">
+                            <div class="broom-stat">
+                                <span>速度</span>
+                                <span class="broom-stat-value ${stats.speedBonus > 0 ? 'positive' : ''}">${stats.speedBonus > 0 ? '+' + (stats.speedBonus * 100).toFixed(0) + '%' : '正常'}</span>
+                            </div>
+                            <div class="broom-stat">
+                                <span>缝隙</span>
+                                <span class="broom-stat-value ${stats.gapBonus > 0 ? 'positive' : ''}">${stats.gapBonus > 0 ? '+' + stats.gapBonus + 'px' : '正常'}</span>
+                            </div>
+                            <div class="broom-stat">
+                                <span>金币</span>
+                                <span class="broom-stat-value ${stats.coinBonus > 0 ? 'positive' : ''}">${stats.coinBonus > 0 ? '+' + stats.coinBonus + '%' : '正常'}</span>
+                            </div>
+                            ${stats.affectionBonus > 0 ? `
+                            <div class="broom-stat">
+                                <span>好感度</span>
+                                <span class="broom-stat-value positive">+${stats.affectionBonus}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('broomSelectionOverlay').classList.add('active');
+        }
+
+        // 选择扫帚
+        function selectBroom(broomId) {
+            // 更新选中状态
+            document.querySelectorAll('.broom-card').forEach(card => {
+                card.classList.remove('selected');
+                if (card.dataset.broom === broomid) {
+                    card.classList.add('selected');
+                }
+            });
+
+            // 临时保存选择（确认时才真正保存）
+            sessionStorage.setItem('tempSelectedBroom', broomid);
+        }
+
+        // 确认扫帚选择
+        function confirmBroomSelection() {
+            const tempSelected = sessionStorage.getItem('tempSelectedBroom');
+            if (tempSelected) {
+                saveSelectedBroom(tempSelected);
+                sessionStorage.removeItem('tempSelectedBroom');
+                updateCurrentBroomDisplay();
+            }
+
+            document.getElementById('broomSelectionOverlay').classList.remove('active');
+            startGameDirectly();
+        }
+
+        // ==================== 原游戏逻辑 ====================
+
+        // 游戏配置
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 画布尺寸 - 使用全屏
+        let CANVAS_WIDTH = window.innerWidth;
+        let CANVAS_HEIGHT = window.innerHeight;
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+
+        // 窗口大小变化时重新设置画布
+        window.addEventListener('resize', () => {
+            CANVAS_WIDTH = window.innerWidth;
+            CANVAS_HEIGHT = window.innerHeight;
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+            // 更新巫师位置为屏幕左侧 1/3 处
+            if (wizard) wizard.x = CANVAS_WIDTH * 0.33;
+        });
+
+        // 游戏状态
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh'; // 当前语言
+        let gameRunning = false;
+        let score = 0;
+        let coins = 0;
+        let highScore = 0;
+        let isNewRecord = false;
+        let affection = 0; // 好感度
+        let lastAffectionUpdate = 0; // 上次好感度更新的分数
+        let poorPerformanceCount = 0; // 通过柱子少于3根的次数统计
+        let sessionCoins = 0; // 本局金币
+
+        // 扫帚加成（动态计算）
+        let currentBroomStats = null;
+        let currentPillarSpeed = 2;
+        let currentPillarGap = 154;
+
+        // 每日游戏时间限制
+        const DAILY_TIME_LIMIT = 60 * 60; // 60分钟（秒）
+        let gameStartTime = 0; // 本次游戏开始时间
+        let dailyPlayTime = 0; // 今日已玩时间（秒）
+
+        // 物理参数（基础值，基于 60 FPS）
+        const GRAVITY = 0.35;
+        const FLAP_STRENGTH = -4.5;
+        const BASE_PILLAR_SPEED = 2; // 基础速度（每 60 FPS 移动 2 像素）
+        const BASE_PILLAR_GAP = 154; // 基础缝隙
+        const PILLAR_WIDTH = 80;
+        const PILLAR_SPAWN_INTERVAL = 3000; // 柱子生成间隔（毫秒）
+        const TARGET_FPS = 60; // 目标帧率
+
+        // 时间增量计算
+        let lastTime = 0;
+        function getDeltaTime(currentTime) {
+            if (!lastTime) {
+                lastTime = currentTime;
+                return 1;
+            }
+            const deltaTime = (currentTime - lastTime) / 1000; // 转换为秒
+            lastTime = currentTime;
+            // 返回基于 60 FPS 的倍数
+            return Math.min(deltaTime * TARGET_FPS, 3); // 限制最大倍数防止卡顿后跳跃
+        }
+        const MAX_PILLARS = 100; // 最多100根柱子
+        const WIZARD_HOVER_DELAY = 3000; // 巫师悬停延迟（毫秒）
+
+        // 游戏对象
+        let wizard = {
+            x: 0, // 将在 resize 中设置为 1/3 处
+            y: CANVAS_HEIGHT / 2,
+            width: 50,
+            height: 50,
+            velocity: 0,
+            isFlying: false,
+            visible: false // 巫师是否可见
+        };
+
+        let pillars = [];
+        let lastPillarTime = 0;
+        let pillarSpawnAccumulator = 0; // 柱子生成累积时间（用于确保一致间距）
+        let movementStartTime = 0; // 移动开始时间（用于悬停延迟）
+        let canMove = false; // 巫师是否可以移动（悬停延迟后）
+        let gameStarted = false; // 游戏是否正式开始（巫师出现）
+        let passedPillars = 0; // 已穿过的柱子数
+        let lastPillarGapY = null; // 上一根柱子的缝隙位置（用于平滑过渡）
+
+        // 初始化金币和最高分
+        function initGameData() {
+            // 读取金币
+            const savedCoins = localStorage.getItem('hogwartsCoins');
+            coins = savedCoins ? parseInt(savedCoins) : 0;
+            updateCoinDisplay();
+
+            // 读取好感度
+            const savedAffection = localStorage.getItem('flyingClassAffection');
+            affection = savedAffection ? parseInt(savedAffection) : 0;
+            updateAffectionDisplay();
+
+            // 读取表现不佳次数统计
+            const savedPoorPerformance = localStorage.getItem('flyingClassPoorPerformance');
+            poorPerformanceCount = savedPoorPerformance ? parseInt(savedPoorPerformance) : 0;
+
+            // 读取最高分
+            const savedHighScore = localStorage.getItem('flyingClassHighScore');
+            highScore = savedHighScore ? parseInt(savedHighScore) : 0;
+
+            // 加载每日游戏时间
+            loadDailyPlayTime();
+        }
+
+        // 更新好感度显示
+        function updateAffectionDisplay() {
+            document.getElementById('affectionValue').textContent = affection;
+        }
+
+        // 保存好感度
+        function saveAffection() {
+            localStorage.setItem('flyingClassAffection', affection.toString());
+        }
+
+        // 更新金币显示
+        function updateCoinDisplay() {
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        // 更新本局金币显示
+        function updateGameCoinsDisplay() {
+            document.getElementById('gameCoinsDisplay').textContent = sessionCoins;
+        }
+
+        // 保存金币
+        function saveCoins() {
+            localStorage.setItem('hogwartsCoins', coins.toString());
+        }
+
+        // 保存最高分
+        function saveHighScore() {
+            localStorage.setItem('flyingClassHighScore', highScore.toString());
+        }
+
+        // 获取今天的日期字符串
+        function getTodayDate() {
+            const today = new Date();
+            return today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        }
+
+        // 加载每日游戏时间
+        function loadDailyPlayTime() {
+            const today = getTodayDate();
+            const savedData = localStorage.getItem('flyingClassDailyTime');
+
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.date === today) {
+                    dailyPlayTime = data.time || 0;
+                } else {
+                    // 新的一天，重置时间
+                    dailyPlayTime = 0;
+                    saveDailyPlayTime();
+                }
+            } else {
+                dailyPlayTime = 0;
+            }
+
+            return dailyPlayTime;
+        }
+
+        // 保存每日游戏时间
+        function saveDailyPlayTime() {
+            const today = getTodayDate();
+            const data = {
+                date: today,
+                time: dailyPlayTime
+            };
+            localStorage.setItem('flyingClassDailyTime', JSON.stringify(data));
+        }
+
+        // 检查是否超过每日游戏时间限制
+        function checkDailyTimeLimit() {
+            loadDailyPlayTime();
+
+            if (dailyPlayTime >= DAILY_TIME_LIMIT) {
+                const minutesPlayed = Math.floor(dailyPlayTime / 60);
+                if (currentLang === 'zh') {
+                    alert(`⏰ 营业时间结束！\n\n今日已游玩 ${minutesPlayed} 分钟，达到每日60分钟上限。\n明天再来吧！`);
+                } else {
+                    alert(`⏰ Shop Closed!\n\nYou've played ${minutesPlayed} minutes today, reaching the 60-minute daily limit.\nCome back tomorrow!`);
+                }
+                return true; // 超过限制
+            }
+
+            return false; // 未超过限制
+        }
+
+        // 更新每日时间显示
+        function updateDailyTimeDisplay() {
+            loadDailyPlayTime();
+
+            const remainingSeconds = DAILY_TIME_LIMIT - dailyPlayTime;
+            const remainingMinutes = Math.ceil(remainingSeconds / 60);
+
+            const displayElement = document.getElementById('timeRemaining');
+
+            if (remainingSeconds <= 0) {
+                displayElement.textContent = currentLang === 'zh' ?
+                    '⏰ 今日游戏时间已用完' :
+                    '⏰ Daily play time exhausted';
+                displayElement.style.color = '#e74c3c';
+            } else if (remainingMinutes <= 10) {
+                displayElement.textContent = currentLang === 'zh' ?
+                    `⏰ 今日剩余时间：${remainingMinutes} 分钟` :
+                    `⏰ Time remaining: ${remainingMinutes} min`;
+                displayElement.style.color = '#e74c3c';
+            } else {
+                displayElement.textContent = currentLang === 'zh' ?
+                    `⏰ 今日剩余时间：${remainingMinutes} 分钟` :
+                    `⏰ Time remaining: ${remainingMinutes} min`;
+                displayElement.style.color = '#d4af37';
+            }
+        }
+
+        // 更新游戏时间
+        function updateGameTime() {
+            if (!gameRunning) return;
+
+            const currentTime = Date.now();
+            const elapsedSeconds = Math.floor((currentTime - gameStartTime) / 1000);
+
+            // 更新每日游戏时间
+            dailyPlayTime += elapsedSeconds;
+
+            // 确保不超过限制
+            if (dailyPlayTime > DAILY_TIME_LIMIT) {
+                dailyPlayTime = DAILY_TIME_LIMIT;
+            }
+
+            saveDailyPlayTime();
+
+            // 重置开始时间
+            gameStartTime = currentTime;
+        }
+
+        // 创建星星背景
+        function createStars() {
+            const container = document.getElementById('starsBg');
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 3 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        // 绘制背景
+        function drawBackground() {
+            // 渐变天空
+            const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            gradient.addColorStop(0, '#0a1628');
+            gradient.addColorStop(0.5, '#1a2845');
+            gradient.addColorStop(1, '#2a3855');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // 绘制星星
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 30; i++) {
+                const x = (i * 73 + Date.now() * 0.01) % CANVAS_WIDTH;
+                const y = (i * 47) % CANVAS_HEIGHT;
+                const size = (Math.sin(Date.now() * 0.003 + i) + 1) * 1.5;
+                ctx.globalAlpha = 0.3 + Math.sin(Date.now() * 0.002 + i) * 0.3;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        // 绘制巫师
+        function drawWizard() {
+            // 确保透明度为1，确保颜色正常显示
+            ctx.globalAlpha = 1;
+            // 重置任何滤镜效果
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+
+            ctx.font = '35px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // 获取用户头像
+            const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+            const userAvatar = playerData.avatar || '🧙';
+
+            // 根据飞行状态稍微旋转
+            ctx.save();
+            ctx.translate(wizard.x + wizard.width / 2, wizard.y + wizard.height / 2);
+
+            if (wizard.velocity < 0) {
+                ctx.rotate(-0.2);
+            } else if (wizard.velocity > 0) {
+                ctx.rotate(0.2);
+            }
+
+            ctx.fillText(userAvatar, 0, 0);
+            ctx.restore();
+        }
+
+        // 绘制石柱
+        function drawPillars() {
+            pillars.forEach(pillar => {
+                // 魔法柱渐变 - 紫金色调
+                const gradient = ctx.createLinearGradient(pillar.x, 0, pillar.x + PILLAR_WIDTH, 0);
+                gradient.addColorStop(0, '#6b4c7a'); // 深紫色
+                gradient.addColorStop(0.25, '#8b5ba8'); // 中紫色
+                gradient.addColorStop(0.5, '#d4af37'); // 金色
+                gradient.addColorStop(0.75, '#9b6ba8'); // 浅紫色
+                gradient.addColorStop(1, '#7a4a8a'); // 深灰紫
+
+                ctx.fillStyle = gradient;
+
+                // 上方柱子
+                ctx.fillRect(pillar.x, 0, PILLAR_WIDTH, pillar.topHeight);
+
+                // 金色边框
+                ctx.strokeStyle = '#d4af37';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(pillar.x, 0, PILLAR_WIDTH, pillar.topHeight);
+
+                // 下方柱子
+                ctx.fillRect(pillar.x, pillar.bottomY, PILLAR_WIDTH, CANVAS_HEIGHT - pillar.bottomY);
+                ctx.strokeRect(pillar.x, pillar.bottomY, PILLAR_WIDTH, CANVAS_HEIGHT - pillar.bottomY);
+
+                // 魔法符文装饰
+                ctx.fillStyle = 'rgba(212, 175, 55, 0.3)';
+                ctx.font = '16px serif';
+                ctx.fillText('✦', pillar.x + PILLAR_WIDTH / 2 - 6, 30);
+                ctx.fillText('✦', pillar.x + PILLAR_WIDTH / 2 - 6, CANVAS_HEIGHT - 30);
+
+                // 柱子纹理 - 魔法线条
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+                ctx.lineWidth = 1;
+                for (let i = 40; i < pillar.topHeight - 20; i += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(pillar.x + 10, i);
+                    ctx.lineTo(pillar.x + PILLAR_WIDTH - 10, i);
+                    ctx.stroke();
+                }
+                for (let i = pillar.bottomY + 40; i < CANVAS_HEIGHT - 20; i += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(pillar.x + 10, i);
+                    ctx.lineTo(pillar.x + PILLAR_WIDTH - 10, i);
+                    ctx.stroke();
+                }
+
+                // 魔法光晕效果
+                ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            });
+            // 重置阴影
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+        }
+
+        // 生成柱子
+        function spawnPillar() {
+            const minGapY = 100;
+            const maxGapY = CANVAS_HEIGHT - 100 - currentPillarGap;
+
+            // 限制相邻柱子的高度变化，最大变化为缝隙的40%
+            let gapY;
+            if (lastPillarGapY === null) {
+                // 第一个柱子，完全随机
+                gapY = Math.random() * (maxGapY - minGapY) + minGapY;
+            } else {
+                // 后续柱子，限制高度变化
+                const maxChange = currentPillarGap * 0.4; // 最大变化为缝隙的40%
+                const minAllowedGapY = Math.max(minGapY, lastPillarGapY - maxChange);
+                const maxAllowedGapY = Math.min(maxGapY, lastPillarGapY + maxChange);
+                gapY = Math.random() * (maxAllowedGapY - minAllowedGapY) + minAllowedGapY;
+            }
+
+            lastPillarGapY = gapY; // 记录当前柱子位置
+
+            // 柱子从屏幕右侧外开始，慢慢移动进来
+            pillars.push({
+                x: CANVAS_WIDTH + 100, // 从屏幕外 100px 处开始
+                topHeight: gapY,
+                bottomY: gapY + currentPillarGap,
+                passed: false
+            });
+        }
+
+        // 计算金币奖励（分层奖励 + 扫帚加成）
+        function calculateCoins(pillarsPassed) {
+            let totalCoins = 0;
+
+            // 1-20根：每5根给5金币
+            if (pillarsPassed <= 20) {
+                totalCoins = Math.floor(pillarsPassed / 5) * 5;
+            }
+            // 21-50根：前20根20金币 + 每5根给8金币
+            else if (pillarsPassed <= 50) {
+                totalCoins = 20 + Math.floor((pillarsPassed - 20) / 5) * 8;
+            }
+            // 51-100根：前50根68金币 + 每5根给10金币
+            else {
+                totalCoins = 68 + Math.floor((pillarsPassed - 50) / 5) * 10;
+            }
+
+            // 应用扫帚金币加成
+            if (currentBroomStats && currentBroomStats.coinBonus > 0) {
+                totalCoins = Math.floor(totalCoins * (1 + currentBroomStats.coinBonus / 100));
+            }
+
+            return totalCoins;
+        }
+
+        // 更新柱子
+        function updatePillars() {
+            // 如果还没有柱子，生成第一个
+            if (pillars.length === 0) {
+                spawnPillar();
+                lastPillarTime = Date.now();
+            }
+
+            // 后续柱子按间隔生成（不超过最大数量）
+            if (pillars.length > 0 && Date.now() - lastPillarTime > PILLAR_SPAWN_INTERVAL && score < MAX_PILLARS) {
+                spawnPillar();
+                lastPillarTime = Date.now();
+            }
+
+            // 移动柱子（使用当前扫帚速度）
+            pillars.forEach(pillar => {
+                pillar.x -= currentPillarSpeed;
+
+                // 检查是否通过
+                if (!pillar.passed && pillar.x + PILLAR_WIDTH < wizard.x) {
+                    pillar.passed = true;
+                    score++;
+                    passedPillars = score; // 更新已穿过柱子数
+                    document.getElementById('scoreDisplay').textContent = score;
+                }
+            });
+
+            // 移除屏幕外的柱子
+            pillars = pillars.filter(pillar => pillar.x + PILLAR_WIDTH > 0);
+        }
+
+        // 碰撞检测
+        function checkCollision() {
+            // 检查边界
+            if (wizard.y < 0 || wizard.y + wizard.height > CANVAS_HEIGHT) {
+                return true;
+            }
+
+            // 检查柱子碰撞
+            for (let pillar of pillars) {
+                if (wizard.x + wizard.width > pillar.x &&
+                    wizard.x < pillar.x + PILLAR_WIDTH) {
+                    if (wizard.y < pillar.topHeight ||
+                        wizard.y + wizard.height > pillar.bottomY) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // 游戏循环
+        function gameLoop(currentTime = 0) {
+            if (!gameRunning) return;
+
+            // 计算时间增量
+            const deltaTime = getDeltaTime(currentTime);
+
+            // 清空画布
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // 绘制背景
+            drawBackground();
+
+            // 生成和移动柱子（立即生成第一根柱子）
+            if (pillars.length === 0) {
+                spawnPillar();
+                lastPillarTime = Date.now();
+            }
+
+            // 移动柱子（使用当前扫帚速度，乘以时间增量）
+            pillars.forEach(pillar => {
+                pillar.x -= currentPillarSpeed * deltaTime;
+
+                // 检查是否通过
+                if (!pillar.passed && pillar.x + PILLAR_WIDTH < wizard.x) {
+                    pillar.passed = true;
+                    score++;
+                    passedPillars = score;
+                    document.getElementById('scoreDisplay').textContent = score;
+
+                    // 每10分增加好感度（考虑扫帚加成）
+                    const affectionThreshold = 10 - currentBroomStats.affectionBonus;
+                    if (affectionThreshold > 0 && score - lastAffectionUpdate >= affectionThreshold) {
+                        affection++;
+                        lastAffectionUpdate = score;
+                        updateAffectionDisplay();
+                        saveAffection();
+                    }
+
+                    // 达到100根柱子，游戏结束（胜利）
+                    if (score >= MAX_PILLARS) {
+                        setTimeout(() => {
+                            gameOver();
+                        }, 500);
+                        return;
+                    }
+                }
+            });
+
+            // 使用累积时间生成柱子，确保间距一致（基于60 FPS）
+            // 将毫秒转换为帧数（3000ms / (1000ms/60fps) = 180帧）
+            const pillarSpawnIntervalFrames = (PILLAR_SPAWN_INTERVAL / 1000) * TARGET_FPS;
+            pillarSpawnAccumulator += deltaTime;
+
+            if (pillarSpawnAccumulator >= pillarSpawnIntervalFrames && pillars.length > 0 && score < MAX_PILLARS) {
+                spawnPillar();
+                pillarSpawnAccumulator = 0; // 重置累积器
+            }
+
+            // 检查是否可以开始移动（悬停延迟后）
+            if (gameStarted && !canMove) {
+                if (Date.now() - movementStartTime >= WIZARD_HOVER_DELAY) {
+                    canMove = true;
+                }
+            }
+
+            // 更新巫师（悬停延迟后才开始受物理影响，使用时间增量）
+            if (canMove) {
+                if (wizard.isFlying) {
+                    // 增加向上的速度（而不是设置），确保跳跃力度一致
+                    wizard.velocity += FLAP_STRENGTH * deltaTime;
+                }
+                wizard.velocity += GRAVITY * deltaTime;
+                wizard.y += wizard.velocity * deltaTime;
+            } else {
+                // 悬停期间，巫师保持在中间
+                wizard.y = CANVAS_HEIGHT / 2;
+                wizard.velocity = 0;
+            }
+
+            // 移除屏幕外的柱子
+            pillars = pillars.filter(pillar => pillar.x + PILLAR_WIDTH > 0);
+
+            // 绘制
+            drawPillars();
+            if (wizard.visible) {
+                drawWizard();
+            }
+
+            // 检查碰撞（悬停延迟后才检测）
+            if (canMove && checkCollision()) {
+                gameOver();
+                return;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 开始游戏（显示扫帚选择界面）
+        function startGame() {
+            // 检查每日游戏时间限制
+            if (checkDailyTimeLimit()) {
+                return; // 超过限制，不开始游戏
+            }
+
+            // 显示扫帚选择界面
+            showBroomSelection();
+        }
+
+        // 直接开始游戏（不显示选择界面）
+        function startGameDirectly() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('pauseScreen').style.display = 'none';
+            document.getElementById('scoreDisplay').style.display = 'block';
+            document.getElementById('gameControls').style.display = 'flex';
+
+            // 获取当前扫帚属性
+            currentBroomStats = getCurrentBroomStats();
+            currentPillarSpeed = BASE_PILLAR_SPEED * (1 - currentBroomStats.speedBonus);
+            currentPillarGap = BASE_PILLAR_GAP + currentBroomStats.gapBonus;
+
+            // 重置游戏状态
+            gameRunning = true;
+            score = 0;
+            sessionCoins = 0; // 重置本局金币
+            passedPillars = 0; // 重置通过柱子数
+            wizard.y = CANVAS_HEIGHT / 2;
+            wizard.velocity = 0;
+            wizard.x = CANVAS_WIDTH * 0.33; // 设置巫师在屏幕左侧 1/3 处
+            wizard.visible = true; // 巫师立即出现
+            pillars = [];
+            canMove = false; // 初始不能移动
+            gameStarted = true; // 游戏立即开始
+            lastPillarTime = 0;
+            pillarSpawnAccumulator = 0; // 重置柱子生成累积器
+            lastPillarGapY = null; // 重置柱子位置记录
+            lastAffectionUpdate = 0; // 重置本次游戏的好感度更新点
+            movementStartTime = Date.now(); // 记录移动开始时间（用于悬停延迟）
+            lastTime = 0; // 重置时间增量计算
+
+            // 更新本局金币显示
+            updateGameCoinsDisplay();
+
+            // 记录游戏开始时间
+            gameStartTime = Date.now();
+
+            document.getElementById('scoreDisplay').textContent = '0';
+
+            gameLoop();
+        }
+
+        // 游戏结束
+        function gameOver() {
+            gameRunning = false;
+
+            // 隐藏游戏控制按钮
+            document.getElementById('gameControls').style.display = 'none';
+
+            // 更新游戏时间
+            updateGameTime();
+
+            // 计算金币（分层奖励）
+            const earnedCoins = calculateCoins(passedPillars);
+            coins += earnedCoins;
+            sessionCoins += earnedCoins;
+            saveCoins();
+            updateCoinDisplay();
+            updateGameCoinsDisplay();
+
+            // 更新每日飞行进度（用于任务系统）
+            const todayDailyPillars = parseInt(localStorage.getItem('dailyFlyingPillars') || '0');
+            localStorage.setItem('dailyFlyingPillars', (todayDailyPillars + passedPillars).toString());
+
+            // 更新每周飞行进度
+            const weeklyPillars = parseInt(localStorage.getItem('weeklyFlyingPillars') || '0');
+            localStorage.setItem('weeklyFlyingPillars', (weeklyPillars + passedPillars).toString());
+
+            // 检查是否通过柱子少于3根
+            if (passedPillars < 3) {
+                poorPerformanceCount++;
+                localStorage.setItem('flyingClassPoorPerformance', poorPerformanceCount.toString());
+
+                // 每5次表现不佳减少好感度
+                if (poorPerformanceCount % 5 === 0) {
+                    affection = Math.max(0, affection - 1);
+                    saveAffection();
+                    updateAffectionDisplay();
+                }
+            }
+
+            // 更新累计金币（用于等级计算）
+            updateCumulativeCoins(earnedCoins);
+
+            // 检查是否新纪录
+            isNewRecord = score > highScore;
+            if (isNewRecord) {
+                highScore = score;
+                saveHighScore();
+            }
+
+            // 显示结算界面
+            document.getElementById('scoreDisplay').style.display = 'none';
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('coinsEarned').textContent = earnedCoins + ' 🪙';
+            document.getElementById('highScore').textContent = highScore;
+            document.getElementById('newRecord').style.display = isNewRecord ? 'inline' : 'none';
+
+            document.getElementById('gameOverScreen').style.display = 'flex';
+        }
+
+        // 更新累计金币（用于等级计算）
+        function updateCumulativeCoins(amount) {
+            let playerData = localStorage.getItem('hogwartsPlayer');
+            if (!playerData) {
+                playerData = {
+                    nickname: '魔法学徒',
+                    avatar: '🧙',
+                    cumulativeCoins: amount,
+                    inventory: [],
+                    level: 0
+                };
+            } else {
+                playerData = JSON.parse(playerData);
+                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
+            }
+
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+        }
+
+        // 重新开始
+        function restartGame() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease-in-out';
+            setTimeout(() => {
+                // 直接开始，不显示扫帚选择（快速重玩）
+                startGameDirectly();
+                document.body.style.opacity = '1';
+            }, 300);
+        }
+
+        // 语言切换支持
+        function updateLanguage() {
+            // 设置body的语言类
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            // 更新返回按钮
+            const backBtns = document.querySelectorAll('.back-btn');
+            backBtns.forEach(btn => {
+                const zhText = btn.querySelector('.back-text-zh');
+                const enText = btn.querySelector('.back-text-en');
+                if (zhText && enText) {
+                    if (currentLang === 'zh') {
+                        zhText.style.display = '';
+                        enText.style.display = 'none';
+                    } else {
+                        zhText.style.display = 'none';
+                        enText.style.display = '';
+                    }
+                }
+            });
+
+            // 更新每日时间显示
+            updateDailyTimeDisplay();
+        }
+
+        // 暂停游戏
+        function pauseGame() {
+            if (!gameRunning || !gameStarted) return;
+            gameRunning = false;
+            lastTime = 0; // 重置时间增量，防止恢复时跳跃
+
+            // 显示暂停界面
+            document.getElementById('pauseScore').textContent = score;
+            document.getElementById('gameControls').style.display = 'none';
+            document.getElementById('pauseScreen').style.display = 'flex';
+        }
+
+        // 恢复游戏
+        function resumeGame() {
+            document.getElementById('pauseScreen').style.display = 'none';
+            document.getElementById('gameControls').style.display = 'flex';
+            gameRunning = true;
+            lastTime = 0; // 重置时间增量
+            gameLoop();
+        }
+
+        // 确认退出游戏
+        function confirmExitGame() {
+            const confirmMsg = currentLang === 'zh' ?
+                '确定要退出游戏吗？当前进度将不会保存！' :
+                'Are you sure you want to exit? Current progress will not be saved!';
+
+            if (gameRunning && gameStarted) {
+                if (confirm(confirmMsg)) {
+                    // 清理游戏内容
+                    gameRunning = false;
+                    document.getElementById('gameCanvas').style.display = 'none';
+                    document.getElementById('scoreDisplay').style.display = 'none';
+                    document.getElementById('gameControls').style.display = 'none';
+                    document.getElementById('pauseScreen').style.display = 'none';
+                    document.getElementById('teacher-display').style.display = 'none';
+                    document.getElementById('coin-display').style.display = 'none';
+
+                    // 返回上一页
+                    goBack();
+                }
+            } else {
+                // 如果游戏还没开始，直接返回
+                goBack();
+            }
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'hogwarts-games.html';
+            }, 500);
+        }
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && gameRunning && gameStarted) {
+                e.preventDefault();
+                wizard.isFlying = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') {
+                wizard.isFlying = false;
+            }
+        });
+
+        // 触摸控制（移动端）
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameRunning && gameStarted) {
+                wizard.isFlying = true;
+            }
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            wizard.isFlying = false;
+        });
+
+        // 初始化
+        createStars();
+        // 初始化巫师位置
+        wizard.x = CANVAS_WIDTH * 0.33;
+        initGameData();
+        sessionCoins = 0; // 初始化本局金币
+        updateGameCoinsDisplay(); // 初始化显示
+        drawBackground();
+        drawWizard();
+        updateDailyTimeDisplay();
+
+        // 初始化扫帚显示和语言
+        updateCurrentBroomDisplay();
+        updateLanguage();
+
+        // 每分钟更新一次时间显示
+        setInterval(updateDailyTimeDisplay, 60000);
+    </script>
+</body>
+</html>
