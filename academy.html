@@ -891,6 +891,9 @@
         // 初始化玩家数据
         initPlayerData();
 
+        // 加载房间装饰品
+        loadRoomDecorations();
+
         // ==================== 邮件系统 ====================
 
         // 邮件类型定义
@@ -996,23 +999,50 @@
             return today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         }
 
-        // 获取今天已生成的邮件数量
-        function getTodayLetterCount() {
+        // 获取本周的起始日期（周一）
+        function getWeekStartDate() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1); // 调整到周一
+            const monday = new Date(now.setDate(diff));
+            monday.setHours(0, 0, 0, 0);
+            return monday;
+        }
+
+        // 获取本周已生成的邮件数量
+        function getWeekLetterCount() {
             const letters = getLetters();
-            const today = getTodayDate();
+            const weekStart = getWeekStartDate();
             return letters.filter(l => {
                 const letterDate = new Date(l.date);
-                const letterDateStr = letterDate.getFullYear() + '-' + (letterDate.getMonth() + 1) + '-' + letterDate.getDate();
-                return letterDateStr === today;
+                return letterDate >= weekStart;
             }).length;
         }
 
-        // 生成随机邮件（每天最多3封）
+        // 生成随机邮件（每周1-3次，金币越多概率越高）
         function generateRandomLetter() {
-            // 检查今天已生成的邮件数量
-            const todayCount = getTodayLetterCount();
-            if (todayCount >= 3) {
-                return null; // 今天已达到3封上限
+            // 检查本周已生成的邮件数量
+            const weekCount = getWeekLetterCount();
+            if (weekCount >= 3) {
+                return null; // 本周已达到3封上限
+            }
+
+            // 获取当前金币，计算生成概率
+            const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            // 基础概率5%，每100金币增加1%，最多20%
+            let generationChance = 0.05 + Math.min(currentCoins / 10000, 0.15);
+
+            // 如果本周已有邮件，降低生成概率
+            if (weekCount >= 1) {
+                generationChance *= 0.5;
+            }
+            if (weekCount >= 2) {
+                generationChance *= 0.3;
+            }
+
+            // 随机决定是否生成邮件
+            if (Math.random() > generationChance) {
+                return null;
             }
 
             const letters = getLetters();
@@ -1303,7 +1333,178 @@
             if (!playerData.roomDecorations.find(d => d.id === decoration.id)) {
                 playerData.roomDecorations.push(decoration);
                 localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+
+                // 立即在房间中创建可拖动的装饰品
+                createDraggableDecoration(decoration);
             }
+        }
+
+        // 创建可拖动的房间装饰品
+        function createDraggableDecoration(decoration) {
+            // 检查是否已存在DOM元素
+            if (document.getElementById(`decoration-${decoration.id}`)) {
+                return;
+            }
+
+            // 创建装饰品元素
+            const decorEl = document.createElement('div');
+            decorEl.id = `decoration-${decoration.id}`;
+            decorEl.className = 'room-decoration';
+            decorEl.innerHTML = decoration.icon;
+            decorEl.setAttribute('data-id', decoration.id);
+            decorEl.setAttribute('data-name-zh', decoration.nameZh);
+            decorEl.setAttribute('data-name-en', decoration.nameEn);
+            decorEl.title = currentLang === 'zh' ? decoration.nameZh : decoration.nameEn;
+
+            // 设置初始位置（随机位置）
+            const maxX = window.innerWidth - 60;
+            const maxY = window.innerHeight - 60;
+            const randomX = Math.max(50, Math.random() * maxX);
+            const randomY = Math.max(100, Math.random() * maxY);
+
+            decorEl.style.cssText = `
+                position: fixed;
+                left: ${randomX}px;
+                top: ${randomY}px;
+                font-size: 40px;
+                cursor: move;
+                z-index: 50;
+                user-select: none;
+                filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+                transition: transform 0.2s ease;
+            `;
+
+            // 添加到页面
+            document.body.appendChild(decorEl);
+
+            // 实现拖动功能
+            makeElementDraggable(decorEl, decoration.id);
+        }
+
+        // 使元素可拖动
+        function makeElementDraggable(element, id) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            element.addEventListener('mousedown', startDrag);
+            element.addEventListener('touchstart', startDrag, { passive: false });
+
+            function startDrag(e) {
+                e.preventDefault();
+                isDragging = true;
+                element.style.transform = 'scale(1.2)';
+
+                if (e.type === 'touchstart') {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                } else {
+                    startX = e.clientX;
+                    startY = e.clientY;
+                }
+
+                initialX = element.offsetLeft;
+                initialY = element.offsetTop;
+
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchmove', onDrag, { passive: false });
+                document.addEventListener('touchend', stopDrag);
+            }
+
+            function onDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+
+                let currentX, currentY;
+                if (e.type === 'touchmove') {
+                    currentX = e.touches[0].clientX;
+                    currentY = e.touches[0].clientY;
+                } else {
+                    currentX = e.clientX;
+                    currentY = e.clientY;
+                }
+
+                const deltaX = currentX - startX;
+                const deltaY = currentY - startY;
+                let newX = initialX + deltaX;
+                let newY = initialY + deltaY;
+
+                // 边界限制
+                const maxX = window.innerWidth - element.offsetWidth;
+                const maxY = window.innerHeight - element.offsetHeight;
+
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
+
+                element.style.left = newX + 'px';
+                element.style.top = newY + 'px';
+            }
+
+            function stopDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                element.style.transform = 'scale(1)';
+
+                // 保存位置
+                const position = {
+                    left: element.offsetLeft,
+                    top: element.offsetTop
+                };
+
+                let playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                if (!playerData.decorationPositions) {
+                    playerData.decorationPositions = {};
+                }
+                playerData.decorationPositions[id] = position;
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchmove', onDrag);
+                document.removeEventListener('touchend', stopDrag);
+            }
+        }
+
+        // 加载并显示所有已保存的房间装饰
+        function loadRoomDecorations() {
+            const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+            if (!playerData.roomDecorations) return;
+
+            playerData.roomDecorations.forEach(decoration => {
+                const decorEl = document.createElement('div');
+                decorEl.id = `decoration-${decoration.id}`;
+                decorEl.className = 'room-decoration';
+                decorEl.innerHTML = decoration.icon;
+                decorEl.setAttribute('data-id', decoration.id);
+                decorEl.title = currentLang === 'zh' ? decoration.nameZh : decoration.nameEn;
+
+                // 使用保存的位置，或随机位置
+                let posX, posY;
+                if (playerData.decorationPositions && playerData.decorationPositions[decoration.id]) {
+                    posX = playerData.decorationPositions[decoration.id].left;
+                    posY = playerData.decorationPositions[decoration.id].top;
+                } else {
+                    const maxX = window.innerWidth - 60;
+                    const maxY = window.innerHeight - 60;
+                    posX = Math.max(50, Math.random() * maxX);
+                    posY = Math.max(100, Math.random() * maxY);
+                }
+
+                decorEl.style.cssText = `
+                    position: fixed;
+                    left: ${posX}px;
+                    top: ${posY}px;
+                    font-size: 40px;
+                    cursor: move;
+                    z-index: 50;
+                    user-select: none;
+                    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+                    transition: transform 0.2s ease;
+                `;
+
+                document.body.appendChild(decorEl);
+                makeElementDraggable(decorEl, decoration.id);
+            });
         }
 
         // 格式化日期
@@ -1568,6 +1769,18 @@
         checkSession().then(() => {
             // 检查完成后更新用户状态栏
             updateUserStatusBar();
+
+            // 页面加载时尝试生成新邮件（基于概率）
+            const weekCount = getWeekLetterCount();
+            if (weekCount < 3) {
+                setTimeout(() => {
+                    const newLetter = generateRandomLetter();
+                    if (newLetter) {
+                        // 显示通知
+                        showNewLetterNotification(newLetter);
+                    }
+                }, 3000); // 3秒后检查
+            }
         });
 
         // 每次切换语言时更新用户状态栏
@@ -1577,11 +1790,62 @@
             updateUserStatusBar();
         };
 
-        // 随机生成新邮件（每次页面加载时有10%的概率）
-        if (Math.random() < 0.1) {
+        // 显示新邮件通知
+        function showNewLetterNotification(letter) {
+            if (!letter) return;
+
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = 'owl-notification';
+            notification.innerHTML = `
+                <div class="owl-icon">🦉</div>
+                <div class="notification-content">
+                    <div class="notification-title">
+                        <span class="lang-zh">新邮件到达！</span>
+                        <span class="lang-en">New Owl Mail!</span>
+                    </div>
+                    <div class="notification-text">
+                        <span class="lang-zh">你收到了一封来自霍格沃茨的邮件</span>
+                        <span class="lang-en">You received a letter from Hogwarts</span>
+                    </div>
+                </div>
+                <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: linear-gradient(145deg, rgba(30, 20, 10, 0.98), rgba(20, 10, 5, 0.98));
+                border: 3px solid #d4af37;
+                border-radius: 15px;
+                padding: 15px 20px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                z-index: 1000;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+                animation: slideIn 0.5s ease-out;
+                max-width: 350px;
+            `;
+
+            document.body.appendChild(notification);
+
+            // 点击打开邮箱
+            notification.addEventListener('click', function(e) {
+                if (e.target.className !== 'notification-close') {
+                    openMailbox();
+                    notification.remove();
+                }
+            });
+
+            // 5秒后自动消失
             setTimeout(() => {
-                generateRandomLetter();
-            }, 2000); // 2秒后显示通知
+                if (notification.parentElement) {
+                    notification.style.animation = 'slideOut 0.5s ease-out';
+                    setTimeout(() => notification.remove(), 500);
+                }
+            }, 5000);
         }
     </script>
 </body>
