@@ -105,7 +105,7 @@
 
         // ========== 排行榜功能 ==========
         const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cI6KpXVCJ9.eyJpc3MiOjzdXBhYmFzZSIsInJlZi6IwibWkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cI6MjA4Nzc1NTc0OX0.VcFTE9cOcUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
 
         let currentLeaderboardTab = 'coins';
 
@@ -215,7 +215,8 @@
                         <div class="lang-zh">加载失败，请稍后重试</div>
                         <div class="lang-en">Failed to load, please try again later</div>
                         <div style="margin-top: 10px; font-size: 0.9rem; opacity: 0.7;">${error.message || ''}</div>
-                    `;
+                    </div>
+                `;
             }
 
         // 更新金币显示
