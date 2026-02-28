@@ -787,6 +787,7 @@
 
             // 扣除金币 - 更新到 hogwartsPlayer 对象
             coins = currentCoins - item.price;
+            playerData.coins = coins;
             playerData.cumulativeCoins = coins;
             localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
             document.getElementById('coinAmount').textContent = coins;
