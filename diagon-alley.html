@@ -357,7 +357,6 @@
 
             <!-- 破釜酒吧 -->
             <div class="shop-card leaky" onclick="openShop('leaky')">
-                <span class="shop-badge">即将推出</span>
                 <div class="shop-icon">🍺</div>
                 <div class="shop-name-zh">破釜酒吧</div>
                 <div class="shop-name-en">Leaky Cauldron</div>
@@ -385,6 +384,8 @@
                     window.location.href = 'broomsticks.html';
                 } else if (shopType === 'malkin') {
                     window.location.href = 'madam-malkins.html';
+                } else if (shopType === 'leaky') {
+                    window.location.href = 'leaky-cauldron.html';
                 } else {
                     alert('该商店即将推出，敬请期待！\nThis shop is coming soon!');
                 }

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>破釜酒吧 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .pub-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .pub-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .pub-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #2e8b57;
+            text-shadow: 0 0 30px rgba(46, 139, 87, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .pub-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #3cb371;
+            font-style: italic;
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .category-tab {
+            background: linear-gradient(135deg, rgba(46, 139, 87, 0.3), rgba(35, 110, 70, 0.3));
+            border: 3px solid rgba(46, 139, 87, 0.4);
+            border-radius: 20px;
+            padding: 15px 35px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #2e8b57;
+        }
+
+        .category-tab:hover {
+            background: linear-gradient(135deg, #3cb371, #27ae60);
+            border-color: #2e8b57;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(46, 139, 87, 0.4);
+        }
+
+        .category-tab.active {
+            background: linear-gradient(135deg, #2e8b57, #27ae60);
+            border-color: #2e8b57;
+            box-shadow: 0 5px 20px rgba(46, 139, 87, 0.4);
+        }
+
+        .category-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        /* 商品网格 */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .menu-item {
+            background: linear-gradient(145deg, rgba(30, 40, 20, 0.95), rgba(20, 25, 10, 0.98));
+            border: 3px solid rgba(46, 139, 87, 0.3);
+            border-radius: 18px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(46, 139, 87, 0.08) 0%, transparent 70%);
+            animation: menuMagic 12s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes menuMagic {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .menu-item:hover {
+            border-color: rgba(46, 139, 87, 0.6);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(46, 139, 87, 0.3);
+        }
+
+        .menu-item.owned {
+            border-color: rgba(76, 175, 80, 0.5);
+            background: linear-gradient(145deg, rgba(26, 35, 20, 0.15), rgba(20, 25, 10, 0.1));
+        }
+
+        .item-icon {
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(46, 139, 87, 0.5));
+        }
+
+        .item-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #2e8b57;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .item-description {
+            font-size: 0.95rem;
+            color: #a8b8b;
+            text-align: center;
+            line-height: 1.6;
+            min-height: 45px;
+        }
+
+        .item-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: rgba(46, 139, 87, 0.1);
+            border-radius: 12px;
+        }
+
+        .price-icon {
+            font-size: 1.5rem;
+        }
+
+        .price-amount {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .order-btn {
+            background: linear-gradient(135deg, #2e8b57, #27ae60);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .order-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #1e8b57);
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(46, 139, 87, 0.5);
+        }
+
+        .order-btn.owned {
+            background: #666;
+            cursor: default;
+        }
+
+        .owned-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .consumed-message {
+            text-align: center;
+            padding: 20px;
+            color: #3cb371;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .pub-title {
+                font-size: 1.8rem;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display" style="background: linear-gradient(135deg, rgba(46, 139, 87, 0.3), rgba(35, 110, 70, 0.4)); border-color: #2e8b57;">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">金加隆</span>
+    </div>
+
+    <div class="container">
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">破釜酒吧</span>
+                <span class="title-text-en">Leaky Cauldron</span>
+            </h1>
+        </header>
+
+        <div class="pub-container">
+            <div class="pub-header">
+                <h2 class="pub-title">
+                    <span class="title-text-zh">🍺 破釜酒吧 🍺</span>
+                    <span class="title-text-en">🍺 Leaky Cauldron 🍺</span>
+                </h2>
+                <p class="pub-subtitle">
+                    <span class="title-text-zh">对角巷最温馨的酒吧</span>
+                    <span class="title-text-en">The coziest pub in Diagon Alley</span>
+                </p>
+            </div>
+
+            <!-- 分类标签 -->
+            <div class="category-tabs">
+                <div class="category-tab active" data-category="drinks" onclick="switchCategory('drinks')">
+                    <div class="category-icon">🍷</div>
+                    <div>
+                        <span class="title-text-zh">饮品类</span>
+                        <span class="title-text-en">Drinks</span>
+                    </div>
+                </div>
+                <div class="category-tab" data-category="food" onclick="switchCategory('food')">
+                    <div class="category-icon">🍽</div>
+                    <div>
+                        <span class="title-text-zh">食物类</span>
+                        <span class="title-text-en">Food</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 商品列表 -->
+            <div class="items-grid" id="itemsGrid">
+                <div class="loading-spinner">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 魔法提示 -->
+        <div class="magic-tip">
+            <p class="tip-text-zh">✨ 品尝美食，畅谈巫师 ✨</p>
+            <p class="tip-text-en">✨ Taste the magic, chat with wizards ✨</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+        let currentCategory = 'drinks';
+
+        // 饮品类数据
+        const DRINKS = [
+            {
+                id: 'butterbeer',
+                name: '雪利酒',
+                nameEn: 'Butterbeer',
+                icon: '🍺',
+                description: '酒吧角落里的老太婆们曾拿着小杯喝这种酒。',
+                descriptionEn: 'The old ladies in the corner used to drink from small cups.',
+                price: 80
+            },
+            {
+                id: 'beer',
+                name: '啤酒',
+                nameEn: 'Beer',
+                icon: '🍻',
+                description: '酒吧老板汤姆曾询问魔法部部长福吉是否需要。',
+                descriptionEn: 'Tom once asked Minister Fudge if he needed anything.',
+                price: 50
+            },
+            {
+                id: 'mead',
+                name: '白兰地',
+                nameEn: 'Mead',
+                icon: '🍵',
+                description: '酒吧老板汤姆曾询问魔法部部长福吉是否需要。',
+                descriptionEn: 'Tom once asked Minister Fudge if he needed anything.',
+                price: 65
+            },
+            {
+                id: 'tea',
+                name: '茶',
+                nameEn: 'Tea',
+                icon: '☕',
+                description: '福吉曾点过一罐茶，由老板汤姆用托盘端来。',
+                descriptionEn: 'Fudge once ordered a pot of tea, served by Tom on a tray.',
+                price: 40
+            }
+        ];
+
+        // 食物类数据
+        const FOODS = [
+            {
+                id: 'roast_pie',
+                name: '烤面饼',
+                nameEn: 'Roast Pie',
+                icon: '🥧',
+                description: '老板汤姆曾为福吉和哈利端来，福吉在上面抹了黄油。',
+                descriptionEn: 'Tom once served Fudge and Harry, with butter on top.',
+                price: 120
+            },
+            {
+                id: 'liver',
+                name: '生肝',
+                nameEn: 'Liver',
+                icon: '🥓',
+                description: '哈利曾目睹一名形迹可疑的人在早餐时点了一碟子生肝。',
+                descriptionEn: 'Harry once saw a suspicious-looking person order liver at breakfast.',
+                price: 85
+            },
+            {
+                id: 'regular_breakfast',
+                name: '常规早饭',
+                nameEn: 'Regular Breakfast',
+                icon: '🍳',
+                description: '哈利在破釜酒吧住宿期间，每天早晨固定食用的餐点。',
+                descriptionEn: 'During Harry\'s stay at Leaky Cauldron, he ate this every morning.',
+                price: 100
+            }
+        ];
+
+        const INVENTORY_KEY = 'hogwartsInventory';
+        const COINS_KEY = 'hogwartsCoins';
+
+        // 获取金币
+        function getCoins() {
+            return parseInt(localStorage.getItem(COINS_KEY) || '0');
+        }
+
+        // 更新金币显示
+        function updateCoinDisplay() {
+            document.getElementById('coinAmount').textContent = getCoins();
+        }
+
+        // 获取背包
+        function getInventory() {
+            const data = localStorage.getItem(INVENTORY_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // 保存背包
+        function saveInventory(inventory) {
+            localStorage.setItem(INVENTORY_KEY, JSON.stringify(inventory));
+        }
+
+        // 检查是否拥有
+        function hasItem(itemId) {
+            const inventory = getInventory();
+            return inventory.some(item => item.id === itemId);
+        }
+
+        // 切换分类
+        function switchCategory(category) {
+            currentCategory = category;
+
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.category-tab[data-category="${category}"]`).classList.add('active');
+
+            renderItems();
+        }
+
+        // 渲染商品列表
+        function renderItems() {
+            const items = currentCategory === 'drinks' ? DRINKS : FOODS;
+            const grid = document.getElementById('itemsGrid');
+
+            grid.innerHTML = items.map(item => {
+                const owned = hasItem(item.id);
+
+                return `
+                    <div class="menu-item ${owned ? 'owned' : ''}" onclick="${owned ? '' : `orderItem('${item.id}')`}">
+                        ${owned ? `<div class="owned-badge">✓ 已拥有</div>` : ''}
+                        <div class="item-icon">${item.icon}</div>
+                        <div class="item-name">${currentLang === 'zh' ? item.name : item.nameEn}</div>
+                        <div class="item-description">${currentLang === 'zh' ? item.description : item.descriptionEn}</div>
+                        <div class="item-price">
+                            <span class="price-icon">${owned ? '🪙' : '💰'}</span>
+                            <span class="price-amount">${owned ? '已购买' : item.price}</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="order-btn ${owned ? 'owned' : ''}" ${owned ? 'disabled' : ''} onclick="${owned ? '' : `orderItem('${item.id}')`}">
+                                ${owned ? (currentLang === 'zh' ? '已享用' : 'Enjoyed') : (currentLang === 'zh' ? '点餐' : 'Order')}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 点餐
+        function orderItem(itemId) {
+            const items = currentCategory === 'drinks' ? DRINKS : FOODS;
+            const item = items.find(i => i.id === itemId);
+
+            if (!item) return;
+
+            const coins = getCoins();
+
+            if (coins < item.price) {
+                alert(currentLang === 'zh' ? '金币不足！\n需要 ' + item.price + ' 金加隆，当前只有 ' + coins + ' 金加隆。' : 'Not enough coins!\nNeed ' + item.price + ' Galleons, you only have ' + coins + ' Galleons.');
+                return;
+            }
+
+            if (confirm(currentLang === 'zh' ? '确定要购买「' + item.name + '」吗？\n价格：' + item.price + ' 金加隆' : 'Are you sure you want to buy "' + (currentLang === 'zh' ? item.name : item.nameEn) + '"?\nPrice: ' + item.price + ' Galleons')) {
+                // 扣除金币
+                const newCoins = coins - item.price;
+                localStorage.setItem(COINS_KEY, newCoins.toString());
+
+                // 添加到背包
+                const inventory = getInventory();
+                inventory.push({
+                    id: item.id,
+                    name: item.name,
+                    nameEn: item.nameEn,
+                    icon: item.icon,
+                    description: item.description,
+                    descriptionEn: item.descriptionEn,
+                    price: item.price,
+                    purchaseDate: new Date().toISOString(),
+                    type: currentCategory === 'drinks' ? 'drink' : 'food',
+                    source: 'leaky_cauldron'
+                });
+                saveInventory(inventory);
+
+                // 更新显示
+                updateCoinDisplay();
+                renderItems();
+
+                alert(currentLang === 'zh' ? '购买成功！\n你获得了「' + item.name + '」' : 'Purchased successfully!\nYou got "' + (currentLang === 'zh' ? item.name : item.nameEn) + '"!');
+            }
+        }
+
+        // 语言切换
+        function updateLanguage() {
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ? '← 返回' : '← Back';
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'diagon-alley.html';
+            }, 500);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            if (!container) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 初始化
+        updateLanguage();
+        updateCoinDisplay();
+        renderItems();
+        createMagicParticles();
+    </script>
+</body>
+</html>
