@@ -1052,7 +1052,6 @@
             width: 50,
             height: 50,
             velocity: 0,
-            isFlying: false,
             visible: false // 巫师是否可见
         };
 
@@ -1064,6 +1063,7 @@
         let gameStarted = false; // 游戏是否正式开始（巫师出现）
         let passedPillars = 0; // 已穿过的柱子数
         let lastPillarGapY = null; // 上一根柱子的缝隙位置（用于平滑过渡）
+        let flapKeyPressed = false; // 跟跃按键状态，防止连续触发
 
         // 初始化金币和最高分
         function initGameData() {
@@ -1522,12 +1522,15 @@
 
             // 更新巫师（悬停延迟后才开始受物理影响，使用时间增量）
             if (canMove) {
-                if (wizard.isFlying) {
-                    // 增加向上的速度（而不是设置），确保跳跃力度一致
-                    wizard.velocity += FLAP_STRENGTH * deltaTime;
-                }
+                // 应用重力
                 wizard.velocity += GRAVITY * deltaTime;
                 wizard.y += wizard.velocity * deltaTime;
+
+                // 限制最大下落速度，防止穿模
+                const maxFallSpeed = 15;
+                if (wizard.velocity > maxFallSpeed) {
+                    wizard.velocity = maxFallSpeed;
+                }
             } else {
                 // 悬停期间，巫师保持在中间
                 wizard.y = CANVAS_HEIGHT / 2;
@@ -1779,29 +1782,38 @@
 
         // 键盘控制
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && gameRunning && gameStarted) {
+            if (e.code === 'Space' && gameRunning && gameStarted && canMove) {
                 e.preventDefault();
-                wizard.isFlying = true;
+                // 只在按下的瞬间触发一次跳跃，防止连续触发
+                if (!flapKeyPressed) {
+                    flapKeyPressed = true;
+                    // 直接设置向上的速度（而不是累加）
+                    wizard.velocity = FLAP_STRENGTH;
+                }
             }
         });
 
         document.addEventListener('keyup', (e) => {
             if (e.code === 'Space') {
-                wizard.isFlying = false;
+                flapKeyPressed = false;
             }
         });
 
         // 触摸控制（移动端）
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            if (gameRunning && gameStarted) {
-                wizard.isFlying = true;
+            if (gameRunning && gameStarted && canMove) {
+                // 只在触摸瞬间触发一次跳跃
+                if (!flapKeyPressed) {
+                    flapKeyPressed = true;
+                    wizard.velocity = FLAP_STRENGTH;
+                }
             }
         });
 
         canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
-            wizard.isFlying = false;
+            flapKeyPressed = false;
         });
 
         // 初始化
