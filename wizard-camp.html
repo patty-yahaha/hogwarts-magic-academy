@@ -711,6 +711,13 @@
         createMagicParticles();
         initMessageBoardBadge();
 
+        // 监听留言板角标更新消息
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'updateMessageBoardBadge') {
+                updateMessageBoardBadge(event.data.count);
+            }
+        });
+
         // 初始化语言
         updateLanguage();
     </script>
