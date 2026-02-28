@@ -543,6 +543,15 @@
                     <div class="section-desc-zh">买卖魔法物品，交换珍稀资源</div>
                     <div class="section-desc-en">Buy and sell magical items, trade rare resources</div>
                 </div>
+
+                <!-- 金加隆排行榜 -->
+                <div class="camp-section-btn" onclick="openLeaderboard()">
+                    <div class="section-icon">🏆</div>
+                    <div class="section-title-zh">金加隆排行榜</div>
+                    <div class="section-title-en">Galleon Leaderboard</div>
+                    <div class="section-desc-zh">查看巫师的财富排名</div>
+                    <div class="section-desc-en">View wizards' wealth rankings</div>
+                </div>
             </div>
         </div>
 
@@ -550,52 +559,6 @@
         <div class="magic-tip">
             <p class="tip-text-zh">✨ 选择你的营地活动 ✨</p>
             <p class="tip-text-en">✨ Choose Your Camp Activity ✨</p>
-        </div>
-    </div>
-
-    <!-- 排行榜浮动按钮 -->
-    <div class="leaderboard-fab" onclick="openLeaderboard()" title="排行榜">
-        🏆
-    </div>
-
-    <!-- 排行榜模态框 -->
-    <div class="leaderboard-modal" id="leaderboardModal">
-        <div class="leaderboard-content">
-            <div class="leaderboard-header">
-                <h2 class="leaderboard-title">
-                    <span class="lang-zh">🏆 巫师排行榜 🏆</span>
-                    <span class="lang-en">🏆 Wizard Leaderboard 🏆</span>
-                </h2>
-                <button class="close-leaderboard-btn" onclick="closeLeaderboard()">✕</button>
-            </div>
-
-            <!-- 切换标签 -->
-            <div class="leaderboard-tabs">
-                <div class="leaderboard-tab active" data-tab="coins" onclick="switchLeaderboardTab('coins')">
-                    <span class="lang-zh">💰 金币榜</span>
-                    <span class="lang-en">💰 Coins</span>
-                </div>
-                <div class="leaderboard-tab" data-tab="affection" onclick="switchLeaderboardTab('affection')">
-                    <span class="lang-zh">❤️ 好感度榜</span>
-                    <span class="lang-en">❤️ Affection</span>
-                </div>
-            </div>
-
-            <!-- 金币排行榜 -->
-            <div class="leaderboard-list active" id="coinsLeaderboard">
-                <div class="loading-spinner">
-                    <span class="lang-zh">正在加载...</span>
-                    <span class="lang-en">Loading...</span>
-                </div>
-            </div>
-
-            <!-- 好感度排行榜 -->
-            <div class="leaderboard-list" id="affectionLeaderboard">
-                <div class="loading-spinner">
-                    <span class="lang-zh">正在加载...</span>
-                    <span class="lang-en">Loading...</span>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -642,6 +605,14 @@
             document.body.style.transition = 'opacity 0.8s ease-in-out';
             setTimeout(() => {
                 window.location.href = 'play-guide.html';
+            }, 800);
+        }
+
+        function openLeaderboard() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'leaderboard.html';
             }, 800);
         }
 
