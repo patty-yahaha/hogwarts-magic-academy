@@ -1008,9 +1008,6 @@
                 savePlayerData();
             }
 
-            // 不在这里加载装饰品，而是在切换到房间标签时加载
-        }
-
             // 初始化玩家位置
             if (!playerData.playerPosition) {
                 playerData.playerPosition = { x: 380, y:300 }; // 房间中心
@@ -1018,10 +1015,12 @@
             }
 
             // 设置下一个物品ID
-            if (playerData.room.items.length > 0) {
+            if (playerData.room && playerData.room.items.length > 0) {
                 const maxId = Math.max(...playerData.room.items.map(i => i.id));
                 nextItemId = maxId + 1;
             }
+
+            // 不在这里加载装饰品，而是在切换到房间标签时加载
         }
 
         // 加载玩家数据

@@ -254,6 +254,177 @@
             border-color: rgba(244, 67, 54, 0.5);
         }
 
+        /* 回复按钮 */
+        .reply-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            color: #2196f3;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+        }
+
+        .reply-btn:hover {
+            background: rgba(33, 150, 243, 0.2);
+            border-color: rgba(33, 150, 243, 0.5);
+        }
+
+        /* 回复输入区域 */
+        .reply-input-area {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(10, 15, 30, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            display: none;
+        }
+
+        .reply-input-area.active {
+            display: block;
+        }
+
+        .reply-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(10, 15, 30, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            color: #d4af37;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+
+        .reply-input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .reply-submit-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reply-submit-btn:hover {
+            background: linear-gradient(135deg, #42a5f5, #2196f3);
+        }
+
+        .reply-cancel-btn {
+            padding: 8px 20px;
+            background: rgba(128, 128, 128, 0.2);
+            color: #c9a876;
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .reply-cancel-btn:hover {
+            background: rgba(128, 128, 128, 0.3);
+        }
+
+        /* 回复列表 */
+        .replies-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            display: none;
+        }
+
+        .replies-section.has-replies {
+            display: block;
+        }
+
+        .replies-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: #8b7355;
+            font-size: 0.9rem;
+        }
+
+        .reply-card {
+            background: rgba(10, 15, 30, 0.4);
+            border-left: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .reply-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reply-avatar {
+            font-size: 1.2rem;
+        }
+
+        .reply-author-name {
+            color: #d4af37;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .reply-time {
+            color: #8b7355;
+            font-size: 0.8rem;
+        }
+
+        .reply-content {
+            color: #c9a876;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .reply-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(212, 175, 55, 0.05);
+        }
+
+        .reply-delete-btn {
+            background: none;
+            border: none;
+            color: #f44336;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .reply-delete-btn:hover {
+            opacity: 1;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -507,7 +678,7 @@
                 const messagesList = document.getElementById('messagesList');
 
                 try {
-                    const { data, error } = await supabase
+                    const { data: messages, error } = await supabase
                         .from('messages')
                         .select('*')
                         .order('created_at', { ascending: false })
@@ -532,12 +703,41 @@
                         return;
                     }
 
-                    if (!data || data.length === 0) {
+                    if (!messages || messages.length === 0) {
                         showEmptyState();
                         return;
                     }
 
-                    displayMessages(data);
+                    // 获取每条消息的点赞数
+                    const messagesWithLikes = await Promise.all(
+                        messages.map(async (msg) => {
+                            const { count, error } = await supabase
+                                .from('message_likes')
+                                .select('*', { count: 'exact', head: true })
+                                .eq('message_id', msg.id);
+                            return {
+                                ...msg,
+                                likes_count: count || 0
+                            };
+                        })
+                    );
+
+                    // 获取每条消息的回复
+                    const messagesWithReplies = await Promise.all(
+                        messagesWithLikes.map(async (msg) => {
+                            const { data: replies, error } = await supabase
+                                .from('message_replies')
+                                .select('*')
+                                .eq('message_id', msg.id)
+                                .order('created_at', { ascending: true });
+                            return {
+                                ...msg,
+                                replies: replies || []
+                            };
+                        })
+                    );
+
+                    displayMessages(messagesWithReplies);
                 } catch (error) {
                     messagesList.innerHTML = `
                         <div class="error-message">
@@ -555,9 +755,38 @@
                     const time = formatTime(msg.created_at);
                     const isMyMessage = !currentUser.isGuest && msg.user_id === currentUser.id;
                     const isLiked = likedMessages.has(msg.id);
+                    const repliesCount = msg.replies ? msg.replies.length : 0;
+                    const hasReplies = repliesCount > 0;
+
+                    // 生成回复HTML
+                    const repliesHtml = hasReplies ? msg.replies.map(reply => {
+                        const replyTime = formatTime(reply.created_at);
+                        const isMyReply = !currentUser.isGuest && reply.user_id === currentUser.id;
+
+                        return `
+                            <div class="reply-card">
+                                <div class="reply-header">
+                                    <div class="reply-author">
+                                        <span class="reply-avatar">${reply.user_avatar || '🧙'}</span>
+                                        <span class="reply-author-name">${escapeHtml(reply.user_nickname || '匿名')}</span>
+                                        ${reply.is_guest ? '<span class="guest-badge">游客</span>' : ''}
+                                    </div>
+                                    <span class="reply-time">${replyTime}</span>
+                                </div>
+                                <div class="reply-content">${escapeHtml(reply.content)}</div>
+                                ${isMyReply ? `
+                                    <div class="reply-actions">
+                                        <button class="reply-delete-btn" onclick="deleteReply(${reply.id}, ${msg.id})">
+                                            🗑️ <span class="lang-zh">删除</span><span class="lang-en">Delete</span>
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('') : '';
 
                     return `
-                        <div class="message-card">
+                        <div class="message-card" data-message-id="${msg.id}">
                             <div class="message-header">
                                 <div class="message-author">
                                     <span class="author-avatar">${msg.user_avatar || '🧙'}</span>
@@ -572,11 +801,43 @@
                                     <span class="like-icon">${isLiked ? '❤️' : '🤍'}</span>
                                     <span class="like-count">${msg.likes_count || 0}</span>
                                 </button>
+                                <button class="reply-btn" onclick="toggleReplyInput(${msg.id})">
+                                    💬 <span class="lang-zh">回复</span><span class="lang-en">Reply</span>
+                                    ${repliesCount > 0 ? `(${repliesCount})` : ''}
+                                </button>
                                 ${isMyMessage ? `
                                     <button class="delete-btn" onclick="deleteMessage(${msg.id})">
                                         🗑️ <span class="lang-zh">删除</span><span class="lang-en">Delete</span>
                                     </button>
                                 ` : ''}
+                            </div>
+
+                            <!-- 回复输入区域 -->
+                            <div class="reply-input-area" id="replyInput-${msg.id}">
+                                <textarea class="reply-input" id="replyContent-${msg.id}"
+                                    placeholder="${currentLang === 'zh' ? '写下你的回复...' : 'Write your reply...'}"
+                                    maxlength="300"></textarea>
+                                <div>
+                                    <button class="reply-cancel-btn" onclick="cancelReply(${msg.id})">
+                                        <span class="lang-zh">取消</span><span class="lang-en">Cancel</span>
+                                    </button>
+                                    <button class="reply-submit-btn" onclick="submitReply(${msg.id})">
+                                        <span class="lang-zh">📤 发送回复</span>
+                                        <span class="lang-en">📤 Send Reply</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 回复列表 -->
+                            <div class="replies-section ${hasReplies ? 'has-replies' : ''}" id="repliesSection-${msg.id}">
+                                ${hasReplies ? `
+                                    <div class="replies-header">
+                                        💬 ${repliesCount} ${currentLang === 'zh' ? '条回复' : 'replies'}
+                                    </div>
+                                ` : ''}
+                                <div id="repliesList-${msg.id}">
+                                    ${repliesHtml}
+                                </div>
                             </div>
                         </div>
                     `;
@@ -642,6 +903,97 @@
                         showError((currentLang === 'zh' ? '删除失败：' : 'Delete failed: ') + error.message);
                     } else {
                         showSuccess(currentLang === 'zh' ? '留言已删除' : 'Message deleted');
+                        loadMessages();
+                    }
+                } catch (error) {
+                    showError((currentLang === 'zh' ? '删除失败：' : 'Delete failed: ') + error.message);
+                }
+            };
+
+            // 切换回复输入框显示
+            window.toggleReplyInput = function(messageId) {
+                if (currentUser.isGuest) {
+                    showError(currentLang === 'zh' ? '游客无法回复，请先登录' : 'Guests cannot reply, please login first');
+                    return;
+                }
+
+                const replyInput = document.getElementById(`replyInput-${messageId}`);
+                replyInput.classList.toggle('active');
+
+                if (replyInput.classList.contains('active')) {
+                    document.getElementById(`replyContent-${messageId}`).focus();
+                }
+            };
+
+            // 取消回复
+            window.cancelReply = function(messageId) {
+                const replyInput = document.getElementById(`replyInput-${messageId}`);
+                const replyContent = document.getElementById(`replyContent-${messageId}`);
+
+                replyInput.classList.remove('active');
+                replyContent.value = '';
+            };
+
+            // 提交回复
+            window.submitReply = async function(messageId) {
+                const replyContent = document.getElementById(`replyContent-${messageId}`).value.trim();
+
+                if (!replyContent) {
+                    showError(currentLang === 'zh' ? '请输入回复内容' : 'Please enter your reply');
+                    return;
+                }
+
+                if (currentUser.isGuest) {
+                    showError(currentLang === 'zh' ? '游客无法回复，请先登录' : 'Guests cannot reply, please login first');
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabase
+                        .from('message_replies')
+                        .insert([{
+                            message_id: messageId,
+                            user_id: currentUser.isGuest ? null : currentUser.id,
+                            user_nickname: currentUser.nickname,
+                            user_avatar: currentUser.avatar,
+                            content: replyContent,
+                            is_guest: currentUser.isGuest
+                        }])
+                        .select()
+                        .single();
+
+                    if (error) {
+                        showError((currentLang === 'zh' ? '回复失败：' : 'Reply failed: ') + error.message);
+                    } else {
+                        showSuccess(currentLang === 'zh' ? '回复成功！' : 'Reply posted!');
+                        cancelReply(messageId);
+                        loadMessages(); // 重新加载以显示新回复
+                    }
+                } catch (error) {
+                    showError((currentLang === 'zh' ? '回复失败：' : 'Reply failed: ') + error.message);
+                }
+            };
+
+            // 删除回复
+            window.deleteReply = async function(replyId, messageId) {
+                const confirmMsg = currentLang === 'zh' ?
+                    '确定要删除这条回复吗？' :
+                    'Are you sure you want to delete this reply?';
+
+                if (!confirm(confirmMsg)) {
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('message_replies')
+                        .delete()
+                        .eq('id', replyId);
+
+                    if (error) {
+                        showError((currentLang === 'zh' ? '删除失败：' : 'Delete failed: ') + error.message);
+                    } else {
+                        showSuccess(currentLang === 'zh' ? '回复已删除' : 'Reply deleted');
                         loadMessages();
                     }
                 } catch (error) {

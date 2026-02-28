@@ -676,7 +676,29 @@
             // 发放碎片奖励
             if (reward.type === 'broomFragment') {
                 const currentFragments = parseInt(localStorage.getItem('broomFragments') || '0');
-                localStorage.setItem('broomFragments', (currentFragments + reward.amount).toString());
+                const newFragments = currentFragments + reward.amount;
+                localStorage.setItem('broomFragments', newFragments.toString());
+
+                // 自动兑换：每10个碎片兑换成1张500金加隆券
+                const vouchersEarned = Math.floor(newFragments / 10);
+                const remainingFragments = newFragments % 10;
+
+                // 更新碎片（保留余数）
+                localStorage.setItem('broomFragments', remainingFragments.toString());
+
+                // 添加兑换券到背包
+                if (vouchersEarned > 0) {
+                    const currentVouchers = parseInt(localStorage.getItem('broomVouchers') || '0');
+                    localStorage.setItem('broomVouchers', (currentVouchers + vouchersEarned).toString());
+
+                    // 显示兑换券获得通知
+                    const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                    const currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+                    alert(currentLang === 'zh'
+                        ? `🎉 获得了 ${vouchersEarned} 张500金加隆兑换券！\n\n兑换券已添加到你的道具背包，可用于兑换飞天扫帚。`
+                        : `🎉 You received ${vouchersEarned} 500-Galleon voucher(s)!\n\nVouchers added to your inventory, can be used to redeem broomsticks.`);
+                }
 
                 // 记录已发放的奖励
                 grantedRewards.push(achievementId);
@@ -872,8 +894,8 @@
             if (reward.type === 'broomFragment') {
                 rewardDisplay = `
                     <span class="reward-icon">🧹</span>
-                    <span class="reward-text-zh">奖励: ${reward.amount} 飞天扫帚碎片 (10/500金加隆兑换券)</span>
-                    <span class="reward-text-en">Reward: ${reward.amount} Broom Fragments (10 = 500 Galleon Voucher)</span>
+                    <span class="reward-text-zh">奖励: ${reward.amount} 飞天扫帚碎片 (10碎片可兑换500金加隆券，仅限兑换飞天扫帚)</span>
+                    <span class="reward-text-en">Reward: ${reward.amount} Broom Fragments (10 = 500 Galleon Voucher for Broomsticks only)</span>
                 `;
             } else if (reward.type === 'avatar') {
                 rewardDisplay = `
