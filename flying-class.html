@@ -1353,16 +1353,21 @@
             const minGapY = 100;
             const maxGapY = CANVAS_HEIGHT - 100 - currentPillarGap;
 
-            // 限制相邻柱子的高度变化，最大变化为缝隙的40%
+            // 限制相邻柱子的高度变化（不对称：向上小，向下大）
             let gapY;
             if (lastPillarGapY === null) {
                 // 第一个柱子，完全随机
                 gapY = Math.random() * (maxGapY - minGapY) + minGapY;
             } else {
-                // 后续柱子，限制高度变化
-                const maxChange = currentPillarGap * 0.4; // 最大变化为缝隙的40%
-                const minAllowedGapY = Math.max(minGapY, lastPillarGapY - maxChange);
-                const maxAllowedGapY = Math.min(maxGapY, lastPillarGapY + maxChange);
+                // 向上移动（gapY 变小）：限制更小，因为需要时间向上飞
+                // 向下移动（gapY 变大）：允许更大变化，因为有重力帮助
+                const maxUpwardChange = currentPillarGap * 0.25; // 向上最多25%
+                const maxDownwardChange = currentPillarGap * 0.5;  // 向下最多50%
+
+                // 计算允许的范围
+                const minAllowedGapY = Math.max(minGapY, lastPillarGapY - maxUpwardChange);
+                const maxAllowedGapY = Math.min(maxGapY, lastPillarGapY + maxDownwardChange);
+
                 gapY = Math.random() * (maxAllowedGapY - minAllowedGapY) + minAllowedGapY;
             }
 
