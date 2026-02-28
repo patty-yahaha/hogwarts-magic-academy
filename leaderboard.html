@@ -9,331 +9,20 @@
     <link rel="stylesheet" href="academy.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        .leaderboard-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 80vh;
-        }
-
-        .leaderboard-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .leaderboard-title {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 2.5rem;
-            color: #d4af37;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-            margin-bottom: 15px;
-        }
-
-        .leaderboard-subtitle {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            color: #8b7355;
-            font-style: italic;
-        }
-
-        /* 排行榜切换标签 */
-        .leaderboard-tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            justify-content: center;
-        }
-
-        .leaderboard-tab {
-            background: rgba(212, 175, 55, 0.1);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            color: #d4af37;
-            padding: 15px 40px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
-        }
-
-        .leaderboard-tab:hover {
-            background: rgba(212, 175, 55, 0.2);
-            border-color: rgba(212, 175, 55, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .leaderboard-tab.active {
-            background: linear-gradient(135deg, #d4af37, #c9a227);
-            color: #1a1a2e;
-            font-weight: 600;
-            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
-        }
-
-        /* 排行榜列表 */
-        .leaderboard-list {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .leaderboard-list.active {
-            display: block;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            background: linear-gradient(145deg, rgba(20, 30, 50, 0.9), rgba(10, 20, 40, 0.95));
-            border: 2px solid rgba(212, 175, 55, 0.2);
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .leaderboard-item:hover {
-            background: linear-gradient(145deg, rgba(30, 40, 60, 0.9), rgba(20, 30, 50, 0.95));
-            border-color: rgba(212, 175, 55, 0.5);
-            transform: translateX(8px);
-            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.2);
-        }
-
-        .leaderboard-item.current-user {
-            background: linear-gradient(145deg, rgba(46, 125, 50, 0.2), rgba(27, 94, 32, 0.3));
-            border-color: rgba(76, 175, 80, 0.6);
-            box-shadow: 0 0 25px rgba(76, 175, 80, 0.3);
-        }
-
-        /* 前三名特殊样式 */
-        .leaderboard-item.rank-1 {
-            background: linear-gradient(145deg, rgba(255, 215, 0, 0.2), rgba(212, 175, 55, 0.15));
-            border-color: #ffd700;
-            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.3);
-        }
-
-        .leaderboard-item.rank-2 {
-            background: linear-gradient(145deg, rgba(192, 192, 192, 0.2), rgba(169, 169, 169, 0.15));
-            border-color: #c0c0c0;
-            box-shadow: 0 6px 25px rgba(192, 192, 192, 0.25);
-        }
-
-        .leaderboard-item.rank-3 {
-            background: linear-gradient(145deg, rgba(205, 127, 50, 0.2), rgba(184, 115, 51, 0.15));
-            border-color: #cd7f32;
-            box-shadow: 0 6px 25px rgba(205, 127, 50, 0.25);
-        }
-
-        .rank-number {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 2.2rem;
-            font-weight: bold;
-            min-width: 60px;
-            text-align: center;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .rank-1 .rank-number {
-            color: #ffd700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-
-        .rank-2 .rank-number { color: #c0c0c0; }
-        .rank-3 .rank-number { color: #cd7f32; }
-
-        .player-avatar {
-            font-size: 2.8rem;
-            width: 65px;
-            height: 65px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(212, 175, 55, 0.15);
-            border: 3px solid rgba(212, 175, 55, 0.4);
-            border-radius: 50%;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-        }
-
-        .player-info {
-            flex: 1;
-        }
-
-        .player-name {
-            font-family: 'Cinzel', serif;
-            font-size: 1.3rem;
-            color: #d4af37;
-            font-weight: 600;
-            margin-bottom: 12px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .player-stats {
-            display: flex;
-            gap: 30px;
-            font-size: 1.05rem;
-            color: #c9a227;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 8px 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .stat-icon {
-            font-size: 1.3rem;
-            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.5));
-        }
-
-        .loading-spinner {
-            text-align: center;
-            padding: 60px 20px;
-            color: #d4af37;
-            font-size: 1.3rem;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .loading-spinner::before {
-            content: '✨';
-            display: block;
-            font-size: 4rem;
-            margin-bottom: 20px;
-            animation: sparkle 1s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
-
-        @keyframes sparkle {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(180deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .error-message {
-            text-align: center;
-            padding: 50px 20px;
-            color: #e74c3c;
-            font-size: 1.1rem;
-            background: rgba(231, 76, 60, 0.1);
-            border: 2px solid rgba(231, 76, 60, 0.3);
-            border-radius: 20px;
-            margin: 20px 0;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 60px 20px;
-            color: #8b7355;
-            font-size: 1.1rem;
-            background: rgba(139, 115, 85, 0.1);
-            border: 2px solid rgba(139, 115, 85, 0.2);
-            border-radius: 20px;
-            margin: 20px 0;
-        }
-
-        .empty-message::before {
-            content: '📊';
-            display: block;
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.7;
-        }
-
-        .login-prompt {
-            text-align: center;
-            padding: 60px 20px;
-            background: rgba(212, 175, 55, 0.1);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 20px;
-            margin: 20px 0;
-        }
-
-        .login-prompt::before {
-            content: '🔒';
-            display: block;
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-
-        .login-btn {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #d4af37, #c9a227);
-            color: #1a1a2e;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .login-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
-        }
-
-        @media (max-width: 600px) {
-            .leaderboard-container {
-                padding: 10px;
-            }
-
-            .leaderboard-title {
-                font-size: 1.8rem;
-            }
-
-            .leaderboard-tab {
-                padding: 12px 25px;
-                font-size: 0.95rem;
-            }
-
-            .leaderboard-item {
-                padding: 15px;
-                gap: 12px;
-            }
-
-            .rank-number {
-                font-size: 1.6rem;
-                min-width: 45px;
-            }
-
-            .player-avatar {
-                width: 50px;
-                height: 50px;
-                font-size: 2.2rem;
-            }
-
-            .player-name {
-                font-size: 1.1rem;
-            }
-
-            .player-stats {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .stat-item {
-                font-size: 0.95rem;
-                padding: 6px 12px;
-            }
-        }
-    </style>
 </head>
 <body>
     <div class="stars-bg"></div>
     <div class="magic-particles"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+            <span class="label-en">Galleons</span>
+        </span>
+    </div>
 
     <div class="container">
         <!-- 顶部导航栏 -->
@@ -348,14 +37,12 @@
         </header>
 
         <div class="leaderboard-container">
-            <div class="leaderboard-header">
-                <h2 class="leaderboard-title">
-                    <span class="lang-zh">🏆 巫师财富排行榜 🏆</span>
-                    <span class="lang-en">🏆 Wizard Wealth Leaderboard 🏆</span>
-                </h2>
-                <p class="leaderboard-subtitle">
-                    <span class="lang-zh">—— 展示全服巫师的财富排名 ——</span>
-                    <span class="lang-en">— Show all wizards' wealth rankings —</span>
+            <!-- 商店标题 -->
+            <div class="shop-header">
+                <h2 class="shop-title">🧹 金加隆排行榜 🧹</h2>
+                <p class="shop-subtitle">
+                    <span class="subtitle-zh">—— 展示全服巫师的财富排名 ——</span>
+                    <span class="subtitle-en">— Show all wizards' wealth rankings —</span>
                 </p>
             </div>
 
@@ -393,42 +80,9 @@
             <p class="tip-text-zh">✨ 财富与荣耀并存 ✨</p>
             <p class="tip-text-en">✨ Wealth and Glory ✨</p>
         </div>
+    </div>
 
-        <!-- 调试信息 -->
-        <div id="debug-info" style="position: fixed; top: 10px; right: 10px; background: white; color: black; padding: 15px; border: 3px solid red; border-radius: 5px; font-size: 14px; z-index: 99999; max-width: 300px; max-height: 300px; overflow-y: auto; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>
-        <script>
-            // 页面加载后初始化调试框
-            setTimeout(() => {
-                const debugDiv = document.getElementById('debug-info');
-                if (debugDiv) {
-                    debugDiv.innerHTML = '<div style="color: red; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid red; padding-bottom: 5px;">🔍 调试信息</div>';
-                }
-            }, 0);
-
-            // 页面加载测试 - 显示所有 localStorage 内容
-            const allStorage = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                allStorage[key] = localStorage.getItem(key);
-            }
-            alert('页面已加载！\n\n所有 localStorage 内容：\n' + JSON.stringify(allStorage, null, 2));
-
-            // 更新调试信息
-            function addDebugInfo(message) {
-            const debugDiv = document.getElementById('debug-info');
-            if (debugDiv) {
-                const time = new Date().toLocaleTimeString();
-                const p = document.createElement('p');
-                p.textContent = `[${time}] ${message}`;
-                p.style.color = 'black';
-                p.style.marginTop = '8px';
-                p.style.borderBottom = '1px dashed #ccc';
-                p.style.paddingBottom = '5px';
-                debugDiv.appendChild(p);
-                debugDiv.scrollTop = debugDiv.scrollHeight;
-            }
-        }
-    </script>
+    <script>
         // 语言切换
         let currentLang = localStorage.getItem('siteLanguage') || 'zh';
 
@@ -440,25 +94,25 @@
                 '← 返回' : '← Back';
         }
 
+        // 返回
         function goBack() {
             document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
             setTimeout(() => {
-                window.location.href = 'wizard-camp.html';
-            }, 800);
+                window.location.href = 'games-zone.html';
+            }, 500);
         }
 
         // ========== 排行榜功能 ==========
         const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cI6KpXVCJ9.eyJpc3MiOjzdXBhYmFzZSIsInJlZi6IwibWkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cI6MjA4Nzc1NTc0OX0.VcFTE9cOcUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
         let currentLeaderboardTab = 'coins';
 
         window.switchLeaderboardTab = function(tab) {
             currentLeaderboardTab = tab;
-
             document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`.leaderboard-tab[data-tab="${tab}"]`).classList.add('active');
-
             document.querySelectorAll('.leaderboard-list').forEach(l => l.classList.remove('active'));
             document.getElementById(`${tab}Leaderboard`).classList.add('active');
         };
@@ -468,14 +122,12 @@
             const currentUserId = localStorage.getItem('userId');
 
             console.log(`加载${type === 'coins' ? '金币' : '等级'}排行榜...`);
-            console.log('当前用户ID:', currentUserId);
 
             try {
                 const isGuest = localStorage.getItem('isGuest') === 'true';
 
                 if (isGuest || !currentUserId) {
                     console.log('用户未登录');
-                    alert('用户未登录，需要先登录才能查看排行榜');
                     container.innerHTML = `
                         <div class="login-prompt">
                             <div class="lang-zh">请先登录查看排行榜</div>
@@ -503,11 +155,6 @@
 
                 console.log('查询到的用户数据:', profiles);
                 console.log('用户数量:', profiles ? profiles.length : 0);
-                // 调试：检查第一个用户的完整数据结构
-                if (profiles && profiles.length > 0) {
-                    console.log('第一个用户的完整数据:', profiles[0]);
-                    console.log('第一个用户的 cumulative_coins 值:', profiles[0].cumulative_coins);
-                }
 
                 if (!profiles || profiles.length === 0) {
                     container.innerHTML = `
@@ -527,23 +174,11 @@
                 }
 
                 sortedProfiles = sortedProfiles.slice(0, 50);
-                console.log('排序后的前50名:', sortedProfiles);
-                addDebugInfo(`排序后的前3个用户的cumulative_coins: ${sortedProfiles.slice(0,3).map(p => p.cumulative_coins).join(', ')}`);
-
-                // 用 alert 显示前3个用户的数据
-                alert(`调试信息：\n前3个用户的 cumulative_coins 值：\n${sortedProfiles.slice(0,3).map((p, i) => `用户${i+1}: ${p.cumulative_coins}`).join('\n')}`);
 
                 container.innerHTML = sortedProfiles.map((profile, index) => {
                     const rank = index + 1;
                     const isCurrentUser = profile.id === currentUserId;
                     const displayName = profile.nickname || profile.username || '匿名巫师';
-
-                    // 调试：检查显示值
-                    if (type === 'coins' && index < 3) {
-                        const displayValue = profile.cumulative_coins || 0;
-                        console.log(`用户 ${index + 1} (${displayName}) 的 cumulative_coins:`, profile.cumulative_coins, '显示值:', displayValue);
-                        addDebugInfo(`用户${index+1} ${displayName}: cumulative_coins=${profile.cumulative_coins}, 显示值=${displayValue}`);
-                    }
 
                     return `
                         <div class="leaderboard-item rank-${rank <= 3 ? rank : ''} ${isCurrentUser ? 'current-user' : ''}">
@@ -553,9 +188,9 @@
                                 <div class="player-name">${displayName}</div>
                                 <div class="player-stats">
                                     ${type === 'coins' ? `
-                                        <div class="stat-item" data-debug-coins="${profile.cumulative_coins || 0}">
+                                        <div class="stat-item">
                                             <span class="stat-icon">🪙</span>
-                                            <span data-debug-value="${profile.cumulative_coins || 0}" style="background: yellow; color: black;">${profile.cumulative_coins || 0}</span>
+                                            <span>${profile.cumulative_coins || 0}</span>
                                         </div>
                                     ` : `
                                         <div class="stat-item">
@@ -580,10 +215,20 @@
                         <div class="lang-zh">加载失败，请稍后重试</div>
                         <div class="lang-en">Failed to load, please try again later</div>
                         <div style="margin-top: 10px; font-size: 0.9rem; opacity: 0.7;">${error.message || ''}</div>
-                    </div>
-                `;
+                    `;
             }
+
+        // 更新金币显示
+        function updateCoinDisplay() {
+            const coins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            document.getElementById('coinAmount').textContent = coins;
         }
+
+        // 页面加载时初始化
+        updateLanguage();
+        updateCoinDisplay();
+        loadLeaderboardData('coins');
+        loadLeaderboardData('affection');
 
         // 创建魔法粒子
         function createMagicParticles() {
@@ -599,11 +244,8 @@
             }
         }
 
-        // 页面加载时初始化
-        updateLanguage();
         createMagicParticles();
-        loadLeaderboardData('coins');
-        loadLeaderboardData('affection');
     </script>
+    <script src="draggable-coin.js"></script>
 </body>
 </html>
