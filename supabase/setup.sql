@@ -271,6 +271,10 @@ CREATE POLICY "Users can view own profile" ON player_profiles
 CREATE POLICY "Users can update own profile" ON player_profiles
     FOR UPDATE USING (auth.uid() = id);
 
+-- 允许所有人读取排行榜数据（用于排行榜显示）
+CREATE POLICY "Anyone can view leaderboard data" ON player_profiles
+    FOR SELECT USING (true);
+
 CREATE POLICY "Users can view own broomsticks" ON owned_broomsticks
     FOR SELECT USING (auth.uid() = player_id);
 

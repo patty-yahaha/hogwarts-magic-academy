@@ -392,9 +392,27 @@
             <p class="tip-text-zh">✨ 财富与荣耀并存 ✨</p>
             <p class="tip-text-en">✨ Wealth and Glory ✨</p>
         </div>
+
+        <!-- 调试信息 -->
+        <div id="debug-info" style="position: fixed; top: 10px; right: 10px; background: white; color: black; padding: 15px; border: 3px solid red; border-radius: 5px; font-size: 14px; z-index: 99999; max-width: 300px; max-height: 300px; overflow-y: auto; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+            <div style="color: red; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid red; padding-bottom: 5px;">🔍 调试信息</div>
+        </div>
     </div>
 
     <script>
+        // 页面加载测试
+        alert('页面已加载！');
+
+        // 更新调试信息
+        function addDebugInfo(message) {
+            const debugDiv = document.getElementById('debug-info');
+            if (debugDiv) {
+                const time = new Date().toLocaleTimeString();
+                debugDiv.innerHTML += `<div style="color: black; margin-top: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">[${time}] ${message}</div>`;
+                debugDiv.scrollTop = debugDiv.scrollHeight; // 自动滚动到底部
+            }
+        }
+    </script>
         // 语言切换
         let currentLang = localStorage.getItem('siteLanguage') || 'zh';
 
@@ -468,6 +486,11 @@
 
                 console.log('查询到的用户数据:', profiles);
                 console.log('用户数量:', profiles ? profiles.length : 0);
+                // 调试：检查第一个用户的完整数据结构
+                if (profiles && profiles.length > 0) {
+                    console.log('第一个用户的完整数据:', profiles[0]);
+                    console.log('第一个用户的 cumulative_coins 值:', profiles[0].cumulative_coins);
+                }
 
                 if (!profiles || profiles.length === 0) {
                     container.innerHTML = `
@@ -481,18 +504,29 @@
 
                 let sortedProfiles = [...profiles];
                 if (type === 'coins') {
-                    sortedProfiles.sort((a, b) => (b.galleons || 0) - (a.galleons || 0));
+                    sortedProfiles.sort((a, b) => (b.cumulative_coins || 0) - (a.cumulative_coins || 0));
                 } else if (type === 'affection') {
                     sortedProfiles.sort((a, b) => (b.level || 0) - (a.level || 0));
                 }
 
                 sortedProfiles = sortedProfiles.slice(0, 50);
                 console.log('排序后的前50名:', sortedProfiles);
+                addDebugInfo(`排序后的前3个用户的cumulative_coins: ${sortedProfiles.slice(0,3).map(p => p.cumulative_coins).join(', ')}`);
+
+                // 用 alert 显示前3个用户的数据
+                alert(`调试信息：\n前3个用户的 cumulative_coins 值：\n${sortedProfiles.slice(0,3).map((p, i) => `用户${i+1}: ${p.cumulative_coins}`).join('\n')}`);
 
                 container.innerHTML = sortedProfiles.map((profile, index) => {
                     const rank = index + 1;
-                    const isCurrentUser = profile.user_id === currentUserId;
+                    const isCurrentUser = profile.id === currentUserId;
                     const displayName = profile.nickname || profile.username || '匿名巫师';
+
+                    // 调试：检查显示值
+                    if (type === 'coins' && index < 3) {
+                        const displayValue = profile.cumulative_coins || 0;
+                        console.log(`用户 ${index + 1} (${displayName}) 的 cumulative_coins:`, profile.cumulative_coins, '显示值:', displayValue);
+                        addDebugInfo(`用户${index+1} ${displayName}: cumulative_coins=${profile.cumulative_coins}, 显示值=${displayValue}`);
+                    }
 
                     return `
                         <div class="leaderboard-item rank-${rank <= 3 ? rank : ''} ${isCurrentUser ? 'current-user' : ''}">
@@ -502,9 +536,9 @@
                                 <div class="player-name">${displayName}</div>
                                 <div class="player-stats">
                                     ${type === 'coins' ? `
-                                        <div class="stat-item">
+                                        <div class="stat-item" data-debug-coins="${profile.cumulative_coins || 0}">
                                             <span class="stat-icon">🪙</span>
-                                            <span>${profile.galleons || 0}</span>
+                                            <span data-debug-value="${profile.cumulative_coins || 0}" style="background: yellow; color: black;">${profile.cumulative_coins || 0}</span>
                                         </div>
                                     ` : `
                                         <div class="stat-item">
