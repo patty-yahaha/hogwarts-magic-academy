@@ -891,6 +891,45 @@
         // 初始化玩家数据
         initPlayerData();
 
+        // 确保测试邮件存在（用于测试装饰品功能）
+        function ensureTestMailExists() {
+            const letters = getLetters();
+            const testMailExists = letters.some(letter => letter.id.startsWith('test_decoration_'));
+
+            if (!testMailExists) {
+                const testRewardLetter = {
+                    id: 'test_decoration_' + Date.now(),
+                    type: 'REWARD',
+                    title: {
+                        zh: '🎁 特殊礼物：魔法记忆球',
+                        en: '🎁 Special Gift: Magic Remembrall'
+                    },
+                    body: {
+                        zh: '亲爱的同学，\n\n恭喜你！为了帮助你更好地适应霍格沃茨的生活，我们为你准备了一份特别的礼物——记忆球！\n\n这个神奇的小球会提醒你忘记的事情。把它放在你的房间，作为你在霍格沃茨的第一个装饰品吧！\n\n记得：打开个人资料 → 房间标签 → 从道具背包拖动装饰品到房间中。\n\n霍格沃茨猫头鹰邮局',
+                        en: 'Dear Student,\n\nCongratulations! To help you settle into Hogwarts life, we have prepared a special gift for you—a Remembrall!\n\nThis magical sphere will remind you of things you have forgotten. Place it in your room as your first decoration!\n\nRemember: Open Profile → Room Tab → Drag decorations from inventory to your room.\n\nHogwarts Owl Post Office'
+                    },
+                    date: new Date().toISOString(),
+                    read: false,
+                    reward: {
+                        type: 'decoration',
+                        decoration: {
+                            id: 'remembrall',
+                            icon: '🔴',
+                            nameZh: '记忆球',
+                            nameEn: 'Remembrall'
+                        }
+                    }
+                };
+
+                letters.push(testRewardLetter);
+                saveLetters(letters);
+                console.log('✅ 测试邮件已添加');
+            }
+        }
+
+        // 调用函数确保测试邮件存在
+        ensureTestMailExists();
+
         // ==================== 邮件系统 ====================
 
         // 邮件类型定义
@@ -961,8 +1000,34 @@
                     read: false,
                     reward: null
                 };
-                localStorage.setItem('hogwartsLetters', JSON.stringify([welcomeLetter]));
-                return [welcomeLetter];
+
+                // 添加一封带装饰品奖励的测试邮件
+                const testRewardLetter = {
+                    id: 'test_decoration_' + (Date.now() + 1),
+                    type: 'REWARD',
+                    title: {
+                        zh: '🎁 特殊礼物：魔法记忆球',
+                        en: '🎁 Special Gift: Magic Remembrall'
+                    },
+                    body: {
+                        zh: '亲爱的同学，\n\n恭喜你！为了帮助你更好地适应霍格沃茨的生活，我们为你准备了一份特别的礼物——记忆球！\n\n这个神奇的小球会提醒你忘记的事情。把它放在你的房间，作为你在霍格沃茨的第一个装饰品吧！\n\n记得：打开个人资料 → 房间标签 → 从道具背包拖动装饰品到房间中。\n\n霍格沃茨猫头鹰邮局',
+                        en: 'Dear Student,\n\nCongratulations! To help you settle into Hogwarts life, we have prepared a special gift for you—a Remembrall!\n\nThis magical sphere will remind you of things you have forgotten. Place it in your room as your first decoration!\n\nRemember: Open Profile → Room Tab → Drag decorations from inventory to your room.\n\nHogwarts Owl Post Office'
+                    },
+                    date: new Date(Date.now() + 60000).toISOString(), // 1分钟后
+                    read: false,
+                    reward: {
+                        type: 'decoration',
+                        decoration: {
+                            id: 'remembrall',
+                            icon: '🔴',
+                            nameZh: '记忆球',
+                            nameEn: 'Remembrall'
+                        }
+                    }
+                };
+
+                localStorage.setItem('hogwartsLetters', JSON.stringify([welcomeLetter, testRewardLetter]));
+                return [welcomeLetter, testRewardLetter];
             }
             return JSON.parse(saved);
         }
