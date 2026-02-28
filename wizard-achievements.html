@@ -474,6 +474,15 @@
                     <!-- 成就卡片将由JavaScript生成 -->
                 </div>
             </div>
+            <div class="achievement-category">
+                <h3 class="category-title">
+                    <span class="category-title-zh">❤️ 好感度成就</span>
+                    <span class="category-title-en">❤️ Affection Achievements</span>
+                </h3>
+                <div class="achievements-grid" id="affectionAchievements">
+                    <!-- 成就卡片将由JavaScript生成 -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -612,6 +621,72 @@
                     unit: 'count',
                     reward: { type: 'avatarFrame', id: 'frame_golden', name: { zh: '黄金边框', en: 'Golden Frame' }, icon: '👑' }
                 }
+            ],
+            affection: [
+                {
+                    id: 'affection_hooch_5',
+                    icon: '🧹',
+                    teacher: 'hooch',
+                    name: { zh: '霍琦夫人的得意门生', en: 'Madam Hooch\'s Star Student' },
+                    desc: { zh: '霍琦夫人好感度达到5', en: 'Reach Madam Hooch affection level 5' },
+                    requirement: 5,
+                    unit: 'level',
+                    reward: {
+                        type: 'snack',
+                        id: 'snack_broomstick_cake',
+                        name: { zh: '飞天扫帚蛋糕', en: 'Broomstick Cake' },
+                        icon: '🧁',
+                        teacher: 'hooch'
+                    }
+                },
+                {
+                    id: 'affection_hooch_10',
+                    icon: '🌟',
+                    teacher: 'hooch',
+                    name: { zh: '天空骑士', en: 'Sky Knight' },
+                    desc: { zh: '霍琦夫人好感度达到10', en: 'Reach Madam Hooch affection level 10' },
+                    requirement: 10,
+                    unit: 'level',
+                    reward: {
+                        type: 'snack',
+                        id: 'snack_golden_snitch_chocolate',
+                        name: { zh: '金色飞贼巧克力', en: 'Golden Snitch Chocolate' },
+                        icon: '🍫',
+                        teacher: 'hooch'
+                    }
+                },
+                {
+                    id: 'affection_snape_5',
+                    icon: '⚗️',
+                    teacher: 'snape',
+                    name: { zh: '斯内普教授的认可', en: 'Snape\'s Recognition' },
+                    desc: { zh: '斯内普教授好感度达到5', en: 'Reach Professor Snape affection level 5' },
+                    requirement: 5,
+                    unit: 'level',
+                    reward: {
+                        type: 'snack',
+                        id: 'snack_potion_candy',
+                        name: { zh: '魔药糖果', en: 'Potion Candy' },
+                        icon: '🍬',
+                        teacher: 'snape'
+                    }
+                },
+                {
+                    id: 'affection_snape_10',
+                    icon: '🌙',
+                    teacher: 'snape',
+                    name: { zh: '魔药大师弟子', en: 'Potion Master\'s Apprentice' },
+                    desc: { zh: '斯内普教授好感度达到10', en: 'Reach Professor Snape affection level 10' },
+                    requirement: 10,
+                    unit: 'level',
+                    reward: {
+                        type: 'snack',
+                        id: 'snack_slug_pie',
+                        name: { zh: '鼻涕虫馅饼（迷你版）', en: 'Mini Slug Pie' },
+                        icon: '🥧',
+                        teacher: 'snape'
+                    }
+                }
             ]
         };
 
@@ -624,7 +699,9 @@
                 potionsStreak: parseInt(localStorage.getItem('potionsStreak') || '0'),
                 perfectQuizCount: parseInt(localStorage.getItem('perfectQuizCount') || '0'),
                 quizCompletedCount: parseInt(localStorage.getItem('quizCompletedCount') || '0'),
-                highScoreCount: parseInt(localStorage.getItem('highScoreCount') || '0')
+                highScoreCount: parseInt(localStorage.getItem('highScoreCount') || '0'),
+                hoochAffection: parseInt(localStorage.getItem('hoochAffection') || '0'),
+                snapeAffection: parseInt(localStorage.getItem('potionsGameState') ? JSON.parse(localStorage.getItem('potionsGameState')).favorability || 0 : 0)
             };
         }
 
@@ -732,6 +809,106 @@
                 grantedRewards.push(achievementId);
                 localStorage.setItem('grantedAchievementRewards', JSON.stringify(grantedRewards));
             }
+
+            // 发放零食奖励到道具背包
+            if (reward.type === 'snack') {
+                let playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                if (!playerData.inventory) {
+                    playerData.inventory = [];
+                }
+
+                const snackItem = {
+                    id: reward.id,
+                    nameZh: reward.name.zh,
+                    nameEn: reward.name.en,
+                    icon: reward.icon,
+                    type: 'snack',
+                    description: { zh: `来自${reward.teacher === 'hooch' ? '霍琦夫人' : '斯内普教授'}的奖励`, en: `Reward from ${reward.teacher === 'hooch' ? 'Madam Hooch' : 'Professor Snape'}` },
+                    canUse: true
+                };
+
+                const exists = playerData.inventory.some(i => i.id === snackItem.id);
+                if (!exists) {
+                    playerData.inventory.push(snackItem);
+                    localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+                }
+
+                grantedRewards.push(achievementId);
+                localStorage.setItem('grantedAchievementRewards', JSON.stringify(grantedRewards));
+
+                // 生成老师邮件
+                generateTeacherAffectionLetter(achievement, reward);
+            }
+        }
+
+        // 生成老师好感度邮件
+        function generateTeacherAffectionLetter(achievement, reward) {
+            const teacherName = reward.teacher === 'hooch' ?
+                { zh: '霍琦夫人', en: 'Madam Hooch' } :
+                { zh: '斯内普教授', en: 'Professor Snape' };
+
+            const letterTemplates = {
+                hooch: {
+                    5: {
+                        title: { zh: '🧹 飞行天赋认可', en: '🧹 Flying Talent Recognized' },
+                        body: {
+                            zh: `亲爱的同学，\n\n我一直在观察你的飞行课表现。不得不说，你在扫帚上的天赋让我印象深刻！\n\n这种进步速度在我的教学生涯中是罕见的。为了表彰你的努力，我特意为你准备了一份小礼物——飞天扫帚蛋糕！\n\n继续保持，说不定有一天你会成为格兰芬多球队的找球手！\n\n你的，\n霍琦夫人`,
+                            en: `Dear Student,\n\nI've been watching your performance in Flying Class. I must say, your talent on a broomstick is impressive!\n\nThis rate of improvement is rare in my teaching career. To recognize your efforts, I've prepared a special gift for you—Broomstick Cake!\n\nKeep it up, and one day you might become Gryffindor's Seeker!\n\nYours,\nMadam Hooch`
+                        }
+                    },
+                    10: {
+                        title: { zh: '🌟 天空骑士的荣耀', en: '🌟 Glory of the Sky Knight' },
+                        body: {
+                            zh: `亲爱的同学，\n\n真是令人惊叹！你不仅掌握了飞行的精髓，更展现出了一名优秀飞行者应有的素质——勇气、敏捷和冷静。\n\n你的表现让我想起了许多著名的魁地奇球星。这份金色飞贼巧克力是对你卓越表现的嘉奖！\n\n我向你保证，霍格沃茨的史册上会留下你的名字！\n\n以极大的骄傲，\n霍琦夫人`,
+                            en: `Dear Student,\n\nTruly amazing! You have not only mastered the essence of flying but shown the qualities of an excellent flyer—courage, agility, and composure.\n\nYour performance reminds me of many famous Quidditch players. This Golden Snitch Chocolate is a reward for your outstanding performance!\n\nI assure you, your name will be recorded in Hogwarts' history!\n\nWith great pride,\nMadam Hooch`
+                        }
+                    }
+                },
+                snape: {
+                    5: {
+                        title: { zh: '⚗️ 魔药天赋认可', en: '⚗️ Potion Talent Recognized' },
+                        body: {
+                            zh: `亲爱的同学，\n\n虽然我很少表扬学生...但你的魔药制作能力确实超出我的预期。\n\n你的配方理解能力和对细节的关注，正是成为一名优秀魔药师的关键。这些魔药糖果是你应得的奖励。\n\n不要因为这点小小的成就就自满。继续努力，也许你还有可教之处。\n\n西弗勒斯·斯内普`,
+                            en: `Dear Student,\n\nAlthough I rarely praise students...your potion-making skills have exceeded my expectations.\n\nYour understanding of recipes and attention to detail are precisely what makes an excellent potioneer. These Potion Candies are your well-deserved reward.\n\nDo not become complacent with such a small achievement. Continue working hard, perhaps you are still teachable.\n\nSeverus Snape`
+                        }
+                    },
+                    10: {
+                        title: { zh: '🌙 魔药大师弟子', en: '🌙 Potion Master\'s Apprentice' },
+                        body: {
+                            zh: `亲爱的同学，\n\n我必须承认，你的进步让我感到...惊讶。\n\n在霍格沃茨这么多年，很少有学生能达到你现在的水平。你的魔药作品不仅精确，更展现出一种少有的天赋。\n\n这份鼻涕虫馅饼是我祖母的配方（迷你版），味道比看起来好得多。接受它，作为我对你的认可。\n\n如果继续这样下去，也许你真的会成为魔药大师。\n\n带着勉强的敬意，\n斯内普教授`,
+                            en: `Dear Student,\n\nI must admit, your progress has...surprised me.\n\nIn all my years at Hogwarts, few students have reached your current level. Your potion work is not only precise but shows a rare talent.\n\nThis Mini Slug Pie is my grandmother's recipe. It tastes much better than it looks. Accept it as my recognition of you.\n\nIf you continue like this, you might actually become a Potion Master.\n\nWith reluctant respect,\nProfessor Snape`
+                        }
+                    }
+                }
+            };
+
+            const template = letterTemplates[reward.teacher][achievement.requirement];
+
+            // 创建邮件对象
+            const teacherLetter = {
+                id: `affection_${reward.teacher}_${achievement.requirement}_${Date.now()}`,
+                type: 'ACHIEVEMENT',
+                title: template.title,
+                body: template.body,
+                date: new Date().toISOString(),
+                read: false,
+                reward: {
+                    type: 'snack',
+                    snack: {
+                        id: reward.id,
+                        icon: reward.icon,
+                        nameZh: reward.name.zh,
+                        nameEn: reward.name.en
+                    }
+                }
+            };
+
+            // 保存邮件到 localStorage
+            const letters = JSON.parse(localStorage.getItem('hogwartsLetters') || '[]');
+            letters.unshift(teacherLetter);
+            localStorage.setItem('hogwartsLetters', JSON.stringify(letters));
+
+            console.log(`✅ 已生成${teacherName.zh}的好感度邮件`);
         }
 
         // 检查并解锁所有符合条件的成就
@@ -781,6 +958,21 @@
                     currentProgress = progress.quizCompletedCount;
                 } else if (achievement.id === 'quiz_high_score') {
                     currentProgress = progress.highScoreCount;
+                }
+                if (!isAchievementUnlocked(achievement.id) && currentProgress >= achievement.requirement) {
+                    if (unlockAchievement(achievement.id)) {
+                        newUnlocks.push(achievement);
+                    }
+                }
+            });
+
+            // 检查好感度成就
+            achievements.affection.forEach(achievement => {
+                let currentProgress = 0;
+                if (achievement.teacher === 'hooch') {
+                    currentProgress = progress.hoochAffection;
+                } else if (achievement.teacher === 'snape') {
+                    currentProgress = progress.snapeAffection;
                 }
                 if (!isAchievementUnlocked(achievement.id) && currentProgress >= achievement.requirement) {
                     if (unlockAchievement(achievement.id)) {
