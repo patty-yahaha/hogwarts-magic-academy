@@ -710,7 +710,8 @@
 
         // 更新老师好感度
         function updateTeacherAffection(score, correctAnswers, totalQuestions) {
-            const TEACHER_SYSTEM_KEY = 'hogwarts_teacher_system';
+            const MENTOR_AFFECTION_KEY = 'hogwarts_mentor_affection';
+            const MCGONAGALL_ID = 'mcgonagall';
             const QUIZ_THRESHOLD_SCORE = 95;
             const QUIZ_MAX_ATTEMPTS = 3;
 
@@ -718,8 +719,8 @@
             const percentage = Math.round((correctAnswers / totalQuestions) * 100);
 
             if (percentage >= QUIZ_THRESHOLD_SCORE) {
-                // 获取老师系统数据
-                let data = localStorage.getItem(TEACHER_SYSTEM_KEY);
+                // 获取老师好感度数据
+                let data = localStorage.getItem(MENTOR_AFFECTION_KEY);
                 if (!data) return;
 
                 data = JSON.parse(data);
@@ -731,18 +732,18 @@
                 const attempts = data.quizAttempts ? (data.quizAttempts[quizId] || 0) : 0;
 
                 if (attempts < QUIZ_MAX_ATTEMPTS) {
-                    // 增加好感度
-                    const oldAffection = data.affection || 0;
-                    data.affection = oldAffection + 3;
+                    // 增加麦格教授好感度
+                    const oldAffection = data[MCGONAGALL_ID] || 0;
+                    data[MCGONAGALL_ID] = oldAffection + 3;
 
                     // 更新尝试次数
                     if (!data.quizAttempts) data.quizAttempts = {};
                     data.quizAttempts[quizId] = attempts + 1;
 
                     // 保存数据
-                    localStorage.setItem(TEACHER_SYSTEM_KEY, JSON.stringify(data));
+                    localStorage.setItem(MENTOR_AFFECTION_KEY, JSON.stringify(data));
 
-                    console.log(`Teacher affection increased from ${oldAffection} to ${data.affection} (Quiz score: ${percentage}%)`);
+                    console.log(`McGonagall affection increased from ${oldAffection} to ${data[MCGONAGALL_ID]} (Quiz score: ${percentage}%)`);
                 } else {
                     console.log(`Quiz ${quizId} has reached max attempts (${QUIZ_MAX_ATTEMPTS}), no affection added`);
                 }

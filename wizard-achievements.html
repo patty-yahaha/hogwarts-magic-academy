@@ -552,7 +552,7 @@
                     desc: { zh: '连续飞过15根飞行课的柱子', en: 'Pass 15 consecutive flying pillars' },
                     requirement: 15,
                     unit: 'pillars',
-                    reward: { type: 'broomFragment', amount: 5 }
+                    reward: { type: 'broomFragment', amount: 3 }
                 },
                 {
                     id: 'flying_30',
@@ -561,16 +561,16 @@
                     desc: { zh: '连续飞过30根飞行课的柱子', en: 'Pass 30 consecutive flying pillars' },
                     requirement: 30,
                     unit: 'pillars',
-                    reward: { type: 'broomFragment', amount: 10 }
+                    reward: { type: 'broomFragment', amount: 5 }
                 }
             ],
             potions: [
                 {
-                    id: 'potions_10',
+                    id: 'potions_5',
                     icon: '🧪',
                     name: { zh: '魔药学徒', en: 'Potion Apprentice' },
-                    desc: { zh: '完成10个魔药课', en: 'Complete 10 potion lessons' },
-                    requirement: 10,
+                    desc: { zh: '完成5个魔药课', en: 'Complete 5 potion lessons' },
+                    requirement: 5,
                     unit: 'potions',
                     reward: { type: 'potion', id: 'potion_health', amount: 2, name: { zh: '生命药水', en: 'Health Potion' }, icon: '❤️' }
                 },
@@ -937,7 +937,7 @@
             // 检查魔药成就
             achievements.potions.forEach(achievement => {
                 let currentProgress = 0;
-                if (achievement.id === 'potions_10' || achievement.id === 'potions_50') {
+                if (achievement.id === 'potions_5' || achievement.id === 'potions_50') {
                     currentProgress = progress.potionsCompleted;
                 } else if (achievement.id === 'potions_streak_5') {
                     currentProgress = progress.potionsStreak;
@@ -1059,7 +1059,7 @@
                 currentProgress = progress.learningMinutes;
             } else if (achievement.id.startsWith('flying_')) {
                 currentProgress = progress.flyingConsecutive;
-            } else if (achievement.id === 'potions_10' || achievement.id === 'potions_50') {
+            } else if (achievement.id === 'potions_5' || achievement.id === 'potions_50') {
                 currentProgress = progress.potionsCompleted;
             } else if (achievement.id === 'potions_streak_5') {
                 currentProgress = progress.potionsStreak;
@@ -1086,8 +1086,8 @@
             if (reward.type === 'broomFragment') {
                 rewardDisplay = `
                     <span class="reward-icon">🧹</span>
-                    <span class="reward-text-zh">奖励: ${reward.amount} 飞天扫帚碎片 (10碎片可兑换500金加隆券，仅限兑换飞天扫帚)</span>
-                    <span class="reward-text-en">Reward: ${reward.amount} Broom Fragments (10 = 500 Galleon Voucher for Broomsticks only)</span>
+                    <span class="reward-text-zh">奖励: ${reward.amount} 飞天扫帚碎片 (50碎片可兑换500金加隆券，仅限兑换飞天扫帚)</span>
+                    <span class="reward-text-en">Reward: ${reward.amount} Broom Fragments (50 = 500 Galleon Voucher for Broomsticks only)</span>
                 `;
             } else if (reward.type === 'avatar') {
                 rewardDisplay = `

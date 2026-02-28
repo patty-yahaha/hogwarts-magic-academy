@@ -776,47 +776,64 @@
         let currentLang = localStorage.getItem('siteLanguage') || 'zh';
 
         // 老师好感度系统
-        const TEACHER_SYSTEM_KEY = 'hogwarts_teacher_system';
+        const MENTOR_AFFECTION_KEY = 'hogwarts_mentor_affection';
         const MINUTES_PER_AFFECTION_POINT = 10;
         const QUIZ_THRESHOLD_SCORE = 95;
         const QUIZ_MAX_ATTEMPTS = 3;
 
-        // 获取老师系统数据
-        function getTeacherSystemData() {
-            const data = localStorage.getItem(TEACHER_SYSTEM_KEY);
+        // 麦格教授ID
+        const MCGONAGALL_ID = 'mcgonagall';
+
+        // 获取老师好感度数据
+        function getMentorAffectionData() {
+            const data = localStorage.getItem(MENTOR_AFFECTION_KEY);
             if (!data) {
                 // 初始化数据
                 const initialData = {
-                    affection: 0,
+                    [MCGONAGALL_ID]: 0,
                     totalStudyMinutes: 0,
                     lastStudyTime: Date.now(),
                     quizAttempts: {}, // 存储每个测验的完成次数 {quizId: count}
                     pageStartTime: Date.now() // 当前页面进入时间
                 };
-                localStorage.setItem(TEACHER_SYSTEM_KEY, JSON.stringify(initialData));
+                localStorage.setItem(MENTOR_AFFECTION_KEY, JSON.stringify(initialData));
                 return initialData;
             }
             return JSON.parse(data);
         }
 
-        // 保存老师系统数据
-        function saveTeacherSystemData(data) {
-            localStorage.setItem(TEACHER_SYSTEM_KEY, JSON.stringify(data));
+        // 保存老师好感度数据
+        function saveMentorAffectionData(data) {
+            localStorage.setItem(MENTOR_AFFECTION_KEY, JSON.stringify(data));
+        }
+
+        // 获取麦格教授好感度
+        function getMcGonagallAffection() {
+            const data = getMentorAffectionData();
+            return data[MCGONAGALL_ID] || 0;
+        }
+
+        // 增加麦格教授好感度
+        function addMcGonagallAffection(amount, source) {
+            const data = getMentorAffectionData();
+            const oldAffection = data[MCGONAGALL_ID] || 0;
+            data[MCGONAGALL_ID] = oldAffection + amount;
+            saveMentorAffectionData(data);
         }
 
         // 更新好感度显示
         function updateAffectionDisplay() {
-            const data = getTeacherSystemData();
+            const affection = getMcGonagallAffection();
             const affectionValue = document.getElementById('affectionValue');
             const affectionMessage = document.getElementById('affectionMessage');
 
             // 更新好感度数值
-            affectionValue.textContent = data.affection;
+            affectionValue.textContent = affection;
 
             // 根据好感度更新提示信息
             affectionMessage.className = 'affection-message';
 
-            if (data.affection < 10) {
+            if (affection < 10) {
                 affectionMessage.classList.add('low');
                 setAffectionMessage(
                     '你还需要继续努力哦',
@@ -824,7 +841,7 @@
                     'msg-low-zh',
                     'msg-low-en'
                 );
-            } else if (data.affection >= 20 && data.affection <= 50) {
+            } else if (affection >= 20 && affection <= 50) {
                 affectionMessage.classList.add('medium');
                 setAffectionMessage(
                     '你的表现很出色',
@@ -832,7 +849,7 @@
                     'msg-medium-zh',
                     'msg-medium-en'
                 );
-            } else if (data.affection > 50) {
+            } else if (affection > 50) {
                 affectionMessage.classList.add('high');
                 setAffectionMessage(
                     '你是我最优秀的学生！',
@@ -883,10 +900,8 @@
 
         // 增加好感度
         function addAffection(amount, source) {
-            const data = getTeacherSystemData();
-            const oldAffection = data.affection;
-            data.affection += amount;
-            saveTeacherSystemData(data);
+            const oldAffection = getMcGonagallAffection();
+            addMcGonagallAffection(amount, source);
 
             // 显示增加动画
             if (amount > 0) {
@@ -895,7 +910,7 @@
 
             updateAffectionDisplay();
 
-            console.log(`Affection increased from ${oldAffection} to ${data.affection} (${source})`);
+            console.log(`Affection increased from ${oldAffection} to ${getMcGonagallAffection()} (${source})`);
         }
 
         // 显示好感度增加动画
@@ -918,12 +933,12 @@
 
         // 检查学习时间并增加好感度
         function checkStudyTime() {
-            const data = getTeacherSystemData();
+            const data = getMentorAffectionData();
 
             // 如果是新页面加载，记录开始时间
             if (!data.pageStartTime) {
                 data.pageStartTime = Date.now();
-                saveTeacherSystemData(data);
+                saveMentorAffectionData(data);
                 return;
             }
 
@@ -940,7 +955,7 @@
                 // 更新总学习时间
                 data.totalStudyMinutes += sessionMinutes;
                 data.pageStartTime = now;
-                saveTeacherSystemData(data);
+                saveMentorAffectionData(data);
 
                 // 增加好感度
                 if (newAffectionPoints > 0) {
@@ -951,7 +966,7 @@
 
         // 测验完成后调用此函数
         function onQuizComplete(quizId, score, totalQuestions) {
-            const data = getTeacherSystemData();
+            const data = getMentorAffectionData();
 
             // 计算百分比分数
             const percentage = Math.round((score / totalQuestions) * 100);
@@ -966,7 +981,7 @@
 
                     // 更新尝试次数
                     data.quizAttempts[quizId] = attempts + 1;
-                    saveTeacherSystemData(data);
+                    saveMentorAffectionData(data);
                 } else {
                     console.log(`Quiz ${quizId} has reached max attempts (${QUIZ_MAX_ATTEMPTS}), no affection added`);
                 }
@@ -984,9 +999,9 @@
                 // 页面重新可见时检查学习时间
                 checkStudyTime();
                 // 重置页面开始时间
-                const data = getTeacherSystemData();
+                const data = getMentorAffectionData();
                 data.pageStartTime = Date.now();
-                saveTeacherSystemData(data);
+                saveMentorAffectionData(data);
             }
         });
 

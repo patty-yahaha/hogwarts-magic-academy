@@ -232,6 +232,58 @@
             text-align: center;
         }
 
+        /* 打包奖励横幅 */
+        .bundle-reward {
+            background: linear-gradient(145deg, rgba(39, 174, 96, 0.3), rgba(10, 20, 40, 0.98));
+            border: 3px solid #27ae60;
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 40px;
+            text-align: center;
+            display: none;
+        }
+
+        .bundle-reward.show {
+            display: block;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(39, 174, 96, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(39, 174, 96, 0.7); }
+        }
+
+        .bundle-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+
+        .bundle-reward-btn {
+            background: linear-gradient(145deg, #27ae60, #2ecc71);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bundle-reward-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.5);
+        }
+
+        .bundle-reward-btn:disabled {
+            background: linear-gradient(145deg, #666, #888);
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .daily-banner-title {
             font-family: 'Cinzel Decorative', cursive;
             font-size: 1.5rem;
@@ -296,6 +348,22 @@
                 </p>
             </div>
 
+            <!-- 打包奖励横幅 -->
+            <div class="bundle-reward" id="bundleReward">
+                <h3 class="bundle-title">
+                    <span class="bundle-zh">🎉 恭喜！完成所有今日任务！</span>
+                    <span class="bundle-en">🎉 Congratulations! All Daily Quests Completed!</span>
+                </h3>
+                <p style="color: #d4af37; margin-bottom: 15px;">
+                    <span class="bundle-desc-zh">打包奖励：30 金加隆</span>
+                    <span class="bundle-desc-en">Bundle Reward: 30 Galleons</span>
+                </p>
+                <button class="bundle-reward-btn" id="bundleClaimBtn" onclick="claimBundleReward()">
+                    <span class="claim-zh">领取打包奖励</span>
+                    <span class="claim-en">Claim Bundle Reward</span>
+                </button>
+            </div>
+
             <!-- 任务分类 -->
             <div class="quest-categories">
                 <button class="quest-category active" data-category="daily" onclick="filterQuests('daily')">
@@ -334,7 +402,7 @@
                         zh: '在魔法语言区学习15分钟',
                         en: 'Study 15 minutes in World Languages'
                     },
-                    reward: { zh: '15 金加隆', en: '15 Galleons' },
+                    reward: { zh: '任务奖励', en: 'Task Reward' },
                     type: 'study_time',
                     target: 15,
                     getProgress: () => parseInt(localStorage.getItem('todayStudyTime') || '0')
@@ -347,7 +415,7 @@
                         zh: '在飞行课中通过20根石柱',
                         en: 'Pass 20 pillars in Flying Class'
                     },
-                    reward: { zh: '10 金加隆', en: '10 Galleons' },
+                    reward: { zh: '任务奖励', en: 'Task Reward' },
                     type: 'flying_score',
                     target: 20,
                     getProgress: () => parseInt(localStorage.getItem('dailyFlyingPillars') || '0')
@@ -360,23 +428,10 @@
                         zh: '在魔药课中成功制作30个药水',
                         en: 'Brew 30 potions successfully'
                     },
-                    reward: { zh: '20 金加隆', en: '20 Galleons' },
+                    reward: { zh: '任务奖励', en: 'Task Reward' },
                     type: 'potions_count',
                     target: 30,
                     getProgress: () => parseInt(localStorage.getItem('dailyPotionsCount') || '0')
-                },
-                {
-                    id: 'daily_quiz_3',
-                    icon: '⚡',
-                    name: { zh: '知识测验', en: 'Knowledge Quiz' },
-                    description: {
-                        zh: '完成3次魔法测验',
-                        en: 'Complete 3 Magic Quizzes'
-                    },
-                    reward: { zh: '12 金加隆', en: '12 Galleons' },
-                    type: 'quiz_count',
-                    target: 3,
-                    getProgress: () => parseInt(localStorage.getItem('dailyQuizCount') || '0')
                 }
             ],
             weekly: [
@@ -499,7 +554,7 @@
                 localStorage.removeItem('dailyStudyTime');
                 localStorage.removeItem('dailyFlyingPillars');
                 localStorage.removeItem('dailyPotionsCount');
-                localStorage.removeItem('dailyQuizCount');
+                localStorage.removeItem('bundleRewardClaimed');
             }
 
             // 一次性初始化：为老玩家同步飞行进度
@@ -577,6 +632,25 @@
             const container = document.getElementById('questList');
             const completed = getQuestCompleted();
 
+            // 检查是否所有每日任务都已完成
+            const bundleClaimed = localStorage.getItem('bundleRewardClaimed') === 'true';
+            const allDailyCompleted = currentCategory === 'daily' &&
+                quests.every(q => completed[currentCategory].includes(q.id) || q.getProgress() >= q.target);
+
+            // 显示/隐藏打包奖励横幅
+            const bundleReward = document.getElementById('bundleReward');
+            const bundleClaimBtn = document.getElementById('bundleClaimBtn');
+
+            if (currentCategory === 'daily' && bundleReward) {
+                if (allDailyCompleted && !bundleClaimed) {
+                    bundleReward.classList.add('show');
+                    bundleClaimBtn.disabled = false;
+                } else {
+                    bundleReward.classList.remove('show');
+                    bundleClaimBtn.disabled = true;
+                }
+            }
+
             if (quests.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state" style="grid-column: 1 / -1;">
@@ -617,21 +691,35 @@
                                 <span class="progress-en">${progress} / ${quest.target}</span>
                             </div>
                         </div>
-                        ${!isCompleted && progressPercent >= 100 ? `
-                            <button class="quest-btn claim-btn" onclick="claimQuest('${quest.id}')">
-                                <span class="btn-zh">领取奖励</span>
-                                <span class="btn-en">Claim Reward</span>
-                            </button>
-                        ` : isCompleted ? `
-                            <button class="quest-btn" disabled>
-                                <span class="btn-zh">已完成 ✓</span>
-                                <span class="btn-en">Completed ✓</span>
-                            </button>
+                        ${currentCategory === 'daily' ? `
+                            ${isCompleted ? `
+                                <button class="quest-btn" disabled>
+                                    <span class="btn-zh">已完成 ✓</span>
+                                    <span class="btn-en">Completed ✓</span>
+                                </button>
+                            ` : `
+                                <button class="quest-btn" disabled>
+                                    <span class="btn-zh">进行中...</span>
+                                    <span class="btn-en">In Progress...</span>
+                                </button>
+                            `}
                         ` : `
-                            <button class="quest-btn" disabled>
-                                <span class="btn-zh">进行中...</span>
-                                <span class="btn-en">In Progress...</span>
-                            </button>
+                            ${!isCompleted && progressPercent >= 100 ? `
+                                <button class="quest-btn claim-btn" onclick="claimQuest('${quest.id}')">
+                                    <span class="btn-zh">领取奖励</span>
+                                    <span class="btn-en">Claim Reward</span>
+                                </button>
+                            ` : isCompleted ? `
+                                <button class="quest-btn" disabled>
+                                    <span class="btn-zh">已完成 ✓</span>
+                                    <span class="btn-en">Completed ✓</span>
+                                </button>
+                            ` : `
+                                <button class="quest-btn" disabled>
+                                    <span class="btn-zh">进行中...</span>
+                                    <span class="btn-en">In Progress...</span>
+                                </button>
+                            `}
                         `}
                     </div>
                 `;
@@ -694,6 +782,27 @@
             alert(currentLang === 'zh' ?
                 `🎉 恭喜完成！\n\n你获得了：${quest.reward.zh}` :
                 `🎉 Congratulations!\n\nYou received: ${quest.reward.en}`);
+
+            renderQuests();
+        }
+
+        // 领取打包奖励
+        function claimBundleReward() {
+            const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            const bundleReward = 30;
+
+            // 给予30金币
+            localStorage.setItem('hogwartsCoins', (currentCoins + bundleReward).toString());
+
+            // 更新累计金币
+            updateCumulativeCoins(bundleReward);
+
+            // 标记打包奖励已领取
+            localStorage.setItem('bundleRewardClaimed', 'true');
+
+            alert(currentLang === 'zh' ?
+                `🎉 恭喜完成所有今日任务！\n\n你获得了打包奖励：30 金加隆` :
+                `🎉 Congratulations on completing all daily quests!\n\nYou received bundle reward: 30 Galleons`);
 
             renderQuests();
         }
