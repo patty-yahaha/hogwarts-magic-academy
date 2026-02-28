@@ -1553,6 +1553,14 @@
             const lastVisitDate = localStorage.getItem('campLastVisitDate');
             const today = getTodayDate();
 
+            // 检查留言板未读计数
+            const messageBoardUnread = parseInt(localStorage.getItem('messageBoardUnread') || '0');
+            if (messageBoardUnread > 0) {
+                badge.textContent = messageBoardUnread > 99 ? '99+' : messageBoardUnread;
+                badge.style.display = 'flex';
+                return;
+            }
+
             // 简化版：检查是否有新留言（通过比较上次访问日期）
             const storedMessageCount = localStorage.getItem('lastMessageCount');
             if (storedMessageCount) {
@@ -1824,6 +1832,20 @@
             if (event.data && event.data.type === 'newMail') {
                 updateMailBadge();
                 showNewMailNotification();
+            }
+
+            // 监听留言板未读消息更新事件
+            if (event.data && event.data.type === 'updateMessageBoardBadge') {
+                const count = event.data.count || 0;
+                const badge = document.getElementById('campBadge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.textContent = count > 99 ? '99+' : count;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
             }
         });
 

@@ -1212,86 +1212,62 @@
                 const lastVisitTime = localStorage.getItem('messageBoardLastVisitTime');
                 const currentTime = Date.now();
 
-                if (!lastVisitTime) {
-                    localStorage.setItem('messageBoardLastVisitTime', currentTime.toString());
-                    return;
-                }
+                // 计算新的未读数量
+                let newUnread = 0;
 
-                const lastVisit = parseInt(lastVisitTime);
-                localStorage.setItem('messageBoardLastVisitTime', currentTime.toString());
-            }
-
-            // 检查并更新未读计数
-            async function checkAndUpdateUnread() {
-                if (currentUser.isGuest) return;
-
-                try {
-                    // 获取最后访问时间
-                    const lastVisitTime = parseInt(localStorage.getItem('messageBoardLastVisitTime') || '0');
+                if (lastVisitTime) {
+                    // 有上次访问时间，计算新内容
+                    const lastVisit = parseInt(lastVisitTime);
 
                     // 获取所有留言
-                    const { data: messages, error } = await supabase
+                    supabase
                         .from('messages')
                         .select('id, created_at, user_id')
-                        .order('created_at', { ascending: false });
+                        .then(({ data: messages }) => {
+                            if (!messages) return;
 
-                    if (error || !messages) return;
+                            // 获取自己发的留言ID列表
+                            const myMessageIds = messages
+                                .filter(msg => msg.user_id === currentUser.id)
+                                .map(msg => msg.id);
 
-                    // 获取自己的留言ID
-                    const { data: userLikes } = await supabase
-                        .from('message_likes')
-                        .select('message_id')
-                        .eq('user_id', currentUser.id);
+                            // 获取收到的点赞和回复，计算未读
+                            Promise.all([
+                                supabase.from('message_likes').select('message_id, created_at').in('message_id', myMessageIds).neq('user_id', currentUser.id),
+                                supabase.from('message_replies').select('message_id, created_at').in('message_id', myMessageIds).neq('user_id', currentUser.id)
+                            ]).then(([likesResult, repliesResult]) => {
+                                if (likesResult.data) {
+                                    likesResult.data.forEach(like => {
+                                        const likeTime = new Date(like.created_at).getTime();
+                                        if (likeTime > lastVisit) newUnread++;
+                                    });
+                                }
+                                if (repliesResult.data) {
+                                    repliesResult.data.forEach(reply => {
+                                        const replyTime = new Date(reply.created_at).getTime();
+                                        if (replyTime > lastVisit) newUnread++;
+                                    });
+                                }
 
-                    // 获取收到的回复
-                    const { data: receivedReplies } = await supabase
-                        .from('message_replies')
-                        .select('message_id, user_id')
-                        .neq('user_id', currentUser.id);
+                                // 新留言（别人发的）
+                                messages.forEach(msg => {
+                                    if (msg.user_id !== currentUser.id) {
+                                        const msgTime = new Date(msg.created_at).getTime();
+                                        if (msgTime > lastVisit) newUnread++;
+                                    }
+                                });
 
-                    let unreadCount = 0;
+                                // 更新未读计数
+                                localStorage.setItem('messageBoardUnread', newUnread.toString());
 
-                    // 计算新留言（不是自己发的，且在上次访问之后）
-                    messages.forEach(msg => {
-                        if (msg.user_id !== currentUser.id) {
-                            const msgTime = new Date(msg.created_at).getTime();
-                            if (msgTime > lastVisitTime) {
-                                unreadCount++;
-                            }
-                        }
-                    });
-
-                    // 计算新点赞（别人赞了自己的留言）
-                    userLikes.forEach(like => {
-                        const likeTime = new Date(like.created_at).getTime();
-                        if (likeTime > lastVisitTime) {
-                            unreadCount++;
-                        }
-                    });
-
-                    // 计算新回复（别人回复了自己的留言）
-                    // 需要获取自己发的留言ID
-                    const myMessages = messages.filter(msg => msg.user_id === currentUser.id).map(msg => msg.id);
-                    receivedReplies.forEach(reply => {
-                        if (myMessages.includes(reply.message_id)) {
-                            const replyTime = new Date(reply.created_at).getTime();
-                            if (replyTime > lastVisitTime) {
-                                unreadCount++;
-                            }
-                        }
-                    });
-
-                    // 更新本地存储
-                    const currentUnread = parseInt(localStorage.getItem('messageBoardUnread') || '0');
-                    const newUnread = currentUnread + unreadCount;
-                    localStorage.setItem('messageBoardUnread', newUnread.toString());
-
-                    // 更新角标（如果在营地页面）
-                    window.postMessage({ type: 'updateMessageBoardBadge', count: newUnread });
-
-                } catch (error) {
-                    console.error('检查未读状态失败:', error);
+                                // 更新角标
+                                window.postMessage({ type: 'updateMessageBoardBadge', count: newUnread });
+                            });
+                        });
                 }
+
+                // 更新访问时间
+                localStorage.setItem('messageBoardLastVisitTime', currentTime.toString());
             }
 
             // 初始化
@@ -1300,9 +1276,6 @@
             initPermissions();
             initUnreadTracking();
             loadMessages();
-
-            // 页面加载完成后检查未读
-            setTimeout(checkAndUpdateUnread, 2000);
         })();
     </script>
 </body>
