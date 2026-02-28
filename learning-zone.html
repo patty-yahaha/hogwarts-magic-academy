@@ -35,6 +35,186 @@
             font-style: italic;
         }
 
+        /* 老师卡片 */
+        .teacher-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        .teacher-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+            animation: teacherGlow 6s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes teacherGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .teacher-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a3f35, #2d261f);
+            border: 4px solid #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .teacher-avatar::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            animation: avatarPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes avatarPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .teacher-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .teacher-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            color: #d4af37;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .teacher-affection-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .teacher-affection {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #c9a830;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .affection-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .affection-heart {
+            color: #ff6b6b;
+            animation: heartBeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* 好感度提示框 */
+        .affection-message {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            max-width: 400px;
+        }
+
+        .affection-message.low {
+            background: rgba(255, 152, 0, 0.15);
+            border: 2px solid rgba(255, 152, 0, 0.4);
+            color: #ffb74d;
+        }
+
+        .affection-message.medium {
+            background: rgba(76, 175, 80, 0.15);
+            border: 2px solid rgba(76, 175, 80, 0.4);
+            color: #81c784;
+        }
+
+        .affection-message.high {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(212, 175, 55, 0.15));
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            animation: highAffectionGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes highAffectionGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.5); }
+        }
+
+        .teacher-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #d4af37, #c9a830);
+            color: #1a0f00;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+        }
+
+        /* 好感度增加动画 */
+        .affection-increase {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #4caf50;
+            font-weight: bold;
+            animation: floatUp 1.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(1.5);
+            }
+        }
+
         .zone-sections {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -405,6 +585,32 @@
                     <span class="subtitle-text-zh">选择你的学习方式</span>
                     <span class="subtitle-text-en">Choose Your Learning Path</span>
                 </p>
+
+                <!-- 老师卡片 -->
+                <div class="teacher-card" id="teacherCard">
+                    <span class="teacher-badge">Professor</span>
+                    <div class="teacher-avatar" id="teacherAvatar">
+                        👨‍🏫
+                    </div>
+                    <div class="teacher-info">
+                        <div class="teacher-name">
+                            <span class="name-zh">麦格教授</span>
+                            <span class="name-en">Professor McGonagall</span>
+                        </div>
+                        <div class="teacher-affection-container">
+                            <div class="teacher-affection">
+                                <span class="affection-heart">❤️</span>
+                                <span class="msg-zh">好感度：</span>
+                                <span class="msg-en">Affection:</span>
+                                <span class="affection-value" id="affectionValue">0</span>
+                            </div>
+                        </div>
+                        <div class="affection-message" id="affectionMessage">
+                            <span class="msg-low-zh">你还需要继续努力哦</span>
+                            <span class="msg-low-en">You need to keep working hard</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 学习功能区域 -->
@@ -569,6 +775,226 @@
         // 语言切换
         let currentLang = localStorage.getItem('siteLanguage') || 'zh';
 
+        // 老师好感度系统
+        const TEACHER_SYSTEM_KEY = 'hogwarts_teacher_system';
+        const MINUTES_PER_AFFECTION_POINT = 10;
+        const QUIZ_THRESHOLD_SCORE = 95;
+        const QUIZ_MAX_ATTEMPTS = 3;
+
+        // 获取老师系统数据
+        function getTeacherSystemData() {
+            const data = localStorage.getItem(TEACHER_SYSTEM_KEY);
+            if (!data) {
+                // 初始化数据
+                const initialData = {
+                    affection: 0,
+                    totalStudyMinutes: 0,
+                    lastStudyTime: Date.now(),
+                    quizAttempts: {}, // 存储每个测验的完成次数 {quizId: count}
+                    pageStartTime: Date.now() // 当前页面进入时间
+                };
+                localStorage.setItem(TEACHER_SYSTEM_KEY, JSON.stringify(initialData));
+                return initialData;
+            }
+            return JSON.parse(data);
+        }
+
+        // 保存老师系统数据
+        function saveTeacherSystemData(data) {
+            localStorage.setItem(TEACHER_SYSTEM_KEY, JSON.stringify(data));
+        }
+
+        // 更新好感度显示
+        function updateAffectionDisplay() {
+            const data = getTeacherSystemData();
+            const affectionValue = document.getElementById('affectionValue');
+            const affectionMessage = document.getElementById('affectionMessage');
+
+            // 更新好感度数值
+            affectionValue.textContent = data.affection;
+
+            // 根据好感度更新提示信息
+            affectionMessage.className = 'affection-message';
+
+            if (data.affection < 10) {
+                affectionMessage.classList.add('low');
+                setAffectionMessage(
+                    '你还需要继续努力哦',
+                    'You need to keep working hard',
+                    'msg-low-zh',
+                    'msg-low-en'
+                );
+            } else if (data.affection >= 20 && data.affection <= 50) {
+                affectionMessage.classList.add('medium');
+                setAffectionMessage(
+                    '你的表现很出色',
+                    'Your performance is excellent',
+                    'msg-medium-zh',
+                    'msg-medium-en'
+                );
+            } else if (data.affection > 50) {
+                affectionMessage.classList.add('high');
+                setAffectionMessage(
+                    '你是我最优秀的学生！',
+                    'You are my most excellent student!',
+                    'msg-high-zh',
+                    'msg-high-en'
+                );
+            } else {
+                // 10-19之间，不显示提示
+                affectionMessage.style.display = 'none';
+            }
+        }
+
+        // 设置好感度消息
+        function setAffectionMessage(zhText, enText, zhClass, enClass) {
+            const messageDiv = document.getElementById('affectionMessage');
+            messageDiv.style.display = 'block';
+
+            // 检查是否已有消息元素
+            let zhElement = messageDiv.querySelector('.' + zhClass);
+            let enElement = messageDiv.querySelector('.' + enClass);
+
+            if (!zhElement) {
+                // 移除旧的消息元素
+                messageDiv.innerHTML = '';
+                // 创建新的消息元素
+                zhElement = document.createElement('span');
+                zhElement.className = zhClass;
+                zhElement.textContent = zhText;
+
+                enElement = document.createElement('span');
+                enElement.className = enClass;
+                enElement.textContent = enText;
+
+                messageDiv.appendChild(zhElement);
+                messageDiv.appendChild(enElement);
+            }
+
+            // 根据语言显示
+            if (currentLang === 'zh') {
+                zhElement.style.display = '';
+                enElement.style.display = 'none';
+            } else {
+                zhElement.style.display = 'none';
+                enElement.style.display = '';
+            }
+        }
+
+        // 增加好感度
+        function addAffection(amount, source) {
+            const data = getTeacherSystemData();
+            const oldAffection = data.affection;
+            data.affection += amount;
+            saveTeacherSystemData(data);
+
+            // 显示增加动画
+            if (amount > 0) {
+                showAffectionIncrease(amount);
+            }
+
+            updateAffectionDisplay();
+
+            console.log(`Affection increased from ${oldAffection} to ${data.affection} (${source})`);
+        }
+
+        // 显示好感度增加动画
+        function showAffectionIncrease(amount) {
+            const avatar = document.getElementById('teacherAvatar');
+            const increaseDiv = document.createElement('div');
+            increaseDiv.className = 'affection-increase';
+            increaseDiv.textContent = `+${amount}`;
+
+            const rect = avatar.getBoundingClientRect();
+            increaseDiv.style.left = (rect.left + rect.width / 2 - 20) + 'px';
+            increaseDiv.style.top = rect.top + 'px';
+
+            document.body.appendChild(increaseDiv);
+
+            setTimeout(() => {
+                increaseDiv.remove();
+            }, 1500);
+        }
+
+        // 检查学习时间并增加好感度
+        function checkStudyTime() {
+            const data = getTeacherSystemData();
+
+            // 如果是新页面加载，记录开始时间
+            if (!data.pageStartTime) {
+                data.pageStartTime = Date.now();
+                saveTeacherSystemData(data);
+                return;
+            }
+
+            // 计算从上次检查到现在的时间（毫秒）
+            const now = Date.now();
+            const sessionTime = now - data.pageStartTime;
+            const sessionMinutes = Math.floor(sessionTime / 60000);
+
+            if (sessionMinutes > 0) {
+                // 计算可以增加的好感度
+                const newAffectionPoints = Math.floor((data.totalStudyMinutes + sessionMinutes) / MINUTES_PER_AFFECTION_POINT)
+                    - Math.floor(data.totalStudyMinutes / MINUTES_PER_AFFECTION_POINT);
+
+                // 更新总学习时间
+                data.totalStudyMinutes += sessionMinutes;
+                data.pageStartTime = now;
+                saveTeacherSystemData(data);
+
+                // 增加好感度
+                if (newAffectionPoints > 0) {
+                    addAffection(newAffectionPoints, 'Study time: ' + sessionMinutes + ' minutes');
+                }
+            }
+        }
+
+        // 测验完成后调用此函数
+        function onQuizComplete(quizId, score, totalQuestions) {
+            const data = getTeacherSystemData();
+
+            // 计算百分比分数
+            const percentage = Math.round((score / totalQuestions) * 100);
+
+            if (percentage >= QUIZ_THRESHOLD_SCORE) {
+                // 检查该测验的完成次数
+                const attempts = data.quizAttempts[quizId] || 0;
+
+                if (attempts < QUIZ_MAX_ATTEMPTS) {
+                    // 增加好感度
+                    addAffection(3, `Quiz ${quizId} score: ${percentage}%`);
+
+                    // 更新尝试次数
+                    data.quizAttempts[quizId] = attempts + 1;
+                    saveTeacherSystemData(data);
+                } else {
+                    console.log(`Quiz ${quizId} has reached max attempts (${QUIZ_MAX_ATTEMPTS}), no affection added`);
+                }
+            } else {
+                console.log(`Quiz ${quizId} score ${percentage}% is below threshold (${QUIZ_THRESHOLD_SCORE}%), no affection added`);
+            }
+        }
+
+        // 每分钟检查一次学习时间
+        setInterval(checkStudyTime, 60000);
+
+        // 页面可见性改变时也检查（避免用户切屏累积时间）
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // 页面重新可见时检查学习时间
+                checkStudyTime();
+                // 重置页面开始时间
+                const data = getTeacherSystemData();
+                data.pageStartTime = Date.now();
+                saveTeacherSystemData(data);
+            }
+        });
+
+        // 页面离开前检查
+        window.addEventListener('beforeunload', function() {
+            checkStudyTime();
+        });
+
         function updateLanguage() {
             // 使用更通用的选择器来捕获所有语言元素
             const zhElements = document.querySelectorAll('[class*="-zh"]');
@@ -604,6 +1030,9 @@
                 if (expandIconZh) expandIconZh.style.display = 'none';
                 if (expandIconEn) expandIconEn.style.display = isExpanded ? '' : 'none';
             }
+
+            // 更新好感度消息
+            updateAffectionDisplay();
         }
 
         // 展开或收起书籍列表
@@ -750,6 +1179,10 @@
 
         // 初始化语言显示
         updateLanguage();
+
+        // 初始化好感度系统
+        updateAffectionDisplay();
+        checkStudyTime();
     </script>
 </body>
 </html>

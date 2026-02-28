@@ -984,8 +984,45 @@
                     localStorage.setItem('studyTime', studyTime.toString());
                     // 同时更新今日学习时间
                     saveTodayStudyTime(studyTime);
+                    // 更新老师好感度系统
+                    updateTeacherSystem();
                 }
             }, 1000);
+        }
+
+        // 更新老师好感度系统（基于学习时间）
+        function updateTeacherSystem() {
+            const TEACHER_SYSTEM_KEY = 'hogwarts_teacher_system';
+            const MINUTES_PER_AFFECTION_POINT = 10;
+
+            let data = localStorage.getItem(TEACHER_SYSTEM_KEY);
+            if (!data) return;
+
+            data = JSON.parse(data);
+
+            // 计算累积学习分钟数（使用studyTime变量）
+            const totalMinutes = Math.floor(studyTime / 60);
+
+            // 计算当前应该得到的好感度
+            const expectedAffectionFromTime = Math.floor(totalMinutes / MINUTES_PER_AFFECTION_POINT);
+
+            // 记录上次计算的总分钟数
+            const lastRecordedMinutes = data.lastRecordedMinutes || 0;
+
+            // 计算新增加的好感度
+            const newAffectionPoints = Math.floor(totalMinutes / MINUTES_PER_AFFECTION_POINT) -
+                                    Math.floor(lastRecordedMinutes / MINUTES_PER_AFFECTION_POINT);
+
+            // 更新好感度
+            if (newAffectionPoints > 0) {
+                const oldAffection = data.affection || 0;
+                data.affection = oldAffection + newAffectionPoints;
+                data.lastRecordedMinutes = totalMinutes;
+
+                localStorage.setItem(TEACHER_SYSTEM_KEY, JSON.stringify(data));
+
+                console.log(`Teacher affection increased by ${newAffectionPoints} from study time. Total: ${data.affection}`);
+            }
         }
 
         // 页面可见性变化时暂停/恢复计时器
