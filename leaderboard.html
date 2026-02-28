@@ -433,10 +433,14 @@
             const container = document.getElementById(`${type}Leaderboard`);
             const currentUserId = localStorage.getItem('userId');
 
+            console.log(`加载${type === 'coins' ? '金币' : '等级'}排行榜...`);
+            console.log('当前用户ID:', currentUserId);
+
             try {
                 const isGuest = localStorage.getItem('isGuest') === 'true';
 
                 if (isGuest || !currentUserId) {
+                    console.log('用户未登录');
                     container.innerHTML = `
                         <div class="login-prompt">
                             <div class="lang-zh">请先登录查看排行榜</div>
@@ -452,14 +456,18 @@
 
                 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+                console.log('开始查询数据库...');
                 const { data: profiles, error } = await sb
                     .from('player_profiles')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                    .select('*');
 
                 if (error) {
+                    console.error('数据库查询错误:', error);
                     throw error;
                 }
+
+                console.log('查询到的用户数据:', profiles);
+                console.log('用户数量:', profiles ? profiles.length : 0);
 
                 if (!profiles || profiles.length === 0) {
                     container.innerHTML = `
@@ -479,17 +487,19 @@
                 }
 
                 sortedProfiles = sortedProfiles.slice(0, 50);
+                console.log('排序后的前50名:', sortedProfiles);
 
                 container.innerHTML = sortedProfiles.map((profile, index) => {
                     const rank = index + 1;
                     const isCurrentUser = profile.user_id === currentUserId;
+                    const displayName = profile.nickname || profile.username || '匿名巫师';
 
                     return `
                         <div class="leaderboard-item rank-${rank <= 3 ? rank : ''} ${isCurrentUser ? 'current-user' : ''}">
                             <div class="rank-number">${rank}</div>
                             <div class="player-avatar">${profile.avatar || '🧙'}</div>
                             <div class="player-info">
-                                <div class="player-name">${profile.nickname || '匿名巫师'}</div>
+                                <div class="player-name">${displayName}</div>
                                 <div class="player-stats">
                                     ${type === 'coins' ? `
                                         <div class="stat-item">
