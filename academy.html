@@ -1290,11 +1290,17 @@
 
             if (letter.reward && !letter.reward.claimed) {
                 rewardDiv.style.display = 'block';
-                if (letter.reward.type === 'decoration' || letter.reward.type === 'inventory') {
+                if (letter.reward.type === 'decoration') {
+                    const item = letter.reward.decoration;
+                    const rewardTypeText = currentLang === 'zh' ? '房间装饰' : 'Room Decoration';
+                    document.getElementById('letterRewardText').innerHTML = `
+                        <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
+                        <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
+                    `;
+                    claimBtn.style.display = 'inline-block';
+                } else if (letter.reward.type === 'inventory') {
                     const item = letter.reward.item;
-                    const rewardTypeText = letter.reward.type === 'decoration' ?
-                        (currentLang === 'zh' ? '房间装饰' : 'Room Decoration') :
-                        (currentLang === 'zh' ? '背包物品' : 'Inventory Item');
+                    const rewardTypeText = currentLang === 'zh' ? '背包物品' : 'Inventory Item';
                     document.getElementById('letterRewardText').innerHTML = `
                         <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
                         <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
@@ -1341,15 +1347,15 @@
             if (!letter.reward || letter.reward.claimed) return;
 
             if (letter.reward.type === 'decoration') {
-                const item = letter.reward.item;
+                const decoration = letter.reward.decoration;
                 // 添加到房间装饰
-                addRoomDecoration(item);
+                addRoomDecoration(decoration);
                 letter.reward.claimed = true;
                 saveLetters(letters);
 
                 alert(currentLang === 'zh' ?
-                    `🎉 你收到了：${item.nameZh}！\n\n已添加到你的房间装饰中，去个人资料看看吧！` :
-                    `🎉 You received: ${item.nameEn}!\n\nAdded to your room decorations, check your profile!`);
+                    `🎉 你收到了：${decoration.nameZh}！\n\n已添加到道具背包，去个人资料 → 房间标签 → 从道具背包拖动到房间！` :
+                    `🎉 You received: ${decoration.nameEn}!\n\nAdded to inventory, go to Profile → Room Tab → Drag from inventory to room!`);
 
                 closeLetter();
             } else if (letter.reward.type === 'inventory') {
