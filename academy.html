@@ -1817,6 +1817,16 @@
                 }
             }, 5000);
         }
+
+        // ==================== 监听其他页面的事件 ====================
+        window.addEventListener('message', function(event) {
+            // 监听留言板的新邮件事件
+            if (event.data && event.data.type === 'newMail') {
+                updateMailBadge();
+                showNewMailNotification();
+            }
+        });
+
     </script>
 </body>
 </html>

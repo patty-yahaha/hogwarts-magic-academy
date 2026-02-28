@@ -873,6 +873,18 @@
                 const isLiked = likedMessages.has(messageId);
 
                 try {
+                    // 先获取这条留言的信息（包括作者ID）
+                    const { data: message, error: msgError } = await supabase
+                        .from('messages')
+                        .select('*')
+                        .eq('id', messageId)
+                        .single();
+
+                    if (msgError || !message) {
+                        showError((currentLang === 'zh' ? '获取留言信息失败' : 'Failed to get message info'));
+                        return;
+                    }
+
                     if (isLiked) {
                         // 取消点赞
                         const { error } = await supabase
@@ -899,6 +911,20 @@
 
                         if (!error) {
                             likedMessages.add(messageId);
+
+                            // 如果点赞者不是留言作者，发送邮件通知
+                            if (message.user_id && message.user_id !== currentUser.id) {
+                                sendMailNotification(message.user_id, 'ANNOUNCEMENT', {
+                                    title: {
+                                        zh: '❤️ 你的留言收到了新的点赞！',
+                                        en: '❤️ Your message received a new like!'
+                                    },
+                                    body: {
+                                        zh: `亲爱的 ${message.user_nickname || '巫师'}，\n\n${currentUser.nickname} 赞了你的留言！\n\n"${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}"\n\n✨ 继续保持精彩发言吧！\n\n你的，霍格沃茨猫头鹰`,
+                                        en: `Dear ${message.user_nickname || 'Wizard'},\n\n${currentUser.nickname} liked your message!\n\n"${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}"\n\n✨ Keep the great posts coming!\n\nYours, Hogwarts Owl`
+                                    }
+                                });
+                            }
                         } else {
                             console.error('Like error:', error);
                             showError((currentLang === 'zh' ? '点赞失败：' : 'Like failed: ') + error.message);
@@ -910,7 +936,7 @@
                     loadMessages();
                 } catch (error) {
                     console.error('Like toggle error:', error);
-                    showError(currentLang === 'zh' ? '操作失败，请重试' : 'Action failed, please try again');
+                    showError((currentLang === 'zh' ? '操作失败，请重试' : 'Action failed, please try again');
                 }
             };
 
@@ -980,6 +1006,18 @@
                 }
 
                 try {
+                    // 先获取这条留言的信息
+                    const { data: message, error: msgError } = await supabase
+                        .from('messages')
+                        .select('*')
+                        .eq('id', messageId)
+                        .single();
+
+                    if (msgError || !message) {
+                        showError((currentLang === 'zh' ? '获取留言信息失败' : 'Failed to get message info'));
+                        return;
+                    }
+
                     const { data, error } = await supabase
                         .from('message_replies')
                         .insert([{
@@ -997,6 +1035,21 @@
                         showError((currentLang === 'zh' ? '回复失败：' : 'Reply failed: ') + error.message);
                     } else {
                         showSuccess(currentLang === 'zh' ? '回复成功！' : 'Reply posted!');
+
+                        // 如果回复者不是留言作者，发送邮件通知
+                        if (message.user_id && message.user_id !== currentUser.id) {
+                            sendMailNotification(message.user_id, 'ANNOUNCEMENT', {
+                                title: {
+                                    zh: '💬 你的留言收到了新的回复！',
+                                    en: '💬 Your message received a new reply!'
+                                },
+                                body: {
+                                    zh: `亲爱的 ${message.user_nickname || '巫师'}，\n\n${currentUser.nickname} 回复了你的留言！\n\n"${replyContent.substring(0, 60)}${replyContent.length > 60 ? '...' : ''}"\n\n💬 快来看看他们的回复吧！\n\n你的，霍格沃茨猫头鹰`,
+                                    en: `Dear ${message.user_nickname || 'Wizard'},\n\n${currentUser.nickname} replied to your message!\n\n"${replyContent.substring(0, 60)}${replyContent.length > 60 ? '...' : ''}"\n\n💬 Come check out their reply!\n\nYours, Hogwarts Owl`
+                                }
+                            });
+                        }
+
                         cancelReply(messageId);
                         loadMessages(); // 重新加载以显示新回复
                     }
@@ -1124,6 +1177,33 @@
                     particle.style.top = Math.random() * 100 + '%';
                     particle.style.animationDelay = Math.random() * 5 + 's';
                     container.appendChild(particle);
+                }
+            }
+
+            // ========== 邮件通知系统 ==========
+            // 发送邮件通知
+            function sendMailNotification(targetUserId, type, content) {
+                try {
+                    const letters = JSON.parse(localStorage.getItem('hogwartsMailbox') || '[]');
+
+                    const newLetter = {
+                        id: 'letter_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        type: type,
+                        date: new Date().toISOString(),
+                        read: false,
+                        title: content.title,
+                        body: content.body,
+                        reward: null
+                    };
+
+                    letters.unshift(newLetter);
+                    localStorage.setItem('hogwartsMailbox', JSON.stringify(letters));
+
+                    // 发送通知以更新主页的邮件角标
+                    window.postMessage({ type: 'newMail' });
+
+                } catch (error) {
+                    console.error('发送邮件通知失败:', error);
                 }
             }
 
