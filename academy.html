@@ -1761,6 +1761,67 @@
             }
         });
 
+        // ==================== 金加隆自动同步 ====================
+        // 自动将 localStorage 中的金加隆同步到数据库
+        async function autoSyncCoins() {
+            const userId = localStorage.getItem('userId');
+            const isGuest = localStorage.getItem('isGuest') === 'true';
+
+            // 只同步登录用户的数据
+            if (!userId || isGuest) {
+                return;
+            }
+
+            try {
+                const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+                const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+                const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+                const localCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+
+                // 读取数据库中的当前金加隆
+                const { data: profile, error } = await sb
+                    .from('player_profiles')
+                    .select('coins')
+                    .eq('id', userId)
+                    .single();
+
+                if (error) {
+                    console.log('⏭️ 金加隆同步：无法读取数据库（跳过）');
+                    return;
+                }
+
+                if (!profile) {
+                    console.log('⏭️ 金加隆同步：用户资料不存在（跳过）');
+                    return;
+                }
+
+                const dbCoins = profile.coins || 0;
+
+                // 如果本地金加隆与数据库不同，则更新数据库
+                if (localCoins !== dbCoins) {
+                    const { error: updateError } = await sb
+                        .from('player_profiles')
+                        .update({ coins: localCoins })
+                        .eq('id', userId);
+
+                    if (updateError) {
+                        console.log('⏭️ 金加隆同步：更新失败（跳过）', updateError.message);
+                    } else {
+                        console.log(`✅ 金加隆已同步：${dbCoins} → ${localCoins}`);
+                    }
+                } else {
+                    console.log('✅ 金加隆已是最新的');
+                }
+            } catch (error) {
+                // 同步失败不影响页面功能，只记录日志
+                console.log('⏭️ 金加隆同步：暂时跳过');
+            }
+        }
+
+        // 在页面加载时自动同步金加隆
+        autoSyncCoins();
+
         // 每次切换语言时更新用户状态栏
         const originalUpdateLanguage = updateLanguage;
         updateLanguage = function() {

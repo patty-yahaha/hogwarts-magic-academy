@@ -936,7 +936,7 @@
                     loadMessages();
                 } catch (error) {
                     console.error('Like toggle error:', error);
-                    showError((currentLang === 'zh' ? '操作失败，请重试' : 'Action failed, please try again');
+                    showError((currentLang === 'zh' ? '操作失败，请重试' : 'Action failed, please try again'));
                 }
             };
 
@@ -1209,6 +1209,13 @@
 
             // 初始化留言板未读追踪
             function initUnreadTracking() {
+                // 游客不需要追踪未读
+                if (currentUser.isGuest) {
+                    localStorage.setItem('messageBoardLastVisitTime', Date.now().toString());
+                    localStorage.setItem('messageBoardUnread', '0');
+                    return;
+                }
+
                 const lastVisitTime = localStorage.getItem('messageBoardLastVisitTime');
                 const currentTime = Date.now();
 
@@ -1223,18 +1230,34 @@
                     supabase
                         .from('messages')
                         .select('id, created_at, user_id')
-                        .then(({ data: messages }) => {
-                            if (!messages) return;
+                        .then(({ data: messages, error: msgError }) => {
+                            if (msgError || !messages) {
+                                console.error('Error loading messages for unread tracking:', msgError);
+                                return;
+                            }
 
                             // 获取自己发的留言ID列表
                             const myMessageIds = messages
                                 .filter(msg => msg.user_id === currentUser.id)
                                 .map(msg => msg.id);
 
+                            // 如果没有自己的留言，只需要计算新留言数量
+                            if (myMessageIds.length === 0) {
+                                messages.forEach(msg => {
+                                    if (msg.user_id !== currentUser.id) {
+                                        const msgTime = new Date(msg.created_at).getTime();
+                                        if (msgTime > lastVisit) newUnread++;
+                                    }
+                                });
+                                localStorage.setItem('messageBoardUnread', newUnread.toString());
+                                window.postMessage({ type: 'updateMessageBoardBadge', count: newUnread });
+                                return;
+                            }
+
                             // 获取收到的点赞和回复，计算未读
                             Promise.all([
-                                supabase.from('message_likes').select('message_id, created_at').in('message_id', myMessageIds).neq('user_id', currentUser.id),
-                                supabase.from('message_replies').select('message_id, created_at').in('message_id', myMessageIds).neq('user_id', currentUser.id)
+                                supabase.from('message_likes').select('message_id,created_at').in('message_id', myMessageIds).neq('user_id', currentUser.id),
+                                supabase.from('message_replies').select('message_id,created_at').in('message_id', myMessageIds).neq('user_id', currentUser.id)
                             ]).then(([likesResult, repliesResult]) => {
                                 if (likesResult.data) {
                                     likesResult.data.forEach(like => {
@@ -1262,7 +1285,11 @@
 
                                 // 更新角标
                                 window.postMessage({ type: 'updateMessageBoardBadge', count: newUnread });
+                            }).catch(err => {
+                                console.error('Error loading likes/replies for unread tracking:', err);
                             });
+                        }).catch(err => {
+                            console.error('Error in initUnreadTracking:', err);
                         });
                 }
 
@@ -1274,7 +1301,7 @@
             updateLanguage();
             createMagicParticles();
             initPermissions();
-            initUnreadTracking();
+            // initUnreadTracking();  // 暂时禁用消息提醒功能
             loadMessages();
         })();
     </script>

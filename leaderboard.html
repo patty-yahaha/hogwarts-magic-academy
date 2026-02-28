@@ -9,6 +9,152 @@
     <link rel="stylesheet" href="academy.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* 排行榜样式 */
+        .leaderboard-list {
+            display: none;
+        }
+
+        .leaderboard-list.active {
+            display: block;
+        }
+
+        .leaderboard-item {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+
+        .leaderboard-item.rank-1 {
+            border-color: #ffd700;
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.15), rgba(10, 20, 40, 0.98));
+        }
+
+        .leaderboard-item.rank-2 {
+            border-color: #c0c0c0;
+            background: linear-gradient(145deg, rgba(192, 192, 192, 0.15), rgba(10, 20, 40, 0.98));
+        }
+
+        .leaderboard-item.rank-3 {
+            border-color: #cd7f32;
+            background: linear-gradient(145deg, rgba(205, 127, 50, 0.15), rgba(10, 20, 40, 0.98));
+        }
+
+        .leaderboard-item.current-user {
+            border-color: #4caf50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .rank-number {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a2e;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            font-weight: bold;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            flex-shrink: 0;
+        }
+
+        .player-avatar {
+            font-size: 3rem;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(10, 20, 40, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            flex-shrink: 0;
+        }
+
+        .player-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .player-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.4rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .player-stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #e0e0e0;
+        }
+
+        .stat-icon {
+            font-size: 1.2rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .leaderboard-item {
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .rank-number {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+            }
+
+            .player-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 2.5rem;
+            }
+
+            .player-name {
+                font-size: 1.1rem;
+            }
+
+            .player-stats {
+                gap: 10px;
+            }
+
+            .stat-item {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="stars-bg"></div>
