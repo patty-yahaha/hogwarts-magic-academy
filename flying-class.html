@@ -1064,6 +1064,10 @@
         let passedPillars = 0; // 已穿过的柱子数
         let lastPillarGapY = null; // 上一根柱子的缝隙位置（用于平滑过渡）
         let flapKeyPressed = false; // 跟跃按键状态，防止连续触发
+        let flapStartTime = 0; // 按键开始时间（用于区分按住和轻点）
+        const QUICK_TAP_THRESHOLD = 150; // 轻点判定阈值（毫秒）
+        const QUICK_TAP_VELOCITY = -1.5; // 轻点时的小冲量
+        const HOLD_UPWARD_VELOCITY = -3.0; // 按住时的持续向上速度
 
         // 初始化金币和最高分
         function initGameData() {
@@ -1369,8 +1373,8 @@
             } else {
                 // 向上移动（gapY 变小）：限制更小，因为需要时间向上飞
                 // 向下移动（gapY 变大）：允许更大变化，因为有重力帮助
-                const maxUpwardChange = currentPillarGap * 0.25; // 向上最多25%
-                const maxDownwardChange = currentPillarGap * 0.5;  // 向下最多50%
+                const maxUpwardChange = CANVAS_HEIGHT * 0.25; // 向上最多25%屏幕高度
+                const maxDownwardChange = CANVAS_HEIGHT * 0.5;  // 向下最多50%屏幕高度
 
                 // 计算允许的范围
                 const minAllowedGapY = Math.max(minGapY, lastPillarGapY - maxUpwardChange);
@@ -1540,8 +1544,14 @@
 
             // 更新巫师（悬停延迟后才开始受物理影响，使用时间增量）
             if (canMove) {
-                // 应用重力
-                wizard.velocity += GRAVITY * deltaTime;
+                // 如果按住空格，持续给向上的速度
+                if (flapKeyPressed) {
+                    wizard.velocity = HOLD_UPWARD_VELOCITY;
+                } else {
+                    // 松开时，只受重力影响
+                    wizard.velocity += GRAVITY * deltaTime;
+                }
+
                 wizard.y += wizard.velocity * deltaTime;
 
                 // 限制最大下落速度，防止穿模
@@ -1800,18 +1810,25 @@
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && gameRunning && gameStarted && canMove) {
                 e.preventDefault();
-                // 只在按下的瞬间触发一次跳跃，防止连续触发
+                // 只在按下的瞬间记录时间
                 if (!flapKeyPressed) {
                     flapKeyPressed = true;
-                    // 直接设置向上的速度（而不是累加）
-                    wizard.velocity = FLAP_STRENGTH;
+                    flapStartTime = Date.now();
                 }
             }
         });
 
         document.addEventListener('keyup', (e) => {
-            if (e.code === 'Space') {
+            if (e.code === 'Space' && gameRunning && gameStarted && canMove) {
+                const pressDuration = Date.now() - flapStartTime;
                 flapKeyPressed = false;
+
+                // 如果是轻点（按键时间短于阈值），给小冲量
+                if (pressDuration < QUICK_TAP_THRESHOLD) {
+                    wizard.velocity = QUICK_TAP_VELOCITY;
+                }
+                // 如果是按住，velocity 会在 gameLoop 中持续设置为 HOLD_UPWARD_VELOCITY
+                // 松开后 velocity 会自然受重力影响
             }
         });
 
@@ -1819,17 +1836,25 @@
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (gameRunning && gameStarted && canMove) {
-                // 只在触摸瞬间触发一次跳跃
+                // 只在触摸瞬间记录时间
                 if (!flapKeyPressed) {
                     flapKeyPressed = true;
-                    wizard.velocity = FLAP_STRENGTH;
+                    flapStartTime = Date.now();
                 }
             }
         });
 
         canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
-            flapKeyPressed = false;
+            if (gameRunning && gameStarted && canMove) {
+                const pressDuration = Date.now() - flapStartTime;
+                flapKeyPressed = false;
+
+                // 如果是轻点（按键时间短于阈值），给小冲量
+                if (pressDuration < QUICK_TAP_THRESHOLD) {
+                    wizard.velocity = QUICK_TAP_VELOCITY;
+                }
+            }
         });
 
         // 初始化
