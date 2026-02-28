@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <header class="main-header">
+            <h1 class="title">Hogwarts School of Witchcraft and Wizardry</h1>
+            <p class="subtitle">霍格沃茨魔法学院</p>
+        </header>
+
+        <div class="houses-container">
+            <!-- 左侧学院 -->
+            <div class="houses-left">
+                <div class="house-card gryffindor">
+                    <div class="house-crest">🦁</div>
+                    <h3>Gryffindor</h3>
+                    <p>格兰芬多</p>
+                    <div class="house-traits">勇敢 · 豪爽 · 正直</div>
+                </div>
+
+                <div class="house-card hufflepuff">
+                    <div class="house-crest">🦡</div>
+                    <h3>Hufflepuff</h3>
+                    <p>赫奇帕奇</p>
+                    <div class="house-traits">忠诚 · 勤奋 · 正直</div>
+                </div>
+            </div>
+
+            <!-- 中央霍格沃茨徽章 -->
+            <div class="center-emblem">
+                <div class="emblem-circle">
+                    <div class="emblem-inner">
+                        <div class="hogwarts-crest">⚡</div>
+                        <h2>HOGWARTS</h2>
+                        <p class="motto">Draco Dormiens Nunquam Titillandus</p>
+                        <p class="motto-cn">永远不要逗弄一条睡龙</p>
+                    </div>
+                </div>
+                <a href="login.html" class="enter-btn">
+                    <span class="btn-text">✨ 进入魔法学院 ✨</span>
+                    <div class="btn-glow"></div>
+                </a>
+            </div>
+
+            <!-- 右侧学院 -->
+            <div class="houses-right">
+                <div class="house-card ravenclaw">
+                    <div class="house-crest">🦅</div>
+                    <h3>Ravenclaw</h3>
+                    <p>拉文克劳</p>
+                    <div class="house-traits">智慧 · 博学 · 睿智</div>
+                </div>
+
+                <div class="house-card slytherin">
+                    <div class="house-crest">🐍</div>
+                    <h3>Slytherin</h3>
+                    <p>斯莱特林</p>
+                    <div class="house-traits">野心 · 精明 · 领导力</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="main-footer">
+            <p>The magic begins... ✨</p>
+        </footer>
+    </div>
+
+    <script>
+        // 魔法粒子效果
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 学院卡片悬停效果
+        document.querySelectorAll('.house-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05) translateY(-10px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

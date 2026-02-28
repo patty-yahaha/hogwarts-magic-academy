@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对角巷 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header-nav {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c2a 100%);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #4a2c2a 0%, #2c1810 100%);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-size: 3rem;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+            font-family: 'Cinzel Decorative', cursive;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #c9a227;
+            margin-bottom: 50px;
+            font-size: 1.3rem;
+            font-style: italic;
+        }
+
+        /* 商店网格 */
+        .shops-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .shop-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .shop-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            animation: shopMagicRotate 10s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shopMagicRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .shop-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 60px rgba(212, 175, 55, 0.4);
+            border-color: #ffd700;
+        }
+
+        .shop-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6));
+            position: relative;
+            z-index: 1;
+        }
+
+        .shop-name-zh {
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+        }
+
+        .shop-name-en {
+            font-size: 1.2rem;
+            color: #c9a830;
+            margin-bottom: 15px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .shop-description {
+            font-size: 1rem;
+            color: #a08050;
+            max-width: 300px;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .shop-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-family: 'Cinzel', serif;
+            animation: badgePulse 2s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* 商店特殊颜色 */
+        .shop-card.honeydukes {
+            border-color: #ff69b4;
+            background: linear-gradient(145deg, rgba(50, 20, 40, 0.95), rgba(30, 10, 25, 0.98));
+        }
+
+        .shop-card.honeydukes:hover {
+            border-color: #ff1493;
+            box-shadow: 0 25px 60px rgba(255, 105, 180, 0.4);
+        }
+
+        .shop-card.honeydukes .shop-icon {
+            filter: drop-shadow(0 0 20px rgba(255, 105, 180, 0.6));
+        }
+
+        .shop-card.honeydukes .shop-name-zh {
+            color: #ff69b4;
+        }
+
+        .shop-card.honeydukes .shop-name-en {
+            color: #ff1493;
+        }
+
+        .shop-card.broomstix {
+            border-color: #8b4513;
+            background: linear-gradient(145deg, rgba(40, 25, 15, 0.95), rgba(25, 15, 8, 0.98));
+        }
+
+        .shop-card.broomstix:hover {
+            border-color: #a0522d;
+            box-shadow: 0 25px 60px rgba(139, 69, 19, 0.4);
+        }
+
+        .shop-card.broomstix .shop-icon {
+            filter: drop-shadow(0 0 20px rgba(139, 69, 19, 0.6));
+        }
+
+        .shop-card.broomstix .shop-name-zh {
+            color: #deb887;
+        }
+
+        .shop-card.malkin {
+            border-color: #9370db;
+            background: linear-gradient(145deg, rgba(35, 20, 45, 0.95), rgba(20, 10, 25, 0.98));
+        }
+
+        .shop-card.malkin:hover {
+            border-color: #8a2be2;
+            box-shadow: 0 25px 60px rgba(147, 112, 219, 0.4);
+        }
+
+        .shop-card.malkin .shop-icon {
+            filter: drop-shadow(0 0 20px rgba(147, 112, 219, 0.6));
+        }
+
+        .shop-card.malkin .shop-name-zh {
+            color: #dda0dd;
+        }
+
+        .shop-card.leaky {
+            border-color: #2e8b57;
+            background: linear-gradient(145deg, rgba(15, 35, 25, 0.95), rgba(10, 25, 15, 0.98));
+        }
+
+        .shop-card.leaky:hover {
+            border-color: #3cb371;
+            box-shadow: 0 25px 60px rgba(46, 139, 87, 0.4);
+        }
+
+        .shop-card.leaky .shop-icon {
+            filter: drop-shadow(0 0 20px rgba(46, 139, 87, 0.6));
+        }
+
+        .shop-card.leaky .shop-name-zh {
+            color: #98fb98;
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .shops-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .coin-display {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+            }
+
+            .coin-icon {
+                font-size: 1.3rem;
+            }
+
+            .coin-amount {
+                font-size: 1.2rem;
+            }
+
+            .coin-label {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">金加隆</span>
+    </div>
+
+    <div class="container">
+        <div class="header-nav">
+            <button class="back-button" onclick="goBack()">← 返回巫师市集</button>
+        </div>
+        <h1>🏪 对角巷 🏪</h1>
+        <p class="subtitle">Diagon Alley - 魔法世界的购物天堂</p>
+
+        <div class="shops-grid">
+            <!-- 蜂蜜公爵 -->
+            <div class="shop-card honeydukes" onclick="openShop('honeydukes')">
+                <span class="shop-badge">热门</span>
+                <div class="shop-icon">🍬</div>
+                <div class="shop-name-zh">蜂蜜公爵</div>
+                <div class="shop-name-en">Honeydukes Sweetshop</div>
+                <div class="shop-description">魔法世界最著名的糖果店，各式各样的神奇糖果等你品尝！</div>
+            </div>
+
+            <!-- 扫帚商店 -->
+            <div class="shop-card broomstix" onclick="openShop('broomstix')">
+                <span class="shop-badge">即将推出</span>
+                <div class="shop-icon">🧹</div>
+                <div class="shop-name-zh">Broomstix</div>
+                <div class="shop-name-en">Quality Quidditch Supplies</div>
+                <div class="shop-description">顶级飞天扫帚专卖店，拥有最新款的比赛级扫帚。</div>
+            </div>
+
+            <!-- 摩金夫人长袍店 -->
+            <div class="shop-card malkin" onclick="openShop('malkin')">
+                <span class="shop-badge">即将推出</span>
+                <div class="shop-icon">👗</div>
+                <div class="shop-name-zh">摩金夫人</div>
+                <div class="shop-name-en">Madam Malkin's Robes</div>
+                <div class="shop-description">霍格沃茨校服和各式魔法长袍定制店。</div>
+            </div>
+
+            <!-- 破釜酒吧 -->
+            <div class="shop-card leaky" onclick="openShop('leaky')">
+                <span class="shop-badge">即将推出</span>
+                <div class="shop-icon">🍺</div>
+                <div class="shop-name-zh">破釜酒吧</div>
+                <div class="shop-name-en">Leaky Cauldron</div>
+                <div class="shop-description">对角巷入口的著名酒吧，提供美味正餐和饮品。</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化金币显示
+        function initCoins() {
+            const savedCoins = localStorage.getItem('hogwartsCoins');
+            const coins = savedCoins ? parseInt(savedCoins) : 0;
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        // 打开商店
+        function openShop(shopType) {
+            if (shopType === 'honeydukes') {
+                document.body.style.opacity = '0';
+                document.body.style.transition = 'opacity 0.5s ease-in-out';
+                setTimeout(() => {
+                    window.location.href = 'honeydukes.html';
+                }, 500);
+            } else {
+                alert('该商店即将推出，敬请期待！\nThis shop is coming soon!');
+            }
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'games-zone.html';
+            }, 500);
+        }
+
+        // 页面加载时初始化
+        initCoins();
+    </script>
+</body>
+</html>

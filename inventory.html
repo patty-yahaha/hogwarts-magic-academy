@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔法背包 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .inventory-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .inventory-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .inventory-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .inventory-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        /* 物品分类标签 */
+        .inventory-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .inventory-tab {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            color: #d4af37;
+            padding: 15px 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .inventory-tab:hover {
+            border-color: #d4af37;
+            transform: translateY(-3px);
+        }
+
+        .inventory-tab.active {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.3), rgba(10, 20, 40, 0.98));
+            border-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 物品网格 */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        /* 物品卡片 */
+        .item-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .item-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .item-card.equipped {
+            border-color: #27ae60;
+            box-shadow: 0 0 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .item-card.equipped::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .item-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
+        }
+
+        .item-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        .item-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            color: #c9a227;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .item-count {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 5px 15px;
+            display: inline-block;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        /* 兑换区域 */
+        .exchange-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .exchange-title-zh {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .exchange-title-en {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #c9a227;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .exchange-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .fragment-count {
+            font-size: 2rem;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .exchange-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a3e;
+            padding: 15px 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .exchange-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .exchange-btn:disabled {
+            background: linear-gradient(135deg, #666, #888);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b7355;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        /* 语言切换默认隐藏英文 */
+        .inventory-subtitle-en,
+        .item-name-en,
+        .exchange-title-en {
+            display: none;
+        }
+
+        /* Body class based language switching */
+        body.lang-en .inventory-subtitle-en,
+        body.lang-en .item-name-en,
+        body.lang-en .exchange-title-en {
+            display: block !important;
+        }
+
+        body.lang-en .inventory-subtitle-zh,
+        body.lang-en .item-name-zh,
+        body.lang-en .exchange-title-zh {
+            display: none !important;
+        }
+
+        body.lang-zh .inventory-subtitle-zh,
+        body.lang-zh .item-name-zh,
+        body.lang-zh .exchange-title-zh {
+            display: block !important;
+        }
+
+        body.lang-zh .inventory-subtitle-en,
+        body.lang-zh .item-name-en,
+        body.lang-zh .exchange-title-en {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .inventory-title {
+                font-size: 2rem;
+            }
+
+            .inventory-tabs {
+                gap: 10px;
+            }
+
+            .inventory-tab {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+
+            .inventory-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">魔法背包</span>
+                <span class="title-text-en">Magic Backpack</span>
+            </h1>
+        </header>
+
+        <div class="inventory-container">
+            <!-- 背包标题 -->
+            <div class="inventory-header">
+                <h2 class="inventory-title">
+                    <span class="title-text-zh">🎒 你的魔法背包 🎒</span>
+                    <span class="title-text-en">🎒 Your Magic Backpack 🎒</span>
+                </h2>
+                <p class="inventory-subtitle">
+                    <span class="inventory-subtitle-zh">管理你的头像框、碎片和药水</span>
+                    <span class="inventory-subtitle-en">Manage your avatar frames, fragments & potions</span>
+                </p>
+            </div>
+
+            <!-- 飞天扫帚碎片兑换区 -->
+            <div class="exchange-section">
+                <h3 class="exchange-title-zh">🧹 飞天扫帚碎片兑换</h3>
+                <h3 class="exchange-title-en">🧹 Broomstick Fragments Exchange</h3>
+                <div class="exchange-info">
+                    <div>
+                        <span class="exchange-title-zh">碎片数量:</span>
+                        <span class="exchange-title-en">Fragments:</span>
+                        <span class="fragment-count" id="fragmentCount">0</span> / 10
+                    </div>
+                    <button class="exchange-btn" id="exchangeBtn" onclick="exchangeFragments()" disabled>
+                        <span class="btn-text-zh">兑换为500金加隆券</span>
+                        <span class="btn-text-en">Exchange for 500 Galleon Voucher</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 物品分类标签 -->
+            <div class="inventory-tabs">
+                <button class="inventory-tab active" data-tab="frames" onclick="switchTab('frames')">
+                    <span class="tab-text-zh">🖼️ 头像框</span>
+                    <span class="tab-text-en">🖼️ Frames</span>
+                </button>
+                <button class="inventory-tab" data-tab="potions" onclick="switchTab('potions')">
+                    <span class="tab-text-zh">🧪 药水</span>
+                    <span class="tab-text-en">🧪 Potions</span>
+                </button>
+            </div>
+
+            <!-- 头像框网格 -->
+            <div class="inventory-grid" id="framesGrid"></div>
+
+            <!-- 药水网格 -->
+            <div class="inventory-grid" id="potionsGrid" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+        let currentTab = 'frames';
+
+        // 所有可用的头像框
+        const allFrames = [
+            { id: 'frame_beginner', icon: '✨', name: { zh: '初学者光环', en: 'Beginner Aura' }, achievementId: 'study_15min' },
+            { id: 'frame_scholar', icon: '🌟', name: { zh: '学者光环', en: 'Scholar Aura' }, achievementId: 'study_180min' },
+            { id: 'frame_golden', icon: '👑', name: { zh: '黄金边框', en: 'Golden Frame' }, achievementId: 'quiz_high_score' }
+        ];
+
+        // 所有可用的药水
+        const allPotions = [
+            { id: 'potion_health', icon: '❤️', name: { zh: '生命药水', en: 'Health Potion' }, description: { zh: '恢复生命值', en: 'Restore HP' } },
+            { id: 'potion_attack', icon: '⚔️', name: { zh: '攻击药水', en: 'Attack Potion' }, description: { zh: '增加攻击力', en: 'Boost Attack' } },
+            { id: 'potion_defense', icon: '🛡️', name: { zh: '防御药水', en: 'Defense Potion' }, description: { zh: '增加防御力', en: 'Boost Defense' } },
+            { id: 'potion_speed', icon: '💨', name: { zh: '速度药水', en: 'Speed Potion' }, description: { zh: '增加闪避率', en: 'Boost Evasion' } }
+        ];
+
+        function updateLanguage() {
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ? '← 返回' : '← Back';
+
+            renderInventory();
+        }
+
+        // 获取背包数据
+        function getInventoryData() {
+            return {
+                fragments: parseInt(localStorage.getItem('broomFragments') || '0'),
+                vouchers: parseInt(localStorage.getItem('broomVouchers') || '0'),
+                unlockedFrames: JSON.parse(localStorage.getItem('unlockedFrames') || '[]'),
+                equippedFrame: localStorage.getItem('equippedFrame') || null,
+                potions: JSON.parse(localStorage.getItem('inventoryPotions') || '{}')
+            };
+        }
+
+        // 保存背包数据
+        function saveInventoryData(data) {
+            localStorage.setItem('broomFragments', data.fragments.toString());
+            localStorage.setItem('broomVouchers', data.vouchers.toString());
+            localStorage.setItem('unlockedFrames', JSON.stringify(data.unlockedFrames));
+            localStorage.setItem('equippedFrame', data.equippedFrame || '');
+            localStorage.setItem('inventoryPotions', JSON.stringify(data.potions));
+        }
+
+        // 渲染头像框
+        function renderFrames() {
+            const data = getInventoryData();
+            const container = document.getElementById('framesGrid');
+
+            if (data.unlockedFrames.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🖼️</div>
+                        <p class="empty-state-text-zh">还没有解锁头像框</p>
+                        <p class="empty-state-text-en">No frames unlocked yet</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: #a08050;">
+                            <span class="tip-zh">完成学习成就来解锁头像框</span>
+                            <span class="tip-en">Complete learning achievements to unlock frames</span>
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = data.unlockedFrames.map(frameId => {
+                const frame = allFrames.find(f => f.id === frameId);
+                if (!frame) return '';
+                const isEquipped = data.equippedFrame === frameId;
+                return `
+                    <div class="item-card ${isEquipped ? 'equipped' : ''}" onclick="equipFrame('${frameId}')">
+                        <div class="item-icon">${frame.icon}</div>
+                        <div class="item-name-zh">${frame.name.zh}</div>
+                        <div class="item-name-en">${frame.name.en}</div>
+                        ${isEquipped ? `
+                            <span class="item-count">
+                                <span class="count-zh">已装备</span>
+                                <span class="count-en">Equipped</span>
+                            </span>
+                        ` : `
+                            <span class="item-count">
+                                <span class="count-zh">点击装备</span>
+                                <span class="count-en">Tap to Equip</span>
+                            </span>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染药水
+        function renderPotions() {
+            const data = getInventoryData();
+            const container = document.getElementById('potionsGrid');
+
+            const potionsList = Object.entries(data.potions).filter(([id, count]) => count > 0);
+
+            if (potionsList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🧪</div>
+                        <p class="empty-state-text-zh">背包是空的</p>
+                        <p class="empty-state-text-en">Your backpack is empty</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: #a08050;">
+                            <span class="tip-zh">完成魔药和测验成就来获得药水</span>
+                            <span class="tip-en">Complete potions & quiz achievements to get potions</span>
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = potionsList.map(([potionId, count]) => {
+                const potion = allPotions.find(p => p.id === potionId);
+                if (!potion) return '';
+                return `
+                    <div class="item-card">
+                        <div class="item-icon">${potion.icon}</div>
+                        <div class="item-name-zh">${potion.name.zh}</div>
+                        <div class="item-name-en">${potion.name.en}</div>
+                        <div class="item-count">×${count}</div>
+                        <p style="font-size: 0.8rem; color: #a08050; margin-top: 10px;">
+                            <span class="desc-zh">${potion.description.zh}</span>
+                            <span class="desc-en">${potion.description.en}</span>
+                        </p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染背包
+        function renderInventory() {
+            const data = getInventoryData();
+
+            // 更新碎片显示
+            document.getElementById('fragmentCount').textContent = data.fragments;
+
+            // 更新兑换按钮状态
+            const exchangeBtn = document.getElementById('exchangeBtn');
+            exchangeBtn.disabled = data.fragments < 10;
+
+            // 渲染当前标签页
+            if (currentTab === 'frames') {
+                renderFrames();
+            } else {
+                renderPotions();
+            }
+        }
+
+        // 切换标签页
+        function switchTab(tab) {
+            currentTab = tab;
+
+            // 更新标签按钮
+            document.querySelectorAll('.inventory-tab').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === tab) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // 切换显示
+            document.getElementById('framesGrid').style.display = tab === 'frames' ? 'grid' : 'none';
+            document.getElementById('potionsGrid').style.display = tab === 'potions' ? 'grid' : 'none';
+
+            renderInventory();
+        }
+
+        // 装备头像框
+        function equipFrame(frameId) {
+            const data = getInventoryData();
+            data.equippedFrame = frameId;
+            saveInventoryData(data);
+            renderFrames();
+        }
+
+        // 兑换碎片
+        function exchangeFragments() {
+            const data = getInventoryData();
+
+            if (data.fragments < 10) return;
+
+            const message = currentLang === 'zh' ?
+                `确定要用10个碎片兑换一张500金加隆飞天扫帚兑换券吗？\n当前碎片: ${data.fragments}` :
+                `Exchange 10 fragments for a 500 Galleon broomstick voucher?\nCurrent fragments: ${data.fragments}`;
+
+            if (confirm(message)) {
+                data.fragments -= 10;
+                data.vouchers += 1;
+                saveInventoryData(data);
+
+                const successMsg = currentLang === 'zh' ?
+                    '🎉 兑换成功！你获得了一张飞天扫帚兑换券！' :
+                    '🎉 Exchange successful! You received a broomstick voucher!';
+                alert(successMsg);
+
+                renderInventory();
+            }
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 初始化
+        updateLanguage();
+        renderInventory(); // 渲染碎片和其他数据
+    </script>
+</body>
+</html>

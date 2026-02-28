@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习区 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* 学习区特有样式 */
+        .zone-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .zone-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .zone-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .zone-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        .zone-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .zone-section {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        .zone-section:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.4);
+            border-color: #f0d060;
+        }
+
+        .zone-section.coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #666;
+        }
+
+        .zone-section.coming-soon:hover {
+            transform: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: #666;
+        }
+
+        .section-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+        }
+
+        .section-title-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #d4af37;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title-en {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #c9a830;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .section-description {
+            font-size: 0.95rem;
+            color: #a08050;
+            text-align: center;
+            max-width: 300px;
+            line-height: 1.5;
+        }
+
+        .section-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .section-tag.new {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            animation: newTagPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes newTagPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* 魔法光效 */
+        .zone-section:not(.coming-soon)::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            animation: zoneMagicRotate 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes zoneMagicRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 星星装饰 */
+        .stars-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .star-decoration {
+            position: absolute;
+            color: rgba(212, 175, 55, 0.3);
+            animation: starTwinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        /* 单词卡片区域样式 */
+        .word-cards-section {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        .word-cards-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .word-cards-header:hover {
+            transform: scale(1.02);
+        }
+
+        .word-cards-header:hover .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .expand-icon {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: #d4af37;
+            transition: transform 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .expand-icon-en {
+            display: none;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        /* 书籍容器 */
+        .books-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .books-container.expanded {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        /* 单本书籍样式 */
+        .book-item {
+            background: linear-gradient(145deg, rgba(40, 30, 15, 0.9), rgba(25, 15, 5, 0.95));
+            border: 2px solid #c9a830;
+            border-radius: 15px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 160px;
+        }
+
+        .book-item:not(.coming-soon):hover {
+            transform: translateY(-8px) scale(1.05);
+            border-color: #f0d060;
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+        }
+
+        .book-item.coming-soon {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #666;
+        }
+
+        .book-item.coming-soon:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .book-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #d4af37, #c9a830);
+            color: #1a0f00;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .book-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+        }
+
+        .book-title-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 3px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .book-title-en {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            color: #c9a830;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .coming-soon-tag {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #666, #888);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-family: 'Cinzel', serif;
+            white-space: nowrap;
+        }
+
+        /* Quiz入口特殊样式 */
+        .book-item.quiz-item {
+            background: linear-gradient(145deg, rgba(50, 30, 10, 0.9), rgba(40, 15, 5, 0.95));
+            border: 2px solid #ffd700;
+        }
+
+        .book-item.quiz-item:hover {
+            border-color: #ffed4e;
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+        }
+
+        .book-item.quiz-item .book-number {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0f00;
+        }
+
+        @media (max-width: 768px) {
+            .zone-sections {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .zone-title {
+                font-size: 2rem;
+            }
+
+            .zone-section {
+                min-height: 240px;
+            }
+
+            .books-container {
+                grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+                gap: 15px;
+            }
+
+            .book-item {
+                min-height: 140px;
+                padding: 15px 10px;
+            }
+
+            .book-icon {
+                font-size: 2.5rem;
+            }
+
+            .book-title-zh {
+                font-size: 0.9rem;
+            }
+
+            .book-title-en {
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+    <div class="stars-decoration" id="starsDecoration"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">学习区</span>
+                <span class="title-text-en">Learning Zone</span>
+            </h1>
+        </header>
+
+        <div class="zone-container">
+            <!-- 专区标题 -->
+            <div class="zone-header">
+                <h2 class="zone-title">
+                    <span class="title-text-zh">✨ 魔法学习殿堂 ✨</span>
+                    <span class="title-text-en">✨ Magical Learning Hall ✨</span>
+                </h2>
+                <p class="zone-subtitle">
+                    <span class="subtitle-text-zh">选择你的学习方式</span>
+                    <span class="subtitle-text-en">Choose Your Learning Path</span>
+                </p>
+            </div>
+
+            <!-- 学习功能区域 -->
+            <div class="zone-sections">
+                <!-- 单词卡片区 -->
+                <div class="word-cards-section" id="wordCardsSection">
+                    <div class="word-cards-header" onclick="toggleBooks()">
+                        <span class="section-tag new">NEW</span>
+                        <div class="section-icon">🃏</div>
+                        <div class="section-title-zh">单词卡片 & 测验</div>
+                        <div class="section-title-en">Word Cards & Quiz</div>
+                        <div class="section-description">
+                            <span class="desc-zh">学习卡片 + 单词测验赢金币</span>
+                            <span class="desc-en">Learn & Quiz to Earn Coins</span>
+                        </div>
+                        <div class="expand-icon-zh">▼ 点击展开</div>
+                        <div class="expand-icon-en">▼ Click to Expand</div>
+                    </div>
+                    <div class="books-container" id="booksContainer" style="display: none;">
+                        <!-- 书籍图标 -->
+                        <div class="book-item" onclick="openBookCards(1, event)">
+                            <div class="book-number">1</div>
+                            <div class="book-icon">📖</div>
+                            <div class="book-title-zh">魔法石</div>
+                            <div class="book-title-en">Sorcerer's Stone</div>
+                        </div>
+                        <div class="book-item coming-soon">
+                            <div class="book-number">2</div>
+                            <div class="book-icon">📖</div>
+                            <div class="book-title-zh">密室</div>
+                            <div class="book-title-en">Chamber of Secrets</div>
+                            <span class="coming-soon-tag">
+                                <span class="tag-zh">即将推出</span>
+                                <span class="tag-en">Coming Soon</span>
+                            </span>
+                        </div>
+                        <div class="book-item coming-soon">
+                            <div class="book-number">3</div>
+                            <div class="book-icon">📖</div>
+                            <div class="book-title-zh">阿兹卡班</div>
+                            <div class="book-title-en">Prisoner of Azkaban</div>
+                            <span class="coming-soon-tag">
+                                <span class="tag-zh">即将推出</span>
+                                <span class="tag-en">Coming Soon</span>
+                            </span>
+                        </div>
+                        <div class="book-item coming-soon">
+                            <div class="book-number">4</div>
+                            <div class="book-icon">📖</div>
+                            <div class="book-title-zh">火焰杯</div>
+                            <div class="book-title-en">Goblet of Fire</div>
+                            <span class="coming-soon-tag">
+                                <span class="tag-zh">即将推出</span>
+                                <span class="tag-en">Coming Soon</span>
+                            </span>
+                        </div>
+                        <div class="book-item coming-soon">
+                            <div class="book-number">5</div>
+                            <div class="book-icon">📖</div>
+                            <div class="book-title-zh">凤凰社</div>
+                            <div class="book-title-en">Order of Phoenix</div>
+                            <span class="coming-soon-tag">
+                                <span class="tag-zh">即将推出</span>
+                                <span class="tag-en">Coming Soon</span>
+                            </span>
+                        </div>
+                        <div class="book-item coming-soon">
+                            <div class="book-number">6</div>
+                            <div class="book-icon">📖</div>
+                            <div class="book-title-zh">混血王子</div>
+                            <div class="book-title-en">Half-Blood Prince</div>
+                            <span class="coming-soon-tag">
+                                <span class="tag-zh">即将推出</span>
+                                <span class="tag-en">Coming Soon</span>
+                            </span>
+                        </div>
+                        <div class="book-item coming-soon">
+                            <div class="book-number">7</div>
+                            <div class="book-icon">📖</div>
+                            <div class="book-title-zh">死亡圣器</div>
+                            <div class="book-title-en">Deathly Hallows</div>
+                            <span class="coming-soon-tag">
+                                <span class="tag-zh">即将推出</span>
+                                <span class="tag-en">Coming Soon</span>
+                            </span>
+                        </div>
+                        <!-- Quiz入口 -->
+                        <div class="book-item quiz-item" onclick="openQuiz(event)">
+                            <div class="book-number">📝</div>
+                            <div class="book-icon">✨</div>
+                            <div class="book-title-zh">单词测验</div>
+                            <div class="book-title-en">Vocabulary Quiz</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 拼字游戏 -->
+                <div class="zone-section" onclick="openWordPuzzle()">
+                    <span class="section-tag new hot">热门</span>
+                    <div class="section-icon">🔤</div>
+                    <div class="section-title-zh">拼字游戏</div>
+                    <div class="section-title-en">Word Puzzle</div>
+                    <div class="section-description">
+                        <span class="desc-zh">连接字母拼出单词，挑战你的观察力和逻辑思维！</span>
+                        <span class="desc-en">Connect letters to spell words, challenge your observation and logic!</span>
+                    </div>
+                </div>
+
+                <!-- 更多学习功能 - 预留位置 -->
+                <div class="zone-section coming-soon">
+                    <span class="section-tag">
+                        <span class="tag-zh">即将推出</span>
+                        <span class="tag-en">Coming Soon</span>
+                    </span>
+                    <div class="section-icon">📖</div>
+                    <div class="section-title-zh">语法练习</div>
+                    <div class="section-title-en">Grammar Practice</div>
+                    <div class="section-description">
+                        <span class="desc-zh">更多精彩的学习工具正在开发中...</span>
+                        <span class="desc-en">More learning tools are under development...</span>
+                    </div>
+                </div>
+
+                <div class="zone-section coming-soon">
+                    <span class="section-tag">
+                        <span class="tag-zh">即将推出</span>
+                        <span class="tag-en">Coming Soon</span>
+                    </span>
+                    <div class="section-icon">✍️</div>
+                    <div class="section-title-zh">写作训练</div>
+                    <div class="section-title-en">Writing Practice</div>
+                    <div class="section-description">
+                        <span class="desc-zh">提升你的魔法世界写作能力</span>
+                        <span class="desc-en">Improve your magical world writing skills</span>
+                    </div>
+                </div>
+
+                <div class="zone-section coming-soon">
+                    <span class="section-tag">
+                        <span class="tag-zh">即将推出</span>
+                        <span class="tag-en">Coming Soon</span>
+                    </span>
+                    <div class="section-icon">🎧</div>
+                    <div class="section-title-zh">听力训练</div>
+                    <div class="section-title-en">Listening Practice</div>
+                    <div class="section-description">
+                        <span class="desc-zh">训练你的英语听力技能</span>
+                        <span class="desc-en">Train your English listening skills</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 魔法提示 -->
+        <div class="magic-tip">
+            <p class="tip-zh">✨ 学习是每个巫师的冒险起点 ✨</p>
+            <p class="tip-en">✨ Learning is where every wizard's adventure begins ✨</p>
+        </div>
+    </div>
+
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        function updateLanguage() {
+            // 使用更通用的选择器来捕获所有语言元素
+            const zhElements = document.querySelectorAll('[class*="-zh"]');
+            const enElements = document.querySelectorAll('[class*="-en"]');
+
+            if (currentLang === 'zh') {
+                zhElements.forEach(el => {
+                    const hasEnClass = Array.from(el.classList).some(cls => cls.endsWith('-en'));
+                    if (!hasEnClass) {
+                        el.style.display = '';
+                    }
+                });
+                enElements.forEach(el => el.style.display = 'none');
+            } else {
+                zhElements.forEach(el => el.style.display = 'none');
+                enElements.forEach(el => {
+                    const hasZhClass = Array.from(el.classList).some(cls => cls.endsWith('-zh'));
+                    if (!hasZhClass) {
+                        el.style.display = '';
+                    }
+                });
+            }
+
+            // 更新展开/收起图标文字
+            const expandIconZh = document.querySelector('.expand-icon-zh');
+            const expandIconEn = document.querySelector('.expand-icon-en');
+            const isExpanded = document.getElementById('booksContainer').classList.contains('expanded');
+
+            if (currentLang === 'zh') {
+                if (expandIconZh) expandIconZh.style.display = isExpanded ? '' : 'none';
+                if (expandIconEn) expandIconEn.style.display = 'none';
+            } else {
+                if (expandIconZh) expandIconZh.style.display = 'none';
+                if (expandIconEn) expandIconEn.style.display = isExpanded ? '' : 'none';
+            }
+        }
+
+        // 展开或收起书籍列表
+        function toggleBooks() {
+            const container = document.getElementById('booksContainer');
+            const expandIconZh = document.querySelector('.expand-icon-zh');
+            const expandIconEn = document.querySelector('.expand-icon-en');
+
+            if (container.style.display === 'none' || container.classList.contains('expanded') === false) {
+                container.style.display = 'grid';
+                setTimeout(() => {
+                    container.classList.add('expanded');
+                }, 10);
+                // Update expand icon text based on language
+                if (currentLang === 'zh') {
+                    if (expandIconZh) {
+                        expandIconZh.textContent = '▲ 点击收起';
+                        expandIconZh.style.display = '';
+                    }
+                    if (expandIconEn) expandIconEn.style.display = 'none';
+                } else {
+                    if (expandIconZh) expandIconZh.style.display = 'none';
+                    if (expandIconEn) {
+                        expandIconEn.textContent = '▲ Click to Collapse';
+                        expandIconEn.style.display = '';
+                    }
+                }
+            } else {
+                container.classList.remove('expanded');
+                if (currentLang === 'zh') {
+                    if (expandIconZh) {
+                        expandIconZh.textContent = '▼ 点击展开';
+                        expandIconZh.style.display = '';
+                    }
+                    if (expandIconEn) expandIconEn.style.display = 'none';
+                } else {
+                    if (expandIconZh) expandIconZh.style.display = 'none';
+                    if (expandIconEn) {
+                        expandIconEn.textContent = '▼ Click to Expand';
+                        expandIconEn.style.display = '';
+                    }
+                }
+                setTimeout(() => {
+                    container.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        // 打开指定书籍的单词卡片
+        function openBookCards(bookNum, evt) {
+            if (evt) {
+                evt.stopPropagation();
+            }
+
+            // 目前只有第一本书可用
+            if (bookNum === 1) {
+                document.body.style.opacity = '0';
+                document.body.style.transition = 'opacity 0.8s ease-in-out';
+                setTimeout(() => {
+                    window.location.href = 'harry-potter-sorcerers-stone-words.html';
+                }, 800);
+            }
+        }
+
+        // 页面跳转
+        function openWordCards() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'harry-potter-sorcerers-stone-words.html';
+            }, 800);
+        }
+
+        function openWordPuzzle() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'word-path-game.html';
+            }, 800);
+        }
+
+        // 打开单词测验
+        function openQuiz(evt) {
+            if (evt) {
+                evt.stopPropagation();
+            }
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'quiz-sorcerers-stone.html';
+            }, 800);
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 创建装饰星星
+        function createDecorationStars() {
+            const container = document.getElementById('starsDecoration');
+            for (let i = 0; i < 20; i++) {
+                const star = document.createElement('div');
+                star.className = 'star-decoration';
+                star.innerHTML = '✦';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(star);
+            }
+        }
+        createDecorationStars();
+
+        // 按钮悬停效果增强
+        document.querySelectorAll('.zone-section:not(.coming-soon)').forEach(section => {
+            section.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.section-icon');
+                icon.style.transform = 'scale(1.2) rotate(5deg)';
+                icon.style.transition = 'transform 0.3s ease';
+            });
+            section.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.section-icon');
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+
+        // 初始化语言显示
+        updateLanguage();
+    </script>
+</body>
+</html>

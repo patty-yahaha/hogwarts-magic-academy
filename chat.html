@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色聊天 - Character Chat</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .back-nav {
+            margin-bottom: 20px;
+        }
+
+        .back-nav button {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-nav button:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+        }
+
+        /* 角色选择区域 */
+        .character-selection {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .selection-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .character-cards {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .character-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 200px;
+        }
+
+        .character-card:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .character-card.selected {
+            background: rgba(212, 175, 55, 0.25);
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .character-avatar {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .character-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .character-title {
+            font-size: 0.85rem;
+            color: #8b6914;
+        }
+
+        /* 聊天区域 */
+        .chat-interface {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-header-avatar {
+            font-size: 3rem;
+        }
+
+        .chat-header-info {
+            flex: 1;
+        }
+
+        .chat-header-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+        }
+
+        .chat-header-status {
+            font-size: 0.9rem;
+            color: #90ee90;
+        }
+
+        .chat-messages {
+            flex: 1;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+            animation: messageSlide 0.3s ease;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-character {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.08));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-user {
+            background: linear-gradient(135deg, rgba(42, 71, 42, 0.3), rgba(42, 71, 42, 0.2));
+            border: 2px solid rgba(42, 71, 42, 0.5);
+            color: #90ee90;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            border-top: 2px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 预设问题 */
+        .preset-questions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .preset-question {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            padding: 8px 16px;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-question:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(212, 175, 55, 0.05);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            padding: 14px 20px;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input::placeholder {
+            color: #8b6914;
+        }
+
+        .chat-input:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a3e;
+            padding: 14px 28px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 滚动条 */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.4);
+            border-radius: 3px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .chat-container {
+                padding: 20px 10px;
+            }
+
+            .character-card {
+                width: 140px;
+                padding: 15px;
+            }
+
+            .character-avatar {
+                font-size: 3rem;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+        }
+
+        /* 打字动画 */
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 15px 20px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(212, 175, 55, 0.5);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .title-zh {
+            display: block;
+        }
+
+        .title-en {
+            display: none;
+        }
+
+        body.lang-en .title-en {
+            display: block !important;
+        }
+
+        body.lang-en .title-zh {
+            display: none !important;
+        }
+
+        body.lang-en .lang-zh {
+            display: none !important;
+        }
+
+        body.lang-zh .lang-en {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="lang-zh">
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="chat-container">
+            <div class="back-nav">
+                <button onclick="goBack()">
+                    <span class="lang-zh">← 返回</span>
+                    <span class="lang-en">← Back</span>
+                </button>
+            </div>
+
+            <!-- 角色选择 -->
+            <div class="character-selection">
+                <h2 class="selection-title">
+                    <span class="title-zh">✨ 选择要聊天的角色 ✨</span>
+                    <span class="title-en">✨ Choose a Character to Chat ✨</span>
+                </h2>
+                <div class="character-cards">
+                    <div class="character-card" onclick="selectCharacter('hermione')" id="card-hermione">
+                        <div class="character-avatar">👩‍🦰</div>
+                        <div class="character-name">
+                            <span class="lang-zh">赫敏</span>
+                            <span class="lang-en">Hermione</span>
+                        </div>
+                        <div class="character-title">
+                            <span class="lang-zh">聪明的女巫</span>
+                            <span class="lang-en">Brightest Witch</span>
+                        </div>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('harry')" id="card-harry">
+                        <div class="character-avatar">👓⚡</div>
+                        <div class="character-name">
+                            <span class="lang-zh">哈利</span>
+                            <span class="lang-en">Harry</span>
+                        </div>
+                        <div class="character-title">
+                            <span class="lang-zh">大难不死的男孩</span>
+                            <span class="lang-en">The Boy Who Lived</span>
+                        </div>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('ron')" id="card-ron">
+                        <div class="character-avatar">🧑‍🦰</div>
+                        <div class="character-name">
+                            <span class="lang-zh">罗恩</span>
+                            <span class="lang-en">Ron</span>
+                        </div>
+                        <div class="character-title">
+                            <span class="lang-zh">忠诚的朋友</span>
+                            <span class="lang-en">Loyal Friend</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 聊天界面 -->
+            <div class="chat-interface">
+                <div class="chat-header">
+                    <div class="chat-header-avatar" id="chatAvatar">🧙</div>
+                    <div class="chat-header-info">
+                        <div class="chat-header-name" id="chatName">
+                            <span class="lang-zh">请选择角色</span>
+                            <span class="lang-en">Select a Character</span>
+                        </div>
+                        <div class="chat-header-status" id="chatStatus">
+                            <span class="lang-zh">在线</span>
+                            <span class="lang-en">Online</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message message-character">
+                        <span class="lang-zh">👋 你好！我是霍格沃茨的学生。选择你想聊天的角色吧！</span>
+                        <span class="lang-en">👋 Hello! I'm a Hogwarts student. Choose a character to chat with!</span>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="preset-questions" id="presetQuestions">
+                        <!-- 预设问题将通过JS动态生成 -->
+                    </div>
+                    <div class="chat-input-wrapper">
+                        <input type="text" class="chat-input" id="chatInput"
+                               placeholder="输入消息... / Type your message..."
+                               onkeypress="handleKeyPress(event)">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <span class="lang-zh">发送 ⚡</span>
+                            <span class="lang-en">Send ⚡</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // ==================== 语言设置 ====================
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        // ==================== 角色数据 ====================
+        const characters = {
+            hermione: {
+                name: { zh: '赫敏·格兰杰', en: 'Hermione Granger' },
+                avatar: '👩‍🦰',
+                personality: 'smart',
+                // 关键词问答 - 用户输入包含这些关键词会触发回答
+                keywordResponses: {
+                    zh: {
+                        '你好|嗨|hello|hi': ['你好！很高兴见到你！有什么魔法问题我可以帮忙吗？', '嗨！我刚读完一本关于古代符文的书，你想了解什么？'],
+                        '学习|读书|书|知识|魔法': ['学习是魔法最强大的工具！我在图书馆发现了好多有趣的书籍。', '知识就是力量！我建议你多读《标准咒语》系列。', '魔法需要不断练习和理论学习，我可以帮你一起复习！'],
+                        '魔咒|咒语|咒': ['漂浮咒（Wingardium Leviosa）是最基础的！记得要发音正确！', '我觉得守护神咒很有挑战，但它能抵御摄魂怪。', '你想学习什么咒语？我可以教你！'],
+                        '斯内普|snape|魔药': ['斯内普教授虽然严厉，但他的魔药课确实很有深度。', '魔药学需要精确和耐心，一点点错误都可能导致灾难。'],
+                        '霍格沃茨|学校': ['霍格沃茨是我最喜欢的地方！这里有最好的图书馆和魔法课程。', '每个学院都有特色，格兰芬多教会我勇敢！'],
+                        '考试|成绩|分数': ['O.W.L.考试很重要，但也要注意劳逸结合。', '我总是提前几周就开始复习，这样才能确保拿到优秀。'],
+                        '罗恩|ron': ['罗恩有时候不太爱学习，但他是个真诚的好朋友！', '罗恩总能让大家开怀大笑，这正是我们需要他的原因。'],
+                        '哈利|harry': ['哈利很勇敢，面对伏地魔也从不退缩！', '哈利有时候有点冲动，但他的心是善良的。'],
+                        '伏地魔|voldemort|黑魔法': ['我们必须了解黑魔法才能更好地对抗它。', '恐惧这个名字只会给它更多力量，我们要勇敢面对！'],
+                        '谢谢|感谢': ['不客气！如果还有问题，随时来问我！', '很高兴能帮到你！'],
+                        '喜欢|爱': ['我也很喜欢和你聊天！', '你的问题很有趣，继续保持好奇心吧！'],
+                        '建议|帮助|怎么办': ['我可以帮你分析问题，但最终的答案要你自己寻找。', '让我想想...我们可以从多个角度来看这个问题。'],
+                        '魁地奇|quidditch': ['我不太擅长运动，但我喜欢为格兰芬多队加油！', '哈利是找球手的天才，他在飞天扫帚上简直太棒了！'],
+                        '分院|hat|帽子': ['分院帽差点把我分到拉文克劳！但我觉得格兰芬多更适合我。', '分院帽能看到你的内心，它会做出正确的选择。']
+                    },
+                    en: {
+                        'hello|hi|hey': ['Hello! Nice to meet you! Any magic questions I can help with?', 'Hi! I just finished reading a book on ancient runes, what would you like to know?'],
+                        'study|read|book|knowledge|magic|learn': ['Learning is the most powerful tool in magic! I found many interesting books in the library.', 'Knowledge is power! I recommend reading the "Standard Book of Spells" series.', 'Magic requires constant practice and theoretical study, I can help you review!'],
+                        'spell|charm|curse': ['Leviosa (Wingardium Leviosa) is the most basic! Remember to pronounce it correctly!', "I think the Patronus Charm is challenging, but it can repel Dementors.", 'What spell do you want to learn? I can teach you!'],
+                        'snape|potion': ['Professor Snape may be strict, but his potions class is indeed very profound.', 'Potion-making requires precision and patience, a small mistake can lead to disaster.'],
+                        'hogwarts|school': ['Hogwarts is my favorite place! It has the best library and magic courses.', 'Each house has its characteristics, Gryffindor taught me bravery!'],
+                        'exam|grade|score|test': ['O.W.L. exams are important, but also pay attention to work-life balance.', 'I always start reviewing a few weeks in advance to ensure I get an Outstanding.'],
+                        'ron': ['Ron sometimes doesnt like studying, but he is a sincere good friend!', 'Ron always makes everyone laugh, that\'s exactly why we need him.'],
+                        'harry': ['Harry is very brave, never backing down from Voldemort!', 'Harry is sometimes impulsive, but his heart is kind.'],
+                        'voldemort|dark magic': ['We must understand dark magic to better fight against it.', 'Fearing the name only gives it more power, we must face it bravely!'],
+                        'thank|thanks': ['You\'re welcome! If you have more questions, feel free to ask!', 'Glad I could help!'],
+                        'like|love': ['I also enjoy chatting with you!', 'Your questions are interesting, keep your curiosity!'],
+                        'suggest|help|advice|how': ['I can help you analyze the problem, but you must find the final answer yourself.', 'Let me think... we can look at this from multiple angles.'],
+                        'quidditch': ['I\'m not good at sports, but I love cheering for Gryffindor!', 'Harry is a gifted Seeker, he\'s amazing on a broomstick!'],
+                        'house|sorting hat': ['The Sorting Hat almost put me in Ravenclaw! But I think Gryffindor suits me better.', 'The Sorting Hat can see your heart, it will make the right choice.']
+                    }
+                },
+                // 预设问题
+                presetQuestions: {
+                    zh: [
+                        '赫敏，怎么学好魔法？',
+                        '你最擅长的咒语是什么？',
+                        '告诉我关于霍格沃茨的事',
+                        '怎么准备O.W.L.考试？',
+                        '你和哈利、罗恩是怎么认识的？'
+                    ],
+                    en: [
+                        'How to study magic well?',
+                        'What\'s your best spell?',
+                        'Tell me about Hogwarts',
+                        'How to prepare for O.W.L.s?',
+                        'How did you meet Harry and Ron?'
+                    ]
+                }
+            },
+            harry: {
+                name: { zh: '哈利·波特', en: 'Harry Potter' },
+                avatar: '👓⚡',
+                personality: 'brave',
+                keywordResponses: {
+                    zh: {
+                        '你好|嗨|hello|hi': ['你好！很高兴见到你！', '嗨！有什么我可以帮你的吗？'],
+                        '伏地魔|voldemort|神秘人': ['我们必须勇敢地面对他，不能被恐惧支配。', '我已经面对过他很多次了，我们会胜利的！'],
+                        '霍格沃茨|学校': ['霍格沃茨是我的家，我第一次真正感到自己属于某个地方。', '这里有最好的朋友和老师。'],
+                        '魁地奇|quidditch|飞行': ['我是格兰芬多的找球手！骑火弩箭飞行是我最喜欢的事情！', '没有什么比在空中追捕金色飞贼更让人兴奋的了！'],
+                        '邓布利多|dumbledore': ['邓布利多教授是史上最伟大的巫师，他总是给我明智的建议。', '他相信爱和友谊的力量。'],
+                        '赫敏|hermione': ['赫敏是我们中最聪明的，没有她的帮助我们不可能活下来。', '她总是能在关键时刻找到答案！'],
+                        '罗恩|ron': ['罗恩是我最好的朋友，即使面对恐惧也从不离开我。', '我们下了威森加摩棋后就成了朋友。'],
+                        '麻瓜|muggle': ['我在麻瓜世界长大，有时候还会想念那里的生活。', '我姨妈姨父对我不太好，但至少让我活了下来。'],
+                        '伤疤|scar|额头上': ['这是伏地魔给我留下的，但也提醒我要继续战斗。', '有时候它会痛，预示着危险。'],
+                        '谢谢|感谢': ['不客气！我们霍格沃茨学生要互相帮助。', '很高兴能帮到你！'],
+                        '建议|帮助|怎么办': ['面对恐惧的最好方法就是面对它！', '相信你的朋友，他们会支持你。'],
+                        '分院|hat|帽子': ['我当时真的很不想去斯莱特林，帽子听到了我的想法。', '为格兰芬多而战！'],
+                        '魔法|咒语|咒': ['我精通缴械咒（Expelliarmus）！', '赫敏比我更擅长理论，我更擅长实战。']
+                    },
+                    en: {
+                        'hello|hi|hey': ['Hello! Nice to meet you!', 'Hi! Can I help you with anything?'],
+                        'voldemort|dark lord': ['We must face him bravely, cannot be ruled by fear.', 'I have faced him many times, we will win!'],
+                        'hogwarts|school': ['Hogwarts is my home, the first place I truly felt I belonged.', 'It has the best friends and teachers here.'],
+                        'quidditch|flying|broom': ['I\'m the Seeker for Gryffindor! Flying on a Firebolt is my favorite thing!', 'Nothing is more exciting than chasing the Golden Snitch in the air!'],
+                        'dumbledore': ['Professor Dumbledore is the greatest wizard of all time, he always gives me wise advice.', 'He believes in the power of love and friendship.'],
+                        'hermione': ['Hermione is the smartest of us all, without her help we wouldn\'t have survived.', 'She always finds the answer at critical moments!'],
+                        'ron': ['Ron is my best friend, never leaves me even in the face of fear.', 'We\'ve been friends since we played wizard chess.'],
+                        'muggle': ['I grew up in the Muggle world, sometimes I still miss life there.', 'My aunt and uncle weren\'t nice to me, but at least they let me live.'],
+                        'scar|lightning': ['This is what Voldemort left me, but it reminds me to keep fighting.', 'Sometimes it hurts, signaling danger.'],
+                        'thank|thanks': ['You\'re welcome! We Hogwarts students help each other.', 'Glad I could help!'],
+                        'suggest|help|advice|how': ['The best way to face fear is to face it!', 'Trust your friends, they will support you.'],
+                        'house|sorting hat': ['I really didn\'t want to go to Slytherin, the Hat heard my thoughts.', 'Fight for Gryffindor!'],
+                        'magic|spell|charm': ['I\'m good at Expelliarmus!', 'Hermione is better at theory, I\'m better at practice.']
+                    }
+                },
+                presetQuestions: {
+                    zh: [
+                        '哈利，你是怎么面对伏地魔的？',
+                        '魁地奇最刺激的是什么？',
+                        '你和赫敏、罗恩是怎么认识的？',
+                        '霍格沃茨对你意味着什么？',
+                        '给我一些勇敢的建议吧'
+                    ],
+                    en: [
+                        'How do you face Voldemort?',
+                        'What\'s most exciting about Quidditch?',
+                        'How did you meet Hermione and Ron?',
+                        'What does Hogwarts mean to you?',
+                        'Give me some advice about bravery'
+                    ]
+                }
+            },
+            ron: {
+                name: { zh: '罗恩·韦斯莱', en: 'Ron Weasley' },
+                avatar: '🧑‍🦰',
+                personality: 'loyal',
+                keywordResponses: {
+                    zh: {
+                        '你好|嗨|hello|hi': ['你好！想聊什么？', '嗨！只要别让我写作业就行。'],
+                        '食物|吃|饿|hungry|food': ['你问对人了！我最了解霍格沃茨的美食！', '厨房里的家养小精灵做的烤牛肉和土豆泥是一绝！', '我总是饿，赫敏说我像个无底洞。'],
+                        '棋|game|威森加摩|wizard chess': ['我是下棋高手！我可以教你几招。', '我和哈利下的第一盘威森加摩棋相当精彩！'],
+                        '蜘蛛|spider': ['别！我讨厌蜘蛛！那是我最大的恐惧！', '二年级时那次跟踪阿拉戈克的经历简直是噩梦。'],
+                        '赫敏|hermione': ['赫敏？她...嗯...很聪明。非常聪明。', '她总是知道答案，有时候有点...你知道的。但她是最好的朋友。'],
+                        '哈利|harry': ['哈利是我最好的兄弟，我们经历了一切。', '有时候人们只看到"大难不死的男孩"，但我知道真正的哈利。'],
+                        '家庭|家人|family|韦斯莱|weasley': ['我家很热闹，我有六个兄弟姐妹！', '妈妈的爱是世界上最温暖的，虽然有时候有点唠叨。', ' Fred和George总是恶作剧，但我怀念他们。'],
+                        '老鼠|scabers|斑斑': ['别提斑斑了，那是个谎言！彼得·佩迪鲁！', '克鲁克山一直是对的，我应该听它的。'],
+                        '魁地奇|quidditch': ['我喜欢做解说员！但不如当球员那么刺激。', '我在格兰芬多队的时候也很棒！'],
+                        '斯莱特林|slytherin|马尔福|malfoy': ['马尔福是个得人厌的家伙！', '我不喜欢斯莱特林，他们大多数都很傲慢。'],
+                        '谢谢|感谢': ['啊...不客气！任何朋友都会这么做的。', '我很高兴能帮上忙！'],
+                        '建议|帮助|怎么办': ['嗯...让我想想。也许我们可以找赫敏？', '有时候最简单的办法就是最好的办法。'],
+                        '分院|hat|帽子': ['韦斯莱家几乎都是格兰芬多，我也一样！', '为格兰芬多而战！'],
+                        '魔法|咒语': ['我不是赫敏那样的学霸，但我在实战中很强！', '粉碎咒（Reducto）是我喜欢的！']
+                    },
+                    en: {
+                        'hello|hi|hey': ['Hello! What do you want to chat about?', 'Hi! As long as it\'s not about homework.'],
+                        'food|eat|hungry': ['You asked the right person! I know all about Hogwarts food!', 'The roast beef and mashed potatoes made by house-elves in the kitchen are amazing!', 'I\'m always hungry, Hermione says I\'m like a bottomless pit.'],
+                        'chess|game|wizard chess': ['I\'m a chess master! I can teach you some moves.', 'My first game of wizard chess with Harry was brilliant!'],
+                        'spider|aragog': ['No! I hate spiders! That\'s my biggest fear!', 'Second year following Aragog was a nightmare.'],
+                        'hermione': ['Hermione? She\'s...well...smart. Really smart.', 'She always has the answers, sometimes she\'s a bit...you know. But she\'s the best friend.'],
+                        'harry': ['Harry is my best mate, we\'ve been through everything.', 'Sometimes people only see "the Boy Who Lived", but I know the real Harry.'],
+                        'family|weasley': ['My house is busy, I have six siblings!', ['Mum\'s love is the warmest thing in the world, though sometimes a bit nagging.', 'Fred and George are always pranking, but I miss them.']],
+                        'rat|scabers|peter': ['Don\'t mention Scabers, that was a lie! Peter Pettigrew!', 'Crookshanks was right all along, I should have listened.'],
+                        'quidditch': ['I like being a commentator! But not as exciting as playing.', 'I was great when I was on the Gryffindor team!'],
+                        'slytherin|malfoy|draco': ['Malfoy is a git!', 'I don\'t like Slytherins, most of them are arrogant.'],
+                        'thank|thanks': ['Ah... you\'re welcome! Any friend would do that.', 'Glad I could help!'],
+                        'suggest|help|advice|how': ['Um... let me think. Maybe we should find Hermione?', 'Sometimes the simplest solution is the best.'],
+                        'house|sorting hat': ['Almost all Weasleys are Gryffindors, me too!', 'Fight for Gryffindor!'],
+                        'magic|spell': ['I\'m not a scholar like Hermione, but I\'m strong in practice!', 'I like Reducto!']
+                    }
+                },
+                presetQuestions: {
+                    zh: [
+                        '罗恩，霍格沃茨最好吃的食物是什么？',
+                        '教我下威森加摩棋吧',
+                        '你和赫敏是怎么回事？',
+                        '韦斯莱一家是什么样的？',
+                        '你有什么害怕的东西吗？'
+                    ],
+                    en: [
+                        'What\'s the best food at Hogwarts?',
+                        'Teach me wizard chess',
+                        'What\'s going on with you and Hermione?',
+                        'What\'s the Weasley family like?',
+                        'What are you afraid of?'
+                    ]
+                }
+            }
+        };
+
+        // ==================== 默认回复 ====================
+        const defaultResponses = {
+            zh: [
+                '这是个有趣的问题！让我想想...',
+                '嗯...我也不太确定，但我们可以一起探讨！',
+                '好问题！或许你可以在图书馆找到答案。',
+                '这让我想起了我在霍格沃茨的某次经历...',
+                '我明白你的意思了！这确实值得思考。',
+                '你的想法很有趣！多告诉我一些吧。',
+                '魔法世界充满了奇迹，不是吗？',
+                '也许我们可以问问赫敏，她肯定知道！'
+            ],
+            en: [
+                'That\'s an interesting question! Let me think...',
+                'Hmm... I\'m not sure either, but we can explore together!',
+                'Good question! Maybe you can find the answer in the library.',
+                'This reminds me of an experience at Hogwarts...',
+                'I understand what you mean! That\'s worth thinking about.',
+                'Your idea is interesting! Tell me more.',
+                'The magical world is full of wonders, isn\'t it?',
+                'Maybe we should ask Hermione, she definitely knows!'
+            ]
+        };
+
+        // ==================== 全局变量 ====================
+        let currentCharacter = null;
+        let messageHistory = [];
+
+        // ==================== 初始化 ====================
+        function init() {
+            updateLanguage();
+            createMagicParticles();
+            updatePresetQuestions();
+        }
+
+        function updateLanguage() {
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(`lang-${currentLang}`);
+        }
+
+        // ==================== 角色选择 ====================
+        function selectCharacter(characterId) {
+            currentCharacter = characterId;
+            const character = characters[characterId];
+
+            // 更新选中状态
+            document.querySelectorAll('.character-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById(`card-${characterId}`).classList.add('selected');
+
+            // 更新聊天头部
+            document.getElementById('chatAvatar').textContent = character.avatar;
+            document.getElementById('chatName').innerHTML = `
+                <span class="lang-zh">${character.name.zh}</span>
+                <span class="lang-en">${character.name.en}</span>
+            `;
+
+            // 清空聊天历史
+            messageHistory = [];
+            document.getElementById('chatMessages').innerHTML = '';
+
+            // 发送欢迎消息
+            const welcomeMessages = {
+                hermione: {
+                    zh: '📚 你好！我是赫敏。有什么魔法或学习上的问题，尽管问我吧！',
+                    en: '📚 Hello! I\'m Hermione. Feel free to ask me any questions about magic or studies!'
+                },
+                harry: {
+                    zh: '⚡ 嘿！我是哈利。很高兴和你聊天！有什么想问的吗？',
+                    en: '⚡ Hey! I\'m Harry. Nice to chat with you! What would you like to ask?'
+                },
+                ron: {
+                    zh: '♟️ 嗨！我是罗恩。只要是关于下棋、食物或者冒险的话题，我都在行！',
+                    en: '♟️ Hi! I\'m Ron. As long as it\'s about chess, food, or adventures, I\'m your guy!'
+                }
+            };
+
+            addCharacterMessage(welcomeMessages[characterId][currentLang]);
+            updatePresetQuestions();
+        }
+
+        // ==================== 预设问题 ====================
+        function updatePresetQuestions() {
+            const container = document.getElementById('presetQuestions');
+            if (!currentCharacter) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const character = characters[currentCharacter];
+            const questions = character.presetQuestions[currentLang];
+
+            container.innerHTML = questions.map(q => `
+                <button class="preset-question" onclick="sendPresetQuestion('${q}')">${q}</button>
+            `).join('');
+        }
+
+        function sendPresetQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        // ==================== 消息处理 ====================
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            if (!currentCharacter) {
+                showMessage('请先选择一个角色 / Please select a character first', 'character');
+                return;
+            }
+
+            // 添加用户消息
+            addUserMessage(text);
+            input.value = '';
+
+            // 显示打字指示器
+            showTypingIndicator();
+
+            // 模拟思考延迟
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = generateResponse(text);
+                addCharacterMessage(response);
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function generateResponse(userInput) {
+            const character = characters[currentCharacter];
+            const responses = character.keywordResponses[currentLang];
+            const defaults = defaultResponses[currentLang];
+            const inputLower = userInput.toLowerCase();
+
+            // 遍历所有关键词模式
+            for (const [pattern, answers] of Object.entries(responses)) {
+                const keywords = pattern.split('|');
+                for (const keyword of keywords) {
+                    if (inputLower.includes(keyword.toLowerCase())) {
+                        // 找到匹配，随机返回一个答案
+                        return answers[Math.floor(Math.random() * answers.length)];
+                    }
+                }
+            }
+
+            // 没有匹配到关键词，返回默认回复
+            return defaults[Math.floor(Math.random() * defaults.length)];
+        }
+
+        function addUserMessage(text) {
+            addMessage(text, 'user');
+            messageHistory.push({ type: 'user', text });
+        }
+
+        function addCharacterMessage(text) {
+            addMessage(text, 'character');
+            messageHistory.push({ type: 'character', text });
+            scrollToBottom();
+        }
+
+        function addMessage(text, type) {
+            const container = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+            messageDiv.textContent = text;
+            container.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const container = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'message message-character';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessages');
+            if (container) {
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // ==================== 返回 ====================
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // ==================== 魔法粒子 ====================
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            if (!container) return;
+
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // ==================== 页面加载初始化 ====================
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

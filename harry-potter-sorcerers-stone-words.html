@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>哈利·波特与魔法石 - 单词学习卡片</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header-nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c2a 100%);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #4a2c2a 0%, #2c1810 100%);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-family: 'Cinzel Decorative', cursive;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #c9a227;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            font-style: italic;
+            font-family: 'Cinzel', serif;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .controls button {
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c2a 100%);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .controls button:hover {
+            background: linear-gradient(135deg, #4a2c2a 0%, #2c1810 100%);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            height: 480px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 25px;
+            border: 2px solid #d4af37;
+        }
+
+        .card-front {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            color: #d4af37;
+        }
+
+        .card-back {
+            background: linear-gradient(145deg, #f5f5dc 0%, #faf0e6 100%);
+            color: #2c1810;
+            transform: rotateY(180deg);
+            overflow-y: auto;
+        }
+
+        .word {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #d4af37;
+            font-family: 'Georgia', serif;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .pronunciation {
+            color: #c9a227;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #d4af37;
+        }
+
+        .pronunciation:hover {
+            background: #d4af37;
+            color: #1a1a2e;
+            transform: scale(1.05);
+        }
+
+        .pronunciation-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        .pronunciation:hover .pronunciation-icon {
+            transform: scale(1.2);
+        }
+
+        .chinese-meaning {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c1810;
+            font-family: 'Georgia', serif;
+        }
+
+        .details-section {
+            text-align: left;
+            margin-top: 15px;
+        }
+
+        .details-section h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #4a2c2a;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 5px;
+            font-family: 'Georgia', serif;
+        }
+
+        .details-section p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            font-size: 0.9rem;
+            color: #3d3d3d;
+        }
+
+        .details-section strong {
+            color: #2c1810;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #fff8e7 0%, #ffedcc 100%);
+            border-left: 4px solid #d4af37;
+            padding: 10px 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+
+        .flip-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.75rem;
+            color: rgba(212, 175, 55, 0.6);
+            opacity: 0.8;
+        }
+
+        .card-back .flip-hint {
+            color: #888;
+        }
+
+        .card-back::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-back::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .card-back::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 3px;
+        }
+
+        .card-back::-webkit-scrollbar-thumb:hover {
+            background: #c9a227;
+        }
+
+        .house-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            opacity: 0.3;
+        }
+
+        /* 学习计时器 */
+        .study-timer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            min-width: 150px;
+        }
+
+        .timer-label {
+            color: #c9a830;
+            font-size: 0.85rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .timer-display {
+            color: #d4af37;
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .timer-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .timer-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #ffd700);
+            transition: width 1s linear;
+        }
+
+        .timer-reward {
+            color: #4CAF50;
+            font-size: 0.75rem;
+            margin-top: 5px;
+            animation: rewardGlow 1s ease-in-out infinite;
+        }
+
+        @keyframes rewardGlow {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; text-shadow: 0 0 10px #4CAF50; }
+        }
+
+        .reward-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.98), rgba(20, 10, 5, 1));
+            border: 4px solid #ffd700;
+            border-radius: 25px;
+            padding: 40px 60px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 10px 50px rgba(255, 215, 0, 0.5);
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            70% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .reward-popup h3 {
+            color: #ffd700;
+            font-size: 2rem;
+            font-family: 'Cinzel Decorative', cursive;
+            margin-bottom: 15px;
+        }
+
+        .reward-popup p {
+            color: #d4af37;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                height: 520px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 学习计时器 -->
+    <div class="study-timer" id="studyTimer">
+        <span class="timer-label">⏱️ 学习时长</span>
+        <span class="timer-display" id="timerDisplay">00:00</span>
+        <div class="timer-progress">
+            <div class="timer-progress-bar" id="timerProgressBar"></div>
+        </div>
+        <span class="timer-reward" id="timerReward">15分钟获得10金币 🪙</span>
+    </div>
+
+    <div class="container">
+        <div class="header-nav">
+            <button class="back-button" onclick="goBack()">← 返回学习专区</button>
+        </div>
+        <h1>✨ Harry Potter and the Sorcerer's Stone ✨</h1>
+        <p class="subtitle">哈利·波特与魔法石 - 单词学习卡片</p>
+
+        <div class="controls">
+            <button onclick="flipAll()">🔄 翻转全部</button>
+            <button onclick="resetAll()">🔙 重置全部</button>
+            <button onclick="shuffleCards()">🎲 随机排序</button>
+        </div>
+
+        <div class="cards-grid" id="cardsContainer">
+            <!-- 卡片将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        const wordsData = [
+            {
+                word: "be involved in",
+                chineseMeaning: "卷入，牵涉入，参与",
+                originalContext: "They were the last people you'd expect to be involved in anything strange or mysterious...（场景：开篇介绍德思礼一家是非常循规蹈矩的人，绝不会卷入任何奇怪或神秘的事情。）",
+                practicalUse: "谈论某人参与某项活动或被意外牵扯进某起事件中。",
+                example: "He was heavily involved in the school project."
+            },
+            {
+                word: "nonsense",
+                chineseMeaning: "胡言乱语，荒谬的事",
+                originalContext: "...because they just didn't hold with such nonsense.（场景：德思礼一家根本不相信也不容忍那些荒诞不经的无稽之谈。）",
+                practicalUse: "反驳别人的荒谬观点或描述完全不合理的事物。",
+                example: "Don't talk nonsense; that's impossible!"
+            },
+            {
+                word: "shudder",
+                chineseMeaning: "战栗，发抖",
+                originalContext: "The Dursleys shuddered to think what the neighbors would say if the Potters arrived in the street.（场景：德思礼夫妇一想到波特一家如果出现在街上，邻居们会怎么说就感到不寒而栗。）",
+                practicalUse: "因为恐惧、厌恶或极度寒冷而引起的身体发抖。",
+                example: "She shuddered at the thought of walking home alone in the dark."
+            },
+            {
+                word: "peculiar",
+                chineseMeaning: "奇怪的，古怪的，不同寻常的",
+                originalContext: "It was on the corner of the street that he noticed the first sign of something peculiar -- a cat reading a map.（场景：弗农姨父早上开车出门时，看到了一只猫在看地图的古怪景象。）",
+                practicalUse: "形容事物不同寻常，带有一种诡异或奇特的感觉。",
+                example: "There was a peculiar smell coming from the kitchen."
+            },
+            {
+                word: "enrage",
+                chineseMeaning: "激怒，使暴怒",
+                originalContext: "Mr. Dursley was enraged to see that a couple of them weren't young at all...（场景：弗农看到路边穿着奇怪斗篷的人，觉得他们一把年纪还这样打扮，感到十分恼火。）",
+                practicalUse: "描述某人被他人的行为或某件不公平的事彻底激怒。",
+                example: "His disrespectful comments completely enraged her."
+            },
+            {
+                word: "concentrate on",
+                chineseMeaning: "集中注意力于，专心于",
+                originalContext: "If he hadn't, he might have found it harder to concentrate on drills that morning.（场景：弗农在办公室背对窗户坐，否则他那天早上很难集中精力处理钻机的生意。）",
+                practicalUse: "需要专注精神去完成学习、工作或某项特定任务。",
+                example: "Turn off the TV so you can concentrate on your homework."
+            },
+            {
+                word: "swoop",
+                chineseMeaning: "俯冲，猛扑",
+                originalContext: "He didn't see the owls swooping past in broad daylight...（场景：大白天里，猫头鹰成群结队地从窗外的天空中俯冲飞过。）",
+                practicalUse: "鸟类或飞机迅速下降，或警察突击搜查某个地点。",
+                example: "The eagle swooped down to catch its prey."
+            },
+            {
+                word: "uneasy",
+                chineseMeaning: "不安的，忧虑的",
+                originalContext: "He didn't know why, but they made him uneasy.（场景：弗农看到路边那些穿斗篷的神秘人，心里感到一种莫名其妙的不安。）",
+                practicalUse: "感到紧张、不舒服，或者有某种不祥的预感。",
+                example: "She felt a bit uneasy about walking through the empty park."
+            },
+            {
+                word: "clutch",
+                chineseMeaning: "紧握，紧抓",
+                originalContext: "It was on his way back past them, clutching a large doughnut in a bag...（场景：弗农去面包店买完东西，手里紧紧抓着装有大甜甜圈的袋子往回走。）",
+                practicalUse: "因为害怕、痛苦或极度紧张而紧紧抓住某物。",
+                example: "The frightened child clutched his mother's hand."
+            },
+            {
+                word: "stumble",
+                chineseMeaning: "绊倒，蹒跚",
+                originalContext: "'Sorry,' he grunted, as the tiny old man stumbled and almost fell.（场景：弗农下班时撞到了一个穿紫色斗篷的老头，老头绊了一下差点摔倒。）",
+                practicalUse: "走路时脚下没站稳绊了一下，或者在说话时结结巴巴。",
+                example: "He stumbled on a rock and hurt his knee."
+            },
+            {
+                word: "approve of",
+                chineseMeaning: "赞成，同意",
+                originalContext: "...because he didn't approve of imagination.（场景：弗农是个极端古板的人，他平时极不赞成人们拥有什么丰富的想象力。）",
+                practicalUse: "表示长辈、上司对某人行为、计划或选择的认可和赞同。",
+                example: "My parents don't approve of me leaving school early."
+            },
+            {
+                word: "stern",
+                chineseMeaning: "严厉的，坚决的",
+                originalContext: "The cat didn't move. It just gave him a stern look.（场景：弗农想赶走停在花园墙上的那只猫，但猫纹丝不动，还严厉地看了他一眼。）",
+                practicalUse: "形容老师、父母的面部表情、态度或语气非常严肃。",
+                example: "The teacher gave the talking students a stern warning."
+            },
+            {
+                word: "rummage",
+                chineseMeaning: "翻找，搜寻",
+                originalContext: "He was busy rummaging in his cloak, looking for something.（场景：邓布利多突然出现在女贞路，正在斗篷口袋里翻找他的熄灯器。）",
+                practicalUse: "在包里、抽屉里等处杂乱地、急切地寻找物品。",
+                example: "She rummaged through her purse looking for her keys."
+            },
+            {
+                word: "severe",
+                chineseMeaning: "严厉的，严肃的（也可指严重的）",
+                originalContext: "Instead he was smiling at a rather severe-looking woman...（场景：那只虎斑猫变成了麦格教授，她看起来是一位表情非常严肃、严厉的女士。）",
+                practicalUse: "形容人面相严肃，或形容天气恶劣、惩罚严厉、病情严重。",
+                example: "He has a very severe expression on his face."
+            },
+            {
+                word: "downright",
+                chineseMeaning: "完全地，彻头彻尾地（常用于负面强调）",
+                originalContext: "People are being downright careless, out on the streets in broad daylight...（场景：麦格教授抱怨巫师们因为伏地魔倒台而得意忘形，大白天上街庆祝，简直太粗心大意了。）",
+                practicalUse: "强调某种消极的状态，如彻底的粗心、完全的无礼。",
+                example: "I think his behavior was downright rude."
+            },
+            {
+                word: "persuade",
+                chineseMeaning: "说服，劝说",
+                originalContext: "...for eleven years I have been trying to persuade people to call him by his proper name: Voldemort.（场景：邓布利多说自己这十一年来一直试图说服人们直接叫伏地魔的真名，而不是'神秘人'。）",
+                practicalUse: "通过讲道理或恳求让别人改变主意去做某事。",
+                example: "I finally persuaded my friends to go camping with me."
+            },
+            {
+                word: "flatter",
+                chineseMeaning: "奉承，讨好，过奖",
+                originalContext: "'You flatter me,' said Dumbledore calmly.（场景：麦格教授夸赞邓布利多拥有伏地魔害怕的力量，邓布利多谦虚地说'你过奖了'。）",
+                practicalUse: "恭维别人，或形容发型/衣服让人显得更好看。",
+                example: "You flatter me, but I really don't think my singing is that good."
+            },
+            {
+                word: "tremble",
+                chineseMeaning: "发抖，颤抖",
+                originalContext: "Professor McGonagall's voice trembled as she went on.（场景：麦格教授在向邓布利多确认波特夫妇的死讯时，声音因极度悲伤而颤抖。）",
+                practicalUse: "因恐惧、寒冷、激动等情绪引起的声音或身体不由自主地发抖。",
+                example: "Her hands trembled as she opened the exam results."
+            },
+            {
+                word: "astounding",
+                chineseMeaning: "令人震惊的，使人惊骇的",
+                originalContext: "'It's just astounding... of all the things to stop him... but how in the name of heaven did Harry survive?'（场景：麦格教授觉得令人闻风丧胆的伏地魔竟然被一个小婴儿阻止了，这简直不可思议。）",
+                practicalUse: "描述某件事情的结果或成就让人非常惊讶或震撼。",
+                example: "The runner completed the marathon in an astounding time."
+            },
+            {
+                word: "come in handy",
+                chineseMeaning: "派上用场，有用",
+                originalContext: "'Even if I could, I wouldn't. Scars can come in handy.'（场景：麦格教授问能不能去除哈利额头的疤，邓布利多说不打算消除，因为伤疤有时会派上用场。）",
+                practicalUse: "某个看似不起眼的物品或技能在未来某个时刻发挥了实用价值。",
+                example: "Take an umbrella; it might come in handy later."
+            },
+            {
+                word: "muffled",
+                chineseMeaning: "听不清的，压低声音的",
+                originalContext: "'Yeah,' said Hagrid in a very muffled voice...（场景：海格把婴儿哈利放下后，满脸是泪，声音闷闷地、哽咽着道别。）",
+                practicalUse: "声音被物体捂住、隔绝，或者因情绪激动而显得含糊不清。",
+                example: "I could hear muffled voices from the room next door."
+            },
+            {
+                word: "astonishing",
+                chineseMeaning: "惊人的，令人惊讶的",
+                originalContext: "...the very last place you would expect astonishing things to happen.（场景：女贞路是一条极其普通、安静整洁的街道，你绝不会想到这里会发生什么惊天动地的事情。）",
+                practicalUse: "形容令人意想不到的现象、事实或壮丽的景象。",
+                example: "The new computer can perform tasks at an astonishing speed."
+            },
+            {
+                word: "shrill",
+                chineseMeaning: "刺耳的，尖声的",
+                originalContext: "His Aunt Petunia was awake and it was her shrill voice that made the first noise of the day.（场景：十年的早晨，佩妮姨妈用尖厉刺耳的声音叫哈利起床做早饭。）",
+                practicalUse: "形容人的尖叫声、警报声等音调又高又尖，让人不舒服。",
+                example: "The shrill sound of the alarm woke everyone up."
+            },
+            {
+                word: "furiously",
+                chineseMeaning: "狂怒地，极其生气地",
+                originalContext: "'Now what?' said Aunt Petunia, looking furiously at Harry as though he'd planned this.（场景：听说费格太太摔断了腿不能照顾哈利，佩妮姨妈暴怒地瞪着哈利，仿佛这是他计划好的。）",
+                practicalUse: "形容人生气到了极点时的神态或动作。",
+                example: "He typed furiously on his keyboard to finish the report in time."
+            },
+            {
+                word: "slither",
+                chineseMeaning: "蜿蜒滑行",
+                originalContext: "Behind the glass, all sorts of lizards and snakes were crawling and slithering over bits of wood and stone.（场景：在动物园的爬虫馆里，玻璃后的蜥蜴和蛇在木头和石头上蜿蜒爬行。）",
+                practicalUse: "专门用来描写蛇、爬行动物或人在光滑表面上滑动的动作。",
+                example: "The snake slithered silently away into the tall grass."
+            },
+            {
+                word: "budge",
+                chineseMeaning: "稍微移动，改变立场",
+                originalContext: "Uncle Vernon tapped on the glass, but the snake didn't budge.（场景：达力想看蛇动，弗农姨父敲打玻璃，但里面的蛇懒洋洋的，纹丝不动。）",
+                practicalUse: "常用于否定句，表示推不动某重物，或某人固执己见坚决不改变想法。",
+                example: "I tried to push the heavy door open, but it wouldn't budge."
+            },
+            {
+                word: "vigorously",
+                chineseMeaning: "精力充沛地，大力地",
+                originalContext: "The snake nodded vigorously.（场景：哈利隔着玻璃问蛇是不是觉得被人敲玻璃围观很烦，蛇用力地点了点头。）",
+                practicalUse: "形容动作剧烈、用力，如大力点头/摇头、剧烈运动、强烈反对等。",
+                example: "She shook her head vigorously to show her disagreement."
+            },
+            {
+                word: "vanish",
+                chineseMeaning: "突然消失，绝迹",
+                originalContext: "Harry sat up and gasped; the glass front of the boa constrictor's tank had vanished.（场景：达力把哈利推倒后，哈利由于情绪激动，不知怎么让关着蟒蛇的玻璃箱正面玻璃凭空消失了。）",
+                practicalUse: "形容事物无影无踪地消失，或事物/物种彻底灭绝。",
+                example: "The magician made the rabbit vanish into thin air."
+            },
+            {
+                word: "strain",
+                chineseMeaning: "尽力，拉伤，承受压力",
+                originalContext: "Sometimes, when he strained his memory during long hours in his cupboard...（场景：哈利在漫长的壁橱时光里，绞尽脑汁、竭力去回忆父母死于车祸时的情景。）",
+                practicalUse: "用力过度（如拉伤肌肉、过度用眼、拼命回忆）。",
+                example: "He strained his eyes to read the small print in the dark."
+            },
+            {
+                word: "wander",
+                chineseMeaning: "漫步，游荡",
+                originalContext: "This was why Harry spent as much time as possible out of the house, wandering around...（场景：为了躲避达力一伙人的欺负，哈利尽可能多地在房子外面闲逛游荡。）",
+                practicalUse: "漫无目的地走动，或思想开小差、走神。",
+                example: "We spent the whole afternoon wandering around the old city."
+            },
+            {
+                word: "gruffly",
+                chineseMeaning: "粗声粗气地，生硬地",
+                originalContext: "...Uncle Vernon said gruffly that it was the proudest moment of his life.（场景：弗农看着穿上斯梅廷中学新校服的达力，粗声粗气地掩饰激动，说这是他一生中最骄傲的时刻。）",
+                practicalUse: "形容说话声音低沉粗哑，或态度显得有些不耐烦、生硬。",
+                example: "'What do you want?' he asked gruffly."
+            },
+            {
+                word: "stamp out",
+                chineseMeaning: "扑灭，彻底消除",
+                originalContext: "'Didn't we swear when we took him in we'd stamp out that dangerous nonsense?'（场景：面对霍格沃茨的来信，弗农姨父愤怒地说，他们在收养哈利时就发誓要彻底消除那种危险的'魔法'胡言乱语。）",
+                practicalUse: "用脚踩灭火苗，或采取强力手段彻底根除某种疾病、坏风气或反叛。",
+                example: "The government is trying to stamp out corruption."
+            },
+            {
+                word: "get out of hand",
+                chineseMeaning: "失去控制，无法收拾",
+                originalContext: "On Saturday, things began to get out of hand.（场景：到了星期六，寄给哈利的信被藏在鸡蛋里送进屋，信件的侵入开始失控了。）",
+                practicalUse: "指聚会、争吵、费用或某种混乱情况变得无法管理和控制。",
+                example: "The protest got out of hand and the police were called."
+            },
+            {
+                word: "gloomy",
+                chineseMeaning: "阴暗的，忧郁的",
+                originalContext: "Uncle Vernon stopped at last outside a gloomy-looking hotel on the outskirts of a big city.（场景：为了彻底躲避信件，弗农漫无目的地开车，最后全家停在了一家看起来极其阴暗、萧条的旅馆外。）",
+                practicalUse: "形容天气阴沉、光线昏暗，或人的情绪低落、前景黯淡。",
+                example: "The weather is gloomy today; it looks like it's going to rain."
+            },
+            {
+                word: "ferociously",
+                chineseMeaning: "凶猛地，残忍地，猛烈地",
+                originalContext: "The storm raged more and more ferociously as the night went on.（场景：德思礼一家躲在海上的礁石小屋里，随着夜深，外面的暴风雨刮得越来越凶猛。）",
+                practicalUse: "形容动物凶残，或者风暴、竞争非常激烈。",
+                example: "The lion roared ferociously at the intruders."
+            },
+            {
+                word: "stoop",
+                chineseMeaning: "弯腰，俯身",
+                originalContext: "The giant squeezed his way into the hut, stooping so that his head just brushed the ceiling.（场景：海格砸开门挤进海边小屋，因为太高大，不得不弯着腰才免得头撞到天花板。）",
+                practicalUse: "因为身高太高而在低矮处弯下身子，或为了捡东西而弯腰。",
+                example: "He had to stoop to enter the small doorway."
+            },
+            {
+                word: "bewildered",
+                chineseMeaning: "困惑的，不知所措的",
+                originalContext: "...fixing Harry with a bewildered stare.（场景：海格发现哈利对魔法世界、自己的父母和名气一无所知，用困惑不解的眼神死死盯着他。）",
+                practicalUse: "被复杂的情况、难以理解的话语弄得完全摸不着头脑。",
+                example: "She was totally bewildered by the complex instructions."
+            },
+            {
+                word: "stammer",
+                chineseMeaning: "结巴，口吃",
+                originalContext: "After a few minutes he stammered, 'What does it mean, they await my owl?'（场景：哈利读完霍格沃茨录取信，满脑子都是烟花般的疑问，结结巴巴地问海格'等待我的猫头鹰'是什么意思。）",
+                practicalUse: "因极度紧张、恐惧、激动或语言障碍而说话不流畅。",
+                example: "He stammered an apology and left the room quickly."
+            },
+            {
+                word: "outrage",
+                chineseMeaning: "暴行，愤慨，引起公愤的事",
+                originalContext: "'It's an outrage! A scandal! Harry Potter not knowin' his own story...'（场景：海格得知哈利被骗以为父母死于车祸，大发雷霆，认为这不仅是丑闻，更是一种难以容忍的无耻行为。）",
+                practicalUse: "形容引起公愤的行为，或人们对此感到的极度愤怒。",
+                example: "The public felt outrage over the politician's corrupt behavior."
+            },
+            {
+                word: "clamber",
+                chineseMeaning: "攀爬，费力地爬",
+                originalContext: "...and they clambered up the stone steps onto the street.（场景：海格和哈利乘坐小船靠岸后，手脚并用费力地爬上石阶来到街上。）",
+                practicalUse: "用手和脚艰难、笨拙地爬上或爬出某处（如岩石、树木）。",
+                example: "The children clambered over the rocks at the beach."
+            },
+            {
+                word: "shabby",
+                chineseMeaning: "破旧的，寒酸的",
+                originalContext: "For a famous place, it was very dark and shabby.（场景：哈利初次来到破釜酒吧，发现这个出名的地方内部显得非常阴暗破旧。）",
+                practicalUse: "形容衣服、建筑物或家具等因为使用太久、缺乏维护而显得破旧不堪。",
+                example: "He wore a shabby old coat that had been patched many times."
+            },
+            {
+                word: "brilliant",
+                chineseMeaning: "极好的，聪颖的，明亮的",
+                originalContext: "'Oh, yeah. Poor bloke. Brilliant mind.'（场景：海格向哈利介绍奇洛教授，说他头脑非常聪明，只是经历恐怖事件后变得神经质了。）",
+                practicalUse: "形容人聪明绝顶，或形容主意、表现极好，也可形容光线耀眼。",
+                example: "She came up with a brilliant idea to solve the problem."
+            },
+            {
+                word: "plunge",
+                chineseMeaning: "纵身投入，猛冲，急降",
+                originalContext: "...but too late -- they plunged even deeper...（场景：在古灵阁，哈利刚想看火是不是龙喷的，推车就已经带着他们猛烈地冲向更深的地底了。）",
+                practicalUse: "迅速掉入水中，从高处急剧下降，或突然陷入某种状态。",
+                example: "The car lost control and plunged off the bridge into the river."
+            },
+            {
+                word: "smuggle",
+                chineseMeaning: "走私，偷偷带入",
+                originalContext: "'I think I'll bully father into getting me one and I'll smuggle it in somehow.'（场景：马尔福在摩金夫人长袍店炫耀，说他要逼父亲买一把飞天扫帚，然后想办法偷偷带进学校。）",
+                practicalUse: "非法将物品带入境内，或违规偷偷带东西进入某处。",
+                example: "The student tried to smuggle his phone into the exam room."
+            },
+            {
+                word: "fascinating",
+                chineseMeaning: "迷人的，极有吸引力的",
+                originalContext: "Then they visited the Apothecary, which was fascinating enough to make up for its horrible smell...（场景：药房虽然气味极其难闻，但里面各种稀奇古怪的魔法药材让哈利觉得极其迷人。）",
+                practicalUse: "形容事物非常有趣，深深吸引了人的注意力。",
+                example: "I found the documentary about the universe absolutely fascinating."
+            },
+            {
+                word: "pliable",
+                chineseMeaning: "易弯曲的，柔韧的",
+                originalContext: "'Eleven inches. Pliable. A little more power and excellent for transfiguration.'（场景：奥利凡德先生回忆哈利父亲的魔杖时，说它长十一英寸，很有柔韧性，非常适合变形术。）",
+                practicalUse: "形容材料容易变形、弯折而不断裂，或指人容易受影响、顺从。",
+                example: "Leather becomes more pliable when you condition it."
+            },
+            {
+                word: "depressing",
+                chineseMeaning: "令人沮丧的，压抑的",
+                originalContext: "Although this was an improvement in many ways, it did become a bit depressing after a while.（场景：哈利回家后德思礼一家因为害怕而彻底无视他，虽然自由了，但长时间被当成空气依然让人感到压抑。）",
+                practicalUse: "形容天气、环境、境遇或消息让人心情沉重、不快乐。",
+                example: "It's depressing to watch the sad news on television every day."
+            },
+            {
+                word: "stranded",
+                chineseMeaning: "滞留的，进退两难的",
+                originalContext: "...he was stranded in the middle of a station with a trunk he could hardly lift...（场景：哈利在火车站找不到9又3/4站台，孤立无援地滞留在人群熙攘的车站中间。）",
+                practicalUse: "由于错过交通工具、恶劣天气或迷路等原因被困在某处无法离开。",
+                example: "The severe snowstorm left hundreds of passengers stranded at the airport."
+            },
+            {
+                word: "briskly",
+                chineseMeaning: "轻快地，敏捷地，生气勃勃地",
+                originalContext: "Now the third brother was walking briskly toward the barrier...（场景：哈利在国王十字车站观察韦斯莱一家，看到第三个兄弟（珀西）步履轻快、干脆地走向站台隔墙。）",
+                practicalUse: "形容走路速度快、动作干脆利落，或天气清冷宜人。",
+                example: "She walked briskly to keep warm in the freezing wind."
+            },
+            {
+                word: "jostle",
+                chineseMeaning: "推挤，撞，推搡",
+                originalContext: "People jostled him on their way to platforms nine and ten.（场景：哈利推着沉重的行李车准备冲向站台隔墙时，急着赶路的旅客们在周围不断推挤他。）",
+                practicalUse: "在拥挤的人群中（如车站、演唱会）身体互相推搡或碰撞。",
+                example: "We were jostled by the large crowd trying to leave the stadium."
+            }
+        ];
+
+        function createCard(wordObj, index) {
+            const badges = ['🦁', '🦅', '🦡', '🐍'];
+            const badge = badges[index % badges.length];
+            return `
+                <div class="card" data-index="${index}" onclick="flipCard(${index})">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="house-badge">${badge}</div>
+                            <div class="word">${wordObj.word}</div>
+                            <div class="pronunciation" onclick="event.stopPropagation(); playPronunciation('${wordObj.word.replace(/'/g, "\\'")}')">
+                                <span class="pronunciation-icon">🔊</span>
+                                <span>点击发音</span>
+                            </div>
+                            <div class="flip-hint">点击翻转</div>
+                        </div>
+                        <div class="card-back">
+                            <div class="chinese-meaning">${wordObj.chineseMeaning}</div>
+                            <div class="details-section">
+                                <h3>【原文与场景】</h3>
+                                <p>${wordObj.originalContext}</p>
+                                <h3>【常见场景】</h3>
+                                <p>${wordObj.practicalUse}</p>
+                                <div class="example-box">
+                                    <strong>例句：</strong>${wordObj.example}
+                                </div>
+                            </div>
+                            <div class="flip-hint">点击返回</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function flipCard(index) {
+            const cards = document.querySelectorAll('.card');
+            cards[index].classList.toggle('flipped');
+        }
+
+        function playPronunciation(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                speechSynthesis.speak(utterance);
+            } else {
+                const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word)}&tl=en&client=tw-ob`);
+                audio.play().catch(error => {
+                    console.error('发音播放失败:', error);
+                    alert('发音功能暂时不可用，请检查浏览器设置。');
+                });
+            }
+        }
+
+        function flipAll() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.add('flipped');
+            });
+        }
+
+        function resetAll() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.remove('flipped');
+            });
+        }
+
+        function shuffleCards() {
+            const container = document.getElementById('cardsContainer');
+            const cards = Array.from(container.children);
+            cards.sort(() => Math.random() - 0.5);
+            cards.forEach(card => {
+                card.classList.remove('flipped');
+                container.appendChild(card);
+            });
+        }
+
+        function goBack() {
+            window.location.href = 'learning-zone.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('cardsContainer');
+            wordsData.forEach((wordObj, index) => {
+                container.innerHTML += createCard(wordObj, index);
+            });
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    resetAll();
+                } else if (event.key === ' ') {
+                    event.preventDefault();
+                    flipAll();
+                }
+            });
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+            }
+        });
+
+        // ========== 学习计时器系统 ==========
+        const STUDY_TIME_FOR_REWARD = 15 * 60; // 15分钟（秒）
+        const REWARD_COINS = 30;
+
+        let studyTime = 0; // 本次学习时长（秒）
+        let timerInterval = null;
+        let hasClaimedReward = false;
+        let lastStudyTime = localStorage.getItem('lastStudyTime') || 0;
+
+        // 获取今天的日期字符串
+        function getTodayString() {
+            const today = new Date();
+            return today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        }
+
+        // 获取今日学习时间
+        function getTodayStudyTime() {
+            const today = getTodayString();
+            const dailyStudyData = JSON.parse(localStorage.getItem('dailyStudyTime') || '{}');
+            return dailyStudyData[today] || 0;
+        }
+
+        // 保存今日学习时间
+        function saveTodayStudyTime(seconds) {
+            const today = getTodayString();
+            const dailyStudyData = JSON.parse(localStorage.getItem('dailyStudyTime') || '{}');
+            dailyStudyData[today] = seconds;
+            localStorage.setItem('dailyStudyTime', JSON.stringify(dailyStudyData));
+        }
+
+        // 更新计时器显示
+        function updateTimerDisplay() {
+            const minutes = Math.floor(studyTime / 60);
+            const seconds = studyTime % 60;
+            document.getElementById('timerDisplay').textContent =
+                String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+
+            // 更新进度条
+            const progress = Math.min((studyTime / STUDY_TIME_FOR_REWARD) * 100, 100);
+            document.getElementById('timerProgressBar').style.width = progress + '%';
+
+            // 检查是否达到奖励时间
+            if (studyTime >= STUDY_TIME_FOR_REWARD && !hasClaimedReward) {
+                claimStudyReward();
+            }
+        }
+
+        // 领取学习奖励
+        function claimStudyReward() {
+            hasClaimedReward = true;
+
+            // 更新金币
+            let coins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            coins += REWARD_COINS;
+            localStorage.setItem('hogwartsCoins', coins.toString());
+
+            // 更新累计金币（用于等级计算）
+            updateCumulativeCoins(REWARD_COINS);
+
+            // 显示奖励弹窗
+            showRewardPopup();
+
+            // 更新计时器提示
+            document.getElementById('timerReward').textContent = `✅ 已获得${REWARD_COINS}金币!`;
+        }
+
+        // 更新累计金币（用于等级计算）
+        function updateCumulativeCoins(amount) {
+            let playerData = localStorage.getItem('hogwartsPlayer');
+            if (!playerData) {
+                playerData = {
+                    nickname: '魔法学徒',
+                    avatar: '🧙',
+                    cumulativeCoins: amount,
+                    inventory: [],
+                    level: 0
+                };
+            } else {
+                playerData = JSON.parse(playerData);
+                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
+            }
+
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+        }
+
+        // 显示奖励弹窗
+        function showRewardPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'reward-popup';
+            popup.innerHTML = `
+                <h3>🎉 学习奖励！</h3>
+                <p>连续学习15分钟</p>
+                <p style="font-size: 2rem; margin: 15px 0;">+${REWARD_COINS} 🪙</p>
+                <p style="font-size: 0.9rem;">金币已添加到你的账户</p>
+            `;
+            document.body.appendChild(popup);
+
+            // 3秒后自动关闭
+            setTimeout(() => {
+                popup.style.animation = 'popIn 0.3s ease-in reverse';
+                setTimeout(() => {
+                    document.body.removeChild(popup);
+                }, 300);
+            }, 3000);
+        }
+
+        // 启动计时器
+        function startStudyTimer() {
+            if (timerInterval) return;
+
+            timerInterval = setInterval(() => {
+                studyTime++;
+                updateTimerDisplay();
+
+                // 每30秒保存一次学习时长
+                if (studyTime % 30 === 0) {
+                    localStorage.setItem('studyTime', studyTime.toString());
+                    // 同时更新今日学习时间
+                    saveTodayStudyTime(studyTime);
+                }
+            }, 1000);
+        }
+
+        // 页面可见性变化时暂停/恢复计时器
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // 页面隐藏时暂停计时器
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            } else {
+                // 页面显示时恢复计时器
+                if (!hasClaimedReward) {
+                    startStudyTimer();
+                }
+            }
+        });
+
+        // 页面加载时启动计时器
+        startStudyTimer();
+        // ========== 学习计时器系统结束 ==========
+    </script>
+</body>
+</html>

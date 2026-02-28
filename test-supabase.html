@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase 测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase 连接测试</h1>
+    <div id="result"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
+        const resultDiv = document.getElementById('result');
+
+        try {
+            resultDiv.innerHTML = '<p>正在测试 Supabase 连接...</p>';
+
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            resultDiv.innerHTML += '<p>✅ Supabase 客户端创建成功！</p>';
+            resultDiv.innerHTML += '<p>URL: ' + SUPABASE_URL + '</p>';
+            resultDiv.innerHTML += '<p><button onclick="testAuth()">测试认证</button></p>';
+
+            window.testAuth = async function() {
+                const { data, error } = await supabase.auth.getSession();
+                if (error) {
+                    resultDiv.innerHTML += '<p>❌ 认证测试失败: ' + error.message + '</p>';
+                } else {
+                    resultDiv.innerHTML += '<p>✅ 认证系统正常！当前状态: ' + (data.session ? '已登录' : '未登录') + '</p>';
+                }
+            };
+
+        } catch (error) {
+            resultDiv.innerHTML = '<p>❌ 错误: ' + error.message + '</p>';
+            console.error('详细错误:', error);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神奇动物商店 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .shop-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .shop-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .shop-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .pet-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        .pet-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.4);
+            border-color: #f0d060;
+        }
+
+        .pet-icon {
+            font-size: 5rem;
+            text-align: center;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+        }
+
+        .pet-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .pet-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #c9a830;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .pet-description {
+            font-size: 0.85rem;
+            color: #a08050;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            min-height: 60px;
+        }
+
+        .pet-price {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .pet-price .price-amount {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .buy-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, #3a3a5a, #2a2a3e);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .danger-level {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            margin-top: 10px;
+        }
+
+        .danger-xx {
+            background: linear-gradient(135deg, #2a1a3e, #1a472a);
+            color: #90ee90;
+        }
+
+        .danger-xxx {
+            background: linear-gradient(135deg, #2a1a3e, #d4af37);
+            color: #fff;
+        }
+
+        .danger-xxxx {
+            background: linear-gradient(135deg, #ff6b35, #d4af37);
+            color: #fff;
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+
+        /* 拥有宠物显示 */
+        .owned-pets {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .owned-pets-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .owned-pets-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .owned-pet-item {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .owned-pet-emoji {
+            font-size: 2rem;
+        }
+
+        .owned-pet-name {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* 购买消息 */
+        .purchase-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.98), rgba(20, 10, 5, 0.99));
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px 40px;
+            z-index: 2000;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .purchase-message.active {
+            display: block;
+        }
+
+        .purchase-message.success {
+            border-color: #27ae60;
+        }
+
+        .purchase-message.error {
+            border-color: #e74c3c;
+        }
+
+        .message-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .message-title {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .message-text {
+            color: #c9a830;
+            margin-bottom: 20px;
+        }
+
+        .close-purchase-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-purchase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+            <span class="label-en">Galleons</span>
+        </span>
+    </div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">神奇动物商店</span>
+                <span class="title-text-en">Magical Menagerie</span>
+            </h1>
+        </header>
+
+        <div class="shop-container">
+            <!-- 商店标题 -->
+            <div class="shop-header">
+                <h2 class="shop-title">
+                    <span class="title-text-zh">🐾 神奇动物商店 🐾</span>
+                    <span class="title-text-en">🐾 Magical Menagerie 🐾</span>
+                </h2>
+                <p class="shop-subtitle">
+                    <span class="subtitle-text-zh">挑选你的神奇伙伴</span>
+                    <span class="subtitle-text-en">Choose Your Magical Companion</span>
+                </p>
+            </div>
+
+            <!-- 已拥有的宠物 -->
+            <div class="owned-pets" id="ownedPets">
+                <div class="owned-pets-title">
+                    <span class="title-zh">已拥有的宠物</span>
+                    <span class="title-en">Owned Pets</span>
+                </div>
+                <div class="owned-pets-list" id="ownedPetsList">
+                    <p style="color: #888; font-style: italic;">
+                        <span class="text-zh">暂无宠物</span>
+                        <span class="text-en">No pets yet</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 宠物网格 -->
+            <div class="pets-grid">
+                <!-- 蒲绒绒 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🧶</div>
+                    <div class="pet-name-zh">蒲绒绒</div>
+                    <div class="pet-name-en">Puffskein</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">圆球形、覆盖奶黄色软毛，极其温顺。深受巫师儿童喜爱的宠物！</span>
+                        <span class="desc-en">Round furry creature, very gentle. Beloved by wizard children!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">350</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('蒲绒绒', 350, '🧶')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 月痴兽 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🌙</div>
+                    <div class="pet-name-zh">月痴兽</div>
+                    <div class="pet-name-en">Mooncalf</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">腼腆的淡灰色动物，在满月时跳舞。其银色粪便能让植物快速生长！</span>
+                        <span class="desc-en">Shy grey creature, dances under full moon. Its silver dung helps plants grow!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">420</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('月痴兽', 420, '🌙')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 护树罗锅 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🌿</div>
+                    <div class="pet-name-zh">护树罗锅</div>
+                    <div class="pet-name-en">Bowtruckle</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">守护树木的小生物，极难见到。性情平和害羞，是树木的忠实守护者。</span>
+                        <span class="desc-en">Small tree guardian, shy and peaceful. Loyal protector of trees!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">450</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('护树罗锅', 450, '🌿')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 燕尾狗 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐕</div>
+                    <div class="pet-name-zh">燕尾狗</div>
+                    <div class="pet-name-en">Crup</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">对巫师极其忠诚，有分叉的尾巴。对麻瓜凶残，是优秀的看门宠物！</span>
+                        <span class="desc-en">Loyal to wizards, forked tail. Fierce to muggles, excellent guard!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">480</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('燕尾狗', 480, '🐕')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 球遁鸟 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🕊️</div>
+                    <div class="pet-name-zh">球遁鸟</div>
+                    <div class="pet-name-en">Diricawl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">肥胖不会飞的鸟，能随心所欲地消失和重现来逃避危险。麻瓜以为已灭绝！</span>
+                        <span class="desc-en">Flightless bird, can vanish and reappear. Muggles think it's extinct!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">520</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('球遁鸟', 520, '🕊️')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 猫狸子 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐱</div>
+                    <div class="pet-name-zh">猫狸子</div>
+                    <div class="pet-name-en">Kneazle</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">聪明独立，能识别人品好坏。可带迷路的主人回家，是理想的魔法宠物！</span>
+                        <span class="desc-en">Smart and independent, detects character. Can guide lost owners home!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">550</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('猫狸子', 550, '🐱')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 绝音鸟 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐦</div>
+                    <div class="pet-name-zh">绝音鸟</div>
+                    <div class="pet-name-en">Jobberknoll</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">蓝色小鸟，一生不鸣叫，死前会吐出它一生听过的所有声音。羽毛用于制作药剂！</span>
+                        <span class="desc-en">Blue bird, silent until death. Reproduces all sounds it heard!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">650</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('绝音鸟', 650, '🐦')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 飞马 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐴</div>
+                    <div class="pet-name-zh">飞马</div>
+                    <div class="pet-name-en">Winged Horse</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">带翅膀的骏马，能在空中翱翔。需要定期施展幻灭咒以防麻瓜发现。飞行利器！</span>
+                        <span class="desc-en">Magnificent winged horse. Needs Disillusionment Charm from muggles!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">780</span>
+                    </div>
+                    <div class="danger-level danger-xxxx">XXXX</div>
+                    <button class="buy-btn" onclick="buyPet('飞马', 780, '🐴')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 鹰头马身有翼兽 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🦅</div>
+                    <div class="pet-name-zh">鹰头马身有翼兽</div>
+                    <div class="pet-name-en">Hippogriff</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">长着鹰头和马身的神奇生物。必须由专家驯服，接近时需要鞠躬致意！</span>
+                        <span class="desc-en">Proud creature with eagle head and horse body. Must bow to approach!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">850</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('鹰头马身有翼兽', 850, '🦅')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 独角兽 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🦄</div>
+                    <div class="pet-name-zh">独角兽</div>
+                    <div class="pet-name-en">Unicorn</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">极其漂亮的带角马形动物，象征着纯净。其角、血液和毛都有很强的魔法功效！</span>
+                        <span class="desc-en">Beautiful horned horse, symbol of purity. Magical horn, blood, and hair!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">950</span>
+                    </div>
+                    <div class="danger-level danger-xxxx">XXXX</div>
+                    <button class="buy-btn" onclick="buyPet('独角兽', 950, '🦄')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 凤凰 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🔥</div>
+                    <div class="pet-name-zh">凤凰</div>
+                    <div class="pet-name-en">Phoenix</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">华贵的鲜红色鸟，能浴火重生。歌声具有魔力，眼泪有极强治疗功效。极其稀有！</span>
+                        <span class="desc-en">Magnificent firebird, reborn from flames. Magical song, healing tears. Rare!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">1000</span>
+                    </div>
+                    <div class="danger-level danger-xxxx">XXXX</div>
+                    <button class="buy-btn" onclick="buyPet('凤凰', 1000, '🔥')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 雪鸮 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🦉</div>
+                    <div class="pet-name-zh">雪鸮</div>
+                    <div class="pet-name-en">Snowy Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">优雅的白色猫头鹰，是巫师寄送信件的最佳伙伴。聪明忠诚，飞行速度快！</span>
+                        <span class="desc-en">Elegant white owl, best for letter delivery. Smart, loyal and fast!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">400</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('雪鸮', 400, '🦉')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 褐林鸮 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🦉</div>
+                    <div class="pet-name-zh">褐林鸮</div>
+                    <div class="pet-name-en">Brown Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">深棕色羽毛的猫头鹰，夜视能力极佳。是霍格沃茨学生最常用的信使之一！</span>
+                        <span class="desc-en">Dark brown feathers, excellent night vision. Popular student messenger!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">320</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('褐林鸮', 320, '🦉')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 鸣角鸮 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🦉</div>
+                    <div class="pet-name-zh">鸣角鸮</div>
+                    <div class="pet-name-en">Screech Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">体型小巧的猫头鹰，发出独特的鸣叫声。虽然不大但非常勤劳可靠的信使！</span>
+                        <span class="desc-en">Small owl with unique call. Small but hardworking and reliable messenger!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">280</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('鸣角鸮', 280, '🦉')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 灰林鸮 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🦉</div>
+                    <div class="pet-name-zh">灰林鸮</div>
+                    <div class="pet-name-en">Tawny Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">温顺的灰棕色猫头鹰，性格友善。非常适合初次养宠物的年轻巫师！</span>
+                        <span class="desc-en">Gentle grey-brown owl, friendly nature. Perfect for first-time pet owners!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">300</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('灰林鸮', 300, '🦉')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 谷仓猫头鹰 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🦉</div>
+                    <div class="pet-name-zh">谷仓猫头鹰</div>
+                    <div class="pet-name-en">Barn Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">心形面容的独特猫头鹰，飞行时悄无声息。是优秀的夜间信使和守护者！</span>
+                        <span class="desc-en">Heart-shaped face, silent flight. Excellent night messenger and guardian!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">360</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('谷仓猫头鹰', 360, '🦉')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 克鲁克香克 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐈</div>
+                    <div class="pet-name-zh">克鲁克香克</div>
+                    <div class="pet-name-en">Crookshanks</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">混血猫猫狸子，聪明绝顶，能识破伪装。是最聪明和最忠诚的伙伴！</span>
+                        <span class="desc-en">Half-Kneazle, incredibly smart. Sees through disguises, loyal companion!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">600</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('克鲁克香克', 600, '🐈')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 黑猫 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐈‍⬛</div>
+                    <div class="pet-name-zh">黑猫</div>
+                    <div class="pet-name-en">Black Cat</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">优雅的黑色猫咪，神秘而迷人。许多巫师的最爱，象征着魔法与直觉！</span>
+                        <span class="desc-en">Elegant black cat, mysterious and charming. Favorite of many wizards!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">250</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('黑猫', 250, '🐈‍⬛')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 斑猫 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐱</div>
+                    <div class="pet-name-zh">斑猫</div>
+                    <div class="pet-name-en">Tabby Cat</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">带有美丽条纹的猫咪，性格温顺亲人。是经典的巫师宠物，备受青睐！</span>
+                        <span class="desc-en">Beautiful striped cat, gentle and affectionate. Classic wizard pet!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">220</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('斑猫', 220, '🐱')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 普通蟾蜍 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐸</div>
+                    <div class="pet-name-zh">普通蟾蜍</div>
+                    <div class="pet-name-en">Common Toad</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">传统的巫师宠物，虽然不如猫头鹰受欢迎，但依然有它的魅力。容易饲养！</span>
+                        <span class="desc-en">Traditional wizard pet, less popular than owls but charming. Easy to care!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">150</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('普通蟾蜍', 150, '🐸')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 毛蟾蜍 -->
+                <div class="pet-card">
+                    <div class="pet-icon">🐸</div>
+                    <div class="pet-name-zh">毛蟾蜍</div>
+                    <div class="pet-name-en">Hairy Toad</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">长着柔软毛发的神奇蟾蜍，非常罕见。其毛发可用于制作某些魔药成分！</span>
+                        <span class="desc-en">Rare toad with soft fur. Its hair is used in certain potion ingredients!</span>
+                    </div>
+                    <div class="pet-price">
+                        🪙 <span class="price-amount">380</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('毛蟾蜍', 380, '🐸')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 购买消息 -->
+        <div class="purchase-message" id="purchaseMessage">
+            <div class="message-icon" id="messageIcon"></div>
+            <div class="message-title" id="messageTitle"></div>
+            <div class="message-text" id="messageText"></div>
+            <button class="close-purchase-btn" onclick="closePurchaseMessage()">
+                <span class="btn-zh">确定</span><span class="btn-en">OK</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        function updateLanguage() {
+            // 使用更通用的选择器来捕获所有语言元素
+            const zhElements = document.querySelectorAll('[class*="-zh"]');
+            const enElements = document.querySelectorAll('[class*="-en"]');
+
+            if (currentLang === 'zh') {
+                zhElements.forEach(el => {
+                    const hasEnClass = Array.from(el.classList).some(cls => cls.endsWith('-en'));
+                    if (!hasEnClass) {
+                        el.style.display = '';
+                    }
+                });
+                enElements.forEach(el => el.style.display = 'none');
+            } else {
+                zhElements.forEach(el => el.style.display = 'none');
+                enElements.forEach(el => {
+                    const hasZhClass = Array.from(el.classList).some(cls => cls.endsWith('-zh'));
+                    if (!hasZhClass) {
+                        el.style.display = '';
+                    }
+                });
+            }
+        }
+
+        // 初始化金币显示
+        function initCoinDisplay() {
+            const savedCoins = localStorage.getItem('hogwartsCoins');
+            const coins = savedCoins ? parseInt(savedCoins) : 0;
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        // 更新金币显示
+        function updateCoinDisplay(newAmount) {
+            localStorage.setItem('hogwartsCoins', newAmount.toString());
+            document.getElementById('coinAmount').textContent = newAmount;
+        }
+
+        // 获取已拥有的宠物
+        function getOwnedPets() {
+            const saved = localStorage.getItem('ownedPets');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        // 更新已拥有宠物显示
+        function updateOwnedPetsDisplay() {
+            const ownedPets = getOwnedPets();
+            const container = document.getElementById('ownedPetsList');
+
+            if (ownedPets.length === 0) {
+                container.innerHTML = `
+                    <p style="color: #888; font-style: italic;">
+                        <span class="text-zh">暂无宠物</span>
+                        <span class="text-en">No pets yet</span>
+                    </p>`;
+                return;
+            }
+
+            container.innerHTML = ownedPets.map(pet => `
+                <div class="owned-pet-item">
+                    <span class="owned-pet-emoji">${pet.emoji}</span>
+                    <span class="owned-pet-name">${pet.name}</span>
+                </div>
+            `).join('');
+        }
+
+        // 购买宠物
+        function buyPet(petName, price, emoji) {
+            // 检查精力值（精力值小于10不准购买）
+            const playerEnergy = parseInt(localStorage.getItem('playerEnergy') || '100');
+            if (playerEnergy < 10) {
+                showMessage('error', '😫',
+                    currentLang === 'zh' ? '精力值不足！' : 'Not Enough Energy!',
+                    currentLang === 'zh' ? '你的精力值太低了，去三把扫帚休息一下吧！' : 'Your energy is too low! Rest at the Three Broomsticks!'
+                );
+                return;
+            }
+
+            const coins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+
+            if (coins < price) {
+                showMessage('error', '💸',
+                    currentLang === 'zh' ? '金币不足！' : 'Not Enough Coins!',
+                    currentLang === 'zh' ? `你需要 ${price - coins} 更多金加隆来购买这只宠物！` : `You need ${price - coins} more Galleons!`
+                );
+                return;
+            }
+
+            // 检查是否已拥有
+            const ownedPets = getOwnedPets();
+            if (ownedPets.some(p => p.name === petName)) {
+                showMessage('error', '⚠️',
+                    currentLang === 'zh' ? '已拥有此宠物！' : 'Already Owned!',
+                    currentLang === 'zh' ? '你已经拥有这只宠物了！' : 'You already own this pet!'
+                );
+                return;
+            }
+
+            // 购买成功
+            const newCoins = coins - price;
+            updateCoinDisplay(newCoins);
+
+            ownedPets.push({ name: petName, emoji: emoji });
+            localStorage.setItem('ownedPets', JSON.stringify(ownedPets));
+            updateOwnedPetsDisplay();
+
+            showMessage('success', '🎉',
+                currentLang === 'zh' ? '购买成功！' : 'Purchase Successful!',
+                currentLang === 'zh' ? `恭喜！你现在拥有了${petName}！` : `Congratulations! You now have a ${petName}!`
+            );
+        }
+
+        // 显示消息
+        function showMessage(type, icon, title, text) {
+            const msg = document.getElementById('purchaseMessage');
+            msg.className = 'purchase-message active ' + type;
+            document.getElementById('messageIcon').textContent = icon;
+            document.getElementById('messageTitle').textContent = title;
+            document.getElementById('messageText').textContent = text;
+        }
+
+        // 关闭消息
+        function closePurchaseMessage() {
+            document.getElementById('purchaseMessage').classList.remove('active');
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'games-zone.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 初始化
+        initCoinDisplay();
+        updateOwnedPetsDisplay();
+        updateLanguage();
+    </script>
+</body>
+</html>

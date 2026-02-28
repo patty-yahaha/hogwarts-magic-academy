@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奥利凡德 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            overflow-x: hidden;
+        }
+
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 顶部导航 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .back-btn {
+            background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 10px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(145deg, #3a3a5a, #2a2a3e);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .header-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border-radius: 20px;
+            border: 3px solid #d4af37;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 商店标题 */
+        .shop-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .shop-title h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .shop-subtitle {
+            color: #8b7355;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        /* 设置表单 */
+        .setup-form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: linear-gradient(145deg, rgba(40, 30, 20, 0.9), rgba(30, 20, 10, 0.95));
+            border-radius: 15px;
+            border: 2px solid #8b7355;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(20, 10, 5, 0.8);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .hand-selection {
+            display: flex;
+            gap: 20px;
+        }
+
+        .hand-option {
+            flex: 1;
+            padding: 15px;
+            background: rgba(20, 10, 5, 0.8);
+            border: 2px solid #8b7355;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .hand-option:hover {
+            border-color: #d4af37;
+            background: rgba(40, 30, 20, 0.9);
+        }
+
+        .hand-option.selected {
+            border-color: #ffd700;
+            background: rgba(60, 50, 30, 0.9);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .hand-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(145deg, #d4af37, #b8860b);
+            border: none;
+            border-radius: 10px;
+            color: #1a1a2e;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(145deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .submit-btn:disabled {
+            background: linear-gradient(145deg, #666, #888);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        /* 魔杖列表 */
+        .wands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .wand-card {
+            background: linear-gradient(145deg, rgba(40, 30, 20, 0.9), rgba(30, 20, 10, 0.95));
+            border: 2px solid #8b7355;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wand-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .wand-card.owned {
+            border-color: #27ae60;
+        }
+
+        .wand-card.owned::after {
+            content: '✓';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #27ae60;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .wand-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .wand-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.3rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .wand-specs {
+            margin-bottom: 15px;
+        }
+
+        .wand-spec {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .wand-spec-label {
+            color: #8b7355;
+            font-size: 0.95rem;
+        }
+
+        .wand-spec-value {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .wand-price {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(145deg, #d4af37, #b8860b);
+            border: none;
+            border-radius: 10px;
+            color: #1a1a2e;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, #ffd700, #d4af37);
+            transform: scale(1.02);
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .owned-badge {
+            background: #27ae60;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        /* 已拥有魔杖区 */
+        .owned-wands-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #8b7355;
+        }
+
+        .section-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #8b7355;
+            font-size: 1.1rem;
+            padding: 20px;
+        }
+
+        /* 提示信息 */
+        .info-text {
+            text-align: center;
+            color: #8b7355;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        /* 购买消息模态框 */
+        .purchase-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.98), rgba(20, 10, 5, 0.99));
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px 40px;
+            z-index: 2000;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+            min-width: 300px;
+        }
+
+        .purchase-message.active {
+            display: block;
+        }
+
+        .purchase-message.success {
+            border-color: #27ae60;
+        }
+
+        .purchase-message.error {
+            border-color: #e74c3c;
+        }
+
+        .message-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .message-title {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .message-text {
+            color: #c9a830;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .close-purchase-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-purchase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 1.3rem;
+            }
+
+            .shop-title h1 {
+                font-size: 1.8rem;
+            }
+
+            .wands-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 15px;
+            }
+
+            .setup-form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+        </span>
+    </div>
+
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span>
+            </button>
+            <h1 class="header-title">
+                <span class="title-text-zh">🪄 奥利凡德魔杖店 🪄</span>
+            </h1>
+        </div>
+
+        <div class="main-content">
+            <!-- 商店标题 -->
+            <div class="shop-title">
+                <h1>
+                    <span class="title-zh">奥利凡德</span>
+                    <span class="title-en">Ollivanders</span>
+                </h1>
+                <p class="shop-subtitle">
+                    <span class="subtitle-zh">"魔杖选择巫师"</span>
+                    <span class="subtitle-en">"The wand chooses the wizard"</span>
+                </p>
+            </div>
+
+            <!-- 设置表单 -->
+            <div id="setupForm" class="setup-form" style="display: none;">
+                <h2 style="text-align: center; margin-bottom: 25px; color: #d4af37;">
+                    <span class="form-title-zh">定制你的魔杖</span>
+                    <span class="form-title-en">Customize Your Wand</span>
+                </h2>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="label-zh">魔杖长度（10-15英寸）</span>
+                        <span class="label-en">Wand Length (10-15 inches)</span>
+                    </label>
+                    <input type="number" id="wandLength" class="form-input" min="10" max="15" step="0.5" placeholder="10-15">
+                    <div class="error-msg" id="lengthError">
+                        <span class="error-zh">请输入10-15之间的长度</span>
+                        <span class="error-en">Please enter a length between 10 and 15</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="label-zh">持杖手</span>
+                        <span class="label-en">Wand Hand</span>
+                    </label>
+                    <div class="hand-selection">
+                        <div class="hand-option" data-hand="left" onclick="selectHand('left')">
+                            <span class="hand-icon">🤚</span>
+                            <span class="hand-label-zh">左手</span>
+                            <span class="hand-label-en">Left</span>
+                        </div>
+                        <div class="hand-option" data-hand="right" onclick="selectHand('right')">
+                            <span class="hand-icon">✋</span>
+                            <span class="hand-label-zh">右手</span>
+                            <span class="hand-label-en">Right</span>
+                        </div>
+                    </div>
+                    <div class="error-msg" id="handError">
+                        <span class="error-zh">请选择持杖手</span>
+                        <span class="error-en">Please select a hand</span>
+                    </div>
+                </div>
+
+                <button class="submit-btn" onclick="generateWands()">
+                    <span class="btn-zh">生成我的魔杖</span>
+                    <span class="btn-en">Generate My Wands</span>
+                </button>
+            </div>
+
+            <!-- 魔杖列表 -->
+            <div id="wandsContainer" style="display: none;">
+                <div class="info-text">
+                    <span class="info-zh">根据你的偏好，为你精选了以下魔杖</span>
+                    <span class="info-en">Based on your preferences, these wands are selected for you</span>
+                </div>
+
+                <div id="availableWands" class="wands-grid"></div>
+
+                <div class="owned-wands-section">
+                    <h2 class="section-title">
+                        <span class="owned-title-zh">我的魔杖</span>
+                        <span class="owned-title-en">My Wands</span>
+                    </h2>
+                    <div id="ownedWands" class="wands-grid"></div>
+                    <div id="emptyOwned" class="empty-message">
+                        <span class="empty-zh">你还没有拥有任何魔杖</span>
+                        <span class="empty-en">You don't own any wands yet</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="back-btn" onclick="resetPreferences()">
+                        <span class="btn-zh">重新设置偏好</span>
+                        <span class="btn-en">Reset Preferences</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // ========== 返回函数（提前定义以确保可访问）==========
+        window.goBack = function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'games-zone.html';
+            }, 500);
+        };
+
+        // ========== 数据 ==========
+        const cores = [
+            { name: '凤凰羽毛', nameEn: 'Phoenix Feather', rarity: 3 },
+            { name: '独角兽毛', nameEn: 'Unicorn Hair', rarity: 2 },
+            { name: '龙心腱', nameEn: 'Dragon Heartstring', rarity: 3 },
+            { name: '夜骐尾羽', nameEn: 'Thestral Tail Hair', rarity: 4 }
+        ];
+
+        const woods = [
+            { name: '冬青木', nameEn: 'Holly', rarity: 3 },
+            { name: '紫杉木', nameEn: 'Yew', rarity: 4 },
+            { name: '柳木', nameEn: 'Willow', rarity: 2 },
+            { name: '橡木', nameEn: 'Oak', rarity: 2 },
+            { name: '檀木', nameEn: 'Sandalwood', rarity: 3 },
+            { name: '樱桃木', nameEn: 'Cherry', rarity: 3 },
+            { name: '槐木', nameEn: 'Locust', rarity: 2 },
+            { name: '枫木', nameEn: 'Maple', rarity: 2 },
+            { name: '松木', nameEn: 'Pine', rarity: 2 },
+            { name: '桦木', nameEn: 'Birch', rarity: 1 }
+        ];
+
+        const wandIcons = ['🪄', '🪄', '🪄', '🪄', '🪄'];
+
+        // ========== 状态 ==========
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+        let userPreferences = null;
+        let availableWands = [];
+        let ownedWands = [];
+        let coins = 0;
+
+        // ========== 初始化 ==========
+        function init() {
+            loadCoins();
+            loadUserData();
+            initStars();
+            updateLanguage();
+        }
+
+        function loadCoins() {
+            // 从 hogwartsPlayer 对象中读取金币
+            const playerDataStr = localStorage.getItem('hogwartsPlayer');
+            if (playerDataStr) {
+                const playerData = JSON.parse(playerDataStr);
+                coins = playerData.cumulativeCoins || 0;
+            } else {
+                coins = 0;
+            }
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        function loadUserData() {
+            const savedPrefs = localStorage.getItem('ollivanderPreferences');
+            const savedWands = localStorage.getItem('ollivanderWands');
+
+            if (savedPrefs) {
+                userPreferences = JSON.parse(savedPrefs);
+                generateWands();
+            } else {
+                document.getElementById('setupForm').style.display = 'block';
+            }
+
+            if (savedWands) {
+                ownedWands = JSON.parse(savedWands);
+            }
+        }
+
+        // ========== 表单处理 ==========
+        let selectedHand = null;
+
+        function selectHand(hand) {
+            selectedHand = hand;
+            document.querySelectorAll('.hand-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.querySelector(`[data-hand="${hand}"]`).classList.add('selected');
+            document.getElementById('handError').classList.remove('show');
+        }
+
+        function generateWands() {
+            // 如果是从设置表单提交
+            const lengthInput = document.getElementById('wandLength');
+            if (lengthInput.value) {
+                const length = parseFloat(lengthInput.value);
+
+                // 验证长度
+                if (isNaN(length) || length < 10 || length > 15) {
+                    document.getElementById('lengthError').classList.add('show');
+                    return;
+                }
+                document.getElementById('lengthError').classList.remove('show');
+
+                // 验证持杖手
+                if (!selectedHand) {
+                    document.getElementById('handError').classList.add('show');
+                    return;
+                }
+                document.getElementById('handError').classList.remove('show');
+
+                // 保存偏好
+                userPreferences = {
+                    length: length,
+                    hand: selectedHand
+                };
+                localStorage.setItem('ollivanderPreferences', JSON.stringify(userPreferences));
+            }
+
+            // 生成10种魔杖
+            availableWands = [];
+            for (let i = 0; i < 10; i++) {
+                availableWands.push(createRandomWand(userPreferences.length, userPreferences.hand));
+            }
+
+            // 显示魔杖列表
+            document.getElementById('setupForm').style.display = 'none';
+            document.getElementById('wandsContainer').style.display = 'block';
+            renderWands();
+        }
+
+        function createRandomWand(preferredLength, hand) {
+            const core = cores[Math.floor(Math.random() * cores.length)];
+            const wood = woods[Math.floor(Math.random() * woods.length)];
+
+            // 长度在偏好长度附近浮动（±0.5英寸）
+            const lengthVariation = (Math.random() - 0.5);
+            const length = Math.max(10, Math.min(15, preferredLength + lengthVariation));
+            const roundedLength = Math.round(length * 2) / 2;
+
+            // 根据稀有度计算价格
+            const basePrice = 50;
+            const rarityBonus = (core.rarity + wood.rarity) * 80;
+            const randomBonus = Math.floor(Math.random() * 200);
+            const price = Math.min(1000, Math.max(50, basePrice + rarityBonus + randomBonus));
+
+            return {
+                id: Date.now() + Math.random(),
+                core: core,
+                wood: wood,
+                length: roundedLength,
+                hand: hand,
+                price: price,
+                icon: wandIcons[Math.floor(Math.random() * wandIcons.length)]
+            };
+        }
+
+        // ========== 渲染 ==========
+        function renderWands() {
+            renderAvailableWands();
+            renderOwnedWands();
+        }
+
+        function renderAvailableWands() {
+            const container = document.getElementById('availableWands');
+            container.innerHTML = '';
+
+            availableWands.forEach(wand => {
+                const isOwned = ownedWands.some(owned => owned.id === wand.id);
+                const card = createWandCard(wand, isOwned);
+                container.appendChild(card);
+            });
+        }
+
+        function renderOwnedWands() {
+            const container = document.getElementById('ownedWands');
+            const emptyMsg = document.getElementById('emptyOwned');
+            container.innerHTML = '';
+
+            if (ownedWands.length === 0) {
+                emptyMsg.style.display = 'block';
+            } else {
+                emptyMsg.style.display = 'none';
+                ownedWands.forEach(wand => {
+                    const card = createWandCard(wand, true);
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        function createWandCard(wand, isOwned) {
+            // 重新从 localStorage 加载金币以确保最新状态
+            const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+            const currentCoins = playerData.cumulativeCoins || 0;
+
+            const card = document.createElement('div');
+            card.className = 'wand-card' + (isOwned ? ' owned' : '');
+
+            const coreName = currentLang === 'zh' ? wand.core.name : wand.core.nameEn;
+            const woodName = currentLang === 'zh' ? wand.wood.name : wand.wood.nameEn;
+            const handText = currentLang === 'zh' ? (wand.hand === 'left' ? '左手' : '右手') : (wand.hand === 'left' ? 'Left' : 'Right');
+
+            card.innerHTML = `
+                <div class="wand-icon">${wand.icon}</div>
+                <div class="wand-name">${woodName} ${coreName}</div>
+                <div class="wand-specs">
+                    <div class="wand-spec">
+                        <span class="wand-spec-label">
+                            <span class="spec-label-zh">杖芯</span>
+                            <span class="spec-label-en">Core</span>
+                        </span>
+                        <span class="wand-spec-value">${coreName}</span>
+                    </div>
+                    <div class="wand-spec">
+                        <span class="wand-spec-label">
+                            <span class="spec-label-zh">木材</span>
+                            <span class="spec-label-en">Wood</span>
+                        </span>
+                        <span class="wand-spec-value">${woodName}</span>
+                    </div>
+                    <div class="wand-spec">
+                        <span class="wand-spec-label">
+                            <span class="spec-label-zh">长度</span>
+                            <span class="spec-label-en">Length</span>
+                        </span>
+                        <span class="wand-spec-value">${wand.length}英寸</span>
+                    </div>
+                    <div class="wand-spec">
+                        <span class="wand-spec-label">
+                            <span class="spec-label-zh">持杖手</span>
+                            <span class="spec-label-en">Hand</span>
+                        </span>
+                        <span class="wand-spec-value">${handText}</span>
+                    </div>
+                </div>
+                <div class="wand-price">🪙 ${wand.price}</div>
+                ${isOwned ?
+                    `<div class="owned-badge">
+                        <span class="owned-zh">已拥有</span>
+                        <span class="owned-en">Owned</span>
+                    </div>` :
+                    `<button class="buy-btn" onclick="buyWand(${wand.id})" ${currentCoins < wand.price ? 'disabled' : ''}>
+                        <span class="buy-zh">购买</span>
+                        <span class="buy-en">Buy</span>
+                    </button>`
+                }
+            `;
+
+            // 更新语言显示
+            if (currentLang === 'en') {
+                card.querySelectorAll('.spec-label-zh, .owned-zh, .buy-zh').forEach(el => el.style.display = 'none');
+                card.querySelectorAll('.spec-label-en, .owned-en, .buy-en').forEach(el => el.style.display = '');
+            }
+
+            return card;
+        }
+
+        // ========== 购买 ==========
+        function buyWand(wandId) {
+            // 检查精力值（精力值小于10不准购买）
+            const playerEnergy = parseInt(localStorage.getItem('playerEnergy') || '100');
+            if (playerEnergy < 10) {
+                showMessage('error', '😫',
+                    currentLang === 'zh' ? '精力值不足！' : 'Not Enough Energy!',
+                    currentLang === 'zh' ? '你的精力值太低了，去三把扫帚休息一下吧！' : 'Your energy is too low! Rest at the Three Broomsticks!'
+                );
+                return;
+            }
+
+            // 重新从 localStorage 读取最新金币
+            const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+            const currentCoins = playerData.cumulativeCoins || 0;
+            const wand = availableWands.find(w => w.id === wandId);
+            if (!wand) return;
+
+            if (currentCoins < wand.price) {
+                showMessage('error', '💸',
+                    currentLang === 'zh' ? '金加隆不足！' : 'Not Enough Coins!',
+                    currentLang === 'zh' ? `你需要 ${wand.price - currentCoins} 更多金加隆来购买这根魔杖！` : `You need ${wand.price - currentCoins} more Galleons!`
+                );
+                return;
+            }
+
+            // 直接购买，不需要确认
+            // 扣除金币 - 更新到 hogwartsPlayer 对象
+            const newCoins = currentCoins - wand.price;
+            playerData.cumulativeCoins = newCoins;
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            coins = newCoins;
+            document.getElementById('coinAmount').textContent = coins;
+
+            // 添加到已拥有
+            ownedWands.push(wand);
+            localStorage.setItem('ollivanderWands', JSON.stringify(ownedWands));
+
+            // 显示成功消息
+            showMessage('success', '🎉',
+                currentLang === 'zh' ? '购买成功！' : 'Purchase Successful!',
+                currentLang === 'zh' ? `你购买了 ${currentLang === 'zh' ? wand.core.name : wand.core.nameEn} ${currentLang === 'zh' ? wand.wood.name : wand.wood.nameEn} 魔杖！` : `You purchased the ${wand.core.nameEn} ${wand.wood.nameEn} wand!`
+            );
+
+            // 重新渲染
+            renderWands();
+        }
+
+        // 显示消息
+        function showMessage(type, icon, title, text) {
+            const modal = document.getElementById('purchaseMessage');
+            const iconEl = document.getElementById('messageIcon');
+            const titleEl = document.getElementById('messageTitle');
+            const textEl = document.getElementById('messageText');
+
+            iconEl.textContent = icon;
+            titleEl.textContent = title;
+            textEl.textContent = text;
+
+            modal.className = 'purchase-message active ' + type;
+        }
+
+        // 关闭消息
+        function closePurchaseMessage() {
+            const modal = document.getElementById('purchaseMessage');
+            modal.classList.remove('active');
+        }
+
+        // ========== 重置偏好 ==========
+        function resetPreferences() {
+            if (confirm(currentLang === 'zh' ? '确定要重新设置魔杖偏好吗？将生成新的魔杖组合。' : 'Are you sure you want to reset your wand preferences? New wand combinations will be generated.')) {
+                localStorage.removeItem('ollivanderPreferences');
+                userPreferences = null;
+                selectedHand = null;
+                document.querySelectorAll('.hand-option').forEach(opt => opt.classList.remove('selected'));
+                document.getElementById('wandLength').value = '';
+                document.getElementById('setupForm').style.display = 'block';
+                document.getElementById('wandsContainer').style.display = 'none';
+            }
+        }
+
+        // ========== 星星背景 ==========
+        function initStars() {
+            const container = document.querySelector('.stars-bg');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.cssText = `
+                    position: absolute;
+                    width: ${Math.random() * 3 + 1}px;
+                    height: ${Math.random() * 3 + 1}px;
+                    background: white;
+                    border-radius: 50%;
+                    top: ${Math.random() * 100}%;
+                    left: ${Math.random() * 100}%;
+                    opacity: ${Math.random()};
+                    animation: twinkle ${Math.random() * 3 + 2}s ease-in-out infinite;
+                `;
+                container.appendChild(star);
+            }
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes twinkle {
+                    0%, 100% { opacity: 0.3; }
+                    50% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 初始化
+        init();
+    </script>
+
+    <!-- 购买消息模态框 -->
+    <div class="purchase-message" id="purchaseMessage">
+        <div class="message-icon" id="messageIcon">🎉</div>
+        <div class="message-title" id="messageTitle">购买成功</div>
+        <div class="message-text" id="messageText">购买成功！</div>
+        <button class="close-purchase-btn" onclick="closePurchaseMessage()">
+            <span class="btn-zh">关闭</span>
+            <span class="btn-en">Close</span>
+        </button>
+    </div>
+</body>
+</html>

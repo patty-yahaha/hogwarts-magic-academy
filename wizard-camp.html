@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>巫师营地 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .camp-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .camp-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .camp-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .camp-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        /* 营地布局 - 改为3列 */
+        .camp-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            padding: 20px;
+        }
+
+        /* 营地按钮 */
+        .camp-section-btn {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 25px;
+            padding: 50px 40px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .camp-section-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .camp-section-btn:hover {
+            border-color: #d4af37;
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.4);
+        }
+
+        .camp-section-btn:hover::before {
+            opacity: 1;
+        }
+
+        .section-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5));
+        }
+
+        .section-title-zh {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .section-title-en {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #c9a227;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .section-desc-zh {
+            font-size: 1.1rem;
+            color: #a08050;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .section-desc-en {
+            font-size: 1rem;
+            color: #8b6914;
+            text-align: center;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* 火堆装饰 */
+        .campfire-decoration {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            animation: campfireGlow 2s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes campfireGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.6));
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 35px rgba(255, 100, 0, 0.9));
+                transform: translateX(-50%) scale(1.1);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .camp-layout {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .camp-layout {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            /* ========== 排行榜模态框样式 ========== */
+            .leaderboard-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 1000;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(5px);
+            }
+
+            .leaderboard-modal.active {
+                display: flex;
+            }
+
+            .leaderboard-content {
+                background: linear-gradient(145deg, rgba(20, 30, 50, 0.98), rgba(10, 20, 40, 0.99));
+                border: 3px solid #d4af37;
+                border-radius: 25px;
+                padding: 30px;
+                max-width: 900px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+                position: relative;
+            }
+
+            .leaderboard-header {
+                text-align: center;
+                margin-bottom: 25px;
+                position: relative;
+            }
+
+            .leaderboard-title {
+                font-family: 'Cinzel Decorative', cursive;
+                font-size: 2rem;
+                color: #d4af37;
+                text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+                margin-bottom: 10px;
+            }
+
+            .close-leaderboard-btn {
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                background: rgba(231, 76, 60, 0.2);
+                border: 2px solid #e74c3c;
+                color: #e74c3c;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                font-size: 1.5rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+
+            .close-leaderboard-btn:hover {
+                background: #e74c3c;
+                color: white;
+                transform: rotate(90deg);
+            }
+
+            /* 排行榜切换标签 */
+            .leaderboard-tabs {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 25px;
+                justify-content: center;
+            }
+
+            .leaderboard-tab {
+                background: rgba(212, 175, 55, 0.1);
+                border: 2px solid rgba(212, 175, 55, 0.3);
+                color: #d4af37;
+                padding: 12px 30px;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-family: 'Cinzel', serif;
+                font-size: 1rem;
+            }
+
+            .leaderboard-tab:hover {
+                background: rgba(212, 175, 55, 0.2);
+                border-color: rgba(212, 175, 55, 0.5);
+            }
+
+            .leaderboard-tab.active {
+                background: linear-gradient(135deg, #d4af37, #c9a227);
+                color: #1a1a2e;
+                font-weight: 600;
+                box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            }
+
+            /* 排行榜列表 */
+            .leaderboard-list {
+                display: none;
+            }
+
+            .leaderboard-list.active {
+                display: block;
+            }
+
+            .leaderboard-item {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                padding: 18px;
+                margin-bottom: 12px;
+                background: rgba(212, 175, 55, 0.05);
+                border: 2px solid rgba(212, 175, 55, 0.2);
+                border-radius: 15px;
+                transition: all 0.3s ease;
+            }
+
+            .leaderboard-item:hover {
+                background: rgba(212, 175, 55, 0.1);
+                border-color: rgba(212, 175, 55, 0.4);
+                transform: translateX(5px);
+            }
+
+            .leaderboard-item.current-user {
+                background: rgba(76, 175, 80, 0.15);
+                border-color: rgba(76, 175, 80, 0.5);
+                box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+            }
+
+            /* 前三名特殊样式 */
+            .leaderboard-item.rank-1 {
+                background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(212, 175, 55, 0.1));
+                border-color: #ffd700;
+            }
+
+            .leaderboard-item.rank-2 {
+                background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(169, 169, 169, 0.1));
+                border-color: #c0c0c0;
+            }
+
+            .leaderboard-item.rank-3 {
+                background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(184, 115, 51, 0.1));
+                border-color: #cd7f32;
+            }
+
+            .rank-number {
+                font-family: 'Cinzel Decorative', cursive;
+                font-size: 1.8rem;
+                font-weight: bold;
+                min-width: 50px;
+                text-align: center;
+            }
+
+            .rank-1 .rank-number { color: #ffd700; }
+            .rank-2 .rank-number { color: #c0c0c0; }
+            .rank-3 .rank-number { color: #cd7f32; }
+
+            .player-avatar {
+                font-size: 2.5rem;
+                width: 55px;
+                height: 55px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(212, 175, 55, 0.1);
+                border: 2px solid rgba(212, 175, 55, 0.3);
+                border-radius: 50%;
+            }
+
+            .player-info {
+                flex: 1;
+            }
+
+            .player-name {
+                font-family: 'Cinzel', serif;
+                font-size: 1.1rem;
+                color: #d4af37;
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+
+            .player-stats {
+                display: flex;
+                gap: 25px;
+                font-size: 0.95rem;
+                color: #c9a227;
+            }
+
+            .stat-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .stat-icon {
+                font-size: 1.2rem;
+            }
+
+            .loading-spinner {
+                text-align: center;
+                padding: 40px;
+                color: #d4af37;
+                font-size: 1.1rem;
+            }
+
+            .error-message {
+                text-align: center;
+                padding: 30px;
+                color: #e74c3c;
+                font-size: 1rem;
+            }
+
+            .empty-message {
+                text-align: center;
+                padding: 40px;
+                color: #8b7355;
+                font-size: 1rem;
+            }
+
+            /* 排行榜按钮 */
+            .leaderboard-fab {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 65px;
+                height: 65px;
+                background: linear-gradient(135deg, #d4af37, #c9a227);
+                border: 3px solid #ffd700;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2rem;
+                cursor: pointer;
+                box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+                transition: all 0.3s ease;
+                z-index: 100;
+                animation: fabPulse 2s ease-in-out infinite;
+            }
+
+            .leaderboard-fab:hover {
+                transform: scale(1.1) rotate(5deg);
+                box-shadow: 0 12px 35px rgba(212, 175, 55, 0.7);
+            }
+
+            @keyframes fabPulse {
+                0%, 100% {
+                    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+                }
+                50% {
+                    box-shadow: 0 8px 35px rgba(212, 175, 55, 0.8);
+                }
+            }
+
+            @media (max-width: 600px) {
+                .leaderboard-fab {
+                    width: 55px;
+                    height: 55px;
+                    font-size: 1.5rem;
+                    bottom: 20px;
+                    right: 20px;
+                }
+
+                .player-stats {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+            }
+        }
+
+            .camp-title {
+                font-size: 2rem;
+            }
+
+            .section-icon {
+                font-size: 4rem;
+            }
+
+            .section-title-zh {
+                font-size: 1.5rem;
+            }
+
+            .section-title-en {
+                font-size: 1.2rem;
+            }
+
+            .camp-section-btn {
+                padding: 40px 30px;
+            }
+        }
+
+        .section-title-en,
+        .section-desc-en {
+            display: none;
+        }
+
+        /* Body class based language switching */
+        body.lang-en .section-title-en,
+        body.lang-en .section-desc-en {
+            display: block !important;
+        }
+
+        body.lang-en .section-title-zh,
+        body.lang-en .section-desc-zh {
+            display: none !important;
+        }
+
+        body.lang-zh .section-title-zh,
+        body.lang-zh .section-desc-zh {
+            display: block !important;
+        }
+
+        body.lang-zh .section-title-en,
+        body.lang-zh .section-desc-en {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+    <div class="campfire-decoration">🔥</div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">巫师营地</span>
+                <span class="title-text-en">Wizard Camp</span>
+            </h1>
+        </header>
+
+        <div class="camp-container">
+            <!-- 营地标题 -->
+            <div class="camp-header">
+                <h2 class="camp-title">
+                    <span class="title-text-zh">⛺ 欢迎来到巫师营地 ⛺</span>
+                    <span class="title-text-en">⛺ Welcome to Wizard Camp ⛺</span>
+                </h2>
+                <p class="camp-subtitle">
+                    <span class="subtitle-text-zh">探索成就、社交、交易与游戏指南</span>
+                    <span class="subtitle-text-en">Explore Achievements, Social, Trade & Game Guide</span>
+                </p>
+            </div>
+
+            <!-- 营地布局 -->
+            <div class="camp-layout">
+                <!-- 巫师成就墙 -->
+                <div class="camp-section-btn" onclick="openAchievements()">
+                    <div class="section-icon">🏆</div>
+                    <div class="section-title-zh">巫师成就墙</div>
+                    <div class="section-title-en">Achievement Wall</div>
+                    <div class="section-desc-zh">解锁你的魔法成就，展示你的荣耀</div>
+                    <div class="section-desc-en">Unlock magical achievements and show your glory</div>
+                </div>
+
+                <!-- 巫师留言板（原聊天大厅） -->
+                <div class="camp-section-btn" onclick="openMessageBoard()">
+                    <div class="section-icon">📝</div>
+                    <div class="section-title-zh">巫师留言板</div>
+                    <div class="section-title-en">Message Board</div>
+                    <div class="section-desc-zh">与其他巫师交流心得，分享魔法</div>
+                    <div class="section-desc-en">Chat with other wizards, share magic</div>
+                </div>
+
+                <!-- 玩转魔法世界 -->
+                <div class="camp-section-btn" onclick="openPlayGuide()">
+                    <div class="section-icon">🎮</div>
+                    <div class="section-title-zh">玩转魔法世界</div>
+                    <div class="section-title-en">Play Guide</div>
+                    <div class="section-desc-zh">了解游戏规则、精力值、成就与奖励</div>
+                    <div class="section-desc-en">Learn rules, energy, achievements & rewards</div>
+                </div>
+
+                <!-- 巫师交易市场 -->
+                <div class="camp-section-btn" onclick="openTradeMarket()">
+                    <div class="section-icon">💰</div>
+                    <div class="section-title-zh">巫师交易市场</div>
+                    <div class="section-title-en">Trade Market</div>
+                    <div class="section-desc-zh">买卖魔法物品，交换珍稀资源</div>
+                    <div class="section-desc-en">Buy and sell magical items, trade rare resources</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 魔法提示 -->
+        <div class="magic-tip">
+            <p class="tip-text-zh">✨ 选择你的营地活动 ✨</p>
+            <p class="tip-text-en">✨ Choose Your Camp Activity ✨</p>
+        </div>
+    </div>
+
+    <!-- 排行榜浮动按钮 -->
+    <div class="leaderboard-fab" onclick="openLeaderboard()" title="排行榜">
+        🏆
+    </div>
+
+    <!-- 排行榜模态框 -->
+    <div class="leaderboard-modal" id="leaderboardModal">
+        <div class="leaderboard-content">
+            <div class="leaderboard-header">
+                <h2 class="leaderboard-title">
+                    <span class="lang-zh">🏆 巫师排行榜 🏆</span>
+                    <span class="lang-en">🏆 Wizard Leaderboard 🏆</span>
+                </h2>
+                <button class="close-leaderboard-btn" onclick="closeLeaderboard()">✕</button>
+            </div>
+
+            <!-- 切换标签 -->
+            <div class="leaderboard-tabs">
+                <div class="leaderboard-tab active" data-tab="coins" onclick="switchLeaderboardTab('coins')">
+                    <span class="lang-zh">💰 金币榜</span>
+                    <span class="lang-en">💰 Coins</span>
+                </div>
+                <div class="leaderboard-tab" data-tab="affection" onclick="switchLeaderboardTab('affection')">
+                    <span class="lang-zh">❤️ 好感度榜</span>
+                    <span class="lang-en">❤️ Affection</span>
+                </div>
+            </div>
+
+            <!-- 金币排行榜 -->
+            <div class="leaderboard-list active" id="coinsLeaderboard">
+                <div class="loading-spinner">
+                    <span class="lang-zh">正在加载...</span>
+                    <span class="lang-en">Loading...</span>
+                </div>
+            </div>
+
+            <!-- 好感度排行榜 -->
+            <div class="leaderboard-list" id="affectionLeaderboard">
+                <div class="loading-spinner">
+                    <span class="lang-zh">正在加载...</span>
+                    <span class="lang-en">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        function updateLanguage() {
+            // 设置body的语言类
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            // 更新返回按钮
+            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ?
+                '← 返回' : '← Back';
+        }
+
+        // 页面跳转
+        function openAchievements() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'wizard-achievements.html';
+            }, 800);
+        }
+
+        function openMessageBoard() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            // 标记已访问营地
+            localStorage.setItem('campLastVisitDate', new Date().toDateString());
+            setTimeout(() => {
+                window.location.href = 'message-board.html';
+            }, 800);
+        }
+
+        function openTradeMarket() {
+            alert(currentLang === 'zh' ? '巫师交易市场即将推出！' : 'Trade Market coming soon!');
+        }
+
+        function openPlayGuide() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'play-guide.html';
+            }, 800);
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // ========== 排行榜功能 ==========
+        const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+        let currentLeaderboardTab = 'coins';
+
+        window.openLeaderboard = function() {
+            document.getElementById('leaderboardModal').classList.add('active');
+            loadLeaderboardData('coins');
+            loadLeaderboardData('affection');
+        };
+
+        window.closeLeaderboard = function() {
+            document.getElementById('leaderboardModal').classList.remove('active');
+        };
+
+        window.switchLeaderboardTab = function(tab) {
+            currentLeaderboardTab = tab;
+
+            // 更新标签样式
+            document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.leaderboard-tab[data-tab="${tab}"]`).classList.add('active');
+
+            // 更新列表显示
+            document.querySelectorAll('.leaderboard-list').forEach(l => l.classList.remove('active'));
+            document.getElementById(`${tab}Leaderboard`).classList.add('active');
+        };
+
+        async function loadLeaderboardData(type) {
+            const container = document.getElementById(`${type}Leaderboard`);
+            const currentUserId = localStorage.getItem('userId');
+
+            try {
+                // 检查是否已登录
+                const isGuest = localStorage.getItem('isGuest') === 'true';
+
+                if (isGuest || !currentUserId) {
+                    container.innerHTML = `
+                        <div class="empty-message">
+                            <div style="font-size: 3rem; margin-bottom: 15px;">🔒</div>
+                            <div class="lang-zh">请先登录查看排行榜</div>
+                            <div class="lang-en">Please login to view leaderboard</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 从 Supabase 获取用户数据
+                const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+                // 获取所有用户的资料
+                const { data: profiles, error } = await sb
+                    .from('player_profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!profiles || profiles.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-message">
+                            <div class="lang-zh">暂无排行榜数据</div>
+                            <div class="lang-en">No leaderboard data yet</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 根据类型排序
+                let sortedProfiles = [...profiles];
+                if (type === 'coins') {
+                    sortedProfiles.sort((a, b) => (b.galleons || 0) - (a.galleons || 0));
+                } else if (type === 'affection') {
+                    // 好感度暂时用 level 代替，如果 player_profiles 有 affection 字段可以用那个
+                    sortedProfiles.sort((a, b) => (b.level || 0) - (a.level || 0));
+                }
+
+                // 只显示前50名
+                sortedProfiles = sortedProfiles.slice(0, 50);
+
+                // 渲染排行榜
+                container.innerHTML = sortedProfiles.map((profile, index) => {
+                    const rank = index + 1;
+                    const isCurrentUser = profile.user_id === currentUserId;
+
+                    return `
+                        <div class="leaderboard-item rank-${rank <= 3 ? rank : ''} ${isCurrentUser ? 'current-user' : ''}">
+                            <div class="rank-number">${rank}</div>
+                            <div class="player-avatar">${profile.avatar || '🧙'}</div>
+                            <div class="player-info">
+                                <div class="player-name">${profile.nickname || '匿名巫师'}</div>
+                                <div class="player-stats">
+                                    ${type === 'coins' ? `
+                                        <div class="stat-item">
+                                            <span class="stat-icon">🪙</span>
+                                            <span>${profile.galleons || 0}</span>
+                                        </div>
+                                    ` : `
+                                        <div class="stat-item">
+                                            <span class="stat-icon">⭐</span>
+                                            <span>等级 ${profile.level || 1}</span>
+                                        </div>
+                                    `}
+                                    <div class="stat-item">
+                                        <span class="stat-icon">🏠</span>
+                                        <span>${profile.house || 'Gryffindor'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+                container.innerHTML = `
+                    <div class="error-message">
+                        <div class="lang-zh">加载失败，请稍后重试</div>
+                        <div class="lang-en">Failed to load, please try again later</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 点击模态框外部关闭
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('leaderboardModal');
+            if (e.target === modal) {
+                closeLeaderboard();
+            }
+        });
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 初始化语言
+        updateLanguage();
+    </script>
+</body>
+</html>

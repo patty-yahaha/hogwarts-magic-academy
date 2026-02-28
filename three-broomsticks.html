@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三把扫帚 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c1810 0%, #1a1a2e 50%, #0f3460 100%);
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            overflow-x: hidden;
+        }
+
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 顶部导航 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(145deg, rgba(40, 20, 10, 0.95), rgba(30, 15, 5, 0.98));
+            border-radius: 15px;
+            border: 2px solid #8b4513;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .back-btn {
+            background: linear-gradient(145deg, #3a2a1a, #2a1a0a);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 10px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(145deg, #4a3a2a, #3a2a1a);
+            transform: translateY(-2px);
+        }
+
+        .header-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 玩家状态栏 */
+        .player-status {
+            background: linear-gradient(145deg, rgba(40, 20, 10, 0.95), rgba(30, 15, 5, 0.98));
+            border-radius: 15px;
+            border: 2px solid #8b4513;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .player-avatar {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(145deg, #4a3a2a, #3a2a1a);
+            border-radius: 50%;
+            border: 3px solid #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .energy-bar-container {
+            background: rgba(20, 10, 5, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px solid #5a3a2a;
+        }
+
+        .energy-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .energy-bar {
+            height: 25px;
+            background: rgba(30, 15, 5, 0.9);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c 0%, #f39c12 30%, #27ae60 70%, #2ecc71 100%);
+            transition: width 0.5s ease;
+            border-radius: 12px;
+        }
+
+        .energy-status {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .status-icon {
+            font-size: 1.8rem;
+        }
+
+        /* 状态指示 */
+        .status-sleepy { color: #95a5a6; }
+        .status-normal { color: #f39c12; }
+        .status-energetic { color: #27ae60; }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        /* 消费物品显示 */
+        .consumed-item {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(40, 20, 10, 0.95), rgba(30, 15, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            z-index: 3000;
+            animation: fadeInOut 10s ease-in-out forwards;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.7);
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
+        .consumed-icon {
+            font-size: 5rem;
+            margin-bottom: 15px;
+        }
+
+        .consumed-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .consumed-energy {
+            font-size: 1.2rem;
+            color: #27ae60;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            background: linear-gradient(145deg, rgba(40, 20, 10, 0.9), rgba(30, 15, 5, 0.95));
+            border-radius: 20px;
+            border: 3px solid #8b4513;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 酒吧标题 */
+        .pub-title {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .pub-title h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .pub-subtitle {
+            color: #a08050;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        /* 分类区域 */
+        .menu-section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #5a3a2a;
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+        }
+
+        .section-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            color: #d4af37;
+        }
+
+        .section-badge {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-left: auto;
+        }
+
+        .section-badge.non-alcoholic {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        /* 物品网格 */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background: linear-gradient(145deg, rgba(50, 30, 15, 0.9), rgba(40, 20, 10, 0.95));
+            border: 2px solid #5a3a2a;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .item-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .item-icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+        }
+
+        .item-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.15rem;
+            color: #d4af37;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .item-name-en {
+            font-size: 0.85rem;
+            color: #8b7355;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .item-energy {
+            display: inline-block;
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .item-price {
+            font-size: 1.4rem;
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(145deg, #d4af37, #b8860b);
+            border: none;
+            border-radius: 10px;
+            color: #1a1a2e;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, #ffd700, #d4af37);
+            transform: scale(1.02);
+        }
+
+        .buy-btn:disabled {
+            background: linear-gradient(145deg, #666, #888);
+            cursor: not-allowed;
+        }
+
+        /* 警告信息 */
+        .warning-text {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 1.3rem;
+            }
+
+            .pub-title h1 {
+                font-size: 1.8rem;
+            }
+
+            .player-status {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .player-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+
+            .items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .item-icon {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* 购买消息模态框 */
+        .purchase-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.98), rgba(20, 10, 5, 0.99));
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px 40px;
+            z-index: 2000;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+            min-width: 300px;
+        }
+
+        .purchase-message.active {
+            display: block;
+        }
+
+        .purchase-message.success {
+            border-color: #27ae60;
+        }
+
+        .purchase-message.error {
+            border-color: #e74c3c;
+        }
+
+        .message-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .message-title {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .message-text {
+            color: #c9a830;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .close-purchase-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-purchase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+        </span>
+    </div>
+
+    <!-- 消费物品显示容器 -->
+    <div id="consumedItemContainer"></div>
+
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span>
+            </button>
+            <h1 class="header-title">
+                <span class="title-text-zh">🧹 三把扫帚 🧹</span>
+            </h1>
+        </div>
+
+        <!-- 玩家状态 -->
+        <div class="player-status">
+            <div class="player-avatar">
+                <span id="avatarIcon">🧙‍♂️</span>
+            </div>
+            <div class="player-info">
+                <div class="player-name">
+                    <span class="name-zh">霍格沃茨学生</span>
+                    <span class="name-en">Hogwarts Student</span>
+                </div>
+                <div class="energy-bar-container">
+                    <div class="energy-label">
+                        <span>
+                            <span class="label-zh">精力值</span>
+                            <span class="label-en">Energy</span>
+                        </span>
+                        <span id="energyValue">0 / 100</span>
+                    </div>
+                    <div class="energy-bar">
+                        <div class="energy-fill" id="energyFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="energy-status" id="energyStatus">
+                        <span class="status-icon">😴</span>
+                        <span class="status-text">
+                            <span class="status-zh">昏昏欲睡</span>
+                            <span class="status-en">Sleepy</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="main-content">
+            <div class="pub-title">
+                <h1>
+                    <span class="title-zh">三把扫帚酒吧</span>
+                    <span class="title-en">Three Broomsticks</span>
+                </h1>
+                <p class="pub-subtitle">
+                    <span class="subtitle-zh">霍格莫德最温暖的休憩之地</span>
+                    <span class="subtitle-en">The warmest rest in Hogsmeade</span>
+                </p>
+            </div>
+
+            <!-- 无酒精饮料 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <span class="section-icon">🍺</span>
+                    <span class="section-title">
+                        <span class="title-zh">无酒精 / 低醇</span>
+                        <span class="title-en">Non-Alcoholic</span>
+                    </span>
+                    <span class="section-badge non-alcoholic">
+                        <span class="badge-zh">学生友好</span>
+                        <span class="badge-en">Student Friendly</span>
+                    </span>
+                </div>
+                <div class="items-grid" id="nonAlcoholicDrinks"></div>
+            </div>
+
+            <!-- 含酒精饮料 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <span class="section-icon">🥃</span>
+                    <span class="section-title">
+                        <span class="title-zh">含酒精饮品</span>
+                        <span class="title-en">Alcoholic Drinks</span>
+                    </span>
+                    <span class="section-badge">
+                        <span class="badge-zh">成年巫师</span>
+                        <span class="badge-en">Adult Wizards</span>
+                    </span>
+                </div>
+                <div class="items-grid" id="alcoholicDrinks"></div>
+            </div>
+
+            <!-- 主食 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <span class="section-icon">🍽️</span>
+                    <span class="section-title">
+                        <span class="title-zh">美食佳肴</span>
+                        <span class="title-en">Main Courses</span>
+                    </span>
+                </div>
+                <div class="items-grid" id="mainCourses"></div>
+            </div>
+
+            <!-- 甜点 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <span class="section-icon">🍰</span>
+                    <span class="section-title">
+                        <span class="title-zh">甜点时光</span>
+                        <span class="title-en">Desserts</span>
+                    </span>
+                </div>
+                <div class="items-grid" id="desserts"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // ========== 物品数据 ==========
+        const menuItems = {
+            nonAlcoholicDrinks: [
+                { id: 1, icon: '🍺', name: '黄油啤酒', nameEn: 'Butterbeer', energy: 5, price: 8 },
+                { id: 2, icon: '🎃', name: '南瓜汁', nameEn: 'Pumpkin Juice', energy: 4, price: 6 },
+                { id: 3, icon: '💧', name: '接骨木水', nameEn: 'Gillywater', energy: 3, price: 5 },
+                { id: 4, icon: '🍒', name: '樱桃糖浆苏打', nameEn: 'Cherry Syrup Soda', energy: 4, price: 7 },
+                { id: 5, icon: '🍋', name: '柠檬水', nameEn: 'Lemonade', energy: 3, price: 5 }
+            ],
+            alcoholicDrinks: [
+                { id: 6, icon: '🔥', name: '火焰威士忌', nameEn: 'Firewhisky', energy: 8, price: 25, adult: true },
+                { id: 7, icon: '🍯', name: '热蜂蜜酒', nameEn: 'Hot Mead', energy: 7, price: 18, adult: true },
+                { id: 8, icon: '🍷', name: '红醋栗朗姆', nameEn: 'Redcurrant Rum', energy: 7, price: 20, adult: true },
+                { id: 9, icon: '🍾', name: '红酒', nameEn: 'Wine', energy: 6, price: 15, adult: true }
+            ],
+            mainCourses: [
+                { id: 10, icon: '🥧', name: '牧羊人派配田园沙拉', nameEn: 'Shepherd\'s Pie with Salad', energy: 8, price: 22 },
+                { id: 11, icon: '🐟', name: '炸鱼薯条', nameEn: 'Fish & Chips', energy: 7, price: 18 },
+                { id: 12, icon: '🥧', name: '康沃尔肉馅饼', nameEn: 'Cornish Pasty', energy: 7, price: 16 },
+                { id: 13, icon: '🍗', name: '烤鸡 / 烤猪肋排', nameEn: 'Roasted Chicken / Ribs', energy: 9, price: 25 },
+                { id: 14, icon: '🥔', name: '土豆泥', nameEn: 'Mashed Potatoes', energy: 4, price: 10 },
+                { id: 15, icon: '🥬', name: '时令蔬菜', nameEn: 'Seasonal Vegetables', energy: 3, price: 8 }
+            ],
+            desserts: [
+                { id: 16, icon: '🍎', name: '苹果派', nameEn: 'Apple Pie', energy: 5, price: 12 },
+                { id: 17, icon: '🍮', name: '奶油布丁', nameEn: 'Cream Pudding', energy: 4, price: 10 }
+            ]
+        };
+
+        // ========== 状态 ==========
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+        let energy = 0;
+        const maxEnergy = 100;
+        let coins = 0;
+
+        // ========== 初始化 ==========
+        function init() {
+            loadCoins();
+            loadEnergy();
+            loadAvatar();
+            renderMenu();
+            updateEnergyDisplay();
+            initStars();
+            initEnergyDecay(); // 启动精力值下降计时器
+            updateLanguage();
+        }
+
+        function loadCoins() {
+            // 从 hogwartsPlayer 对象中读取金币
+            const playerDataStr = localStorage.getItem('hogwartsPlayer');
+            if (playerDataStr) {
+                const playerData = JSON.parse(playerDataStr);
+                coins = playerData.cumulativeCoins || 0;
+            } else {
+                coins = 0;
+            }
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        function loadEnergy() {
+            // 从 localStorage 加载精力值
+            const savedEnergy = localStorage.getItem('playerEnergy');
+            energy = savedEnergy ? parseInt(savedEnergy) : 100; // 默认100
+            // 确保精力值在0-100范围内
+            energy = Math.max(0, Math.min(maxEnergy, energy));
+        }
+
+        function saveEnergy() {
+            localStorage.setItem('playerEnergy', energy.toString());
+        }
+
+        // ========== 精力值随时间下降机制 ==========
+        let energyDecayTimer = null;
+        let lastActivityTime = Date.now();
+        let isEnergyDecayActive = true;
+
+        // 记录用户活动
+        function recordActivity() {
+            lastActivityTime = Date.now();
+            // 如果之前停止了，恢复精力值下降
+            if (!isEnergyDecayActive) {
+                isEnergyDecayActive = true;
+                console.log('用户活动恢复，精力值继续下降');
+            }
+        }
+
+        // 检查是否超过15分钟无操作
+        function checkInactivity() {
+            const inactiveTime = Date.now() - lastActivityTime;
+            const fifteenMinutes = 15 * 60 * 1000; // 15分钟 = 900000毫秒
+
+            if (inactiveTime >= fifteenMinutes && isEnergyDecayActive) {
+                isEnergyDecayActive = false;
+                console.log('用户15分钟无操作，精力值停止下降');
+            }
+        }
+
+        function initEnergyDecay() {
+            // 精力值每分钟下降1，但需要检查是否超过15分钟无操作
+            energyDecayTimer = setInterval(() => {
+                checkInactivity(); // 检查是否超过15分钟无操作
+
+                if (isEnergyDecayActive && energy > 0) {
+                    energy = Math.max(0, energy - 1);
+                    saveEnergy();
+                    updateEnergyDisplay();
+                    console.log(`精力值下降: ${energy} / ${maxEnergy}`);
+                }
+            }, 60000); // 60000毫秒 = 1分钟
+        }
+
+        // 监听用户活动事件
+        ['click', 'keydown', 'scroll', 'touchstart', 'mousemove'].forEach(event => {
+            document.addEventListener(event, recordActivity, { passive: true });
+        });
+
+        // 页面卸载时清除定时器
+        window.addEventListener('beforeunload', () => {
+            if (energyDecayTimer) {
+                clearInterval(energyDecayTimer);
+            }
+            saveEnergy(); // 退出时保存精力值
+        });
+
+        function loadAvatar() {
+            const playerDataStr = localStorage.getItem('hogwartsPlayer');
+            if (playerDataStr) {
+                try {
+                    const playerData = JSON.parse(playerDataStr);
+                    if (playerData.avatar) {
+                        document.getElementById('avatarIcon').textContent = playerData.avatar;
+                    }
+                } catch (e) {
+                    console.error('Failed to load avatar:', e);
+                }
+            }
+        }
+
+        function updateLanguage() {
+            // 使用更通用的选择器来捕获所有语言元素
+            const zhElements = document.querySelectorAll('[class*="-zh"]');
+            const enElements = document.querySelectorAll('[class*="-en"]');
+
+            if (currentLang === 'zh') {
+                zhElements.forEach(el => {
+                    const hasEnClass = Array.from(el.classList).some(cls => cls.endsWith('-en'));
+                    if (!hasEnClass) {
+                        el.style.display = '';
+                    }
+                });
+                enElements.forEach(el => el.style.display = 'none');
+            } else {
+                zhElements.forEach(el => el.style.display = 'none');
+                enElements.forEach(el => {
+                    const hasZhClass = Array.from(el.classList).some(cls => cls.endsWith('-zh'));
+                    if (!hasZhClass) {
+                        el.style.display = '';
+                    }
+                });
+            }
+        }
+
+        // ========== 渲染菜单 ==========
+        function renderMenu() {
+            renderCategory('nonAlcoholicDrinks', menuItems.nonAlcoholicDrinks);
+            renderCategory('alcoholicDrinks', menuItems.alcoholicDrinks);
+            renderCategory('mainCourses', menuItems.mainCourses);
+            renderCategory('desserts', menuItems.desserts);
+        }
+
+        function renderCategory(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            items.forEach(item => {
+                const card = createItemCard(item);
+                container.appendChild(card);
+            });
+        }
+
+        function createItemCard(item) {
+            // 重新从 localStorage 加载金币以确保最新状态
+            const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+            const currentCoins = playerData.cumulativeCoins || 0;
+            const canAfford = currentCoins >= item.price;
+
+            const card = document.createElement('div');
+            card.className = 'item-card';
+
+            card.innerHTML = `
+                <div class="item-icon">${item.icon}</div>
+                <div class="item-name">${item.name}</div>
+                <div class="item-name-en">${item.nameEn}</div>
+                <div class="item-energy">
+                    ⚡ +${item.energy}
+                    <span class="energy-label-zh">精力</span>
+                    <span class="energy-label-en">Energy</span>
+                </div>
+                <div class="item-price">🪙 ${item.price}</div>
+                ${item.adult ? `<div class="warning-text">
+                    <span class="warning-zh">⚠️ 适合成年巫师</span>
+                    <span class="warning-en">⚠️ Adult Wizards Only</span>
+                </div>` : ''}
+                <button class="buy-btn" onclick="purchaseItem(${item.id})" ${!canAfford ? 'disabled' : ''}>
+                    <span class="btn-zh">购买</span>
+                    <span class="btn-en">Buy</span>
+                </button>
+            `;
+
+            // 更新语言显示
+            if (currentLang === 'en') {
+                card.querySelectorAll('.energy-label-zh, .warning-zh, .btn-zh').forEach(el => el.style.display = 'none');
+                card.querySelectorAll('.energy-label-en, .warning-en, .btn-en').forEach(el => el.style.display = '');
+            }
+
+            return card;
+        }
+
+        // ========== 购买功能 ==========
+        function purchaseItem(itemId) {
+            // 重新从 localStorage 读取最新金币
+            const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+            const currentCoins = playerData.cumulativeCoins || 0;
+
+            // 查找物品
+            let item = null;
+            Object.values(menuItems).forEach(category => {
+                const found = category.find(i => i.id === itemId);
+                if (found) item = found;
+            });
+
+            if (!item) return;
+
+            // 检查金币
+            if (currentCoins < item.price) {
+                showMessage('error', '💸',
+                    currentLang === 'zh' ? '金加隆不足！' : 'Not Enough Coins!',
+                    currentLang === 'zh' ? `你需要 ${item.price - currentCoins} 更多金加隆！` : `You need ${item.price - currentCoins} more Galleons!`
+                );
+                return;
+            }
+
+            // 扣除金币 - 更新到 hogwartsPlayer 对象
+            coins = currentCoins - item.price;
+            playerData.cumulativeCoins = coins;
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            document.getElementById('coinAmount').textContent = coins;
+
+            // 增加精力值
+            energy = Math.min(maxEnergy, energy + item.energy);
+            saveEnergy(); // 保存精力值
+
+            // 显示消费动画
+            showConsumedItem(item);
+
+            // 更新精力显示
+            updateEnergyDisplay();
+
+            // 显示成功消息
+            showMessage('success', '🎉',
+                currentLang === 'zh' ? '购买成功！' : 'Purchase Successful!',
+                currentLang === 'zh' ? `你享用了 ${item.name}！精力值 +${item.energy}` : `You enjoyed ${item.nameEn}! Energy +${item.energy}`
+            );
+
+            // 更新按钮状态
+            setTimeout(() => {
+                renderMenu();
+            }, 100);
+        }
+
+        // ========== 显示消息 ==========
+        function showMessage(type, icon, title, text) {
+            const modal = document.getElementById('purchaseMessage');
+            const iconEl = document.getElementById('messageIcon');
+            const titleEl = document.getElementById('messageTitle');
+            const textEl = document.getElementById('messageText');
+
+            iconEl.textContent = icon;
+            titleEl.textContent = title;
+            textEl.textContent = text;
+
+            modal.className = 'purchase-message active ' + type;
+        }
+
+        // ========== 关闭消息 ==========
+        function closePurchaseMessage() {
+            const modal = document.getElementById('purchaseMessage');
+            modal.classList.remove('active');
+        }
+
+        function showConsumedItem(item) {
+            const container = document.getElementById('consumedItemContainer');
+            container.innerHTML = `
+                <div class="consumed-item">
+                    <div class="consumed-icon">${item.icon}</div>
+                    <div class="consumed-name">${currentLang === 'zh' ? item.name : item.nameEn}</div>
+                    <div class="consumed-energy">
+                        ⚡ +${item.energy}
+                        <span class="energy-zh">精力值提升！</span>
+                        <span class="energy-en">Energy Boost!</span>
+                    </div>
+                </div>
+            `;
+
+            // 10秒后移除
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 10000);
+        }
+
+        // ========== 精力值显示 ==========
+        function updateEnergyDisplay() {
+            const fill = document.getElementById('energyFill');
+            const value = document.getElementById('energyValue');
+            const status = document.getElementById('energyStatus');
+
+            fill.style.width = `${energy}%`;
+            value.textContent = `${energy} / ${maxEnergy}`;
+
+            // 更新状态显示
+            let statusIcon, statusTextZh, statusTextEn, statusClass;
+
+            if (energy === 0) {
+                statusIcon = '😴';
+                statusTextZh = '昏昏欲睡';
+                statusTextEn = 'Sleepy';
+                statusClass = 'status-sleepy';
+            } else if (energy < 50) {
+                statusIcon = '😌';
+                statusTextZh = '略显疲惫';
+                statusTextEn = 'A bit tired';
+                statusClass = 'status-sleepy';
+            } else if (energy < 100) {
+                statusIcon = '😊';
+                statusTextZh = '神清气爽';
+                statusTextEn = 'Refreshed';
+                statusClass = 'status-normal';
+            } else {
+                statusIcon = '⚡';
+                statusTextZh = '精力旺盛';
+                statusTextEn = 'Full of Energy!';
+                statusClass = 'status-energetic';
+            }
+
+            status.className = `energy-status ${statusClass}`;
+            status.innerHTML = `
+                <span class="status-icon">${statusIcon}</span>
+                <span class="status-text">
+                    <span class="status-zh">${statusTextZh}</span>
+                    <span class="status-en">${statusTextEn}</span>
+                </span>
+            `;
+
+            // 更新语言
+            if (currentLang === 'en') {
+                status.querySelector('.status-zh').style.display = 'none';
+                status.querySelector('.status-en').style.display = '';
+            }
+        }
+
+        // ========== 返回 ==========
+        window.goBack = function() {
+            console.log('返回按钮被点击');
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'games-zone.html';
+            }, 500);
+        };
+
+        // ========== 星星背景 ==========
+        function initStars() {
+            const container = document.querySelector('.stars-bg');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.cssText = `
+                    position: absolute;
+                    width: ${Math.random() * 3 + 1}px;
+                    height: ${Math.random() * 3 + 1}px;
+                    background: white;
+                    border-radius: 50%;
+                    top: ${Math.random() * 100}%;
+                    left: ${Math.random() * 100}%;
+                    opacity: ${Math.random()};
+                    animation: twinkle ${Math.random() * 3 + 2}s ease-in-out infinite;
+                `;
+                container.appendChild(star);
+            }
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes twinkle {
+                    0%, 100% { opacity: 0.3; }
+                    50% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 初始化
+        init();
+    </script>
+
+    <!-- 购买消息模态框 -->
+    <div class="purchase-message" id="purchaseMessage">
+        <div class="message-icon" id="messageIcon">🎉</div>
+        <div class="message-title" id="messageTitle">购买成功</div>
+        <div class="message-text" id="messageText">购买成功！</div>
+        <button class="close-purchase-btn" onclick="closePurchaseMessage()">
+            <span class="btn-zh">关闭</span>
+            <span class="btn-en">Close</span>
+        </button>
+    </div>
+</body>
+</html>

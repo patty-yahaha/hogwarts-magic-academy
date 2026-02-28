@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔杖介绍</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .wands-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #c9a227;
+            margin-bottom: 50px;
+            font-style: italic;
+        }
+
+        .wands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .wand-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wand-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .wand-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+        }
+
+        .wand-card:hover::before {
+            opacity: 1;
+        }
+
+        .wand-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .wand-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .wand-owner {
+            text-align: center;
+            color: #c9a227;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .wand-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .wand-detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .wand-detail-label {
+            color: #8b6914;
+            font-size: 0.95rem;
+        }
+
+        .wand-detail-value {
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .back-nav {
+            margin-bottom: 30px;
+        }
+
+        .back-nav button {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-nav button:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="wands-container">
+            <div class="back-nav">
+                <button onclick="goBack()">← 返回大厅</button>
+            </div>
+
+            <h1 class="page-title">🪄 魔杖介绍 🪄</h1>
+            <p class="page-subtitle">Wands of the Wizarding World</p>
+
+            <div class="wands-grid">
+                <div class="wand-card">
+                    <div class="wand-icon">🪄</div>
+                    <div class="wand-name">冬青木凤凰羽毛魔杖</div>
+                    <div class="wand-owner">主人：哈利·波特</div>
+                    <div class="wand-details">
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">木材</span>
+                            <span class="wand-detail-value">冬青木</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">杖芯</span>
+                            <span class="wand-detail-value">凤凰羽毛</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">长度</span>
+                            <span class="wand-detail-value">11英寸</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">弹性</span>
+                            <span class="wand-detail-value">坚硬</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wand-card">
+                    <div class="wand-icon">🪄</div>
+                    <div class="wand-name">葡萄藤木龙心弦魔杖</div>
+                    <div class="wand-owner">主人：赫敏·格兰杰</div>
+                    <div class="wand-details">
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">木材</span>
+                            <span class="wand-detail-value">葡萄藤木</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">杖芯</span>
+                            <span class="wand-detail-value">龙心弦</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">长度</span>
+                            <span class="wand-detail-value">10¾英寸</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">弹性</span>
+                            <span class="wand-detail-value">适中</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wand-card">
+                    <div class="wand-icon">🪄</div>
+                    <div class="wand-name">山楂木独角兽毛魔杖</div>
+                    <div class="wand-owner">主人：罗恩·韦斯莱</div>
+                    <div class="wand-details">
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">木材</span>
+                            <span class="wand-detail-value">山楂木</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">杖芯</span>
+                            <span class="wand-detail-value">独角兽毛</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">长度</span>
+                            <span class="wand-detail-value">14英寸</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">弹性</span>
+                            <span class="wand-detail-value">略弯</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wand-card">
+                    <div class="wand-icon">🪄</div>
+                    <div class="wand-name">紫杉木凤凰羽毛魔杖</div>
+                    <div class="wand-owner">主人：伏地魔</div>
+                    <div class="wand-details">
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">木材</span>
+                            <span class="wand-detail-value">紫杉木</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">杖芯</span>
+                            <span class="wand-detail-value">凤凰羽毛</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">长度</span>
+                            <span class="wand-detail-value">13½英寸</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">弹性</span>
+                            <span class="wand-detail-value">坚硬</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wand-card">
+                    <div class="wand-icon">🪄</div>
+                    <div class="wand-name">胡桃木龙心弦魔杖</div>
+                    <div class="wand-owner">主人：西弗勒斯·斯内普</div>
+                    <div class="wand-details">
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">木材</span>
+                            <span class="wand-detail-value">胡桃木</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">杖芯</span>
+                            <span class="wand-detail-value">龙心弦</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">长度</span>
+                            <span class="wand-detail-value">13¼英寸</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">弹性</span>
+                            <span class="wand-detail-value">适中</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wand-card">
+                    <div class="wand-icon">🪄</div>
+                    <div class="wand-name">老魔杖</div>
+                    <div class="wand-owner">主人：邓布利多 / 格林德沃</div>
+                    <div class="wand-details">
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">木材</span>
+                            <span class="wand-detail-value">接骨木</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">杖芯</span>
+                            <span class="wand-detail-value">夜骐尾羽</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">长度</span>
+                            <span class="wand-detail-value">15英寸</span>
+                        </div>
+                        <div class="wand-detail-item">
+                            <span class="wand-detail-label">弹性</span>
+                            <span class="wand-detail-value">未知</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        window.goBack = function() {
+            console.log('返回按钮被点击');
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        };
+    </script>
+</body>
+</html>

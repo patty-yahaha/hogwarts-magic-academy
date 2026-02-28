@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册功能测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>Supabase 注册功能测试</h1>
+
+    <div>
+        <label>邮箱：</label>
+        <input type="email" id="email" value="test@example.com">
+    </div>
+    <div>
+        <label>密码：</label>
+        <input type="password" id="password" value="123456">
+    </div>
+    <div>
+        <label>昵称：</label>
+        <input type="text" id="nickname" value="测试用户">
+    </div>
+
+    <button onclick="testRegister()">测试注册</button>
+    <button onclick="testConnection()">测试连接</button>
+    <button onclick="clearResult()">清空结果</button>
+
+    <div id="result" class="info">准备测试...</div>
+
+    <script>
+        const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
+        let supabase;
+        const resultDiv = document.getElementById('result');
+
+        function log(message, type = 'info') {
+            resultDiv.className = type;
+            resultDiv.textContent = message;
+            console.log(message);
+        }
+
+        function clearResult() {
+            resultDiv.className = 'info';
+            resultDiv.textContent = '准备测试...';
+        }
+
+        async function testConnection() {
+            try {
+                log('正在创建 Supabase 客户端...', 'info');
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                log('✅ Supabase 客户端创建成功！\nURL: ' + SUPABASE_URL, 'success');
+
+                // 测试连接
+                const { data, error } = await supabase.auth.getSession();
+                if (error) {
+                    log('❌ getSession 失败: ' + error.message, 'error');
+                } else {
+                    log('✅ 连接测试成功！\n当前状态: ' + (data.session ? '已登录' : '未登录'), 'success');
+                }
+            } catch (error) {
+                log('❌ 连接错误: ' + error.message + '\n\n详细信息:\n' + JSON.stringify(error, null, 2), 'error');
+            }
+        }
+
+        async function testRegister() {
+            try {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const nickname = document.getElementById('nickname').value;
+
+                log('正在测试注册功能...\n邮箱: ' + email + '\n昵称: ' + nickname, 'info');
+
+                if (!supabase) {
+                    await testConnection();
+                }
+
+                log('正在调用 supabase.auth.signUp()...', 'info');
+
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: { nickname: nickname }
+                    }
+                });
+
+                if (error) {
+                    log('❌ 注册失败！\n\n错误信息: ' + error.message + '\n\n错误详情:\n' + JSON.stringify(error, null, 2), 'error');
+                } else {
+                    log('✅ 注册成功！\n\n用户ID: ' + data.user.id + '\n邮箱: ' + data.user.email + '\n\n请检查 Supabase Dashboard 的 Authentication > Users 是否有新用户。', 'success');
+                }
+
+            } catch (error) {
+                log('❌ 捕获到异常！\n\n错误信息: ' + error.message + '\n\n错误详情:\n' + JSON.stringify(error, null, 2) + '\n\n堆栈信息:\n' + error.stack, 'error');
+            }
+        }
+
+        // 页面加载时自动测试连接
+        window.onload = async function() {
+            await testConnection();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预言家日报 - 霍格沃茨魔法学院</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'Cinzel', serif;
+            background: linear-gradient(135deg, #f5f0e6 0%, #e8dcc8 50%, #f0e6d2 100%);
+            min-height: 100vh;
+            color: #2c1810;
+            padding: 80px 20px 20px;
+        }
+
+        .newspaper-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 顶部导航 */
+        .newspaper-header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .newspaper-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .newspaper-masthead {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-top: 2px solid #d4af37;
+            border-bottom: 2px solid #d4af37;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .newspaper-date {
+            font-size: 1.1rem;
+            color: #c9a227;
+        }
+
+        .newspaper-issue {
+            font-size: 1rem;
+            color: #8b6914;
+        }
+
+        /* 搜索栏 */
+        .search-section {
+            background: white;
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input-group label {
+            display: block;
+            color: #8b6914;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .search-input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #faf8f3;
+        }
+
+        .search-input-group input:focus {
+            outline: none;
+            border-color: #c9a227;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 语言切换 */
+        .lang-switch {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .lang-btn {
+            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid #d4af37;
+            color: #8b6914;
+            padding: 8px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active,
+        .lang-btn:hover {
+            background: #d4af37;
+            color: #1a1a2e;
+        }
+
+        /* 新闻文章 */
+        .news-articles {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .news-card {
+            background: white;
+            border: 3px solid #8b6914;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            border-color: #d4af37;
+        }
+
+        .news-header {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            padding: 20px;
+            position: relative;
+        }
+
+        .news-date-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #1a1a2e;
+            color: #d4af37;
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
+
+        .news-title {
+            font-size: 1.3rem;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .news-summary {
+            color: #3d2914;
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        .news-thumbnail {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f0e6, #e8dcc8);
+            font-size: 5rem;
+        }
+
+        .news-footer {
+            padding: 15px 20px;
+            background: #faf8f3;
+            border-top: 2px solid #e8dcc8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .news-author {
+            color: #8b6914;
+            font-size: 0.85rem;
+        }
+
+        .news-category {
+            background: #d4af37;
+            color: #1a1a2e;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 3px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 无结果提示 */
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            color: #8b6914;
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+
+        .no-results-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* 装饰元素 */
+        .decorative-line {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            margin: 30px 0;
+        }
+
+        /* 详情弹窗 */
+        .news-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .news-detail-modal.active {
+            display: flex;
+        }
+
+        .news-detail-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            padding: 25px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+
+        .close-detail-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(26, 26, 46, 0.8);
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-detail-btn:hover {
+            background: #1a1a2e;
+            transform: scale(1.1);
+        }
+
+        .detail-date-badge {
+            display: inline-block;
+            background: #1a1a2e;
+            color: #d4af37;
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .detail-title {
+            font-size: 2rem;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .detail-summary {
+            color: #3d2914;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .detail-body {
+            padding: 30px;
+        }
+
+        .detail-image {
+            width: 100%;
+            max-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f0e6, #e8dcc8);
+            font-size: 8rem;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .detail-text {
+            line-height: 1.9;
+            color: #3d2914;
+            font-size: 1.05rem;
+        }
+
+        .detail-text p {
+            margin-bottom: 15px;
+        }
+
+        .detail-footer {
+            padding: 20px 30px;
+            background: #faf8f3;
+            border-top: 2px solid #e8dcc8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .detail-author {
+            color: #8b6914;
+            font-size: 0.95rem;
+        }
+
+        .detail-category {
+            background: #d4af37;
+            color: #1a1a2e;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .newspaper-title {
+                font-size: 2rem;
+            }
+
+            .news-title {
+                font-size: 1.1rem;
+            }
+
+            .news-articles {
+                grid-template-columns: 1fr;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .newspaper-masthead {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回按钮 -->
+    <button class="back-btn" onclick="goBack()">← 返回大厅</button>
+
+    <div class="newspaper-container">
+        <!-- 报纸头部 -->
+        <div class="newspaper-header">
+            <h1 class="newspaper-title">《预言家日报》 The Daily Prophet</h1>
+            <div class="newspaper-masthead">
+                <div class="newspaper-date" id="currentDate"></div>
+                <div class="newspaper-issue">魔法世界权威资讯 / The Wizarding World's #1 News Source</div>
+                <div class="newspaper-price">5银西可 / 5 Sickles</div>
+            </div>
+        </div>
+
+        <!-- 搜索栏 -->
+        <div class="search-section">
+            <div class="search-row">
+                <div class="search-input-group">
+                    <label>关键词搜索 / Search Keywords</label>
+                    <input type="text" id="keywordSearch" placeholder="哈利·波特 / Harry Potter">
+                </div>
+                <div class="search-input-group">
+                    <label>日期搜索 / Search by Date</label>
+                    <input type="date" id="dateSearch">
+                </div>
+                <button class="search-btn" onclick="searchNews()">🔍 搜索 / Search</button>
+            </div>
+            <div class="lang-switch">
+                <button class="lang-btn active" data-lang="zh" onclick="switchLanguage('zh')">中文</button>
+                <button class="lang-btn" data-lang="en" onclick="switchLanguage('en')">English</button>
+            </div>
+        </div>
+
+        <!-- 装饰线 -->
+        <div class="decorative-line"></div>
+
+        <!-- 新闻文章列表 -->
+        <div class="news-articles" id="newsArticles">
+            <!-- 动态生成新闻 -->
+        </div>
+    </div>
+
+    <!-- 新闻详情弹窗 -->
+    <div class="news-detail-modal" id="newsDetailModal">
+        <div class="news-detail-content" id="newsDetailContent">
+            <!-- 动态填充详情内容 -->
+        </div>
+    </div>
+
+    <script>
+        // 当前语言
+        let currentLang = 'zh';
+
+        // 新闻数据库
+        const newsDatabase = [
+            {
+                id: 1,
+                date: '1996-07-12',
+                year: 1996,
+                month: 7,
+                day: 12,
+                category: 'politics',
+                icon: '🏛️',
+                zh: {
+                    title: '魔法部严正警告：壁炉网路安全性遭质疑',
+                    summary: '福吉部长重申对飞路网的监管处于"史无前例的严密状态"',
+                    content: `【本报讯】魔法部部长康奈利·福吉昨日在新闻发布会上重申，魔法部对所有官方壁炉网路的监管处于"史无前例的严密状态"。此番表态旨在回应近期多起关于食死徒渗透飞路网的传言。
+
+尽管部长坚称一切尽在掌握，但据知情人士透露，魔法法律执行司昨日突击搜查了翻倒巷的数家店铺，理由是怀疑其私自改装非法壁炉。
+
+"我们呼吁公众保持冷静，"福吉部长表示，"任何关于神秘人已经控制交通枢纽的说法都是彻头彻尾的妖言惑众。"
+
+然而，匿名的魔法部官员向本报透露，近期的安全检查确实发现了一些"令人不安"的迹象。在对角巷和霍格莫德的多个公共壁炉中，检测到了不明魔法的残留痕迹。
+
+威森加摩成员亚瑟·韦斯莱先生拒绝就此发表评论，但他所在的禁止滥用魔法司上周确实增派了人手监控飞路网的使用情况。
+
+与此同时，霍格沃茨校长阿不思·邓布利多在今日的校董会会议上再次呼吁提高警惕。虽然他没有直接批评魔法部的做法，但暗示当前的形势比官方承认的更为严峻。
+
+"黑暗时刻往往以我们不预期的方式到来，"邓布利多说，"团结与警觉是我们最好的防御。"
+
+本报将持续关注事态发展。`,
+                    author: '丽塔·斯基特'
+                },
+                en: {
+                    title: 'Ministry of Magic Warns: Floo Network Security Questioned',
+                    summary: 'Minister Fudge reiterates that Floo Network regulation is "unprecedentedly stringent"',
+                    content: `[Special Report] Minister of Magic Cornelius Fudge reiterated yesterday at a press conference that the Ministry's oversight of all official Floo Network connections remains "unprecedentedly stringent." This statement aims to respond to recent rumors about Death Eaters infiltrating the Floo Network.
+
+While the Minister insists everything is under control, sources reveal that the Department of Magical Law Enforcement conducted surprise raids on several shops in Knockturn Alley yesterday, citing suspicions of illegal fireplace modifications.
+
+"We urge the public to remain calm," stated Minister Fudge, "Any claims that You-Know-Who has controlled transportation hubs are complete and utter nonsense."
+
+However, anonymous Ministry officials disclosed to this newspaper that recent security inspections have indeed uncovered some "unsettling" signs. At several public fireplaces in Diagon Alley and Hogsmeade, traces of unknown magic were detected.
+
+Wizengamot member Mr. Arthur Weasley refused to comment, but his Misuse of Magic Office did indeed deploy additional personnel last week to monitor Floo Network usage.
+
+Meanwhile, Hogwarts Headmaster Albus Dumbledore once again called for increased vigilance at today's Board of Governors meeting. While he did not directly criticize the Ministry's approach, he implied the situation is more grave than officially acknowledged.
+
+"Dark times often arrive in ways we do not expect," said Dumbledore, "Unity and vigilance are our best defense."
+
+This newspaper will continue to monitor developments.`,
+                    author: 'Rita Skeeter'
+                }
+            },
+            {
+                id: 2,
+                date: '1996-07-12',
+                year: 1996,
+                month: 7,
+                day: 12,
+                category: 'business',
+                icon: '📚',
+                zh: {
+                    title: '丽痕书店宣布：洛哈特亲笔签名版即将售罄',
+                    summary: '由于库存紧缺，将采取限购措施',
+                    content: `【商业快讯】丽痕书店今日发布公告，由于库存紧缺，吉德罗·洛哈特爵士的自传签名版《会魔法的我》将采取限购措施。尽管洛哈特教授目前仍在圣芒戈魔法伤病医院接受长期治疗，但其作品的流行程度并未减弱。
+
+书店经理在公告中表示："我们非常高兴地看到，吉德罗·洛哈特教授的著作依然受到广大巫师读者的热烈追捧。然而，由于签名版数量有限，每位顾客限购一本。"
+
+这一消息立即在对角巷引发了一阵抢购热潮。今早开店前，书店门口已经排起了长长的队伍，有的巫师甚至从前一天晚上就开始排队。
+
+"我是吉德罗·洛哈特的忠实粉丝，"排在队伍第一位的是霍格沃茨六年级学生，"他的《与吸血鬼同舟》让我对黑魔法防御术产生了浓厚的兴趣。能够拥有他的亲笔签名，是我此生最大的梦想。"
+
+值得一提的是，书店经理特别提醒顾客，购书期间请严禁携带爆炸弹或其他恶作剧商品，以免引发不必要的骚乱。这一规定源于去年发生的"韦斯莱双子爆炸事件"，当时弗雷德和乔治·韦斯莱在书店内引爆了一整箱速效逃课糖。
+
+截止发稿时，签名版库存已不足百本。预计本周末将完全售罄。
+
+对于未能购得签名版的读者，书店表示将提供普通版本，并赠送一张洛哈特教授的明信片（非签名）。`,
+                    author: '特里·布特'
+                },
+                en: {
+                    title: 'Flourish and Blotts Announces: Lockhart Signed Edition Nearly Sold Out',
+                    summary: 'Rationing measures implemented due to limited stock',
+                    content: `[Business Brief] Flourish and Blotts announced today that due to limited stock, Gilderoy Lockhart's signed autobiography "Magical Me" will be subject to rationing. Although Professor Lockhart remains under long-term care at St Mungo's Hospital for Magical Maladies, the popularity of his works has not diminished.
+
+"We are delighted to see that Professor Gilderoy Lockhart's writings remain enthusiastically sought after by wizard readers," the bookstore manager stated in the announcement. "However, due to limited signed copies, each customer is limited to one purchase."
+
+This news immediately triggered a buying frenzy in Diagon Alley. Before the store opened this morning, a long queue had already formed, with some wizards having started queuing since the previous night.
+
+"I am a devoted fan of Gilderoy Lockhart," said a sixth-year Hogwarts student at the front of the queue, "His book 'Voyages with Vampires' sparked my deep interest in Defense Against the Dark Arts. Owning his autograph is my lifelong dream."
+
+Notably, the bookstore manager specifically reminded customers that no explosive devices or other prank products should be brought during book purchasing, to avoid causing unnecessary disturbances. This rule stems from last year's "Weasley Twins Explosion Incident," when Fred and George Weasley detonated an entire box of Puking Pastilles inside the bookstore.
+
+As of press time, less than one hundred signed copies remain in stock. Complete sellout is expected by this weekend.
+
+For readers unable to purchase the signed edition, the bookstore will offer regular editions, accompanied by a Lockhart professor postcard (unsigned).`,
+                    author: 'Terry Boot'
+                }
+            },
+            {
+                id: 3,
+                date: '1996-07-12',
+                year: 1996,
+                month: 7,
+                day: 12,
+                category: 'classifieds',
+                icon: '📋',
+                zh: {
+                    title: '分类广告与通知',
+                    summary: '寻找丢失的嗅嗅、脱靶预警及各类魔法服务',
+                    content: `【分类广告】
+
+寻找丢失的嗅嗅
+在对角巷遗失一只嗅嗅，脖子上套着金色项圈，名字叫"闪闪"。若能寻回并确保其未洗劫古灵阁，酬劳丰厚。联系人：蒙顿格斯·弗莱奇（注：谢绝傲罗垂询）
+
+脱靶预警
+自动矫正羽毛笔促销中！让您的论文告别拼写错误。价格：每支3金加隆。（免责声明：本产品不对因药剂配方拼写错误导致的坩埚爆炸负责）
+
+魔法物品修复
+专业修复破损魔杖、走坏怀表、毁坏坩埚。五十年经验，保证满意。联系人：奥利凡德魔杖店二楼，希克·科尔
+
+房屋出租
+霍格沃茨附近有一间舒适小屋出租，两室一厅，适合小家庭。租金面议。请注意：此房屋已施放反麻瓜咒，麻瓜无法看见。联系人：费格太太
+
+黑魔法防御术辅导
+前傲罗，有丰富实战经验，提供黑魔法防御术一对一辅导。特别擅长对付摄魂怪。时间：周末。地点：对角巷。联系人：莱姆斯·卢平（化名）
+
+求购
+求购二手光轮2000，八成新以上，价格面议。联系人：罗纳德·韦斯莱（请勿在早餐时间打扰）`,
+                    author: '广告部'
+                },
+                en: {
+                    title: 'Classified Ads & Notices',
+                    summary: 'Lost Niffler, Spell-Checking Quills, and various magical services',
+                    content: `[Classified advertisements]
+
+Lost Niffler
+Lost a Niffler in Diagon Alley, wearing a golden collar, name "Twinky". Generous reward for return and assurance that Gringotts has not been robbed. Contact: Mundungus Fletcher (Note: No Aurors, please)
+
+Spell-Checking Solutions
+Auto-Correct Quills on sale! Say goodbye to spelling errors in your essays. Price: 3 Galleons each. (Disclaimer: This product is not responsible for cauldron explosions caused by incorrect potion formula spelling)
+
+Magical Item Repair
+Professional repair of broken wands, stopped watches, damaged cauldrons. Fifty years of experience, satisfaction guaranteed. Contact: Second Floor, Ollivander's, Hikke Koll
+
+House for Rent
+Cozy cottage near Hogwarts, two bedrooms and living room, suitable for small families. Rent negotiable. Note: This property is under Anti-Muggle Charm, Muggles cannot see it. Contact: Mrs. Figg
+
+Defense Against the Dark Arts Tutoring
+Former Auror with extensive combat experience offers one-on-one DADA tutoring. Specializes in dealing with Dementors. Time: Weekends. Location: Diagon Alley. Contact: Remus Lupin (alias)
+
+Wanted to Purchase
+Seeking second-hand Firebolt, 80% new or better, price negotiable. Contact: Ronald Weasley (please do not disturb during mealtime)`,
+                    author: 'Advertising Department'
+                }
+            },
+            {
+                id: 4,
+                date: '1996-07-12',
+                year: 1996,
+                month: 7,
+                day: 12,
+                category: 'sports',
+                icon: '🧹',
+                zh: {
+                    title: '今日魁地奇战报：查德里火炮队连败纪录延续',
+                    summary: '火炮队以10:450的悬殊比分负于普德米尔联队',
+                    content: `【体育快讯】查德里火炮队在昨日的比赛中以10:450的悬殊比分负于普德米尔联队，延续了他们令人难以置信的连败纪录。
+
+火炮队的搜捕手在比赛开始十分钟后便因扫帚故障误入禁林，这为整个比赛奠定了悲剧性的基调。球队管理层表示，他们正在考虑更换队服颜色以"改变运势"。
+
+"这是一个令人失望的结果，"火炮队队长在赛后新闻发布会上勉强说道，"但我们不会放弃。我们的球迷一直支持着我们，即使我们已经连续输了...呃...很多场。"
+
+普德米尔联队的击球手表现出色，共击晕了三颗游走球，其中一颗直接命中火炮队的守门员，导致他不得不退场接受治疗。
+
+值得一提的是，火炮队的追球手在比赛中一度接近金色飞贼，但就在他伸手的瞬间，一只不知从何处飞来的霍格沃茨猫头鹰撞在了他的光轮2000上。
+
+"这是最不幸的时刻，"这位追球手回忆道，"那只猫头鹰似乎传递着某种重要信息。我看见了信封上的霍格沃茨校徽。"
+
+火炮队目前在本赛季中排名垫底，并且已经连续72场比赛未能取胜。球迷们纷纷表示，他们已经开始习惯这种"传统"。
+
+"支持火炮队已经成为一种生活态度，"一位资深球迷说道，"就像喝黄油啤酒一样，即使你知道喝多了会醉，但还是忍不住继续喝。"`,
+                    author: '肯尼厄尔·惠斯普'
+                },
+                en: {
+                    title: 'Quidditch Report: Chudley Cannons Continue Losing Streak',
+                    summary: 'Cannons lose 10:450 to Puddlemere United',
+                    content: `[Sports Brief] The Chudley Cannons suffered a crushing 10:450 defeat against Puddlemere United yesterday, extending their incredible losing streak.
+
+The Cannons' Seeker was knocked off course into the Forbidden Forest just ten minutes into the match due to broomstick malfunction, setting a tragic tone for the entire game. Team management stated they are considering changing the team colors to "change their luck."
+
+"This is a disappointing result," the Cannons captain reluctantly stated at the post-match press conference, "But we won't give up. Our fans have always supported us, even though we've now lost...er...many games in a row."
+
+Puddlemere United's Beaters performed excellently, stunning three Bludgers in total, one of which directly hit the Cannons' Keeper, forcing him to leave for treatment.
+
+Notably, the Cannons' Chaser briefly approached the Snitch during the match, but at the very moment he reached out, a Hogwarts owl flew out of nowhere and collided with his Firebolt 2000.
+
+"It was the most unfortunate moment," the Chaser recalled, "That owl seemed to be delivering something important. I saw the Hogwarts school crest on the envelope."
+
+The Cannons currently sit at the bottom of the season standings and have failed to win in 72 consecutive matches. Fans have expressed that they have grown accustomed to this "tradition."
+
+"Supporting the Cannons has become a lifestyle," said a long-time fan, "Like drinking butterbeer, even though you know you'll get drunk if you drink too much, you still can't help but continue."`,
+                    author: 'Kennilworthy Whisp'
+                }
+            },
+            {
+                id: 5,
+                date: '1995-10-31',
+                year: 1995,
+                month: 10,
+                day: 31,
+                category: 'politics',
+                icon: '⚠️',
+                zh: {
+                    title: '神秘人归来？魔法部强烈否认相关传言',
+                    summary: '福吉部长称此类谣言"毫无根据且不负责任"',
+                    content: `【重要声明】魔法部今日就近期关于"神秘人已经归来"的传言发布正式声明。
+
+魔法部部长康奈利·福吉在紧急新闻发布会上表示："这些关于神秘人归来的谣言是毫无根据且不负责任的。阿兹卡班固若金汤，摄魂怪继续忠诚地为魔法部服务。任何传播此类谣言的人都将被调查。"
+
+福吉部长的声明是对霍格沃茨黑魔法防御术教师阿拉斯托·穆迪（人称"疯眼汉"）近期言论的回应。穆迪先生曾在公开场合表示，他感受到的"每一次颤动都暗示着黑暗力量的复苏"。
+
+然而，魔法部官方发言人强调，穆迪先生的言论只是他个人的"过度警觉"，并提醒公众，这位前傲罗曾因与黑巫师战斗而多次受伤。
+
+与此同时，霍格沃茨校长阿不思·邓布利多拒绝就被指责为"散布谣言者"一事发表评论。但当被问及是否相信神秘人已经归来时，他只是微笑着说："我相信证据，而非恐惧。"
+
+本报将继续关注这一重大事件的后续发展。
+
+（注：本文发表于1995年10月31日，时值三强争霸赛期间）`,
+                    author: '巴蒂·克劳奇'
+                },
+                en: {
+                    title: 'Has You-Know-Who Returned? Ministry Strongly Denies Rumors',
+                    summary: 'Minister Fudge calls such rumors "baseless and irresponsible"',
+                    content: `[Important Statement] The Ministry of Magic today issued an official statement regarding recent rumors about "You-Know-Who's return."
+
+Minister of Magic Cornelius Fudge stated at an emergency press conference: "These rumors about You-Know-Who's return are baseless and irresponsible. Azkaban remains impregnable, and Dementors continue to loyally serve the Ministry. Anyone spreading such rumors will be investigated."
+
+Minister Fudge's statement responds to recent remarks by Alastor "Mad-Eye" Moody, Hogwarts Defense Against the Dark Arts teacher. Mr. Moody had publicly stated that "every tremor he feels suggests the resurgence of dark forces."
+
+However, a Ministry spokesperson emphasized that Mr. Moody's comments are merely his personal "excessive vigilance" and reminded the public that the former Auror has been injured multiple times in battles with Dark wizards.
+
+Meanwhile, Hogwarts Headmaster Albus Dumbledore declined to comment on being labeled a "rumor-monger." But when asked whether he believes You-Know-Who has returned, he merely smiled and said: "I believe in evidence, not fear."
+
+This newspaper will continue to follow developments on this significant event.
+
+(Note: This article was published on October 31, 1995, during the Triwizard Tournament)`,
+                    author: 'Barty Crouch Sr.'
+                }
+            },
+            {
+                id: 6,
+                date: '1995-10-31',
+                year: 1995,
+                month: 10,
+                day: 31,
+                category: 'school',
+                icon: '🏰',
+                zh: {
+                    title: '三强争霸赛开幕！霍格沃茨迎来历史性时刻',
+                    summary: '三所欧洲顶级魔法学校齐聚霍格沃茨',
+                    content: `【教育特刊】经过一百多年的等待，三强争霸赛今日在霍格沃茨魔法学校正式拉开帷幕！
+
+来自布斯巴顿魔法学院（法国）和德姆斯特朗魔法学院（保加利亚）的代表团于今晨抵达霍格沃茨。这是该赛事自1792年以来首次重启。
+
+霍格沃茨校长阿不思·邓布利多在开幕仪式上发表致辞："魔法将我们联系在一起，友谊使我们的纽带更加坚固。愿最好的勇士获胜！"
+
+来自德姆斯特朗的代表团由著名国际巫师联合会主席、著名的媚娃战士代表卡卡洛夫率领。他们的代表团乘着一艘巨大的魔法船只从黑湖中浮现，令在场所有观众惊叹不已。
+
+布斯巴顿代表团则由马克西姆夫人带领，她们乘坐一辆巨大无比的粉蓝色马车飞临霍格沃茨。代表团中的众多媚娃表演了优美的舞蹈，让在场的许多男巫师为之倾倒。
+
+三所学校的勇士选拔将在万圣节晚宴前完成。霍格沃茨的勇士将由火焰杯选出。参赛勇士必须年满十七岁，并将面临三项极其危险的任务。
+
+"这是一项荣誉，也是一项挑战，"邓布利多校长警告道，"只有最勇敢、最智慧的学生才能在这项比赛中生存。愿梅林保佑他们。"
+
+（本报将派出特派记者丽塔·斯基特全程追踪报道此次赛事）`,
+                    author: '李·乔丹'
+                },
+                en: {
+                    title: 'Triwizard Tournament Opens! Hogwarts Hosts Historic Moment',
+                    summary: 'Three top European magical schools gather at Hogwarts',
+                    content: `[Education Special] After more than a century of waiting, the Triwizard Tournament officially opened today at Hogwarts School of Witchcraft and Wizardry!
+
+Delegations from Beauxbatons Academy of Magic (France) and Durmstrang Institute (Bulgaria) arrived at Hogwarts this morning. This marks the tournament's revival since 1792.
+
+Hogwarts Headmaster Albus Dumbledore delivered a speech at the opening ceremony: "Magic brings us together, and friendship strengthens our bonds. May the best champion win!"
+
+The Durmstrang delegation was led by the famous International Confederation of Wizards Chairman and renowned Veela warrior representative, Igor Karkaroff. Their delegation emerged from the Black Lake aboard a gigantic magical ship, amazing all present spectators.
+
+The Beauxbatons delegation was led by Madame Maxime, arriving at Hogwarts aboard an enormous powder-blue carriage. The many Veela in the delegation performed beautiful dances, enchanting many of the wizards present.
+
+Champion selection from the three schools will be completed before the Halloween feast. Hogwarts' champion will be selected by the Goblet of Fire. Participating champions must be at least seventeen years old and will face three extremely dangerous tasks.
+
+"This is an honor and a challenge," Headmaster Dumbledore warned, "Only the bravest, wisest students can survive this competition. May Merlin protect them."
+
+(This newspaper has assigned special correspondent Rita Skeeter to provide full coverage of the tournament)`,
+                    author: 'Lee Jordan'
+                }
+            },
+            {
+                id: 7,
+                date: '1998-05-02',
+                year: 1998,
+                month: 5,
+                day: 2,
+                category: 'politics',
+                icon: '🕊️',
+                zh: {
+                    title: '【特别号外】神秘人覆灭！魔法世界重获和平！',
+                    summary: '霍格沃茨战役结束，伏地魔彻底战败',
+                    content: `【号外】本台刚刚收到的消息——神秘人（伏地魔）已在霍格沃茨被击败！
+
+据可靠消息来源，霍格沃茨昨晚爆发了一场决定性的战役。在经历了漫长而血腥的战斗后，神秘人及其追随者最终被击败。
+
+虽然战斗的具体细节尚不完全清楚，但消息确认，那位大难不死的男孩——哈利·波特，在霍格沃茨大礼堂与神秘人进行了最后的对决。在决斗中，神秘人自己的杀戮咒反弹，终结了他邪恶的统治。
+
+霍格沃茨城堡在战斗中遭受了严重损坏，但邓布利多军的成员、凤凰社的成员以及霍格沃茨的学生和教师们团结一致，共同对抗了食死徒的进攻。
+
+许多勇敢的巫师在这场战斗中献出了宝贵的生命，包括弗雷德·韦斯莱、莱姆斯·卢平、尼法朵拉·唐克斯、科林·克里维等。他们的牺牲将永远被铭记。
+
+金斯莱·沙克尔已被任命为临时魔法部部长。他于今早向全魔法世界发表广播讲话："今天，我们不仅迎来了一位黑魔王的覆灭，更迎来了一个新时代的黎明。那些牺牲的英雄们用生命换来了我们今天的自由。让我们铭记他们的勇气，共同建设一个更加公正、更加团结的魔法社会。"
+
+魔法部已经开始重建工作，阿兹卡班监狱中的大部分食死徒已被捕获。
+
+霍格沃茨将于下个月重新开学。邓布利多军成员表示，他们将继续守护这个世界，确保和平能够持久。
+
+魔法战争终于结束了。
+
+（本报记者李·乔丹发自霍格沃茨现场报道）
+
+【编者按】这是预言家日报创刊以来最重大的一篇报道。我们为所有在战斗中牺牲的英雄们致以最崇高的敬意。愿和平永驻魔法世界。`,
+                    author: '李·乔丹、金斯莱·沙克尔'
+                },
+                en: {
+                    title: '[EXTRA EDITION] You-Know-Who Defeated! Peace Returns to Magical World!',
+                    summary: 'Battle of Hogwarts concludes, Voldemort vanquished',
+                    content: `[EXTRA EDITION] Breaking news — You-Know-Who (Voldemort) has been defeated at Hogwarts!
+
+According to reliable sources, a decisive battle erupted at Hogwarts last night. After a long and bloody struggle, You-Know-Who and his followers were ultimately defeated.
+
+While specific details of the battle remain unclear, it has been confirmed that the Boy Who Lived, Harry Potter, engaged You-Know-Who in a final duel in the Great Hall. During the duel, You-Know-Who's own Killing Curse rebounded, ending his evil reign.
+
+Hogwarts Castle suffered severe damage during the battle, but members of Dumbledore's Army, the Order of the Phoenix, and Hogwarts students and teachers united to resist the Death Eaters' assault.
+
+Many brave wizards sacrificed their precious lives in this battle, including Fred Weasley, Remus Lupin, Nymphadora Tonks, Colin Creevey, and others. Their sacrifice will be forever remembered.
+
+Kingsley Shacklebolt has been appointed interim Minister of Magic. He addressed the entire magical world by radio broadcast this morning: "Today, we not only witness the fall of a Dark Lord, but also witness the dawn of a new era. Those heroic sacrifices have purchased our freedom with their lives. Let us remember their courage and build a more just, more united magical society together."
+
+The Ministry has begun reconstruction efforts, and most Death Eaters in Azkaban prison have been captured.
+
+Hogwarts will reopen next month. Dumbledore's Army members have stated they will continue to protect this world and ensure that peace endures.
+
+The wizarding war has finally ended.
+
+(Reported on-site at Hogwarts by our reporter Lee Jordan)
+
+[Editor's Note] This is the most significant report in the Daily Prophet's history. We extend our highest respects to all heroes who sacrificed in the battle. May peace forever bless the magical world.`,
+                    author: 'Lee Jordan, Kingsley Shacklebolt'
+                }
+            },
+            {
+                id: 8,
+                date: '1998-05-03',
+                year: 1998,
+                month: 5,
+                day: 3,
+                category: 'business',
+                icon: '🏪',
+                zh: {
+                    title: '战后重建启动：对角巷商家纷纷重新开业',
+                    summary: '古灵阁承诺恢复所有客户存款',
+                    content: `【商业快讯】随着神秘人势力的覆灭，对角巷的商家们正积极准备重新开业。
+
+古灵阁巫师银行今日发表声明，承诺将在一周内恢复所有客户因战争影响而无法取出的存款。古灵阁发言人表示："古灵阁始终是巫师财富最安全的守护者。我们为在战争期间给客户带来的不便深表歉意，并承诺将提供额外的补偿服务。"
+
+ Quality Quidditch Supplies宣布将推出新款光轮系列扫帚，以庆祝和平的到来。这是自1992年光轮2000发布以来，该品牌的首次重大产品更新。
+
+"和平时代需要新的速度，"该店经理表示，"我们期待看到新一代的魁地奇运动员在天空中翱翔。"
+
+韦斯莱 Wizard Wheezes笑话店（位于对角巷93号）宣布将举办为期一周的"胜利庆典"，所有商品半价销售。店长弗雷德·韦斯莱（注：本报收到更正，实际为乔治·韦斯莱）表示："这是为了庆祝我们所有人的胜利。每个人都需要一点欢笑来治愈战争的创伤。"
+
+与此同时，丽痕书店宣布将举办"哈利·波特系列图书展"，展示那位大难不死的男孩的英雄故事。
+
+值得注意的是，翻倒巷的多家店铺因涉嫌支持食死徒而被关闭。魔法法律执行司表示将继续调查这些店铺的所有者。
+
+对角巷预计将于本周末全面恢复营业。`,
+                    author: '贝拉特里克斯·唐克斯'
+                },
+                en: {
+                    title: 'Post-War Reconstruction Begins: Diagon Alley Shops Reopen',
+                    summary: 'Gringotts pledges to restore all customer deposits',
+                    content: `[Business Brief] Following the defeat of You-Know-Who's forces, merchants in Diagon Alley are actively preparing to reopen.
+
+Gringotts Wizarding Bank today issued a statement promising to restore all customer deposits that were inaccessible during the war within one week. A Gringotts spokesperson stated: "Gringotts has always been the safest guardian of wizard wealth. We deeply apologize for the inconvenience caused to customers during the war and pledge to provide additional compensation services."
+
+Quality Quidditch Supplies announced it will launch a new Firebolt series broomstick to celebrate the arrival of peace. This marks the brand's first major product update since the Firebolt 2000 was released in 1992.
+
+"Peaceful times require new speed," the store manager stated, "We look forward to seeing a new generation of Quidditch players soaring through the skies."
+
+Weasleys' Wizard Wheezes (located at 93 Diagon Alley) announced it will host a week-long "Victory Celebration" with all items at half price. Store manager Fred Weasley (Note: This newspaper received a correction, actually George Weasley) stated: "This is to celebrate our collective victory. Everyone needs some laughter to heal the wounds of war."
+
+Meanwhile, Flourish and Blotts announced it will host a "Harry Potter Book Series Exhibition," showcasing the heroic story of the Boy Who Lived.
+
+Notably, several shops in Knockturn Alley have been closed for alleged Death Eater support. The Department of Magical Law Enforcement stated it will continue investigating these shop owners.
+
+Diagon Alley is expected to fully resume business by this weekend.`,
+                    author: 'Bella Tonks'
+                }
+            },
+            {
+                id: 9,
+                date: '1998-05-05',
+                year: 1998,
+                month: 5,
+                day: 5,
+                category: 'school',
+                icon: '🎓',
+                zh: {
+                    title: '霍格沃茨将于9月1日重新开学',
+                    summary: '米勒娃·麦格被任命为新任校长',
+                    content: `【教育特刊】霍格沃茨魔法学校今日正式宣布，学校将于今年9月1日重新开学。
+
+这是自神秘人势力掌控学校以来的首次重新开放。霍格沃茨董事会已任命米勒娃·麦格教授为新任校长。
+
+麦格教授在接受本报采访时表示："霍格沃茨的大门将再次向所有年轻巫师敞开。我们将确保每一位学生都能在一个安全、充满爱的环境中学习魔法。重建霍格沃茨是我们的首要任务，但我相信，在全体师生的共同努力下，霍格沃茨将比以往任何时候都更加辉煌。"
+
+学校将在暑假期间进行大规模修复工作，包括修复被破坏的城堡、恢复被魔法破坏的场地以及重建战斗中损毁的建筑。
+
+值得注意的是，霍格沃茨将迎来一批特殊的"插班生"——那些因战争而中断学业的学生们将有机会完成他们的魔法教育。
+
+新任副校长的职位将由赫敏·格兰杰担任。这位曾在霍格沃茨大战中发挥关键作用的年轻女巫，将成为霍格沃茨历史上最年轻的副校长。
+
+"教育是防止黑暗再次降临的最有效武器，"格兰杰女士表示，"我期待与麦格教授以及所有师生一起，共同建设一个更加美好的霍格沃茨。"
+
+霍格沃茨校董会还宣布，将为在战争中牺牲的英雄们建立纪念碑，以永远铭记他们的勇气和牺牲。`,
+                    author: '鲁伯·海格'
+                },
+                en: {
+                    title: 'Hogwarts to Reopen on September 1st',
+                    summary: 'Minerva McGonagall appointed as new Headmistress',
+                    content: `[Education Special] Hogwarts School of Witchcraft and Wizardry today officially announced that the school will reopen on September 1st this year.
+
+This marks the first reopening since You-Know-Who's forces took control of the school. The Hogwarts Board of Governors has appointed Professor Minerva McGonagall as the new Headmistress.
+
+Professor McGonagall stated in an interview with this newspaper: "Hogwarts' doors will open once again to all young wizards. We will ensure every student can learn magic in a safe, loving environment. Rebuilding Hogwarts is our top priority, but I believe that with the joint efforts of all faculty and students, Hogwarts will be more glorious than ever before."
+
+Large-scale restoration work will take place during the summer holidays, including repairing damaged castle sections, restoring magically damaged grounds, and rebuilding structures destroyed in the battle.
+
+Notably, Hogwarts will welcome a group of special "transfer students" — those whose education was interrupted by the war will have the opportunity to complete their magical education.
+
+The Deputy Headmistress position will be filled by Hermione Granger. The young witch, who played a crucial role in the Hogwarts battle, will become the youngest Deputy Headmistress in Hogwarts history.
+
+"Education is the most effective weapon to prevent darkness from descending again," Ms. Granger stated, "I look forward to working with Professor McGonagall and all faculty and students to build a better Hogwarts together."
+
+The Hogwarts Board of Governors also announced that monuments will be erected to honor the heroes who sacrificed in the war, forever remembering their courage and sacrifice.`,
+                    author: 'Rubeus Hagrid'
+                }
+            },
+            {
+                id: 10,
+                date: '2026-02-26',
+                year: 2026,
+                month: 2,
+                day: 26,
+                category: 'politics',
+                icon: '🌟',
+                zh: {
+                    title: '魔法世界迎来和平30周年纪念',
+                    summary: '全魔法界将举办一系列庆祝活动',
+                    content: `【特别报道】今年是神秘人覆灭30周年，魔法世界将举办一系列隆重的庆祝活动。
+
+魔法部部长赫敏·韦斯莱今日宣布，将启动"和平30年"纪念计划。这一系列活动旨在缅怀那些为和平献出生命的英雄们，并庆祝魔法世界30年来的和平与繁荣。
+
+"30年前，无数勇敢的巫师为了保护我们所珍视的一切而战，"韦斯莱部长在新闻发布会上表示，"今天，我们不仅要缅怀他们的牺牲，更要继承他们的勇气与团结精神。"
+
+庆祝活动将包括：
+
+1. **霍格沃茨和平纪念碑揭幕仪式**：5月2日，将在霍格沃茨大礼堂前为所有在战争中牺牲的英雄们揭幕新的纪念碑。哈利·波特、罗恩·韦斯莱和赫敏·韦斯莱将出席仪式。
+
+2. **对角巷和平博览会**：整个5月，对角巷将举办盛大的博览会，展示魔法世界30年来的发展成就。包括最新的魔法发明、魁地奇装备、魔药进步等。
+
+3. **全魔法界烛光守夜**：5月1日晚，全魔法界的巫师们将在自家门前点亮蜡烛，缅怀那些为和平献身的英雄。
+
+4. **霍格沃茨重建30周年展览**：展示霍格沃茨在战后如何重建并发展壮大。
+
+5. **魔法儿童绘画大赛**：主题为"我心中的和平"，鼓励年轻的巫师们表达对和平的理解。
+
+值得注意的是，哈利·波特将在这个特殊年退休。作为现任傲罗办公室主任，他在接受本报独家采访时表示："是时候让更年轻的巫师来守护这个世界了。我将有更多时间陪伴家人和朋友。"
+
+罗恩·韦斯莱现任韦斯莱 Wizard Wheezes笑话店总裁。他的店铺已扩展至国际市场，在美国、法国和澳大利亚都开设了分店。
+
+本报将持续报道这一系列庆祝活动。`,
+                    author: '泰德·波特'
+                },
+                en: {
+                    title: 'Magical World Celebrates 30th Anniversary of Peace',
+                    summary: 'Series of commemorative events announced across wizarding community',
+                    content: `[Special Report] This year marks the 30th anniversary of You-Know-Who's defeat, and the magical world will host a series of grand commemorative events.
+
+Minister of Magic Hermione Weasley today announced the launch of the "30 Years of Peace" commemorative program. This series of events aims to honor the heroes who sacrificed their lives for peace and celebrate 30 years of prosperity in the magical world.
+
+"Thirty years ago, countless brave wizards fought to protect everything we cherish," Minister Weasley stated at a press conference, "Today, we not only commemorate their sacrifices but also inherit their courage and spirit of unity."
+
+The celebrations will include:
+
+1. **Hogwarts Peace Memorial Unveiling Ceremony**: On May 2nd, a new memorial will be unveiled before the Great Hall at Hogwarts to honor all heroes who sacrificed in the war. Harry Potter, Ron Weasley, and Hermione Weasley will attend the ceremony.
+
+2. **Diagon Alley Peace Expo**: Throughout May, Diagon Alley will host a grand exhibition showcasing 30 years of magical world development, including latest magical inventions, Quidditch equipment, potion advances, and more.
+
+3. **Worldwide Candlelight Vigil**: On the evening of May 1st, wizards across the magical world will light candles at their doorsteps to honor heroes who gave their lives for peace.
+
+4. **Hogwarts Reconstruction 30th Anniversary Exhibition**: Showcasing how Hogwarts was rebuilt and developed after the war.
+
+5. **Magical Children's Art Competition**: Themed "Peace in My Heart," encouraging young wizards to express their understanding of peace.
+
+Notably, Harry Potter will retire in this special year. As current Head of the Auror Office, he stated in an exclusive interview with this newspaper: "It's time for younger wizards to protect this world. I will have more time to spend with family and friends."
+
+Ron Weasley now serves as President of Weasleys' Wizard Wheezes. His joke shop has expanded internationally, with branches in the United States, France, and Australia.
+
+This newspaper will continue to report on this series of commemorative events.`,
+                    author: 'Ted Potter'
+                }
+            }
+        ];
+
+        // 初始化
+        function init() {
+            // 标记预言家日报已访问（用于徽章显示）
+            localStorage.setItem('prophetLastReadDate', new Date().toDateString());
+
+            updateCurrentDate();
+            loadNews(newsDatabase);
+        }
+
+        // 更新当前日期显示
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            const dateStr = now.toLocaleDateString(currentLang === 'zh' ? 'zh-CN' : 'en-US', options);
+            document.getElementById('currentDate').textContent = dateStr;
+        }
+
+        // 获取分类名称
+        function getCategoryName(category) {
+            const categories = {
+                zh: {
+                    politics: '政治',
+                    business: '商业',
+                    classifieds: '分类广告',
+                    sports: '体育',
+                    school: '教育'
+                },
+                en: {
+                    politics: 'Politics',
+                    business: 'Business',
+                    classifieds: 'Classifieds',
+                    sports: 'Sports',
+                    school: 'Education'
+                }
+            };
+            return categories[currentLang][category] || category;
+        }
+
+        // 加载新闻缩略图
+        function loadNews(news) {
+            const container = document.getElementById('newsArticles');
+
+            if (news.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">📰</div>
+                        <p>没有找到相关新闻 / No news articles found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 按日期从新到旧排序
+            const sortedNews = [...news].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            container.innerHTML = sortedNews.map(article => {
+                const content = article[currentLang];
+                const dateObj = new Date(article.date);
+                const dateStr = dateObj.toLocaleDateString(currentLang === 'zh' ? 'zh-CN' : 'en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                return `
+                    <div class="news-card" onclick="openNewsDetail(${article.id})" data-id="${article.id}" data-category="${article.category}">
+                        <div class="news-header">
+                            <span class="news-date-badge">${dateStr}</span>
+                            <h2 class="news-title">${content.title}</h2>
+                            <p class="news-summary">${content.summary}</p>
+                        </div>
+                        <div class="news-thumbnail">${article.icon}</div>
+                        <div class="news-footer">
+                            <span class="news-author">✍️ ${content.author}</span>
+                            <span class="news-category">${getCategoryName(article.category)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 打开新闻详情
+        function openNewsDetail(articleId) {
+            const article = newsDatabase.find(a => a.id === articleId);
+            if (!article) return;
+
+            const content = article[currentLang];
+            const modal = document.getElementById('newsDetailModal');
+            const detailContent = document.getElementById('newsDetailContent');
+
+            const dateObj = new Date(article.date);
+            const dateStr = dateObj.toLocaleDateString(currentLang === 'zh' ? 'zh-CN' : 'en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            detailContent.innerHTML = `
+                <div class="detail-header">
+                    <button class="close-detail-btn" onclick="closeNewsDetail()">✕</button>
+                    <span class="detail-date-badge">${dateStr}</span>
+                    <h1 class="detail-title">${content.title}</h1>
+                    <p class="detail-summary">${content.summary}</p>
+                </div>
+                <div class="detail-body">
+                    <div class="detail-image">${article.icon}</div>
+                    <div class="detail-text">${content.content.split('\n').map(p => p ? `<p>${p}</p>` : '').join('')}</div>
+                </div>
+                <div class="detail-footer">
+                    <span class="detail-author">✍️ ${content.author}</span>
+                    <span class="detail-category">${getCategoryName(article.category)}</span>
+                </div>
+            `;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭新闻详情
+        function closeNewsDetail() {
+            const modal = document.getElementById('newsDetailModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // 点击模态框外部关闭
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('newsDetailModal');
+            if (e.target === modal) {
+                closeNewsDetail();
+            }
+        });
+
+        // ESC键关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeNewsDetail();
+            }
+        });
+
+        // 搜索新闻
+        function searchNews() {
+            const keyword = document.getElementById('keywordSearch').value.toLowerCase();
+            const dateInput = document.getElementById('dateSearch').value;
+
+            let filteredNews = newsDatabase;
+
+            // 按日期筛选
+            if (dateInput) {
+                const searchDate = new Date(dateInput);
+                filteredNews = filteredNews.filter(article => {
+                    const articleDate = new Date(article.date);
+                    return articleDate.toDateString() === searchDate.toDateString();
+                });
+            }
+
+            // 按关键词筛选
+            if (keyword) {
+                filteredNews = filteredNews.filter(article => {
+                    const zhContent = article.zh.title + article.zh.summary + article.zh.content;
+                    const enContent = article.en.title + article.en.summary + article.en.content;
+                    return zhContent.toLowerCase().includes(keyword) ||
+                           enContent.toLowerCase().includes(keyword);
+                });
+            }
+
+            loadNews(filteredNews);
+        }
+
+        // 切换语言
+        function switchLanguage(lang) {
+            currentLang = lang;
+
+            // 更新语言按钮状态
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // 更新日期显示
+            updateCurrentDate();
+
+            // 重新加载新闻（保持当前的搜索条件）
+            searchNews();
+        }
+
+        // 返回大厅
+        function goBack() {
+            window.location.href = 'academy.html';
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+
+            // 回车搜索
+            document.getElementById('keywordSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchNews();
+                }
+            });
+
+            document.getElementById('dateSearch').addEventListener('change', function() {
+                searchNews();
+            });
+        });
+    </script>
+</body>
+</html>

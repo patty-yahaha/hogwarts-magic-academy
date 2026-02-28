@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玩家资料 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 个人资料卡片 */
+        .profile-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .avatar-section {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .avatar-display {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 5px solid #ffd700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-display:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.7);
+        }
+
+        .change-avatar-hint {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #666, #888);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .nickname-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .nickname-text {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .edit-nickname-btn {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .edit-nickname-btn:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: scale(1.05);
+        }
+
+        .level-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .level-badge {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .level-name {
+            font-size: 1.5rem;
+            color: #c9a227;
+            font-style: italic;
+        }
+
+        /* 等级进度条 */
+        .level-progress-section {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #c9a227;
+            font-size: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37);
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 统计信息 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.6), rgba(20, 10, 5, 0.8));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #8b6914;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        /* 背包区域 */
+        .inventory-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .inventory-item {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.8), rgba(20, 10, 5, 0.9));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .inventory-item:hover {
+            transform: translateY(-5px) scale(1.03);
+            border-color: #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .item-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            font-size: 1.1rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .item-category {
+            font-size: 0.8rem;
+            color: #8b6914;
+            font-style: italic;
+        }
+
+        .empty-inventory {
+            text-align: center;
+            padding: 60px;
+            color: #8b6914;
+            font-size: 1.2rem;
+        }
+
+        .empty-inventory-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.98), rgba(10, 20, 40, 0.98));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            animation: modalPopIn 0.3s ease-out;
+        }
+
+        @keyframes modalPopIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            color: #d4af37;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-family: 'Cinzel Decorative', cursive;
+        }
+
+        .modal-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: #d4af37;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-confirm, .btn-cancel {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+            font-weight: bold;
+        }
+
+        .btn-confirm:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(145deg, #666, #888);
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            transform: scale(1.05);
+        }
+
+        /* 头像选择 */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .avatar-option {
+            font-size: 2.5rem;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-option:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+            transform: scale(1.1);
+        }
+
+        .avatar-option.selected {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+
+        /* 标签页导航 */
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.3), rgba(10, 20, 40, 0.98));
+            border-color: #d4af37;
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .tab-icon {
+            font-size: 1.5rem;
+        }
+
+        .tab-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #d4af37;
+        }
+
+        .tab-btn.active .tab-text {
+            color: #ffd700;
+        }
+
+        /* 标签页内容 */
+        .tab-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 房间容器 */
+        .room-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .room-sidebar {
+            width: 280px;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.3rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .room-inventory-list {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 5px;
+        }
+
+        .room-inventory-item {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .room-inventory-item:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+            transform: scale(1.05);
+        }
+
+        .room-inventory-item:active {
+            cursor: grabbing;
+        }
+
+        .room-inventory-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+
+        .room-inventory-icon {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        .room-inventory-name {
+            font-size: 0.75rem;
+            color: #c9a227;
+            line-height: 1.2;
+        }
+
+        .room-inventory-item.item-placed {
+            opacity: 0.5;
+            background: rgba(100, 100, 100, 0.2);
+            border-color: rgba(128, 128, 128, 0.3);
+            cursor: not-allowed;
+        }
+
+        .placed-status {
+            font-size: 0.65rem;
+            color: #4caf50;
+            font-weight: bold;
+            display: block;
+            margin-top: 3px;
+        }
+
+        /* 玩家角色 */
+        .player-character {
+            position: absolute;
+            font-size: 5rem;
+            cursor: move;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+            user-select: none;
+            z-index: 100;
+        }
+
+        .player-character:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 8px 20px rgba(212, 175, 55, 0.6));
+        }
+
+        .player-name-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #d4af37;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* 右键上下文菜单 */
+        .room-context-menu {
+            position: fixed;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.98), rgba(10, 20, 40, 0.98));
+            border: 2px solid #e74c3c;
+            border-radius: 12px;
+            padding: 8px 12px;
+            z-index: 2000;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            animation: contextMenuFadeIn 0.15s ease;
+        }
+
+        .room-context-menu .delete-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .room-context-menu .delete-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            transform: scale(1.05);
+        }
+
+        @keyframes contextMenuFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .room-tip {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8b6914;
+            font-family: 'MedievalSharp', cursive;
+        }
+
+        .room-area-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .room-area {
+            width: 800px;
+            height: 600px;
+            background: linear-gradient(180deg, #2a1a3a 0%, #1a2a4a 50%, #3d2a1a 100%);
+            border: 5px solid #8b4513;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 房间背景装饰 */
+        .room-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 100px,
+                rgba(139, 69, 19, 0.1) 100px,
+                rgba(139, 69, 19, 0.1) 102px
+            );
+            pointer-events: none;
+        }
+
+        .room-window {
+            position: absolute;
+            top: 30px;
+            left: 50px;
+            font-size: 4rem;
+            opacity: 0.6;
+            filter: drop-shadow(0 0 10px rgba(135, 206, 250, 0.5));
+            pointer-events: none;
+        }
+
+        .room-fireplace {
+            position: absolute;
+            bottom: 0;
+            right: 50px;
+            font-size: 5rem;
+            opacity: 0.5;
+            filter: drop-shadow(0 0 15px rgba(255, 100, 0, 0.5));
+            pointer-events: none;
+            animation: fireGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes fireGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.7; }
+        }
+
+        .room-bed {
+            position: absolute;
+            bottom: 20px;
+            left: 100px;
+            font-size: 4rem;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* 房间中的物品 */
+        .room-item {
+            position: absolute;
+            font-size: 3rem;
+            cursor: move;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.5));
+            user-select: none;
+            z-index: 10;
+        }
+
+        .room-item:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.6));
+            z-index: 100;
+        }
+
+        .room-item.dragging {
+            opacity: 0.7;
+            transform: scale(1.2);
+            z-index: 1000;
+        }
+
+        /* 拖拽预览 */
+        .drag-preview {
+            position: fixed;
+            font-size: 3rem;
+            pointer-events: none;
+            opacity: 0.7;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nickname-display {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .inventory-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .avatar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .tab-btn {
+                padding: 12px 30px;
+            }
+
+            .room-container {
+                flex-direction: column;
+            }
+
+            .room-sidebar {
+                width: 100%;
+                max-height: 200px;
+            }
+
+            .room-inventory-list {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .room-area {
+                width: 100%;
+                height: 400px;
+            }
+
+            .room-window {
+                font-size: 2.5rem;
+                top: 15px;
+                left: 20px;
+            }
+
+            .room-fireplace {
+                font-size: 3rem;
+                right: 20px;
+            }
+
+            .room-bed {
+                font-size: 2.5rem;
+                left: 30px;
+                bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 返回按钮 -->
+        <button class="back-btn" onclick="goBack()" style="margin-bottom: 20px;">← 返回</button>
+
+        <!-- 个人资料卡片 -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="avatar-section">
+                    <div class="avatar-display" onclick="openAvatarModal()" id="avatarDisplay">🧙</div>
+                    <span class="change-avatar-hint">点击更换</span>
+                </div>
+                <div class="player-info">
+                    <div class="nickname-display">
+                        <span class="nickname-text" id="nicknameText">魔法学徒</span>
+                        <button class="edit-nickname-btn" onclick="openNicknameModal()">✏️ 编辑</button>
+                    </div>
+                    <div class="level-display">
+                        <span class="level-badge" id="levelBadge">Lv.0</span>
+                        <span class="level-name" id="levelName">见习生</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 等级进度条 -->
+            <div class="level-progress-section">
+                <div class="progress-label">
+                    <span>累计金币</span>
+                    <span><span id="currentCoins">0</span> / <span id="nextLevelCoins">500</span></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- 统计信息 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">当前金币</div>
+                    <div class="stat-value">🪙 <span id="coinBalance">0</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">累计收入</div>
+                    <div class="stat-value">💰 <span id="cumulativeCoins">0</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">物品数量</div>
+                    <div class="stat-value">🎒 <span id="itemCount">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 标签页导航 -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('inventory')" id="tabInventory">
+                <span class="tab-icon">🎒</span>
+                <span class="tab-text">背包</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('room')" id="tabRoom">
+                <span class="tab-icon">🏠</span>
+                <span class="tab-text">房间</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('items')" id="tabItems">
+                <span class="tab-icon">🎒</span>
+                <span class="tab-text">道具背包</span>
+            </button>
+        </div>
+
+        <!-- 背包区域 -->
+        <div class="tab-content" id="contentInventory">
+            <div class="inventory-section">
+                <h2 class="section-title">🎒 我的背包 🎒</h2>
+                <div class="inventory-grid" id="inventoryGrid">
+                    <!-- 物品将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 房间区域 -->
+        <div class="tab-content" id="contentRoom" style="display: none;">
+            <div class="room-container">
+                <div class="room-sidebar">
+                    <h3 class="sidebar-title">📦 可放置物品</h3>
+                    <div class="room-inventory-list" id="roomInventoryList">
+                        <!-- 物品列表 -->
+                    </div>
+                    <div class="room-tip">💡 拖拽物品到房间，右键点击物品可删除</div>
+                </div>
+                <div class="room-area-wrapper">
+                    <div class="room-area" id="roomArea">
+                        <!-- 房间背景装饰 -->
+                        <div class="room-window">🪟</div>
+                        <div class="room-fireplace">🔥</div>
+                        <div class="room-bed">🛏️</div>
+                        <!-- 已放置的物品将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 道具背包区域 -->
+        <div class="tab-content" id="contentItems" style="display: none;">
+            <div class="inventory-section">
+                <h2 class="section-title">🎒 道具背包 🎒</h2>
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🎒</div>
+                    <div style="font-size: 1.3rem; color: #d4af37; margin-bottom: 15px;">打开完整道具背包</div>
+                    <div style="font-size: 1rem; color: #8b6914; margin-bottom: 30px;">管理你的头像框、碎片和药水</div>
+                    <button onclick="openInventory()" style="
+                        background: linear-gradient(135deg, #9b59b6, #8e44ad);
+                        border: 3px solid #bb8fce;
+                        color: white;
+                        padding: 15px 40px;
+                        font-family: 'Cinzel', serif;
+                        font-size: 1.1rem;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        打开道具背包 →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 昵称修改弹窗 -->
+    <div class="modal" id="nicknameModal">
+        <div class="modal-content">
+            <h3 class="modal-title">修改昵称</h3>
+            <input type="text" class="modal-input" id="nicknameInput" placeholder="输入新昵称..." maxlength="12">
+            <div class="modal-buttons">
+                <button class="btn-confirm" onclick="saveNickname()">确认</button>
+                <button class="btn-cancel" onclick="closeNicknameModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 头像选择弹窗 -->
+    <div class="modal" id="avatarModal">
+        <div class="modal-content">
+            <h3 class="modal-title">选择头像</h3>
+            <div class="avatar-grid" id="avatarGrid">
+                <!-- 头像选项将通过JavaScript动态生成 -->
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-confirm" onclick="saveAvatar()">确认</button>
+                <button class="btn-cancel" onclick="closeAvatarModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 等级配置
+        const LEVELS = [
+            { coins: 0, nameZh: '见习生', nameEn: 'Student', level: 0 },
+            { coins: 500, nameZh: '新手', nameEn: 'Novice', level: 1 },
+            { coins: 1500, nameZh: '学徒', nameEn: 'Apprentice', level: 2 },
+            { coins: 3000, nameZh: '老手', nameEn: 'Journeyman', level: 3 },
+            { coins: 5000, nameZh: '专家', nameEn: 'Expert', level: 4 },
+            { coins: 10000, nameZh: '大师', nameEn: 'Master', level: 5 }
+        ];
+
+        // 基础可选头像（10个特色头像）
+        const AVATARS = [
+            '🧙',        // 传统巫师
+            '🧙‍♂️',       // 男巫师
+            '🧙‍♀️',       // 女巫师
+            '⚡',        // 闪电（哈利波特主题）
+            '🦁',        // 格兰芬多狮子
+            '🦅',        // 拉文克劳鹰
+            '🦡',        // 赫奇帕奇獾
+            '🐍',        // 斯莱特林蛇
+            '🦉',        // 海德薇猫头鹰
+            '🔮'         // 水晶球
+        ];
+
+        // 成就可解锁的特殊头像
+        const UNLOCKABLE_AVATARS = {
+            'avatar_dobby': { icon: '🧝', name: '多比', achievement: 'study_60min' },
+            'avatar_vampire': { icon: '🧛‍♂️', name: '吸血鬼巫师', achievement: 'quiz_perfect' },
+            // 可以继续添加更多...
+        };
+
+        let playerData = null;
+        let selectedAvatar = null;
+
+        // 初始化
+        function init() {
+            loadPlayerData();
+            createMagicParticles();
+            loadAvatarOptions();
+            setupRoomDropZone();
+
+            // 初始化房间数据结构
+            if (!playerData.room) {
+                playerData.room = { items: [] };
+                savePlayerData();
+            }
+
+            // 初始化玩家位置
+            if (!playerData.playerPosition) {
+                playerData.playerPosition = { x: 380, y:300 }; // 房间中心
+                savePlayerData();
+            }
+
+            // 设置下一个物品ID
+            if (playerData.room.items.length > 0) {
+                const maxId = Math.max(...playerData.room.items.map(i => i.id));
+                nextItemId = maxId + 1;
+            }
+        }
+
+        // 加载玩家数据
+        function loadPlayerData() {
+            const data = localStorage.getItem('hogwartsPlayer');
+            if (data) {
+                playerData = JSON.parse(data);
+            } else {
+                // 创建新玩家
+                playerData = {
+                    nickname: '魔法学徒',
+                    avatar: '🧙',
+                    cumulativeCoins: 0,
+                    inventory: [],
+                    level: 0
+                };
+                savePlayerData();
+            }
+
+            updateDisplay();
+        }
+
+        // 保存玩家数据
+        function savePlayerData() {
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            // 昵称和头像
+            document.getElementById('nicknameText').textContent = playerData.nickname;
+            document.getElementById('avatarDisplay').textContent = playerData.avatar;
+
+            // 计算等级
+            const levelInfo = calculateLevel(playerData.cumulativeCoins);
+            playerData.level = levelInfo.level;
+
+            document.getElementById('levelBadge').textContent = `Lv.${levelInfo.level}`;
+            document.getElementById('levelName').textContent = levelInfo.nameZh;
+
+            // 金币统计
+            const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            document.getElementById('coinBalance').textContent = currentCoins;
+            document.getElementById('cumulativeCoins').textContent = playerData.cumulativeCoins;
+            document.getElementById('currentCoins').textContent = playerData.cumulativeCoins;
+
+            // 进度条
+            const nextLevel = LEVELS[levelInfo.level + 1];
+            if (nextLevel) {
+                document.getElementById('nextLevelCoins').textContent = nextLevel.coins;
+                const prevCoins = levelInfo.coins;
+                const progress = ((playerData.cumulativeCoins - prevCoins) / (nextLevel.coins - prevCoins)) * 100;
+                document.getElementById('progressFill').style.width = Math.min(progress, 100) + '%';
+            } else {
+                document.getElementById('nextLevelCoins').textContent = '满级';
+                document.getElementById('progressFill').style.width = '100%';
+            }
+
+            // 背包
+            updateInventory();
+        }
+
+        // 计算等级
+        function calculateLevel(cumulativeCoins) {
+            for (let i = LEVELS.length - 1; i >= 0; i--) {
+                if (cumulativeCoins >= LEVELS[i].coins) {
+                    return LEVELS[i];
+                }
+            }
+            return LEVELS[0];
+        }
+
+        // 更新背包显示
+        function updateInventory() {
+            const grid = document.getElementById('inventoryGrid');
+            const itemCount = document.getElementById('itemCount');
+
+            if (!playerData.inventory || playerData.inventory.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-inventory" style="grid-column: 1 / -1;">
+                        <div class="empty-inventory-icon">🎒</div>
+                        <div>背包空空如也</div>
+                        <div style="font-size: 0.9rem; margin-top: 10px;">去对角巷购买一些魔法物品吧！</div>
+                    </div>
+                `;
+                itemCount.textContent = '0';
+                return;
+            }
+
+            itemCount.textContent = playerData.inventory.length;
+
+            grid.innerHTML = playerData.inventory.map(item => `
+                <div class="inventory-item">
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="item-name">${item.nameZh}</div>
+                    <div class="item-category">${item.category || '物品'}</div>
+                </div>
+            `).join('');
+        }
+
+        // 昵称弹窗
+        function openNicknameModal() {
+            document.getElementById('nicknameInput').value = playerData.nickname;
+            document.getElementById('nicknameModal').style.display = 'flex';
+        }
+
+        function closeNicknameModal() {
+            document.getElementById('nicknameModal').style.display = 'none';
+        }
+
+        function saveNickname() {
+            const newNickname = document.getElementById('nicknameInput').value.trim();
+            if (newNickname && newNickname.length > 0) {
+                playerData.nickname = newNickname;
+                savePlayerData();
+                updateDisplay();
+                closeNicknameModal();
+                alert('昵称修改成功！');
+            } else {
+                alert('请输入有效的昵称！');
+            }
+        }
+
+        // 头像弹窗
+        function loadAvatarOptions() {
+            const grid = document.getElementById('avatarGrid');
+
+            // 获取已解锁的成就头像
+            const unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+
+            // 收集所有可用头像
+            const allAvatars = [...AVATARS];
+
+            // 检查每个成就头像是否已解锁
+            Object.entries(UNLOCKABLE_AVATARS).forEach(([avatarId, avatarData]) => {
+                if (unlockedAchievements.includes(avatarData.achievement)) {
+                    allAvatars.push(avatarData.icon);
+                }
+            });
+
+            grid.innerHTML = allAvatars.map(avatar => `
+                <div class="avatar-option" onclick="selectAvatar('${avatar}')" data-avatar="${avatar}">
+                    ${avatar}
+                </div>
+            `).join('');
+        }
+
+        function openAvatarModal() {
+            // 高亮当前头像
+            document.querySelectorAll('.avatar-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.avatar === playerData.avatar) {
+                    opt.classList.add('selected');
+                }
+            });
+            selectedAvatar = playerData.avatar;
+            document.getElementById('avatarModal').style.display = 'flex';
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('avatarModal').style.display = 'none';
+        }
+
+        function selectAvatar(avatar) {
+            selectedAvatar = avatar;
+            document.querySelectorAll('.avatar-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.avatar === avatar) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
+
+        function saveAvatar() {
+            if (selectedAvatar) {
+                playerData.avatar = selectedAvatar;
+                savePlayerData();
+                updateDisplay();
+                closeAvatarModal();
+                alert('头像修改成功！');
+
+                // 同时更新 academy.html 中的头像显示（通过 localStorage）
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            }
+        }
+
+        // ========== 房间功能 ==========
+        let currentTab = 'inventory';
+        let draggedItem = null;
+        let isDraggingFromRoom = false;
+        let nextItemId = 1;
+
+        // 切换标签页
+        function switchTab(tab) {
+            currentTab = tab;
+
+            // 更新标签按钮状态
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (tab === 'inventory') {
+                document.getElementById('tabInventory').classList.add('active');
+                document.getElementById('contentInventory').style.display = 'block';
+                document.getElementById('contentRoom').style.display = 'none';
+                document.getElementById('contentItems').style.display = 'none';
+            } else if (tab === 'room') {
+                document.getElementById('tabRoom').classList.add('active');
+                document.getElementById('contentInventory').style.display = 'none';
+                document.getElementById('contentRoom').style.display = 'block';
+                document.getElementById('contentItems').style.display = 'none';
+                loadRoomInventory();
+                loadRoomItems();
+            } else if (tab === 'items') {
+                document.getElementById('tabItems').classList.add('active');
+                document.getElementById('contentInventory').style.display = 'none';
+                document.getElementById('contentRoom').style.display = 'none';
+                document.getElementById('contentItems').style.display = 'block';
+            }
+        }
+
+        // 打开道具背包页面
+        function openInventory() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'inventory.html';
+            }, 800);
+        }
+
+        // 加载房间背包列表
+        function loadRoomInventory() {
+            const container = document.getElementById('roomInventoryList');
+            if (!playerData.inventory || playerData.inventory.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #8b6914; padding: 20px;">背包空空如也</div>';
+                return;
+            }
+
+            // 统计房间中每个物品名称的数量
+            const placedItemCount = {};
+            playerData.room.items.forEach(item => {
+                placedItemCount[item.name] = (placedItemCount[item.name] || 0) + 1;
+            });
+
+            // 统计背包中每个物品的购买数量
+            const inventoryCount = {};
+            playerData.inventory.forEach(item => {
+                inventoryCount[item.nameZh] = (inventoryCount[item.nameZh] || 0) + 1;
+            });
+
+            container.innerHTML = playerData.inventory.map((item, index) => {
+                const itemName = item.nameZh;
+                const placedCount = placedItemCount[itemName] || 0;
+                const totalCount = inventoryCount[itemName] || 1;
+
+                // 检查是否已达到最大放置数量
+                const isMaxReached = placedCount >= totalCount;
+                const statusClass = isMaxReached ? 'item-placed' : '';
+                const statusText = `已放置 ${placedCount} / ${totalCount}`;
+
+                return `
+                    <div class="room-inventory-item ${statusClass}" draggable="${!isMaxReached}" data-index="${index}">
+                        <div class="room-inventory-icon">${item.icon}</div>
+                        <div class="room-inventory-name">${itemName}</div>
+                        ${isMaxReached ?
+                            `<span class="placed-status" style="color: #e74c3c;">✓ ${statusText}</span>` :
+                            `<span class="placed-status" style="color: #27ae60;">${statusText}</span>`
+                        }
+                    </div>
+                `;
+            }).join('');
+
+            // 添加拖拽事件监听（只给未达到上限的物品添加）
+            container.querySelectorAll('.room-inventory-item').forEach(item => {
+                if (item.getAttribute('draggable') === 'true') {
+                    item.addEventListener('dragstart', handleInventoryDragStart);
+                    item.addEventListener('dragend', handleInventoryDragEnd);
+                }
+            });
+        }
+
+        // 从背包开始拖拽
+        function handleInventoryDragStart(e) {
+            const index = parseInt(e.target.dataset.index);
+            draggedItem = playerData.inventory[index];
+            draggedItem.sourceIndex = index;
+            isDraggingFromRoom = false;
+
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleInventoryDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        // 加载房间中的物品
+        function loadRoomItems() {
+            const roomArea = document.getElementById('roomArea');
+
+            // 初始化房间数据
+            if (!playerData.room) {
+                playerData.room = { items: [] };
+                savePlayerData();
+            }
+
+            // 清除旧的物品元素（保留装饰）
+            roomArea.querySelectorAll('.room-item').forEach(el => el.remove());
+            roomArea.querySelectorAll('.player-character').forEach(el => el.remove());
+
+            // 加载已放置的物品
+            playerData.room.items.forEach(item => {
+                createRoomItemElement(item);
+            });
+
+            // 加载玩家角色
+            loadPlayerCharacter();
+        }
+
+        // 创建房间物品元素
+        function createRoomItemElement(item) {
+            const roomArea = document.getElementById('roomArea');
+            const element = document.createElement('div');
+            element.className = 'room-item';
+            element.textContent = item.icon;
+            element.style.left = item.x + 'px';
+            element.style.top = item.y + 'px';
+            element.dataset.id = item.id;
+            element.dataset.name = item.name;
+
+            // 添加拖拽事件（左键）
+            element.addEventListener('mousedown', handleRoomItemMouseDown);
+
+            // 添加右键菜单事件
+            element.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showContextMenu(e, item.id);
+            });
+
+            roomArea.appendChild(element);
+        }
+
+        // 删除房间物品（返回背包）
+        function removeRoomItem(itemId) {
+            const roomItem = playerData.room.items.find(i => i.id === itemId);
+            if (!roomItem) return;
+
+            // 从房间移除物品
+            playerData.room.items = playerData.room.items.filter(i => i.id !== itemId);
+            savePlayerData();
+
+            // 隐藏上下文菜单
+            hideContextMenu();
+
+            // 重新加载房间物品
+            loadRoomItems();
+            loadRoomInventory();
+
+            // 显示提示
+            showRoomTip('物品已返回背包！');
+        }
+
+        // 显示右键上下文菜单
+        function showContextMenu(e, itemId) {
+            // 隐藏已存在的菜单
+            hideContextMenu();
+
+            // 创建菜单
+            const menu = document.createElement('div');
+            menu.className = 'room-context-menu';
+            menu.id = 'roomContextMenu';
+
+            // 创建删除按钮
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '🗑️ 删除物品';
+            deleteBtn.onclick = () => {
+                removeRoomItem(itemId);
+            };
+
+            menu.appendChild(deleteBtn);
+
+            // 计算菜单位置（在鼠标旁边）
+            let x = e.clientX + 10;
+            let y = e.clientY + 10;
+
+            // 确保菜单不会超出屏幕
+            const menuWidth = 150;
+            const menuHeight = 50;
+            if (x + menuWidth > window.innerWidth) {
+                x = e.clientX - menuWidth - 10;
+            }
+            if (y + menuHeight > window.innerHeight) {
+                y = e.clientY - menuHeight - 10;
+            }
+
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+
+            document.body.appendChild(menu);
+
+            // 点击菜单外部关闭菜单
+            setTimeout(() => {
+                document.addEventListener('click', hideContextMenu, { once: true });
+            }, 0);
+        }
+
+        // 隐藏右键上下文菜单
+        function hideContextMenu() {
+            const existingMenu = document.getElementById('roomContextMenu');
+            if (existingMenu) {
+                existingMenu.remove();
+            }
+        }
+
+        // 显示房间提示
+        function showRoomTip(message) {
+            const roomTip = document.querySelector('.room-tip');
+            const originalText = roomTip.innerHTML;
+            roomTip.textContent = message;
+            roomTip.style.background = 'rgba(76, 175, 80, 0.2)';
+            roomTip.style.color = '#4caf50';
+
+            setTimeout(() => {
+                roomTip.innerHTML = '💡 拖拽物品到房间，右键点击物品可删除';
+                roomTip.style.background = '';
+                roomTip.style.color = '';
+            }, 2000);
+        }
+
+        // 加载玩家角色
+        function loadPlayerCharacter() {
+            const roomArea = document.getElementById('roomArea');
+
+            // 初始化玩家位置
+            if (!playerData.playerPosition) {
+                playerData.playerPosition = { x: 380, y: 300 }; // 房间中心
+                savePlayerData();
+            }
+
+            // 移除旧的玩家元素
+            roomArea.querySelectorAll('.player-character').forEach(el => el.remove());
+
+            // 创建玩家角色
+            const player = document.createElement('div');
+            player.className = 'player-character';
+            player.textContent = playerData.avatar;
+            player.style.left = playerData.playerPosition.x + 'px';
+            player.style.top = playerData.playerPosition.y + 'px';
+
+            // 添加名字标签
+            const nameLabel = document.createElement('div');
+            nameLabel.className = 'player-name-label';
+            nameLabel.textContent = playerData.nickname;
+            player.appendChild(nameLabel);
+
+            // 添加拖拽
+            player.addEventListener('mousedown', handlePlayerMouseDown);
+
+            roomArea.appendChild(player);
+        }
+
+        // 处理玩家拖拽
+        function handlePlayerMouseDown(e) {
+            const player = e.target.closest('.player-character');
+            const roomArea = document.getElementById('roomArea');
+            const rect = roomArea.getBoundingClientRect();
+
+            const offsetX = e.clientX - rect.left - parseFloat(player.style.left);
+            const offsetY = e.clientY - rect.top - parseFloat(player.style.top);
+
+            function onMouseMove(e) {
+                const x = e.clientX - rect.left - offsetX;
+                const y = e.clientY - rect.top - offsetY;
+
+                // 限制在房间范围内
+                const maxX = rect.width - player.offsetWidth;
+                const maxY = rect.height - player.offsetHeight;
+
+                player.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
+                player.style.top = Math.max(0, Math.min(y, maxY)) + 'px';
+            }
+
+            function onMouseUp(e) {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+
+                // 保存新位置
+                const x = parseFloat(player.style.left);
+                const y = parseFloat(player.style.top);
+
+                playerData.playerPosition = { x, y };
+                savePlayerData();
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        // 处理房间物品拖拽
+        function handleRoomItemMouseDown(e) {
+            const item = e.target;
+            const roomArea = document.getElementById('roomArea');
+            const rect = roomArea.getBoundingClientRect();
+
+            const offsetX = e.clientX - rect.left - parseFloat(item.style.left);
+            const offsetY = e.clientY - rect.top - parseFloat(item.style.top);
+
+            isDraggingFromRoom = true;
+            draggedItem = item;
+
+            function onMouseMove(e) {
+                const x = e.clientX - rect.left - offsetX;
+                const y = e.clientY - rect.top - offsetY;
+
+                // 限制在房间范围内
+                const maxX = rect.width - item.offsetWidth;
+                const maxY = rect.height - item.offsetHeight;
+
+                item.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
+                item.style.top = Math.max(0, Math.min(y, maxY)) + 'px';
+            }
+
+            function onMouseUp(e) {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+
+                // 保存新位置
+                const x = parseFloat(item.style.left);
+                const y = parseFloat(item.style.top);
+
+                // 更新房间数据
+                const itemId = parseInt(item.dataset.id);
+                const roomItem = playerData.room.items.find(i => i.id === itemId);
+                if (roomItem) {
+                    roomItem.x = x;
+                    roomItem.y = y;
+                    savePlayerData();
+                }
+
+                isDraggingFromRoom = false;
+                draggedItem = null;
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        // 房间区域拖放事件
+        function setupRoomDropZone() {
+            const roomArea = document.getElementById('roomArea');
+
+            roomArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                roomArea.style.borderColor = '#ffd700';
+            });
+
+            roomArea.addEventListener('dragleave', (e) => {
+                roomArea.style.borderColor = '#8b4513';
+            });
+
+            roomArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                roomArea.style.borderColor = '#8b4513';
+
+                if (draggedItem && !isDraggingFromRoom) {
+                    const rect = roomArea.getBoundingClientRect();
+                    const x = e.clientX - rect.left - 25; // 居中
+                    const y = e.clientY - rect.top - 25;
+
+                    // 创建房间物品
+                    const roomItem = {
+                        id: nextItemId++,
+                        icon: draggedItem.icon,
+                        name: draggedItem.nameZh,
+                        x: Math.max(0, Math.min(x, rect.width - 50)),
+                        y: Math.max(0, Math.min(y, rect.height - 50))
+                    };
+
+                    // 添加到房间数据
+                    playerData.room.items.push(roomItem);
+                    savePlayerData();
+
+                    // 创建元素
+                    createRoomItemElement(roomItem);
+
+                    // 重新加载背包列表（物品保留在背包中，可多次放置）
+                    loadRoomInventory();
+                }
+            });
+
+            // 点击空白处关闭上下文菜单
+            roomArea.addEventListener('click', () => {
+                hideContextMenu();
+            });
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            if (!container) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

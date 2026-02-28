@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>巫师留言板 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .message-board-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .board-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .board-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        /* 留言输入区域 */
+        .message-input-area {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .message-input-area h3 {
+            font-family: 'Cinzel Decorative', cursive;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .guest-notice {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            color: #ff9800;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(10, 15, 30, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            color: #d4af37;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .message-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message-input::placeholder {
+            color: rgba(212, 175, 55, 0.4);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 留言列表 */
+        .messages-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.9), rgba(10, 20, 40, 0.95));
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .message-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateX(5px);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .message-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            font-size: 2rem;
+        }
+
+        .author-name {
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .guest-badge {
+            font-size: 0.75rem;
+            color: #8b7355;
+            background: rgba(139, 115, 85, 0.1);
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+
+        .message-time {
+            color: #8b7355;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .message-content {
+            color: #c9a876;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 15px;
+        }
+
+        /* 消息操作栏 */
+        .message-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        .like-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+        }
+
+        .like-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        .like-btn.liked {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: rgba(255, 68, 68, 0.5);
+            color: #ff4444;
+        }
+
+        .like-btn.liked .like-icon {
+            animation: likeHeart 0.3s ease;
+        }
+
+        @keyframes likeHeart {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .like-count {
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #f44336;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.85rem;
+            margin-left: auto;
+        }
+
+        .delete-btn:hover {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.5);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b7355;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: #d4af37;
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .board-title {
+                font-size: 1.8rem;
+            }
+
+            .message-input-area {
+                padding: 20px;
+            }
+
+            .message-actions {
+                flex-wrap: wrap;
+            }
+        }
+
+        .title-en {
+            display: none;
+        }
+
+        body.lang-en .title-en {
+            display: block !important;
+        }
+
+        body.lang-en .title-zh {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">巫师留言板</span>
+                <span class="title-text-en">Message Board</span>
+            </h1>
+        </header>
+
+        <div class="message-board-container">
+            <!-- 页面标题 -->
+            <div class="board-header">
+                <h2 class="board-title">
+                    <span class="title-zh">📝 巫师留言板 📝</span>
+                    <span class="title-en">📝 Wizard Message Board 📝</span>
+                </h2>
+            </div>
+
+            <!-- 错误提示 -->
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+            <!-- 留言输入区域 -->
+            <div class="message-input-area">
+                <h3>
+                    <span class="title-zh">✨ 发表你的留言 ✨</span>
+                    <span class="title-en">✨ Post Your Message ✨</span>
+                </h3>
+                <div id="guestNotice" class="guest-notice" style="display: none;">
+                    <span class="lang-zh">ℹ️ 游客无法发表留言，请先登录</span>
+                    <span class="lang-en">ℹ️ Guests cannot post messages, please login first</span>
+                </div>
+                <div class="input-group">
+                    <textarea id="messageContent" class="message-input" maxlength="500"
+                        placeholder="在这里写下你的留言... (最多500字) / Write your message here... (Max 500 characters)"></textarea>
+                </div>
+                <button class="submit-btn" onclick="postMessage()" id="submitBtn">
+                    <span class="btn-zh">🪄 发送留言</span>
+                    <span class="btn-en">🪄 Send Message</span>
+                </button>
+            </div>
+
+            <!-- 留言列表 -->
+            <div id="messagesList" class="messages-list">
+                <div class="loading-spinner">
+                    <span class="loading-zh">正在加载留言...</span>
+                    <span class="loading-en">Loading messages...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 魔法提示 -->
+        <div class="magic-tip">
+            <p class="tip-text-zh">✨ 遵守魔法世界礼仪，文明留言 ✨</p>
+            <p class="tip-text-en">✨ Be polite and follow magical etiquette ✨</p>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        (function() {
+            const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+            let currentUser = null;
+            let likedMessages = new Set(); // 存储已点赞的消息ID
+
+            // 获取用户信息
+            function getUserInfo() {
+                const userId = localStorage.getItem('userId');
+                const isGuest = localStorage.getItem('isGuest') === 'true';
+
+                if (isGuest) {
+                    const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                    return {
+                        id: 'guest_' + (playerData.nickname || 'unknown'),
+                        nickname: playerData.nickname || '神秘游客',
+                        avatar: playerData.avatar || '🧙',
+                        isGuest: true
+                    };
+                } else if (userId) {
+                    const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                    return {
+                        id: userId,
+                        nickname: playerData.nickname || '巫师',
+                        avatar: playerData.avatar || '🧙',
+                        isGuest: false
+                    };
+                }
+                return {
+                    id: 'guest_anonymous',
+                    nickname: '匿名巫师',
+                    avatar: '🧙',
+                    isGuest: true
+                };
+            }
+
+            // 初始化权限控制
+            function initPermissions() {
+                currentUser = getUserInfo();
+                const inputArea = document.getElementById('messageContent');
+                const submitBtn = document.getElementById('submitBtn');
+                const guestNotice = document.getElementById('guestNotice');
+
+                if (currentUser.isGuest) {
+                    // 游客：禁用输入框和提交按钮
+                    inputArea.disabled = true;
+                    submitBtn.disabled = true;
+                    guestNotice.style.display = 'block';
+                    inputArea.placeholder = currentLang === 'zh' ?
+                        '请先登录后再发表留言' :
+                        'Please login to post messages';
+                } else {
+                    // 登录用户：启用输入框和提交按钮
+                    inputArea.disabled = false;
+                    submitBtn.disabled = false;
+                    guestNotice.style.display = 'none';
+                }
+
+                // 加载用户已点赞的消息
+                loadUserLikes();
+            }
+
+            // 加载用户点赞记录
+            async function loadUserLikes() {
+                try {
+                    const { data, error } = await supabase
+                        .from('message_likes')
+                        .select('message_id')
+                        .eq('user_id', currentUser.id);
+
+                    if (!error && data) {
+                        likedMessages = new Set(data.map(item => item.message_id));
+                    }
+                } catch (error) {
+                    console.error('Error loading likes:', error);
+                }
+            }
+
+            // 发表留言
+            window.postMessage = async function() {
+                const content = document.getElementById('messageContent').value.trim();
+                const submitBtn = document.getElementById('submitBtn');
+
+                if (!content) {
+                    showError(currentLang === 'zh' ? '请输入留言内容' : 'Please enter your message');
+                    return;
+                }
+
+                if (currentUser.isGuest) {
+                    showError(currentLang === 'zh' ? '游客无法发表留言，请先登录' : 'Guests cannot post, please login first');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                document.getElementById('errorMessage').style.display = 'none';
+
+                try {
+                    const { data, error } = await supabase
+                        .from('messages')
+                        .insert([{
+                            user_id: currentUser.isGuest ? null : currentUser.id,
+                            user_nickname: currentUser.nickname,
+                            user_avatar: currentUser.avatar,
+                            content: content,
+                            is_guest: currentUser.isGuest
+                        }])
+                        .select()
+                        .single();
+
+                    if (error) {
+                        showError((currentLang === 'zh' ? '发送失败：' : 'Failed: ') + error.message);
+                    } else {
+                        document.getElementById('messageContent').value = '';
+                        showSuccess(currentLang === 'zh' ? '留言发布成功！' : 'Message posted successfully!');
+                        loadMessages();
+                    }
+                } catch (error) {
+                    showError((currentLang === 'zh' ? '发送失败：' : 'Failed: ') + error.message);
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            };
+
+            // 加载留言
+            async function loadMessages() {
+                const messagesList = document.getElementById('messagesList');
+
+                try {
+                    const { data, error } = await supabase
+                        .from('messages')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .limit(50);
+
+                    if (error) {
+                        if (error.code === '42P01') {
+                            // 表不存在
+                            messagesList.innerHTML = `
+                                <div class="error-message">
+                                    <span class="lang-zh">📋 留言板尚未初始化。请在 Supabase SQL Editor 中执行 setup-messageboard.sql 脚本。</span>
+                                    <span class="lang-en">📋 Message board not initialized. Please run setup-messageboard.sql in Supabase SQL Editor.</span>
+                                </div>
+                            `;
+                        } else {
+                            messagesList.innerHTML = `
+                                <div class="error-message">
+                                    ${currentLang === 'zh' ? '加载失败：' + error.message : 'Failed to load: ' + error.message}
+                                </div>
+                            `;
+                        }
+                        return;
+                    }
+
+                    if (!data || data.length === 0) {
+                        showEmptyState();
+                        return;
+                    }
+
+                    displayMessages(data);
+                } catch (error) {
+                    messagesList.innerHTML = `
+                        <div class="error-message">
+                            ${currentLang === 'zh' ? '加载失败，请刷新页面重试' : 'Failed to load, please refresh'}
+                        </div>
+                    `;
+                }
+            }
+
+            // 显示留言列表
+            function displayMessages(messages) {
+                const messagesList = document.getElementById('messagesList');
+
+                messagesList.innerHTML = messages.map(msg => {
+                    const time = formatTime(msg.created_at);
+                    const isMyMessage = !currentUser.isGuest && msg.user_id === currentUser.id;
+                    const isLiked = likedMessages.has(msg.id);
+
+                    return `
+                        <div class="message-card">
+                            <div class="message-header">
+                                <div class="message-author">
+                                    <span class="author-avatar">${msg.user_avatar || '🧙'}</span>
+                                    <span class="author-name">${escapeHtml(msg.user_nickname || '匿名巫师')}</span>
+                                    ${msg.is_guest ? '<span class="guest-badge">游客</span>' : ''}
+                                </div>
+                                <span class="message-time">${time}</span>
+                            </div>
+                            <div class="message-content">${escapeHtml(msg.content)}</div>
+                            <div class="message-actions">
+                                <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(${msg.id})">
+                                    <span class="like-icon">${isLiked ? '❤️' : '🤍'}</span>
+                                    <span class="like-count">${msg.likes_count || 0}</span>
+                                </button>
+                                ${isMyMessage ? `
+                                    <button class="delete-btn" onclick="deleteMessage(${msg.id})">
+                                        🗑️ <span class="lang-zh">删除</span><span class="lang-en">Delete</span>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 点赞/取消点赞
+            window.toggleLike = async function(messageId) {
+                const isLiked = likedMessages.has(messageId);
+
+                try {
+                    if (isLiked) {
+                        // 取消点赞
+                        const { error } = await supabase
+                            .from('message_likes')
+                            .delete()
+                            .eq('message_id', messageId)
+                            .eq('user_id', currentUser.id);
+
+                        if (!error) {
+                            likedMessages.delete(messageId);
+                        }
+                    } else {
+                        // 点赞
+                        const { error } = await supabase
+                            .from('message_likes')
+                            .insert([{
+                                message_id: messageId,
+                                user_id: currentUser.id,
+                                is_guest_liker: currentUser.isGuest
+                            }]);
+
+                        if (!error) {
+                            likedMessages.add(messageId);
+                        }
+                    }
+
+                    // 重新加载消息列表以更新点赞数
+                    loadMessages();
+                } catch (error) {
+                    console.error('Like toggle error:', error);
+                    showError(currentLang === 'zh' ? '操作失败，请重试' : 'Action failed, please try again');
+                }
+            };
+
+            // 删除留言
+            window.deleteMessage = async function(messageId) {
+                const confirmMsg = currentLang === 'zh' ?
+                    '确定要删除这条留言吗？' :
+                    'Are you sure you want to delete this message?';
+
+                if (!confirm(confirmMsg)) {
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('messages')
+                        .delete()
+                        .eq('id', messageId);
+
+                    if (error) {
+                        showError((currentLang === 'zh' ? '删除失败：' : 'Delete failed: ') + error.message);
+                    } else {
+                        showSuccess(currentLang === 'zh' ? '留言已删除' : 'Message deleted');
+                        loadMessages();
+                    }
+                } catch (error) {
+                    showError((currentLang === 'zh' ? '删除失败：' : 'Delete failed: ') + error.message);
+                }
+            };
+
+            // 显示空状态
+            function showEmptyState() {
+                const messagesList = document.getElementById('messagesList');
+                messagesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p class="empty-zh">还没有留言，快来发表第一条吧！</p>
+                        <p class="empty-en">No messages yet. Be the first to post!</p>
+                    </div>
+                `;
+            }
+
+            // 格式化时间
+            function formatTime(timeString) {
+                const date = new Date(timeString);
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+
+                if (minutes < 1) {
+                    return currentLang === 'zh' ? '刚刚' : 'Just now';
+                } else if (minutes < 60) {
+                    return currentLang === 'zh' ? `${minutes}分钟前` : `${minutes}m ago`;
+                } else if (hours < 24) {
+                    return currentLang === 'zh' ? `${hours}小时前` : `${hours}h ago`;
+                } else if (days < 7) {
+                    return currentLang === 'zh' ? `${days}天前` : `${days}d ago`;
+                } else {
+                    return date.toLocaleDateString(currentLang === 'zh' ? 'zh-CN' : 'en-US');
+                }
+            }
+
+            // 转义 HTML
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // 显示错误
+            function showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                errorDiv.style.background = 'rgba(255, 0, 0, 0.1)';
+                errorDiv.style.borderColor = 'rgba(255, 0, 0, 0.3)';
+                errorDiv.style.color = '#ff6b6b';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            }
+
+            // 显示成功消息
+            function showSuccess(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                errorDiv.style.background = 'rgba(76, 175, 80, 0.1)';
+                errorDiv.style.borderColor = 'rgba(76, 175, 80, 0.3)';
+                errorDiv.style.color = '#4caf50';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+
+            // 返回
+            window.goBack = function() {
+                document.body.style.opacity = '0';
+                document.body.style.transition = 'opacity 0.8s ease-in-out';
+                setTimeout(() => {
+                    window.location.href = 'wizard-camp.html';
+                }, 800);
+            };
+
+            // 更新语言
+            function updateLanguage() {
+                document.body.classList.remove('lang-zh', 'lang-en');
+                document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+            }
+
+            // 创建魔法粒子
+            function createMagicParticles() {
+                const container = document.querySelector('.magic-particles');
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 5 + 's';
+                    container.appendChild(particle);
+                }
+            }
+
+            // 初始化
+            updateLanguage();
+            createMagicParticles();
+            initPermissions();
+            loadMessages();
+        })();
+    </script>
+</body>
+</html>

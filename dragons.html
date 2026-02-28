@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>龙的介绍</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .dragons-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-nav {
+            margin-bottom: 30px;
+        }
+
+        .back-nav button {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-nav button:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+        }
+
+        .page-title {
+            text-align: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #c9a227;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .page-info {
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.95rem;
+            color: #8b6914;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .dragons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+        }
+
+        .dragon-card {
+            background: linear-gradient(145deg, rgba(40, 10, 10, 0.9), rgba(20, 5, 5, 0.95));
+            border: 3px solid rgba(255, 100, 0, 0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .dragon-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 100, 0, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .dragon-card:hover {
+            border-color: #ff4500;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(255, 69, 0, 0.4);
+        }
+
+        .dragon-card:hover::before {
+            opacity: 1;
+        }
+
+        .dragon-header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 2px solid rgba(255, 100, 0, 0.3);
+            position: relative;
+        }
+
+        .dragon-emoji {
+            font-size: 4.5rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 30px rgba(255, 100, 0, 0.8));
+            animation: dragon-breath 3s ease-in-out infinite;
+        }
+
+        @keyframes dragon-breath {
+            0%, 100% { filter: drop-shadow(0 0 30px rgba(255, 100, 0, 0.8)); }
+            50% { filter: drop-shadow(0 0 50px rgba(255, 150, 0, 1)); }
+        }
+
+        .dragon-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.6rem;
+            color: #ff8c00;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+        }
+
+        .dragon-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: #ff6347;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+
+        .dragon-aliases {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.8rem;
+            color: #8b4513;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+
+        .dragon-classification {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ae0001, #8b0000);
+            color: #ffcccb;
+            animation: pulse-danger 2s infinite;
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(174, 0, 1, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(174, 0, 1, 0.8);
+            }
+        }
+
+        .dragon-info {
+            padding: 20px 25px;
+        }
+
+        .info-section {
+            margin-bottom: 18px;
+        }
+
+        .info-label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: #ff8c00;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-label.fire::before {
+            content: '🔥';
+        }
+
+        .info-label.habitat::before {
+            content: '🌍';
+        }
+
+        .info-label.appearance::before {
+            content: '✨';
+        }
+
+        .info-label.abilities::before {
+            content: '⚡';
+        }
+
+        .info-label.egg::before {
+            content: '🥚';
+        }
+
+        .info-text {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+            color: #ffcccb;
+            line-height: 1.7;
+            padding-left: 25px;
+        }
+
+        .dragon-abilities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            padding-left: 25px;
+        }
+
+        .ability-tag {
+            background: rgba(255, 100, 0, 0.2);
+            border: 1px solid rgba(255, 100, 0, 0.5);
+            color: #ff8c00;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .dragon-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+            padding-left: 25px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 100, 0, 0.1);
+            border: 1px solid rgba(255, 100, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #ff8c00;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #ff6347;
+        }
+
+        @media (max-width: 768px) {
+            .dragons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dragon-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="dragons-container">
+            <div class="back-nav">
+                <button onclick="goBack()">← 返回大厅</button>
+            </div>
+
+            <h1 class="page-title">🐉 火龙介绍 🐉</h1>
+            <p class="page-subtitle">Dragons of the Wizarding World</p>
+            <p class="page-info">根据《神奇动物在哪里》记载<br>火龙是最难藏匿的神奇动物之一，共有十个纯种火龙品种</p>
+
+            <div class="dragons-grid" id="dragonsGrid">
+                <!-- 卡片将通过JavaScript生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dragons = [
+            {
+                name: "澳洲蛋白眼",
+                nameEn: "Antipodean Opaleye",
+                aliases: "",
+                emoji: "🐉",
+                classification: "XXXXX",
+                appearance: "长着呈现出彩虹色、闪闪发光的珍珠状鳞片，眼睛没有瞳孔（因此得名）。也许是所有火龙中最漂亮的一种。",
+                habitat: "新西兰土生土长，后移居到澳大利亚。居住在山谷里而不是山上。",
+                abilities: ["最漂亮火龙", "彩虹色鳞片", "鲜艳红色火焰"],
+                egg: "卵是灰白色的，粗心大意的麻瓜们会把它们误认作化石。",
+                diet: "最喜爱的食物是绵羊。除非肚子饿了，很少有杀戮行为。",
+                size: "2-3吨",
+                traits: ["体型适中", "温和", "不具攻击性"]
+            },
+            {
+                name: "中国火球",
+                nameEn: "Chinese Fireball",
+                aliases: "狮龙 (Liondragon)",
+                emoji: "🔥",
+                classification: "XXXXX",
+                appearance: "光滑的鳞片呈猩红色，脸上长着一只狮子鼻，鼻子周围有一圈金灿灿的流苏状尖刺，眼睛暴突。",
+                habitat: "东方唯一的火龙，生活在中国。",
+                abilities: ["蘑菇状火球", "从鼻孔喷火", "生性好斗"],
+                egg: "卵呈鲜艳的深红色，上有金色斑点，卵壳在中国巫术界颇受珍视，应用广泛。",
+                diet: "大多数哺乳动物都是它的美食，但也比较喜欢吃猪和人。",
+                size: "2-4吨",
+                traits: ["雄火球身体比雌火球大", "对同胞比较能够忍受"]
+            },
+            {
+                name: "普通威尔士绿龙",
+                nameEn: "Common Welsh Green",
+                aliases: "",
+                emoji: "🦎",
+                classification: "XXXXX",
+                appearance: "身体可以和山上茂密的野草很好地混在一起，不易分辨。",
+                habitat: "一般将巢穴建在比较高的山上，为了保护它们，山上建立了保护区。",
+                abilities: ["优美动听的吼叫声", "薄薄上下颌喷火", "避开人类"],
+                egg: "卵是土褐色的，上面有绿色的斑点。",
+                diet: "喜欢捕猎绵羊为食。",
+                size: "中型",
+                traits: ["最不爱惹麻烦", "总是主动避开人类", "除非被激怒"]
+            },
+            {
+                name: "赫希底里群岛黑龙",
+                nameEn: "Hebridean Black",
+                aliases: "",
+                emoji: "🐲",
+                classification: "XXXXX",
+                appearance: "黑龙身长达三十英尺，鳞片粗糙，紫色的眼睛炯炯有神，脊背上有一排不深但却锋利如剃刀的脊隆。",
+                habitat: "不列颠土生土长的火龙，一条这样的火龙需要一百平方英里的领地。",
+                abilities: ["剃刀般锋利脊隆", "蝙蝠般翅膀", "箭头形尾巴"],
+                egg: "卵的特征未详细记载。",
+                diet: "主要以鹿为食，也偷猎体形较大的狗甚至牛作为食物。",
+                size: "30英尺长",
+                traits: ["比威尔士绿龙好斗", "麦克法斯蒂巫师家族管理"]
+            },
+            {
+                name: "匈牙利树蜂",
+                nameEn: "Hungarian Horntail",
+                aliases: "",
+                emoji: "🐲",
+                classification: "XXXXX",
+                appearance: "身上覆盖着黑色的鳞片，外表像蜥蜴，长着黄色的眼睛、青铜犄角，长尾巴上突出着差不多也是青铜色的尖刺。",
+                habitat: "匈牙利",
+                abilities: ["喷火最远（达50英尺）", "最具攻击性", "尾巴尖刺"],
+                egg: "卵和混凝土的颜色一样，而且特别结实；小龙崽出生时用发育很好的尾巴尖刺击破卵壳。",
+                diet: "以山羊、绵羊为食，但任何时候只要有可能，它也吃人。",
+                size: "大型",
+                traits: ["大概是所有火龙中最危险的火龙", "哈利在三强争霸赛中面对的就是这种龙"]
+            },
+            {
+                name: "挪威脊背龙",
+                nameEn: "Norwegian Ridgeback",
+                aliases: "",
+                emoji: "🦖",
+                classification: "XXXXX",
+                appearance: "脊背上特别招摇地隆起了一条黑玉色脊隆，尾巴上没有尖刺。",
+                habitat: "挪威",
+                abilities: ["异常好斗", "攻击大型陆地哺乳动物", "甚至吃水中生物"],
+                egg: "脊背龙的卵是黑色的。",
+                diet: "攻击大多数种类的大型陆地哺乳动物，甚至还吃水中的生物（曾有未经证实的报告称其卷走了一头鲸崽）。",
+                size: "与树蜂相似",
+                traits: ["珍稀龙种之一", "幼崽1-3个月就能喷火", "海格曾秘密饲养过"]
+            },
+            {
+                name: "秘鲁毒牙龙",
+                nameEn: "Peruvian Vipertooth",
+                aliases: "",
+                emoji: "🐉",
+                classification: "XXXXX",
+                appearance: "鳞片光滑，全身黄铜色，脊背上有一条黑色脊隆。犄角不长，长牙有剧毒。",
+                habitat: "秘鲁",
+                abilities: ["飞行速度最快", "体型最小", "剧毒长牙"],
+                egg: "卵的特征未详细记载。",
+                diet: "很愿意以山羊和奶牛为食，但是它对人也特别喜欢。",
+                size: "体长仅15英尺左右（约4.5米）",
+                traits: ["已知的所有火龙中体型最小", "19世纪末国际巫师联合会曾派出屠龙手减少其数量"]
+            },
+            {
+                name: "罗马尼亚长角龙",
+                nameEn: "Romanian Longhorn",
+                aliases: "",
+                emoji: "🐂",
+                classification: "XXXXX",
+                appearance: "长角龙有黑绿色的鳞片，金光闪烁的长犄角。",
+                habitat: "罗马尼亚，现在已经成为世界上最重要的火龙保护区。",
+                abilities: ["犄角可抵死猎物", "再将猎物烤熟", "犄角碾粉可作药剂"],
+                egg: "卵的特征未详细记载。",
+                diet: "猎物种类未详细记载。",
+                size: "大型",
+                traits: ["数量急剧减少", "犄角现为乙级可贸易商品", "受严密保护"]
+            },
+            {
+                name: "瑞典短鼻龙",
+                nameEn: "Swedish Short-Snout",
+                aliases: "",
+                emoji: "🐲",
+                classification: "XXXXX",
+                appearance: "一种外表格外引人注目的银蓝色火龙。",
+                habitat: "喜爱居住在无人居住的荒凉山区。",
+                abilities: ["耀眼的蓝色火焰", "瞬间化为灰烬", "皮可制作手套和护盾"],
+                egg: "卵的特征未详细记载。",
+                diet: "猎物种类未详细记载。",
+                size: "中型",
+                traits: ["名下的命案较少", "人们寻找它的皮制作手套和护盾", "蓝色火焰极危险"]
+            },
+            {
+                name: "乌克兰铁肚皮",
+                nameEn: "Ukrainian Ironbelly",
+                aliases: "",
+                emoji: "🛡️",
+                classification: "XXXXX",
+                appearance: "身体滚圆，鳞片是闪亮的灰色，眼睛深红色，爪子特别长，而且特别狠毒。",
+                habitat: "乌克兰",
+                abilities: ["世界上体型最大的火龙", "鳞片如铁", "可压毁住宅"],
+                egg: "卵的特征未详细记载。",
+                diet: "猎物种类未详细记载，但会从黑海卷走航船。",
+                size: "体重可达6吨",
+                traits: ["飞行速度较慢", "非常非常危险", "1799年卷走过黑海航船", "受乌克兰巫师当局严密监察"]
+            }
+        ];
+
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        function renderDragons() {
+            const grid = document.getElementById('dragonsGrid');
+            grid.innerHTML = '';
+
+            dragons.forEach(dragon => {
+                const card = document.createElement('div');
+                card.className = 'dragon-card';
+
+                card.innerHTML = `
+                    <div class="dragon-header">
+                        <div class="dragon-emoji">${dragon.emoji}</div>
+                        <div class="dragon-name">${dragon.name}</div>
+                        <div class="dragon-name-en">${dragon.nameEn}</div>
+                        ${dragon.aliases ? `<div class="dragon-aliases">${dragon.aliases}</div>` : ''}
+                        <div class="dragon-classification">${dragon.classification}</div>
+                    </div>
+                    <div class="dragon-info">
+                        <div class="info-section">
+                            <div class="info-label appearance">外貌特征</div>
+                            <div class="info-text">${dragon.appearance}</div>
+                        </div>
+                        <div class="info-section">
+                            <div class="info-label habitat">栖息地</div>
+                            <div class="info-text">${dragon.habitat}</div>
+                        </div>
+                        <div class="info-section">
+                            <div class="info-label abilities">特殊能力</div>
+                            <div class="dragon-abilities">
+                                ${dragon.abilities.map(ability => `<span class="ability-tag">${ability}</span>`).join('')}
+                            </div>
+                        </div>
+                        ${dragon.egg ? `
+                        <div class="info-section">
+                            <div class="info-label egg">卵的特征</div>
+                            <div class="info-text">${dragon.egg}</div>
+                        </div>
+                        ` : ''}
+                        <div class="info-section">
+                            <div class="info-label fire">饮食习惯</div>
+                            <div class="info-text">${dragon.diet}</div>
+                        </div>
+                        <div class="dragon-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${dragon.size}</div>
+                                <div class="stat-label">体型</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${dragon.traits.length}+</div>
+                                <div class="stat-label">特点数量</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 从URL获取参数
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split('&');
+
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i].split('=');
+                if (pair[0]) {
+                    params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+                }
+            }
+            return params;
+        }
+
+        // 查找并高亮火龙
+        function findAndHighlightDragon(searchTerm) {
+            if (!searchTerm) return;
+
+            const foundIndex = dragons.findIndex(dragon => {
+                return dragon.name.includes(searchTerm) ||
+                       dragon.nameEn.toLowerCase().includes(searchTerm.toLowerCase());
+            });
+
+            if (foundIndex !== -1) {
+                // 等待渲染完成后滚动
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('.dragon-card');
+                    if (cards[foundIndex]) {
+                        cards[foundIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        cards[foundIndex].style.animation = 'highlight 2s ease-in-out 3';
+                    }
+                }, 500);
+            }
+        }
+
+        // 添加高亮动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes highlight {
+                0%, 100% { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(255, 69, 0, 0.4); }
+                50% { transform: translateY(-15px) scale(1.05); box-shadow: 0 30px 80px rgba(255, 69, 0, 0.7), 0 0 40px rgba(255, 100, 0, 0.9); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            renderDragons();
+
+            const params = getUrlParams();
+            if (params.search) {
+                findAndHighlightDragon(params.search);
+            }
+        });
+    </script>
+</body>
+</html>

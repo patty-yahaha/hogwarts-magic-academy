@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔法学院大厅</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* 按钮通知徽章样式 - 更醒目版本 */
+        .notification-badge {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: linear-gradient(135deg, #ff1744, #d50000);
+            color: white;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.6),
+                        0 0 20px rgba(255, 23, 68, 0.4);
+            animation: badgePulse 1.5s ease-in-out infinite,
+                       badgeShake 2s ease-in-out infinite;
+            z-index: 100;
+            border: 3px solid #fff;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(255, 0, 0, 0.6),
+                            0 0 20px rgba(255, 23, 68, 0.4);
+            }
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 6px 25px rgba(255, 0, 0, 0.9),
+                            0 0 30px rgba(255, 23, 68, 0.6);
+            }
+        }
+
+        @keyframes badgeShake {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(-8deg);
+            }
+            75% {
+                transform: rotate(8deg);
+            }
+        }
+
+        /* 确保按钮有相对定位，用于定位徽章 */
+        .magic-btn-large {
+            position: relative;
+        }
+
+        /* 徽章悬停效果 */
+        .notification-badge:hover {
+            transform: scale(1.2) rotate(5deg);
+            background: linear-gradient(135deg, #ff1744, #b71c1c);
+            animation: none;
+        }
+
+        /* ==================== 用户登录状态显示 ==================== */
+        .user-status-bar {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 12px 20px;
+            margin: 0 auto 30px;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-status-avatar {
+            font-size: 2.5rem;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.2), rgba(10, 20, 40, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .user-nickname {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #d4af37;
+        }
+
+        .user-status-badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+
+        .user-status-badge.logged-in {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            color: #4caf50;
+        }
+
+        .user-status-badge.guest {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(255, 152, 0, 0.1));
+            border: 1px solid rgba(255, 152, 0, 0.5);
+            color: #ff9800;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .user-actions-compact {
+            display: flex;
+            gap: 10px;
+        }
+
+        .user-action-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .user-action-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .user-action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .logout-btn {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+
+        .logout-btn:hover {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.5);
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .user-status-bar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .user-actions-compact {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goHome()">← <span class="back-text-zh">首页</span><span class="back-text-en">Home</span></button>
+            <h1 class="academy-title"><span class="title-text-zh">魔法学院大厅</span><span class="title-text-en">The Great Hall</span></h1>
+            <div class="lang-switch">
+                <button class="lang-btn active" data-lang="zh">中文</button>
+                <button class="lang-btn" data-lang="en">English</button>
+            </div>
+        </header>
+
+        <!-- 用户登录状态栏 -->
+        <div class="user-status-bar" id="userStatusBar">
+            <div class="user-info">
+                <div class="user-status-avatar" id="statusAvatar">🧙</div>
+                <div class="user-details">
+                    <div class="user-nickname" id="statusNickname">加载中...</div>
+                    <div class="user-status-badge" id="statusBadge">
+                        <span class="status-dot"></span>
+                        <span class="status-text">检测中...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="user-actions-compact">
+                <button class="user-action-btn" onclick="openProfile()">
+                    👤 <span class="lang-zh">个人资料</span><span class="lang-en">Profile</span>
+                </button>
+                <button class="user-action-btn logout-btn" onclick="logout()" id="logoutBtn" style="display: none;">
+                    🚪 <span class="lang-zh">退出登录</span><span class="lang-en">Logout</span>
+                </button>
+                <a href="./login.html?force=true" class="user-action-btn" id="loginBtn" style="display: none; text-decoration: none;" onclick="window.location.href='login.html?force=true'; return false;">
+                    🔑 <span class="lang-zh">登录</span><span class="lang-en">Login</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 搜索栏 -->
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="搜索人物、动物、龙...">
+                <button class="search-btn" onclick="performSearch()">
+                    <span class="search-icon">🔍</span>
+                </button>
+            </div>
+            <!-- 头像和邮件按钮 -->
+            <div class="user-actions">
+                <button class="mail-btn" onclick="openMailbox()" id="mailBtn">
+                    <span class="mail-icon">📬</span>
+                    <span class="mail-badge" id="mailBadge" style="display: none;">0</span>
+                </button>
+                <button class="avatar-btn" onclick="openProfile()">
+                    <span class="avatar-icon" id="avatarIcon">🧙</span>
+                </button>
+                <button class="coin-rules-btn" onclick="showCoinRules()" title="金加隆获取守则">
+                    <span class="coin-rules-icon">🪙</span>
+                </button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <!-- 主要功能按钮区域 -->
+        <div class="main-content">
+            <!-- 上方四个主按钮 -->
+            <div class="top-buttons">
+                <button class="magic-btn wand-btn" onclick="openPage('wands')">
+                    <div class="btn-icon">🪄</div>
+                    <div class="btn-content">
+                        <span class="btn-text-zh">魔杖介绍</span>
+                        <span class="btn-text-en">Wands</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <button class="magic-btn characters-btn" onclick="openPage('characters')">
+                    <div class="btn-icon">👤</div>
+                    <div class="btn-content">
+                        <span class="btn-text-zh">人物介绍</span>
+                        <span class="btn-text-en">Characters</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <button class="magic-btn creatures-btn" onclick="openPage('creatures')">
+                    <div class="btn-icon">🦉</div>
+                    <div class="btn-content">
+                        <span class="btn-text-zh">动物介绍</span>
+                        <span class="btn-text-en">Creatures</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <button class="magic-btn dragons-btn" onclick="openPage('dragons')">
+                    <div class="btn-icon">🐉</div>
+                    <div class="btn-content">
+                        <span class="btn-text-zh">龙的介绍</span>
+                        <span class="btn-text-en">Dragons</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+            </div>
+
+            <!-- 下方三个大按钮 -->
+            <div class="bottom-buttons">
+                <button class="magic-btn-large quiz-btn" onclick="openPage('quiz')">
+                    <div class="large-btn-icon">⚡</div>
+                    <div class="large-btn-content">
+                        <span class="large-btn-text-zh">哈利波特魔法测试</span>
+                        <span class="large-btn-text-en">Magic Quiz Challenge</span>
+                        <span class="large-btn-subtitle-zh">选择你的挑战难度</span>
+                        <span class="large-btn-subtitle-en">Choose Your Challenge Level</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <button class="magic-btn-large chat-btn" onclick="openPage('chat')">
+                    <div class="large-btn-icon">💬</div>
+                    <div class="large-btn-content">
+                        <span class="large-btn-text-zh">角色聊天</span>
+                        <span class="large-btn-text-en">Chat with Characters</span>
+                        <span class="large-btn-subtitle-zh">与魔法世界的主角们对话</span>
+                        <span class="large-btn-subtitle-en">Talk with Magical World Characters</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <button class="magic-btn-large learning-zone-btn" onclick="openPage('learning-zone')">
+                    <div class="large-btn-icon">🌍</div>
+                    <div class="large-btn-content">
+                        <span class="large-btn-text-zh">世界语言</span>
+                        <span class="large-btn-text-en">World Languages</span>
+                        <span class="large-btn-subtitle-zh">单词卡片与学习工具</span>
+                        <span class="large-btn-subtitle-en">Flashcards & Learning Tools</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <button class="magic-btn-large hogwarts-games-btn" onclick="openPage('hogwarts-games')">
+                    <div class="large-btn-icon">🏰</div>
+                    <div class="large-btn-content">
+                        <span class="large-btn-text-zh">霍格沃茨课程</span>
+                        <span class="large-btn-text-en">Hogwarts Classes</span>
+                        <span class="large-btn-subtitle-zh">咒语、魔药、黑魔法防御术</span>
+                        <span class="large-btn-subtitle-en">Spells, Potions, Defense Against Dark Arts</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <button class="magic-btn-large games-zone-btn" onclick="openPage('games-zone')">
+                    <div class="large-btn-icon">🏪</div>
+                    <div class="large-btn-content">
+                        <span class="large-btn-text-zh">巫师市集</span>
+                        <span class="large-btn-text-en">Wizard Market</span>
+                        <span class="large-btn-subtitle-zh">魔法世界的购物天堂</span>
+                        <span class="large-btn-subtitle-en">Shopping Paradise of Magic World</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <button class="magic-btn-large wizard-camp-btn" onclick="openPage('wizard-camp')">
+                    <div class="large-btn-icon">⛺</div>
+                    <div class="large-btn-content">
+                        <span class="large-btn-text-zh">巫师营地</span>
+                        <span class="large-btn-text-en">Wizard Camp</span>
+                        <span class="large-btn-subtitle-zh">成就、任务、社交与交易</span>
+                        <span class="large-btn-subtitle-en">Achievements, Quests, Social & Trade</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                    <span class="notification-badge" id="campBadge" style="display: none;">0</span>
+                </button>
+
+                <button class="magic-btn-large quest-btn" onclick="openPage('quest-board')">
+                    <div class="large-btn-icon">📜</div>
+                    <div class="large-btn-content">
+                        <span class="large-btn-text-zh">巫师任务公告栏</span>
+                        <span class="large-btn-text-en">Quest Board</span>
+                        <span class="large-btn-subtitle-zh">接受日常任务，获取丰厚奖励</span>
+                        <span class="large-btn-subtitle-en">Accept Daily Quests and Earn Rich Rewards</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                    <span class="notification-badge" id="questBadge" style="display: none;">0</span>
+                </button>
+
+                <button class="magic-btn-large prophet-btn" onclick="openPage('prophet-daily')">
+                    <div class="large-btn-icon">📰</div>
+                    <div class="large-btn-content">
+                        <span class="large-btn-text-zh">预言家日报</span>
+                        <span class="large-btn-text-en">Daily Prophet</span>
+                        <span class="large-btn-subtitle-zh">魔法世界最新资讯</span>
+                        <span class="large-btn-subtitle-en">Latest News from Magic World</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                    <span class="notification-badge" id="prophetBadge" style="display: none;">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 魔法提示 -->
+        <div class="magic-tip">
+            <p class="tip-text-zh">✨ 选择你的魔法冒险 ✨</p>
+            <p class="tip-text-en">✨ Choose Your Magical Adventure ✨</p>
+        </div>
+    </div>
+
+    <!-- 金加隆守则弹窗 -->
+    <div class="coin-rules-modal" id="coinRulesModal">
+        <div class="modal-content-coin">
+            <div class="modal-header">
+                <h2 class="modal-title-zh">🪙 霍格沃茨金加隆获取守则 🪙</h2>
+                <h2 class="modal-title-en">🪙 Hogwarts Galleon Earning Guide 🪙</h2>
+                <button class="close-modal-btn" onclick="closeCoinRules()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="rule-section">
+                    <h3 class="rule-title-zh">🌍 世界语言奖励</h3>
+                    <h3 class="rule-title-en">🌍 World Languages Rewards</h3>
+                    <div class="rule-item">
+                        <span class="rule-icon">⏱️</span>
+                        <span class="rule-text-zh">学习单词卡片满15分钟：+30 金加隆</span>
+                        <span class="rule-text-en">Study flashcards for 15 minutes: +30 Galleons</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">📝</span>
+                        <span class="rule-text-zh">测验得分 60-70分：+1 金加隆</span>
+                        <span class="rule-text-en">Quiz score 60-70: +1 Galleon</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">📝</span>
+                        <span class="rule-text-zh">测验得分 70-80分：+3 金加隆</span>
+                        <span class="rule-text-en">Quiz score 70-80: +3 Galleons</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">📝</span>
+                        <span class="rule-text-zh">测验得分 80-90分：+20 金加隆</span>
+                        <span class="rule-text-en">Quiz score 80-90: +20 Galleons</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">📝</span>
+                        <span class="rule-text-zh">测验得分 90-100分：+50 金加隆</span>
+                        <span class="rule-text-en">Quiz score 90-100: +50 Galleons</span>
+                    </div>
+                </div>
+
+                <div class="rule-section">
+                    <h3 class="rule-title-zh">🏰 霍格沃茨课程奖励</h3>
+                    <h3 class="rule-title-en">🏰 Hogwarts Classes Rewards</h3>
+                    <div class="rule-item">
+                        <span class="rule-icon">🧹</span>
+                        <span class="rule-text-zh">飞行课：每5根柱子 +3 金加隆</span>
+                        <span class="rule-text-en">Flying Class: Every 5 pillars +3 Galleons</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">⚗️</span>
+                        <span class="rule-text-zh">魔药课初级：每10个 +20 金加隆</span>
+                        <span class="rule-text-en">Potions Beginner: Every 10 +20 Galleons</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">⚗️</span>
+                        <span class="rule-text-zh">魔药课中级：每10个 +30 金加隆</span>
+                        <span class="rule-text-en">Potions Intermediate: Every 10 +30 Galleons</span>
+                    </div>
+                </div>
+
+                <div class="rule-section">
+                    <h3 class="rule-title-zh">❤️ 好感度获得规则</h3>
+                    <h3 class="rule-title-en">❤️ Affection Level Rules</h3>
+                    <div class="rule-item" style="font-size: 0.9rem;">
+                        <span class="rule-icon">🧹</span>
+                        <span class="rule-text-zh">飞行课：每连续通过10根柱子 → 好感度 +1</span>
+                        <span class="rule-text-en">Flying: Every 10 consecutive pillars passed → Affection +1</span>
+                    </div>
+                    <div class="rule-item" style="font-size: 0.9rem;">
+                        <span class="rule-icon">🧹</span>
+                        <span class="rule-text-zh">飞行课：每累计5次通过柱子少于3根 → 好感度 -1</span>
+                        <span class="rule-text-en">Flying: Every 5 times with <3 pillars → Affection -1</span>
+                    </div>
+                    <div class="rule-item" style="font-size: 0.9rem;">
+                        <span class="rule-icon">⚗️</span>
+                        <span class="rule-text-zh">魔药课：每连续成功5个 → 好感度 +1</span>
+                        <span class="rule-text-en">Potions: Every 5 consecutive successes → Affection +1</span>
+                    </div>
+                    <div class="rule-item" style="font-size: 0.9rem;">
+                        <span class="rule-icon">⚗️</span>
+                        <span class="rule-text-zh">魔药课：每累计失败10次 → 好感度 -1</span>
+                        <span class="rule-text-en">Potions: Every 10 failures → Affection -1</span>
+                    </div>
+                </div>
+
+                <div class="rule-section">
+                    <h3 class="rule-title-zh">⭐ 等级系统</h3>
+                    <h3 class="rule-title-en">⭐ Level System</h3>
+                    <div class="rule-item">
+                        <span class="rule-icon">🎖️</span>
+                        <span class="rule-text-zh">500 金加隆：新手 Novice</span>
+                        <span class="rule-text-en">500 Galleons: Novice</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">🎖️</span>
+                        <span class="rule-text-zh">1500 金加隆：学徒 Apprentice</span>
+                        <span class="rule-text-en">1500 Galleons: Apprentice</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">🎖️</span>
+                        <span class="rule-text-zh">3000 金加隆：老手 Journeyman</span>
+                        <span class="rule-text-en">3000 Galleons: Journeyman</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">🎖️</span>
+                        <span class="rule-text-zh">5000 金加隆：专家 Expert</span>
+                        <span class="rule-text-en">5000 Galleons: Expert</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-icon">🎖️</span>
+                        <span class="rule-text-zh">10000 金加隆：大师 Master</span>
+                        <span class="rule-text-en">10000 Galleons: Master</span>
+                    </div>
+                </div>
+
+                <div class="rule-note-zh">💡 提示：等级基于累计收入，花费金加隆不会降低等级！</div>
+                <div class="rule-note-en">💡 Tip: Levels are based on cumulative earnings. Spending won't lower your level!</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 邮箱模态框 -->
+    <div class="mailbox-modal" id="mailboxModal">
+        <div class="mailbox-content">
+            <div class="mailbox-header">
+                <h2 class="mailbox-title">
+                    <span class="mailbox-title-zh">📬 霍格沃茨猫头鹰邮件 🦉</span>
+                    <span class="mailbox-title-en">📬 Hogwarts Owl Mail 🦉</span>
+                </h2>
+                <button class="close-mailbox-btn" onclick="closeMailbox()">✕</button>
+            </div>
+            <div class="mailbox-body" id="mailboxBody">
+                <!-- 邮件列表将动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 单封信件模态框 -->
+    <div class="letter-modal" id="letterModal">
+        <div class="letter-content">
+            <button class="close-letter-btn" onclick="closeLetter()">✕</button>
+            <div class="letter-header-inner">
+                <div class="letter-type-icon-large" id="letterTypeIconLarge">📜</div>
+                <h3 class="letter-title-full">
+                    <span class="letter-title-zh" id="letterTitleZh">信件标题</span>
+                    <span class="letter-title-en" id="letterTitleEn">Letter Title</span>
+                </h3>
+            </div>
+            <div class="letter-body-full">
+                <span class="letter-body-zh" id="letterBodyZh">信件内容...</span>
+                <span class="letter-body-en" id="letterBodyEn">Letter content...</span>
+            </div>
+            <div class="letter-reward" id="letterReward" style="display: none;">
+                <span class="letter-reward-text" id="letterRewardText"></span>
+            </div>
+            <div class="letter-actions">
+                <button class="letter-action-btn" onclick="claimLetterReward()" id="claimRewardBtn">
+                    <span class="btn-zh">领取奖励</span>
+                    <span class="btn-en">Claim Reward</span>
+                </button>
+                <button class="letter-action-btn secondary" onclick="closeLetter()">
+                    <span class="btn-zh">关闭</span>
+                    <span class="btn-en">Close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // ==================== 全局函数（必须在最前面定义）====================
+        // 登录跳转函数
+        window.goToLogin = function() {
+            console.log('登录按钮被点击');
+            try {
+                window.location.href = 'login.html';
+            } catch(e) {
+                console.error('跳转失败:', e);
+            }
+        };
+
+        // 退出登录函数（在后面会重新定义，这里先声明）
+        window.logout = function() {
+            // 后面会定义具体实现
+        };
+
+        // ==================== 语言切换 ====================
+        const langBtns = document.querySelectorAll('.lang-btn');
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh'; // 从 localStorage 读取语言
+
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                langBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentLang = this.dataset.lang;
+                localStorage.setItem('siteLanguage', currentLang); // 保存到 localStorage
+                updateLanguage();
+            });
+        });
+
+        // 初始化语言按钮状态
+        function initLanguage() {
+            langBtns.forEach(btn => {
+                if (btn.dataset.lang === currentLang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            // 设置body的语言类，CSS会根据body类自动切换语言
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            // 更新搜索框placeholder
+            document.getElementById('searchInput').placeholder = currentLang === 'zh' ?
+                '搜索人物、动物、龙...' : 'Search characters, creatures, dragons...';
+        }
+
+        // 页面跳转
+        function openPage(page, filter = null, searchTerm = null) {
+            // 移除了15分钟学习时间限制，待网站基本完成后再加入
+
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+
+            let url = page + '.html';
+            const params = [];
+
+            if (filter) params.push('filter=' + encodeURIComponent(filter));
+            if (searchTerm) params.push('search=' + encodeURIComponent(searchTerm));
+
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+
+            setTimeout(() => {
+                window.location.href = url;
+            }, 800);
+        }
+
+        function goHome() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 800);
+        }
+
+        window.openProfile = function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'profile.html';
+            }, 800);
+        };
+
+        // 初始化玩家数据
+        function initPlayerData() {
+            // 检查是否已存在玩家数据
+            let playerData = localStorage.getItem('hogwartsPlayer');
+
+            if (!playerData) {
+                // 创建新玩家数据
+                playerData = {
+                    nickname: '魔法学徒',
+                    avatar: '🧙',
+                    cumulativeCoins: 0,
+                    inventory: [],
+                    level: 0
+                };
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            } else {
+                playerData = JSON.parse(playerData);
+            }
+
+            // 更新头像图标显示
+            document.getElementById('avatarIcon').textContent = playerData.avatar;
+        }
+
+        // 显示金加隆守则弹窗
+        function showCoinRules() {
+            document.getElementById('coinRulesModal').style.display = 'flex';
+        }
+
+        // 关闭金加隆守则弹窗
+        function closeCoinRules() {
+            document.getElementById('coinRulesModal').style.display = 'none';
+        }
+
+        // 点击弹窗外部关闭
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('coinRulesModal');
+            if (e.target === modal) {
+                closeCoinRules();
+            }
+        });
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 按钮悬停效果
+        document.querySelectorAll('.magic-btn, .magic-btn-large').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // 搜索功能
+        const searchData = [
+            // 人物 (Characters)
+            { name: "哈利·波特", nameEn: "Harry Potter", emoji: "👦🏻", category: "人物", categoryEn: "Character", page: "characters", filter: "protagonists" },
+            { name: "罗恩·韦斯莱", nameEn: "Ron Weasley", emoji: "👦🏼", category: "人物", categoryEn: "Character", page: "characters", filter: "protagonists" },
+            { name: "赫敏·格兰杰", nameEn: "Hermione Granger", emoji: "👩🏻", category: "人物", categoryEn: "Character", page: "characters", filter: "protagonists" },
+            { name: "阿不思·邓布利多", nameEn: "Albus Dumbledore", emoji: "🧙‍♂️", category: "人物", categoryEn: "Character", page: "characters", filter: "staff" },
+            { name: "伏地魔", nameEn: "Lord Voldemort", emoji: "🦹", category: "人物", categoryEn: "Character", page: "characters", filter: "creatures" },
+
+            // 神奇动物 (Creatures)
+            { name: "八眼巨蛛", nameEn: "Acromantula", emoji: "🕷️", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXXXX" },
+            { name: "火灰蛇", nameEn: "Ashwinder", emoji: "🔥", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXX" },
+            { name: "护树罗锅", nameEn: "Bowtruckle", emoji: "🌿", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XX" },
+            { name: "猫狸子", nameEn: "Kneazle", emoji: "🐱", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXX" },
+            { name: "泥伏雷", nameEn: "Niffler", emoji: "🦔", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXX" },
+            { name: "凤凰", nameEn: "Phoenix", emoji: "🔥", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXXX" },
+            { name: "独角兽", nameEn: "Unicorn", emoji: "🦄", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXXX" },
+            { name: "隐形兽", nameEn: "Demiguise", emoji: "🦧", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXXX" },
+            { name: "狼人", nameEn: "Werewolf", emoji: "🐺", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXXXX" },
+            { name: "马人", nameEn: "Centaur", emoji: "🐴", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXXX" },
+            { name: "地精", nameEn: "Gnome", emoji: "👺", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XX" },
+            { name: "仙子", nameEn: "Fairy", emoji: "🧚", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XX" },
+            { name: "蛇怪", nameEn: "Basilisk", emoji: "🐍", category: "神奇动物", categoryEn: "Creature", page: "creatures", filter: "XXXXX" },
+
+            // 龙 (Dragons)
+            { name: "匈牙利树蜂", nameEn: "Hungarian Horntail", emoji: "🐲", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "中国火球", nameEn: "Chinese Fireball", emoji: "🔥", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "挪威脊背龙", nameEn: "Norwegian Ridgeback", emoji: "🦖", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "威尔士绿龙", nameEn: "Welsh Green", emoji: "🦎", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "乌克兰铁肚皮", nameEn: "Ukrainian Ironbelly", emoji: "🛡️", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "瑞典短鼻龙", nameEn: "Swedish Short-Snout", emoji: "🐲", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "澳洲蛋白眼", nameEn: "Antipodean Opaleye", emoji: "🐉", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "秘鲁毒牙龙", nameEn: "Peruvian Vipertooth", emoji: "🐉", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "罗马尼亚长角龙", nameEn: "Romanian Longhorn", emoji: "🐂", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+            { name: "赫希底里群岛黑龙", nameEn: "Hebridean Black", emoji: "🐲", category: "火龙", categoryEn: "Dragon", page: "dragons" },
+
+            // 魔杖 (Wands)
+            { name: "哈利波特魔杖", nameEn: "Harry Potter Wand", emoji: "🪄", category: "魔杖", categoryEn: "Wand", page: "wands" },
+            { name: "赫敏魔杖", nameEn: "Hermione Wand", emoji: "🪄", category: "魔杖", categoryEn: "Wand", page: "wands" },
+            { name: "罗恩魔杖", nameEn: "Ron Wand", emoji: "🪄", category: "魔杖", categoryEn: "Wand", page: "wands" },
+            { name: "邓布利多魔杖", nameEn: "Dumbledore Wand", emoji: "🪄", category: "魔杖", categoryEn: "Wand", page: "wands" },
+            { name: "伏地魔魔杖", nameEn: "Voldemort Wand", emoji: "🪄", category: "魔杖", categoryEn: "Wand", page: "wands" },
+            { name: "老魔杖", nameEn: "Elder Wand", emoji: "🪄", category: "魔杖", categoryEn: "Wand", page: "wands" }
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        // 输入时显示搜索建议
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+
+            if (query.length < 1) {
+                searchResults.classList.remove('show');
+                return;
+            }
+
+            const results = searchData.filter(item => {
+                return item.name.toLowerCase().includes(query) ||
+                       item.nameEn.toLowerCase().includes(query) ||
+                       item.category.toLowerCase().includes(query);
+            });
+
+            displaySearchResults(results);
+        });
+
+        // 按回车键直接搜索
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // 点击其他地方关闭搜索结果
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                searchResults.classList.remove('show');
+            }
+        });
+
+        function displaySearchResults(results) {
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="no-results">😢 未找到相关结果 / No results found</div>';
+                searchResults.classList.add('show');
+                return;
+            }
+
+            const categoryText = currentLang === 'zh' ? 'category' : 'categoryEn';
+            const html = results.slice(0, 8).map(item => `
+                <div class="search-result-item" onclick="goToSearchResult('${item.page}', '${item.filter || ''}', '${item.name}')">
+                    <span class="search-result-emoji">${item.emoji}</span>
+                    <div class="search-result-info">
+                        <div class="search-result-name">
+                            ${currentLang === 'zh' ? item.name : item.nameEn}
+                        </div>
+                        <span class="search-result-page">${item[categoryText]}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            searchResults.innerHTML = html;
+            searchResults.classList.add('show');
+        }
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            const results = searchData.filter(item => {
+                return item.name.toLowerCase().includes(query.toLowerCase()) ||
+                       item.nameEn.toLowerCase().includes(query.toLowerCase());
+            });
+
+            if (results.length > 0) {
+                // 跳转到第一个结果的页面
+                const firstResult = results[0];
+                goToSearchResult(firstResult.page, firstResult.filter || '', query);
+            }
+
+            searchResults.classList.remove('show');
+        }
+
+        function goToSearchResult(page, filter, searchTerm) {
+            openPage(page, filter, searchTerm);
+        }
+
+        // 初始化语言显示
+        initLanguage();
+
+        // 初始化玩家数据
+        initPlayerData();
+
+        // ==================== 邮件系统 ====================
+
+        // 邮件类型定义
+        const LETTER_TYPES = {
+            ITEM: {
+                icon: '🎁',
+                nameZh: '物品奖励',
+                nameEn: 'Item Reward'
+            },
+            INVENTORY: {
+                icon: '🎒',
+                nameZh: '背包物品',
+                nameEn: 'Inventory Item'
+            },
+            REMEMBRALL: {
+                icon: '🔴',
+                nameZh: '特殊物品',
+                nameEn: 'Special Item'
+            },
+            ANNOUNCEMENT: {
+                icon: '📢',
+                nameZh: '重要通知',
+                nameEn: 'Announcement'
+            },
+            EVENT: {
+                icon: '✉️',
+                nameZh: '魔法事件',
+                nameEn: 'Magic Event'
+            },
+            ACHIEVEMENT: {
+                icon: '🏆',
+                nameZh: '成就解锁',
+                nameEn: 'Achievement'
+            }
+        };
+
+        // 房间装饰物列表
+        const ROOM_DECORATIONS = [
+            { id: 'moving_portrait', icon: '🖼️', nameZh: '会动的肖像画', nameEn: 'Moving Portrait' },
+            { id: 'magic_lamp', icon: '🪔', nameZh: '魔法油灯', nameEn: 'Magic Lamp' },
+            { id: 'crystal_ball', icon: '🔮', nameZh: '水晶球摆件', nameEn: 'Crystal Ball Decor' },
+            { id: 'owl_feather', icon: '🪶', nameZh: '猫头鹰羽毛', nameEn: 'Owl Feather' },
+            { id: 'golden_snitch', icon: '🥎', nameZh: '金色飞贼模型', nameEn: 'Golden Snitch Model' },
+            { id: 'spell_book', icon: '📕', nameZh: '古老咒语书', nameEn: 'Ancient Spell Book' },
+            { id: 'potion_bottle', icon: '🧪', nameZh: '彩色魔药瓶', nameEn: 'Colored Potion Bottle' },
+            { id: 'magic_wand_display', icon: '🪄', nameZh: '魔杖展示架', nameEn: 'Wand Display' },
+            { id: 'house_banner', icon: '🚩', nameZh: '学院旗帜', nameEn: 'House Banner' },
+            { id: 'remembrall', icon: '🔴', nameZh: '记忆球', nameEn: 'Remembrall' }
+        ];
+
+        // 获取所有邮件
+        function getLetters() {
+            const saved = localStorage.getItem('hogwartsLetters');
+            if (!saved) {
+                // 初始化一些欢迎邮件
+                const welcomeLetter = {
+                    id: 'welcome_' + Date.now(),
+                    type: 'ANNOUNCEMENT',
+                    title: {
+                        zh: '欢迎来到霍格沃茨！',
+                        en: 'Welcome to Hogwarts!'
+                    },
+                    body: {
+                        zh: '亲爱的同学，\n\n欢迎来到霍格沃茨魔法学院！猫头鹰邮递系统现在正式开通了。\n\n不定期留意你的邮箱，你可能会收到：\n• 神奇的房间装饰品\n• 重要的学院通知\n• 魔法世界的奇闻趣事\n• 惊喜奖励和礼物\n\n祝你在霍格沃茨的每一天都充满魔法！\n\n霍格沃茨猫头鹰邮局 敬上',
+                        en: 'Dear Student,\n\nWelcome to Hogwarts School of Witchcraft and Wizardry! The Owl Post Service is now officially open.\n\nKeep an eye on your mailbox for:\n• Magical room decorations\n• Important school announcements\n• Magical world news\n• Surprise rewards and gifts\n\nMay every day at Hogwarts be filled with magic!\n\nHogwarts Owl Post Office'
+                    },
+                    date: new Date().toISOString(),
+                    read: false,
+                    reward: null
+                };
+                localStorage.setItem('hogwartsLetters', JSON.stringify([welcomeLetter]));
+                return [welcomeLetter];
+            }
+            return JSON.parse(saved);
+        }
+
+        // 保存邮件列表
+        function saveLetters(letters) {
+            localStorage.setItem('hogwartsLetters', JSON.stringify(letters));
+        }
+
+        // 获取未读邮件数量
+        function getUnreadCount() {
+            const letters = getLetters();
+            return letters.filter(l => !l.read).length;
+        }
+
+        // 更新邮件徽章
+        function updateMailBadge() {
+            const count = getUnreadCount();
+            const badge = document.getElementById('mailBadge');
+            if (count > 0) {
+                badge.textContent = count > 9 ? '9+' : count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // 获取今天的日期字符串
+        function getTodayDate() {
+            const today = new Date();
+            return today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        }
+
+        // 获取今天已生成的邮件数量
+        function getTodayLetterCount() {
+            const letters = getLetters();
+            const today = getTodayDate();
+            return letters.filter(l => {
+                const letterDate = new Date(l.date);
+                const letterDateStr = letterDate.getFullYear() + '-' + (letterDate.getMonth() + 1) + '-' + letterDate.getDate();
+                return letterDateStr === today;
+            }).length;
+        }
+
+        // 生成随机邮件（每天最多3封）
+        function generateRandomLetter() {
+            // 检查今天已生成的邮件数量
+            const todayCount = getTodayLetterCount();
+            if (todayCount >= 3) {
+                return null; // 今天已达到3封上限
+            }
+
+            const letters = getLetters();
+            const types = ['ITEM', 'EVENT', 'REMEMBRALL'];
+            // 记忆球邮件有10%概率，其他概率均分
+            const type = Math.random() < 0.1 ? 'REMEMBRALL' : types[Math.floor(Math.random() * 2)];
+
+            let letter = {
+                id: 'letter_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                type: type,
+                date: new Date().toISOString(),
+                read: false
+            };
+
+            if (type === 'ITEM') {
+                // 物品奖励邮件
+                const decoration = ROOM_DECORATIONS[Math.floor(Math.random() * ROOM_DECORATIONS.length)];
+                const itemReward = {
+                    type: 'decoration',
+                    item: decoration
+                };
+
+                const itemTemplates = [
+                    {
+                        title: { zh: `发现一个${decoration.nameZh}`, en: `Found a ${decoration.nameEn}` },
+                        body: {
+                            zh: `亲爱的同学，\n\n有人在礼堂长凳上发现了一个写着你名字的${decoration.nameZh}，它似乎在等待着它的主人。\n\n这将会是你魔法房间的一个完美装饰！\n\n请尽快领取，让它成为你的收藏吧！\n\n你的，霍格沃茨猫头鹰`,
+                            en: `Dear Student,\n\nSomeone found a ${decoration.nameEn} with your name on it in the Great Hall. It seems to be waiting for its owner.\n\nThis would be a perfect decoration for your magical room!\n\nPlease claim it soon and make it part of your collection!\n\nYours, Hogwarts Owl`
+                        }
+                    },
+                    {
+                        title: { zh: '神秘礼物', en: 'Mysterious Gift' },
+                        body: {
+                            zh: `亲爱的同学，\n\n我们在猫头鹰屋发现了一个未署名的包裹，里面装着一个精致的${decoration.nameZh}。\n\n包裹上只写着："送给那位真正懂得欣赏魔法的巫师。"\n\n这会是你的幸运之物吗？快来领取吧！\n\n你的，霍格沃茨猫头鹰`,
+                            en: `Dear Student,\n\nWe found an unaddressed package in the Owlery containing a beautiful ${decoration.nameEn}.\n\nIt only said: "For the wizard who truly appreciates magic."\n\nCould this be your lucky item? Come claim it!\n\nYours, Hogwarts Owl`
+                        }
+                    },
+                    {
+                        title: { zh: '房间装饰送达', en: 'Room Decoration Delivered' },
+                        body: {
+                            zh: `亲爱的同学，\n\n一个${decoration.nameZh}刚刚被送到你的房间门口！\n\n也许这是某位小精灵的好意，或者是魔法本身的选择...\n\n无论如何，它现在属于你了！\n\n你的，霍格沃茨猫头鹰`,
+                            en: `Dear Student,\n\nA ${decoration.nameEn} was just delivered to your room!\n\nPerhaps it's a kind gesture from a house-elf, or maybe magic itself...\n\nEither way, it belongs to you now!\n\nYours, Hogwarts Owl`
+                        }
+                    }
+                ];
+
+                const template = itemTemplates[Math.floor(Math.random() * itemTemplates.length)];
+                letter.title = template.title;
+                letter.body = template.body;
+                letter.reward = itemReward;
+
+            } else if (type === 'REMEMBRALL') {
+                // 记忆球特殊邮件 - 奖励添加到背包
+                const remembrall = ROOM_DECORATIONS.find(d => d.id === 'remembrall');
+                const itemReward = {
+                    type: 'inventory',
+                    item: remembrall
+                };
+
+                letter.title = { zh: '发现记忆球！', en: 'Remembrall Found!' };
+                letter.body = {
+                    zh: '亲爱的同学，\n\n有人在礼堂长凳上发现了一个写着你名字的记忆球，它现在正通体通红！\n\n这意味着你有什么重要的事情忘记了...\n\n不过别担心，记忆球现在归你了，放入背包好好保管吧！\n\n你的，霍格沃茨猫头鹰',
+                    en: 'Dear Student,\n\nSomeone found a Remembrall with your name on it in the Great Hall, and it\'s glowing bright red!\n\nThis means you\'ve forgotten something important...\n\nBut don\'t worry, the Remembrall is yours now. Keep it safe in your inventory!\n\nYours, Hogwarts Owl'
+                };
+                letter.reward = itemReward;
+
+            } else if (type === 'EVENT') {
+                // 随机事件邮件
+                const eventTemplates = [
+                    {
+                        title: { zh: '霍格沃茨特快消息', en: 'Hogwarts Express News' },
+                        body: {
+                            zh: '亲爱的同学，\n\n听说你在霍格沃茨的学习进展顺利！\n\n猫头鹰们都在议论你的出色表现呢。继续努力，也许更多的惊喜正在前方等着你！\n\n✨ 记得多来看看你的邮箱哦 ✨',
+                            en: 'Dear Student,\n\nWe heard you are doing great at Hogwarts!\n\nThe owls are all talking about your excellent performance. Keep it up, more surprises may be waiting for you!\n\n✨ Remember to check your mailbox often ✨'
+                        }
+                    },
+                    {
+                        title: { zh: '魔法部通知', en: 'Ministry of Magic Notice' },
+                        body: {
+                            zh: '亲爱的同学，\n\n魔法部魔法交通司提醒：\n\n如果你在城堡内发现任何奇怪的东西，请勿惊慌，那可能只是某种无害的魔法现象...\n\n或者也许不是？🔮',
+                            en: 'Dear Student,\n\nThe Ministry of Magic Magical Transportation Department reminds you:\n\nIf you find anything strange in the castle, do not panic. It may just be some harmless magical phenomenon...\n\nOr maybe not? 🔮'
+                        }
+                    },
+                    {
+                        title: { zh: '韦斯莱笑话店的优惠', en: 'Weasleys Wizard Wheezes Offer' },
+                        body: {
+                            zh: '亲爱的同学，\n\n韦斯莱笑话店最新产品推出！\n\n"便携式沼泽" - 现在买一送一！\n\n（霍格沃茨学生请在假期使用，费尔奇先生不允许在校内使用...）\n\n你的，弗雷德和乔治',
+                            en: 'Dear Student,\n\nNew product at Weasleys Wizard Wheezes!\n\n"Portable Swamp" - Buy one get one free!\n\n(Hogwarts students please use during holidays only, Filch does not allow it in school...)\n\nYours, Fred and George'
+                        }
+                    },
+                    {
+                        title: { zh: '猫头鹰的悄悄话', en: "Owl's Whisper" },
+                        body: {
+                            zh: '亲爱的同学，\n\n嘘...\n\n我在禁林边看到了一些有趣的事情...\n\n也许你可以去探索一下？\n\n但一定要小心！🦌',
+                            en: 'Dear Student,\n\nShh...\n\nI saw something interesting near the Forbidden Forest...\n\nMaybe you should go explore?\n\nBut be careful! 🦌'
+                        }
+                    }
+                ];
+
+                const template = eventTemplates[Math.floor(Math.random() * eventTemplates.length)];
+                letter.title = template.title;
+                letter.body = template.body;
+                letter.reward = null;
+            }
+
+            // 添加新邮件
+            letters.unshift(letter);
+            saveLetters(letters);
+            updateMailBadge();
+
+            return letter;
+        }
+
+        // 打开邮箱
+        function openMailbox() {
+            const letters = getLetters();
+            const mailboxBody = document.getElementById('mailboxBody');
+
+            if (letters.length === 0) {
+                mailboxBody.innerHTML = `
+                    <div class="no-letters">
+                        <div class="no-letters-icon">📭</div>
+                        <p class="no-letters-text">
+                            <span class="no-letters-zh">暂无邮件</span>
+                            <span class="no-letters-en">No letters yet</span>
+                        </p>
+                    </div>
+                `;
+            } else {
+                mailboxBody.innerHTML = '<div class="letter-list">' + letters.map((letter, index) => {
+                    const typeInfo = LETTER_TYPES[letter.type];
+                    const date = new Date(letter.date);
+                    const dateStr = formatDate(date);
+
+                    return `
+                        <div class="letter-item ${letter.read ? '' : 'unread'}" onclick="openLetter(${index})">
+                            <div class="letter-type-icon">${typeInfo.icon}</div>
+                            <div class="letter-title">
+                                ${currentLang === 'zh' ? letter.title.zh : letter.title.en}
+                            </div>
+                            <div class="letter-preview">
+                                ${currentLang === 'zh' ? letter.body.zh : letter.body.en}
+                            </div>
+                            <div class="letter-date">${dateStr}</div>
+                        </div>
+                    `;
+                }).join('') + '</div>';
+            }
+
+            document.getElementById('mailboxModal').classList.add('active');
+        }
+
+        // 关闭邮箱
+        function closeMailbox() {
+            document.getElementById('mailboxModal').classList.remove('active');
+        }
+
+        // 当前打开的邮件索引
+        let currentLetterIndex = null;
+
+        // 打开单封信件
+        function openLetter(index) {
+            const letters = getLetters();
+            const letter = letters[index];
+            currentLetterIndex = index;
+
+            const typeInfo = LETTER_TYPES[letter.type];
+
+            document.getElementById('letterTypeIconLarge').textContent = typeInfo.icon;
+            document.getElementById('letterTitleZh').textContent = letter.title.zh;
+            document.getElementById('letterTitleEn').textContent = letter.title.en;
+            document.getElementById('letterBodyZh').textContent = letter.body.zh;
+            document.getElementById('letterBodyEn').textContent = letter.body.en;
+
+            // 显示奖励
+            const rewardDiv = document.getElementById('letterReward');
+            const claimBtn = document.getElementById('claimRewardBtn');
+
+            if (letter.reward && !letter.reward.claimed) {
+                rewardDiv.style.display = 'block';
+                if (letter.reward.type === 'decoration' || letter.reward.type === 'inventory') {
+                    const item = letter.reward.item;
+                    const rewardTypeText = letter.reward.type === 'decoration' ?
+                        (currentLang === 'zh' ? '房间装饰' : 'Room Decoration') :
+                        (currentLang === 'zh' ? '背包物品' : 'Inventory Item');
+                    document.getElementById('letterRewardText').innerHTML = `
+                        <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
+                        <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
+                    `;
+                    claimBtn.style.display = 'inline-block';
+                }
+            } else if (letter.reward && letter.reward.claimed) {
+                rewardDiv.style.display = 'block';
+                document.getElementById('letterRewardText').innerHTML = `
+                    <span class="reward-zh">✓ 已领取</span>
+                    <span class="reward-en">✓ Claimed</span>
+                `;
+                claimBtn.style.display = 'none';
+            } else {
+                rewardDiv.style.display = 'none';
+                claimBtn.style.display = 'none';
+            }
+
+            document.getElementById('letterModal').classList.add('active');
+
+            // 标记为已读
+            if (!letter.read) {
+                letter.read = true;
+                saveLetters(letters);
+                updateMailBadge();
+            }
+        }
+
+        // 关闭信件
+        function closeLetter() {
+            document.getElementById('letterModal').classList.remove('active');
+            currentLetterIndex = null;
+            // 重新加载邮箱以更新已读状态
+            openMailbox();
+        }
+
+        // 领取奖励
+        function claimLetterReward() {
+            if (currentLetterIndex === null) return;
+
+            const letters = getLetters();
+            const letter = letters[currentLetterIndex];
+
+            if (!letter.reward || letter.reward.claimed) return;
+
+            if (letter.reward.type === 'decoration') {
+                const item = letter.reward.item;
+                // 添加到房间装饰
+                addRoomDecoration(item);
+                letter.reward.claimed = true;
+                saveLetters(letters);
+
+                alert(currentLang === 'zh' ?
+                    `🎉 你收到了：${item.nameZh}！\n\n已添加到你的房间装饰中，去个人资料看看吧！` :
+                    `🎉 You received: ${item.nameEn}!\n\nAdded to your room decorations, check your profile!`);
+
+                closeLetter();
+            } else if (letter.reward.type === 'inventory') {
+                const item = letter.reward.item;
+                // 添加到背包
+                addToInventory(item);
+                letter.reward.claimed = true;
+                saveLetters(letters);
+
+                alert(currentLang === 'zh' ?
+                    `🎉 你收到了：${item.nameZh}！\n\n已添加到你的背包，可以在魔法房间装饰中使用！` :
+                    `🎉 You received: ${item.nameEn}!\n\nAdded to your inventory, use it in your room decoration!`);
+
+                closeLetter();
+            }
+        }
+
+        // 添加物品到背包
+        function addToInventory(item) {
+            let playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+
+            if (!playerData.inventory) {
+                playerData.inventory = [];
+            }
+
+            // 检查是否已存在（避免重复）
+            const exists = playerData.inventory.some(i => i.id === item.id);
+            if (!exists) {
+                playerData.inventory.push({
+                    id: item.id,
+                    icon: item.icon,
+                    nameZh: item.nameZh,
+                    nameEn: item.nameEn
+                });
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            }
+        }
+
+        // 添加房间装饰
+        function addRoomDecoration(decoration) {
+            let playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+
+            if (!playerData.roomDecorations) {
+                playerData.roomDecorations = [];
+            }
+
+            // 检查是否已存在
+            if (!playerData.roomDecorations.find(d => d.id === decoration.id)) {
+                playerData.roomDecorations.push(decoration);
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            }
+        }
+
+        // 格式化日期
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) {
+                return currentLang === 'zh' ? '刚刚' : 'Just now';
+            } else if (minutes < 60) {
+                return currentLang === 'zh' ? `${minutes}分钟前` : `${minutes}m ago`;
+            } else if (hours < 24) {
+                return currentLang === 'zh' ? `${hours}小时前` : `${hours}h ago`;
+            } else if (days < 7) {
+                return currentLang === 'zh' ? `${days}天前` : `${days}d ago`;
+            } else {
+                return date.toLocaleDateString(currentLang === 'zh' ? 'zh-CN' : 'en-US');
+            }
+        }
+
+        // 点击模态框外部关闭
+        document.addEventListener('click', function(e) {
+            const mailboxModal = document.getElementById('mailboxModal');
+            const letterModal = document.getElementById('letterModal');
+
+            if (e.target === mailboxModal) {
+                closeMailbox();
+            }
+            if (e.target === letterModal) {
+                closeLetter();
+            }
+        });
+
+        // 初始化邮件徽章
+        updateMailBadge();
+
+        // ==================== 通知徽章系统 ====================
+
+        // 检查任务公告栏徽章
+        function updateQuestBadge() {
+            const badge = document.getElementById('questBadge');
+            const quests = getDailyQuests();
+            const incompleteCount = quests.filter(q => !q.completed).length;
+
+            if (incompleteCount > 0) {
+                badge.textContent = incompleteCount > 9 ? '9+' : incompleteCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // 获取每日任务
+        function getDailyQuests() {
+            const saved = localStorage.getItem('dailyQuests');
+            if (!saved) {
+                // 初始化默认任务
+                const defaultQuests = [
+                    { id: 'quiz_easy', title: '简单测试', titleEn: 'Easy Quiz', completed: false },
+                    { id: 'fly_10', title: '飞行10根柱子', titleEn: 'Fly 10 Pillars', completed: false },
+                    { id: 'study_15min', title: '学习15分钟', titleEn: 'Study 15 Min', completed: false }
+                ];
+                // 检查是否是今天的任务
+                const today = getTodayDate();
+                const lastDate = localStorage.getItem('questLastDate');
+                if (lastDate !== today) {
+                    localStorage.setItem('questLastDate', today);
+                    localStorage.setItem('dailyQuests', JSON.stringify(defaultQuests));
+                    return defaultQuests;
+                }
+                return defaultQuests;
+            }
+
+            const quests = JSON.parse(saved);
+            const today = getTodayDate();
+            const lastDate = localStorage.getItem('questLastDate');
+
+            // 如果是新的一天，重置任务
+            if (lastDate !== today) {
+                const defaultQuests = [
+                    { id: 'quiz_easy', title: '简单测试', titleEn: 'Easy Quiz', completed: false },
+                    { id: 'fly_10', title: '飞行10根柱子', titleEn: 'Fly 10 Pillars', completed: false },
+                    { id: 'study_15min', title: '学习15分钟', titleEn: 'Study 15 Min', completed: false }
+                ];
+                localStorage.setItem('questLastDate', today);
+                localStorage.setItem('dailyQuests', JSON.stringify(defaultQuests));
+                return defaultQuests;
+            }
+
+            return quests;
+        }
+
+        // 检查预言家日报徽章
+        function updateProphetBadge() {
+            const badge = document.getElementById('prophetBadge');
+            const lastReadDate = localStorage.getItem('prophetLastReadDate');
+            const today = getTodayDate();
+
+            // 有未读的新闻（简化版：每天有新闻）
+            if (lastReadDate !== today) {
+                badge.textContent = '!';
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // 检查留言板徽章
+        function updateCampBadge() {
+            const badge = document.getElementById('campBadge');
+            const lastVisitDate = localStorage.getItem('campLastVisitDate');
+            const today = getTodayDate();
+
+            // 简化版：检查是否有新留言（通过比较上次访问日期）
+            const storedMessageCount = localStorage.getItem('lastMessageCount');
+            if (storedMessageCount) {
+                const messageCount = parseInt(storedMessageCount);
+                if (messageCount > 0 && lastVisitDate !== today) {
+                    badge.textContent = '!';
+                    badge.style.display = 'flex';
+                    return;
+                }
+            }
+
+            // 如果今天访问过，隐藏徽章
+            if (lastVisitDate === today) {
+                badge.style.display = 'none';
+            }
+        }
+
+        // 更新所有徽章
+        function updateAllBadges() {
+            updateQuestBadge();
+            updateProphetBadge();
+            updateCampBadge();
+        }
+
+        // 初始化所有徽章
+        updateAllBadges();
+
+        // ==================== 用户登录状态栏更新 ====================
+        function updateUserStatusBar() {
+            const userId = localStorage.getItem('userId');
+            const isGuestStr = localStorage.getItem('isGuest');
+            // 兼容字符串和布尔值
+            const isGuest = isGuestStr === 'true' || isGuestStr === true;
+            const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+
+            const statusAvatar = document.getElementById('statusAvatar');
+            const statusNickname = document.getElementById('statusNickname');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusText = statusBadge.querySelector('.status-text');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (userId && !isGuest) {
+                // 已登录用户
+                statusAvatar.textContent = playerData.avatar || '🧙';
+                statusNickname.textContent = playerData.nickname || '巫师';
+                statusBadge.className = 'user-status-badge logged-in';
+                statusText.textContent = currentLang === 'zh' ? '已登录' : 'Logged In';
+                logoutBtn.style.display = 'flex';
+                loginBtn.style.display = 'none';
+            } else if (isGuest) {
+                // 游客
+                statusAvatar.textContent = playerData.avatar || '🧙';
+                statusNickname.textContent = playerData.nickname || '游客';
+                statusBadge.className = 'user-status-badge guest';
+                statusText.textContent = currentLang === 'zh' ? '游客模式' : 'Guest Mode';
+                logoutBtn.style.display = 'none';
+                loginBtn.style.display = 'flex';
+            } else {
+                // 未登录
+                statusAvatar.textContent = '❓';
+                statusNickname.textContent = '未登录';
+                statusBadge.className = 'user-status-badge guest';
+                statusText.textContent = currentLang === 'zh' ? '请登录' : 'Please Login';
+                logoutBtn.style.display = 'none';
+                loginBtn.style.display = 'flex';
+            }
+        }
+
+        // 退出登录功能
+        window.logout = function() {
+            const confirmMsg = currentLang === 'zh' ?
+                '确定要退出登录吗？' :
+                'Are you sure you want to logout?';
+
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            // 清除登录状态
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('isGuest');
+
+            // 保留玩家数据（hogwartsPlayer），但标记为游客
+            const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+            playerData.isGuest = true;
+            localStorage.setItem('isGuest', 'true');
+
+            alert(currentLang === 'zh' ?
+                '已退出登录，切换为游客模式' :
+                'Logged out, switched to guest mode');
+
+            // 刷新页面
+            location.reload();
+        };
+
+        // ==================== Supabase Session 检查 ====================
+        // 页面加载时检查用户登录状态
+        async function checkSession() {
+            const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
+            try {
+                const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                const { data: { session }, error } = await sb.auth.getSession();
+
+                if (error) {
+                    console.error('Session检查错误:', error);
+                    return false;
+                }
+
+                if (session) {
+                    // session 有效，更新 localStorage
+                    localStorage.setItem('userId', session.user.id);
+                    localStorage.setItem('userEmail', session.user.email);
+                    localStorage.removeItem('isGuest');
+
+                    // 如果有用户数据，同步昵称和头像
+                    const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                    if (session.user.user_metadata && session.user.user_metadata.nickname) {
+                        playerData.nickname = session.user.user_metadata.nickname;
+                        localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+                    }
+
+                    console.log('✅ Session 有效，已恢复登录状态');
+                    return true;
+                } else {
+                    // session 无效，清除登录状态
+                    const isGuest = localStorage.getItem('isGuest');
+                    if (!isGuest) {
+                        // 如果不是游客模式，说明登录已过期
+                        localStorage.removeItem('userId');
+                        localStorage.removeItem('userEmail');
+                        console.log('⚠️ Session 已过期');
+                    }
+                    return false;
+                }
+            } catch (error) {
+                console.error('Session 检查失败:', error);
+                return false;
+            }
+        }
+
+        // 页面加载时检查 session
+        checkSession().then(() => {
+            // 检查完成后更新用户状态栏
+            updateUserStatusBar();
+        });
+
+        // 每次切换语言时更新用户状态栏
+        const originalUpdateLanguage = updateLanguage;
+        updateLanguage = function() {
+            originalUpdateLanguage();
+            updateUserStatusBar();
+        };
+
+        // 随机生成新邮件（每次页面加载时有10%的概率）
+        if (Math.random() < 0.1) {
+            setTimeout(() => {
+                generateRandomLetter();
+            }, 2000); // 2秒后显示通知
+        }
+    </script>
+</body>
+</html>

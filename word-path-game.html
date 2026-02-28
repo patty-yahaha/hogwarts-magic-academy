@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Path Puzzle - 单词路径拼字游戏</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a1a3e 50%, #0d2137 100%);
+            min-height: 100vh;
+            color: #d4af37;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c2a 100%);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #4a2c2a 0%, #2c1810 100%);
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4ba 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #c9a227;
+            font-size: 1.2rem;
+        }
+
+        /* Input Section */
+        .input-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.9), rgba(10, 20, 40, 0.95));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c9a227;
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            background: rgba(10, 20, 40, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #d4af37;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #1a472a 0%, #2a1a3e 100%);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+        }
+
+        /* Game Container */
+        .game-container {
+            display: none;
+        }
+
+        .game-container.active {
+            display: block;
+        }
+
+        .word-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.9), rgba(10, 20, 40, 0.95));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .word-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .word-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+        }
+
+        .word-hint {
+            color: #8b6914;
+            font-style: italic;
+        }
+
+        /* Grid */
+        .grid-container {
+            display: inline-block;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .letter-grid {
+            display: grid;
+            gap: 3px;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .grid-cell {
+            width: 50px;
+            height: 50px;
+            background: rgba(20, 30, 50, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #d4af37;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .grid-cell:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .grid-cell.selected {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: #d4af37;
+        }
+
+        .grid-cell.correct {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: #22c55e;
+        }
+
+        .grid-cell.path {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .grid-cell.empty {
+            background: rgba(20, 30, 50, 0.6);
+            border: 2px dashed rgba(212, 175, 55, 0.4);
+        }
+
+        .grid-cell.empty:hover {
+            border-color: rgba(212, 175, 55, 0.7);
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .grid-cell.empty.selected {
+            background: rgba(212, 175, 55, 0.4);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+
+        .grid-cell.start {
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .grid-cell.end {
+            border-color: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Path indicator */
+        .path-indicator {
+            position: absolute;
+            font-size: 0.6rem;
+            color: #8b6914;
+            bottom: 2px;
+            right: 4px;
+        }
+
+        .grid-cell.playable {
+            cursor: pointer;
+        }
+
+        .grid-cell.playable:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .instructions {
+            padding: 12px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #d4af37;
+        }
+
+        .player-path {
+            padding: 12px;
+            background: rgba(20, 30, 50, 0.8);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .grid-cell.wrong {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+        }
+
+        /* Solution display */
+        .solution-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .solution-section.visible {
+            display: block;
+        }
+
+        .solution-text {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #c9a227;
+        }
+
+        .path-visualization {
+            margin-top: 10px;
+            color: #8b6914;
+            font-size: 0.9rem;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                padding: 10px;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .header h1 {
+                color: #000 !important;
+                -webkit-text-fill-color: #000 !important;
+                font-size: 1.8rem;
+            }
+
+            .header .subtitle {
+                color: #333 !important;
+            }
+
+            .input-section,
+            .btn-group,
+            button {
+                display: none !important;
+            }
+
+            .word-section {
+                background: white !important;
+                border: 2px solid #333 !important;
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+                box-shadow: none !important;
+            }
+
+            .word-header {
+                border-bottom: 1px solid #333 !important;
+            }
+
+            .word-title {
+                color: #000 !important;
+            }
+
+            .word-hint {
+                color: #333 !important;
+            }
+
+            .instructions {
+                background: #f5f5f5 !important;
+                border-left: 3px solid #333 !important;
+                color: #333 !important;
+            }
+
+            .letter-grid {
+                background: #f0f0f0 !important;
+                border: 1px solid #333 !important;
+            }
+
+            .grid-cell {
+                border: 2px solid #333 !important;
+                color: #000 !important;
+                background: #fff !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .grid-cell.start {
+                background: #90EE90 !important;
+            }
+
+            .grid-cell.end {
+                background: #FFB6C1 !important;
+            }
+
+            .grid-cell.correct {
+                background: #90EE90 !important;
+            }
+
+            .path-indicator {
+                color: #333 !important;
+            }
+
+            .solution-section {
+                display: block !important;
+                background: #f5f5f5 !important;
+                border: 1px solid #333 !important;
+                page-break-inside: avoid;
+            }
+
+            .solution-text,
+            .path-visualization {
+                color: #000 !important;
+            }
+
+            .player-path {
+                border: 1px solid #ccc !important;
+                background: #f9f9f9 !important;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .grid-cell {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">← 返回游戏大厅</button>
+            <h1>⚡ Word Path Puzzle ⚡</h1>
+            <p class="subtitle">单词路径拼字游戏 - 连接字母，记忆拼写</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section" id="inputSection">
+            <div class="input-group">
+                <label for="wordList">输入单词列表（每行一个单词）：</label>
+                <textarea id="wordList" placeholder="例如：&#10;Hogwarts&#10;Patronus&#10;Dumbledore">Hogwarts
+Patronus
+Dumbledore</textarea>
+            </div>
+
+            <div class="options">
+                <div class="option-group">
+                    <input type="checkbox" id="coverAll">
+                    <label for="coverAll">高级挑战：覆盖所有方格（较难，建议单词长度≤15）</label>
+                </div>
+                <div class="option-group">
+                    <input type="checkbox" id="allowHints">
+                    <label for="allowHints">允许显示提示（字母序号）</label>
+                </div>
+                <div class="option-group">
+                    <input type="checkbox" id="showWordLength" checked>
+                    <label for="showWordLength">显示单词字母数量</label>
+                </div>
+            </div>
+
+            <div class="help-text" style="color: #8b6914; font-size: 0.85rem; margin-top: 15px; padding: 10px; background: rgba(212, 175, 55, 0.05); border-radius: 5px;">
+                💡 <strong>提示：</strong>高级挑战需要找到经过所有格子的路径，较难成功。如果生成失败，请尝试取消高级挑战选项或使用更短的单词（4-12个字母最佳）。
+            </div>
+
+            <div class="btn-group">
+                <button class="primary" onclick="generatePuzzles()">🎯 生成拼字游戏</button>
+                <button onclick="clearAll()">🗑️ 清除</button>
+            </div>
+        </div>
+
+        <!-- Game Container -->
+        <div class="game-container" id="gameContainer">
+            <!-- Puzzles will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'learning-zone.html';
+        }
+
+        let puzzles = [];
+
+        // Generate puzzles from word list
+        function generatePuzzles() {
+            const wordList = document.getElementById('wordList').value
+                .split('\n')
+                .map(w => w.trim().toUpperCase())
+                .filter(w => w.length > 0 && /^[A-Z]+$/.test(w));
+
+            if (wordList.length === 0) {
+                alert('请输入有效的单词列表（仅限英文字母）');
+                return;
+            }
+
+            const coverAll = document.getElementById('coverAll').checked;
+            const allowHints = document.getElementById('allowHints').checked;
+            const showWordLength = document.getElementById('showWordLength').checked;
+
+            puzzles = [];
+            const failedWords = [];
+
+            wordList.forEach((word, index) => {
+                console.log(`Generating puzzle for word: ${word} (${index + 1}/${wordList.length})`);
+                const puzzle = createPuzzle(word, coverAll, true);
+
+                if (puzzle && puzzle.path && puzzle.path.length > 0) {
+                    puzzles.push({
+                        word: word,
+                        grid: puzzle.grid,
+                        path: puzzle.path,
+                        coverAll: coverAll,
+                        allowHints: allowHints,
+                        showWordLength: showWordLength
+                    });
+                } else {
+                    console.warn(`Failed to create puzzle for: ${word}`);
+                    failedWords.push(word);
+                }
+            });
+
+            if (puzzles.length === 0) {
+                alert('无法生成拼字游戏。请尝试：\n1. 取消"高级挑战"选项\n2. 使用更短的单词\n3. 减少单词数量');
+                return;
+            }
+
+            if (failedWords.length > 0) {
+                alert(`注意：以下单词无法生成拼字游戏，已跳过：\n${failedWords.join(', ')}`);
+            }
+
+            displayPuzzles();
+        }
+
+        // Create a single puzzle - PATH FIRST APPROACH
+        function createPuzzle(word, coverAll, scrambleLetters) {
+            const wordLength = word.length;
+            const gridSize = calculateGridSize(wordLength, coverAll);
+
+            // Try multiple times to generate a valid puzzle
+            for (let attempt = 0; attempt < 100; attempt++) {
+                const result = tryCreatePuzzleWithPathFirst(word, gridSize, coverAll);
+                if (result) {
+                    return result;
+                }
+            }
+
+            // If all attempts failed, try with larger grid
+            return createPuzzleWithLargerGrid(word, coverAll, scrambleLetters, gridSize);
+        }
+
+        // Try to create puzzle by generating path FIRST, then placing letters along the path
+        function tryCreatePuzzleWithPathFirst(word, gridSize, coverAll) {
+            const rows = gridSize.rows;
+            const cols = gridSize.cols;
+            const totalCells = rows * cols;
+
+            // Step 1: Generate a path
+            let path;
+            if (coverAll) {
+                // Advanced challenge: path must cover ALL cells
+                path = generateSnakePatternPath(rows, cols);
+                if (!path || path.length !== totalCells) {
+                    return null;
+                }
+            } else {
+                // Normal challenge: generate a LONGER winding path so letters can be scattered
+                // Path length should be at least word.length * 1.5 to allow gaps between letters
+                const minPathLength = Math.min(word.length * 2, totalCells);
+                path = generateWindingPath(rows, cols, minPathLength);
+                if (!path || path.length < word.length) {
+                    return null;
+                }
+            }
+
+            // Step 2: Randomly select positions along the path for letters
+            const grid = Array(rows).fill(null).map(() => Array(cols).fill(''));
+
+            // Create array of path indices and shuffle them
+            const pathIndices = Array.from({ length: path.length }, (_, i) => i);
+
+            // Shuffle using Fisher-Yates
+            for (let i = pathIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pathIndices[i], pathIndices[j]] = [pathIndices[j], pathIndices[i]];
+            }
+
+            // Sort the first word.length indices to maintain letter order along the path
+            const selectedIndices = pathIndices.slice(0, word.length);
+            selectedIndices.sort((a, b) => a - b);
+
+            // Step 3: Place letters at the selected positions (in path order)
+            const letterPositions = []; // Track where each letter is placed
+            for (let i = 0; i < word.length; i++) {
+                const pathIdx = selectedIndices[i];
+                const pos = path[pathIdx];
+                grid[pos.row][pos.col] = word[i];
+                letterPositions.push({
+                    row: pos.row,
+                    col: pos.col,
+                    pathIndex: pathIdx
+                });
+            }
+
+            // Step 4: Create answer path
+            let answerPath;
+            if (coverAll) {
+                // Advanced challenge: answer path is the COMPLETE snake path (all cells)
+                answerPath = path;
+            } else {
+                // Normal challenge: answer path goes through letters in order
+                answerPath = createPathThroughLetterPositions(letterPositions, path);
+            }
+
+            return {
+                grid: grid,
+                path: answerPath
+            };
+        }
+
+        // Create a path that visits letter positions in order, using the original path
+        function createPathThroughLetterPositions(letterPositions, fullPath) {
+            const resultPath = [];
+
+            for (let i = 0; i < letterPositions.length; i++) {
+                const currentPos = letterPositions[i];
+                const currentPathIndex = currentPos.pathIndex;
+
+                if (i === 0) {
+                    // For first letter, add all path cells from start to first letter
+                    for (let j = 0; j <= currentPathIndex; j++) {
+                        resultPath.push({ ...fullPath[j] });
+                    }
+                } else {
+                    // For subsequent letters, add path cells from previous letter to current letter
+                    const prevPathIndex = letterPositions[i - 1].pathIndex;
+                    for (let j = prevPathIndex + 1; j <= currentPathIndex; j++) {
+                        resultPath.push({ ...fullPath[j] });
+                    }
+                }
+            }
+
+            return resultPath;
+        }
+
+        // Generate a winding path of given length
+        function generateWindingPath(rows, cols, length) {
+            // Try multiple times with different starting positions
+            for (let attempt = 0; attempt < 100; attempt++) {
+                const visited = new Set();
+                const path = [];
+
+                // Start from a random position
+                let currentRow = Math.floor(Math.random() * rows);
+                let currentCol = Math.floor(Math.random() * cols);
+
+                visited.add(`${currentRow},${currentCol}`);
+                path.push({ row: currentRow, col: currentCol });
+
+                // Use a random walk with bias to continue in same direction
+                const directions = [
+                    [-1, 0], // up
+                    [1, 0],  // down
+                    [0, -1], // left
+                    [0, 1]   // right
+                ];
+
+                let lastDirection = -1; // No previous direction
+
+                for (let i = 1; i < length; i++) {
+                    // Find available neighbors
+                    const availableNeighbors = [];
+                    for (let d = 0; d < directions.length; d++) {
+                        const dr = directions[d][0];
+                        const dc = directions[d][1];
+                        const newRow = currentRow + dr;
+                        const newCol = currentCol + dc;
+                        const key = `${newRow},${newCol}`;
+
+                        if (newRow >= 0 && newRow < rows &&
+                            newCol >= 0 && newCol < cols &&
+                            !visited.has(key)) {
+                            // Prefer to continue in same direction
+                            if (d === lastDirection) {
+                                availableNeighbors.unshift({ row: newRow, col: newCol, dir: d });
+                            } else {
+                                availableNeighbors.push({ row: newRow, col: newCol, dir: d });
+                            }
+                        }
+                    }
+
+                    if (availableNeighbors.length === 0) {
+                        break; // Dead end
+                    }
+
+                    // Choose neighbor (70% chance to continue same direction if available)
+                    let chosen;
+                    if (lastDirection >= 0 && availableNeighbors.length > 1 && Math.random() < 0.7) {
+                        chosen = availableNeighbors[0]; // Continue same direction
+                    } else {
+                        chosen = availableNeighbors[Math.floor(Math.random() * availableNeighbors.length)];
+                    }
+
+                    path.push({ row: chosen.row, col: chosen.col });
+                    visited.add(`${chosen.row},${chosen.col}`);
+                    currentRow = chosen.row;
+                    currentCol = chosen.col;
+                    lastDirection = chosen.dir;
+                }
+
+                if (path.length === length) {
+                    return path;
+                }
+            }
+
+            return null; // Failed to generate path
+        }
+
+        // Generate a random path of given length in a grid
+        function generateRandomPath(rows, cols, length) {
+            const visited = new Set();
+            const path = [];
+
+            // Start from a random position
+            let currentRow = Math.floor(Math.random() * rows);
+            let currentCol = Math.floor(Math.random() * cols);
+
+            visited.add(`${currentRow},${currentCol}`);
+            path.push({ row: currentRow, col: currentCol });
+
+            // Use a random walk to generate the path
+            const directions = [
+                [-1, 0], // up
+                [1, 0],  // down
+                [0, -1], // left
+                [0, 1]   // right
+            ];
+
+            for (let i = 1; i < length; i++) {
+                // Find available neighbors
+                const availableNeighbors = [];
+                for (const [dr, dc] of directions) {
+                    const newRow = currentRow + dr;
+                    const newCol = currentCol + dc;
+                    const key = `${newRow},${newCol}`;
+
+                    if (newRow >= 0 && newRow < rows &&
+                        newCol >= 0 && newCol < cols &&
+                        !visited.has(key)) {
+                        availableNeighbors.push({ row: newRow, col: newCol });
+                    }
+                }
+
+                if (availableNeighbors.length === 0) {
+                    // Dead end, try backtracking or restart
+                    return null;
+                }
+
+                // Choose random neighbor
+                const next = availableNeighbors[Math.floor(Math.random() * availableNeighbors.length)];
+                path.push(next);
+                visited.add(`${next.row},${next.col}`);
+                currentRow = next.row;
+                currentCol = next.col;
+            }
+
+            return path;
+        }
+
+        // Create a path that visits given positions in order
+        function createPathThroughPositions(positions, rows, cols) {
+            const path = [];
+            const visited = new Set();
+
+            // Start from first position
+            let current = positions[0];
+            path.push({ ...current });
+            visited.add(`${current.row},${current.col}`);
+
+            // For each subsequent position, find a path to it
+            for (let i = 1; i < positions.length; i++) {
+                const target = positions[i];
+                const segmentPath = bfsPath(current, target, rows, cols, visited);
+
+                if (!segmentPath) {
+                    return null; // Can't find path
+                }
+
+                // Add path segment (excluding first point as it's already added)
+                for (let j = 1; j < segmentPath.length; j++) {
+                    const point = segmentPath[j];
+                    path.push({ ...point });
+                    visited.add(`${point.row},${point.col}`);
+                }
+
+                current = target;
+            }
+
+            return path;
+        }
+
+        // BFS to find path from start to end, avoiding visited cells
+        function bfsPath(start, end, rows, cols, visited) {
+            const queue = [{ pos: start, path: [start] }];
+            const seen = new Set(visited);
+            seen.add(`${start.row},${start.col}`);
+
+            const directions = [
+                [-1, 0], [1, 0], [0, -1], [0, 1]
+            ];
+
+            while (queue.length > 0) {
+                const { pos, path } = queue.shift();
+
+                if (pos.row === end.row && pos.col === end.col) {
+                    return path;
+                }
+
+                for (const [dr, dc] of directions) {
+                    const newRow = pos.row + dr;
+                    const newCol = pos.col + dc;
+                    const key = `${newRow},${newCol}`;
+
+                    if (newRow >= 0 && newRow < rows &&
+                        newCol >= 0 && newCol < cols &&
+                        !seen.has(key)) {
+                        seen.add(key);
+                        const newPos = { row: newRow, col: newCol };
+                        queue.push({
+                            pos: newPos,
+                            path: [...path, newPos]
+                        });
+                    }
+                }
+            }
+
+            return null; // No path found
+        }
+
+        // Reorder snake path to visit letters in correct sequence
+        function reorderPathToVisitLetters(path, word, shuffledIndices) {
+            // Build a map from path index to letter index
+            const indexMap = {};
+            for (let i = 0; i < word.length; i++) {
+                indexMap[shuffledIndices[i]] = i;
+            }
+
+            // Find the path that visits letters in order
+            const letterPath = [];
+            let currentLetterIndex = 0;
+
+            for (let i = 0; i < path.length && currentLetterIndex < word.length; i++) {
+                if (indexMap[i] === currentLetterIndex) {
+                    letterPath.push({ ...path[i] });
+                    currentLetterIndex++;
+                } else {
+                    // Add intermediate cells to maintain continuous path
+                    letterPath.push({ ...path[i] });
+                }
+            }
+
+            return letterPath;
+        }
+
+        // Create puzzle with larger grid (fallback)
+        function createPuzzleWithLargerGrid(word, coverAll, scrambleLetters, currentSize) {
+            const newGridSize = {
+                rows: currentSize.rows + 1,
+                cols: currentSize.cols + 1
+            };
+
+            // Try with new larger grid
+            for (let attempt = 0; attempt < 50; attempt++) {
+                const result = tryCreatePuzzleWithPathFirst(word, newGridSize, coverAll);
+                if (result) {
+                    return result;
+                }
+            }
+
+            // If still too large, give up
+            if (newGridSize.rows > 10 || newGridSize.cols > 10) {
+                return null;
+            }
+
+            // Try even larger
+            return createPuzzleWithLargerGrid(word, coverAll, scrambleLetters, newGridSize);
+        }
+
+        // Randomly place letters on the grid
+        function randomlyPlaceLetters(grid, word) {
+            const rows = grid.length;
+            const cols = grid[0].length;
+            const wordLength = word.length;
+
+            // Get all empty positions
+            const emptyPositions = [];
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    emptyPositions.push({ row: i, col: j });
+                }
+            }
+
+            // Check if we have enough space
+            if (emptyPositions.length < wordLength) {
+                return null;
+            }
+
+            // Shuffle positions
+            for (let i = emptyPositions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [emptyPositions[i], emptyPositions[j]] = [emptyPositions[j], emptyPositions[i]];
+            }
+
+            // Place letters in random positions
+            const letterPositions = [];
+            for (let i = 0; i < wordLength; i++) {
+                const pos = emptyPositions[i];
+                grid[pos.row][pos.col] = word[i];
+                letterPositions.push({
+                    row: pos.row,
+                    col: pos.col,
+                    letter: word[i],
+                    index: i
+                });
+            }
+
+            return letterPositions;
+        }
+
+        // Find a path that visits all letters in correct order
+        function findPathThroughLetters(grid, letterPositions, word, coverAll) {
+            const rows = grid.length;
+            const cols = grid[0].length;
+
+            // For cover all mode, we need a different approach
+            if (coverAll) {
+                return findCoverAllPath(grid, letterPositions, word, rows, cols);
+            }
+
+            // Sort letter positions by their index in the word
+            const sortedPositions = letterPositions.map((p, idx) => ({
+                row: p.row,
+                col: p.col,
+                targetIndex: idx
+            }));
+
+            // Build a path that visits each letter in order
+            const path = [];
+
+            // Start from first letter
+            let currentPos = { row: sortedPositions[0].row, col: sortedPositions[0].col };
+            path.push({ ...currentPos });
+
+            // For each subsequent letter, find a path
+            for (let i = 1; i < sortedPositions.length; i++) {
+                const target = sortedPositions[i];
+                const segmentPath = findPathBetween(
+                    currentPos.row,
+                    currentPos.col,
+                    target.row,
+                    target.col,
+                    grid,
+                    path
+                );
+
+                if (!segmentPath) {
+                    return null; // No valid path found
+                }
+
+                // Add segment path (excluding first point as it's already in path)
+                for (let j = 1; j < segmentPath.length; j++) {
+                    path.push(segmentPath[j]);
+                }
+
+                currentPos = { row: target.row, col: target.col };
+            }
+
+            return { path };
+        }
+
+        // Find a path that covers ALL cells in the grid (Advanced Challenge)
+        function findCoverAllPath(grid, letterPositions, word, rows, cols) {
+            const totalCells = rows * cols;
+
+            // For orthogonal movement only, try multiple strategies
+            // Strategy 1: Build snake pattern first, then place letters along it
+            for (let attempt = 0; attempt < 200; attempt++) {
+                const path = generateSnakePatternPath(rows, cols);
+                if (path && path.length === totalCells) {
+                    // Check if we can place letters along this path in correct order
+                    if (canPlaceLettersAlongPath(path, letterPositions, word)) {
+                        return { path };
+                    }
+                }
+            }
+
+            // Strategy 2: Start from letter positions and extend
+            for (let attempt = 0; attempt < 100; attempt++) {
+                const path = trySnakePatternPath(grid, letterPositions, word, rows, cols);
+                if (path && path.length === totalCells) {
+                    return { path };
+                }
+            }
+
+            // If Hamiltonian path not found, fall back to extended path through letters
+            console.log("Hamiltonian path not found, using extended path");
+            return findExtendedPathThroughLetters(grid, letterPositions, word, rows, cols);
+        }
+
+        // Generate a pure snake pattern path (visits all cells)
+        function generateSnakePatternPath(rows, cols) {
+            const path = [];
+            const visited = new Set();
+
+            // Start from top-left
+            let current = { row: 0, col: 0 };
+            visited.add(`${current.row},${current.col}`);
+            path.push({ ...current });
+
+            let direction = 1; // 1 = right, -1 = left
+
+            while (visited.size < rows * cols) {
+                let next = null;
+
+                // Try to continue in current direction
+                const nextCol = current.col + direction;
+                const nextKey = `${current.row},${nextCol}`;
+
+                if (nextCol >= 0 && nextCol < cols && !visited.has(nextKey)) {
+                    next = { row: current.row, col: nextCol };
+                } else {
+                    // Need to go down and reverse direction
+                    const downRow = current.row + 1;
+                    const downKey = `${downRow},${current.col}`;
+
+                    if (downRow < rows && !visited.has(downKey)) {
+                        next = { row: downRow, col: current.col };
+                        direction *= -1; // Reverse horizontal direction
+                    }
+                }
+
+                if (!next) {
+                    return null; // Can't continue
+                }
+
+                visited.add(`${next.row},${next.col}`);
+                path.push(next);
+                current = next;
+            }
+
+            return path;
+        }
+
+        // Check if letters can be placed along the path in correct order
+        function canPlaceLettersAlongPath(path, letterPositions, word) {
+            const letterMap = new Map();
+            letterPositions.forEach((p, idx) => {
+                letterMap.set(`${p.row},${p.col}`, idx);
+            });
+
+            // Collect letter indices in path order
+            const letterIndicesInPath = [];
+            for (const pos of path) {
+                const key = `${pos.row},${pos.col}`;
+                if (letterMap.has(key)) {
+                    letterIndicesInPath.push(letterMap.get(key));
+                }
+            }
+
+            // Check if letters appear in correct order (1,2,3,...)
+            for (let i = 0; i < letterIndicesInPath.length; i++) {
+                if (letterIndicesInPath[i] !== i) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Try to build a path using snake-like pattern (row by row)
+        function trySnakePatternPath(grid, letterPositions, word, rows, cols) {
+            const letterMap = new Map();
+            letterPositions.forEach((p, idx) => {
+                letterMap.set(`${p.row},${p.col}`, { letter: word[idx], index: idx });
+            });
+
+            // Build snake pattern: go right, then down, then left, then down, etc.
+            const path = [];
+            const visited = new Set();
+
+            // Start from first letter position
+            const startLetter = letterPositions.find(p => p.index === 0);
+            if (!startLetter) return null;
+
+            let current = { row: startLetter.row, col: startLetter.col };
+            visited.add(`${current.row},${current.col}`);
+            path.push({ ...current });
+
+            let nextLetterIndex = 1;
+            let direction = 1; // 1 = right, -1 = left
+
+            while (visited.size < rows * cols) {
+                const neighbors = getAvailableNeighbors(current.row, current.col, visited, rows, cols);
+
+                if (neighbors.length === 0) {
+                    return null; // Stuck
+                }
+
+                let bestNeighbor = null;
+
+                // First priority: find the next letter we need
+                for (const neighbor of neighbors) {
+                    const key = `${neighbor.row},${neighbor.col}`;
+                    const letterInfo = letterMap.get(key);
+
+                    if (letterInfo && letterInfo.index === nextLetterIndex) {
+                        bestNeighbor = neighbor;
+                        nextLetterIndex++;
+                        break;
+                    }
+                }
+
+                // If no next letter nearby, use snake pattern preference
+                if (!bestNeighbor) {
+                    // Prefer continuing in same direction
+                    const dirPreference = getNeighborInDirection(current, direction, visited, rows, cols);
+                    if (dirPreference) {
+                        bestNeighbor = dirPreference;
+                    } else {
+                        // Change direction and try to find unvisited neighbor
+                        direction *= -1;
+                        // Try going down if we hit the edge
+                        const downNeighbor = neighbors.find(n => n.row === current.row + 1 && n.col === current.col);
+                        if (downNeighbor) {
+                            bestNeighbor = downNeighbor;
+                        } else {
+                            // Use Warnock's algorithm as last resort
+                            bestNeighbor = findBestNeighbor(neighbors, visited, letterMap, nextLetterIndex, rows, cols);
+                        }
+                    }
+                }
+
+                if (!bestNeighbor) {
+                    return null; // Can't continue
+                }
+
+                const key = `${bestNeighbor.row},${bestNeighbor.col}`;
+                const letterInfo = letterMap.get(key);
+
+                // Check if this cell has the next letter we need
+                if (letterInfo && letterInfo.index === nextLetterIndex - 1) {
+                    // Already handled above
+                } else if (letterInfo && letterInfo.index === nextLetterIndex) {
+                    nextLetterIndex++;
+                }
+
+                visited.add(key);
+                path.push(bestNeighbor);
+                current = bestNeighbor;
+            }
+
+            // Verify we found all letters in order
+            if (nextLetterIndex === word.length) {
+                return path;
+            }
+
+            return null;
+        }
+
+        // Get neighbor in specific direction
+        function getNeighborInDirection(current, direction, visited, rows, cols) {
+            const newCol = current.col + direction;
+            const key = `${current.row},${newCol}`;
+
+            if (newCol >= 0 && newCol < cols && !visited.has(key)) {
+                return { row: current.row, col: newCol };
+            }
+            return null;
+        }
+
+        // Find an extended path that covers as many cells as possible
+        function findExtendedPathThroughLetters(grid, letterPositions, word, rows, cols) {
+            // Sort by word order
+            const sortedPositions = letterPositions.map((p, idx) => ({
+                row: p.row,
+                col: p.col,
+                index: idx
+            })).sort((a, b) => a.index - b.index);
+
+            const path = [];
+            const visited = new Set();
+
+            // Start from first letter
+            let current = { row: sortedPositions[0].row, col: sortedPositions[0].col };
+            visited.add(`${current.row},${current.col}`);
+            path.push({ ...current });
+
+            let nextLetterIndex = 1;
+
+            // Build path trying to visit all cells
+            while (visited.size < rows * cols) {
+                const neighbors = getAvailableNeighbors(current.row, current.col, visited, rows, cols);
+
+                if (neighbors.length === 0) {
+                    break; // Can't continue
+                }
+
+                // Check if any neighbor has the next letter we need
+                let bestNeighbor = neighbors[0];
+                let foundNextLetter = false;
+
+                for (const neighbor of neighbors) {
+                    const key = `${neighbor.row},${neighbor.col}`;
+                    const letterPos = sortedPositions.find(p =>
+                        p.row === neighbor.row && p.col === neighbor.col && p.index === nextLetterIndex
+                    );
+
+                    if (letterPos) {
+                        bestNeighbor = neighbor;
+                        foundNextLetter = true;
+                        nextLetterIndex++;
+                        break;
+                    }
+                }
+
+                if (!foundNextLetter) {
+                    // Use Warnock's algorithm to avoid dead ends
+                    let minOptions = 999;
+                    for (const neighbor of neighbors) {
+                        const count = getAvailableNeighbors(neighbor.row, neighbor.col, visited, rows, cols).length;
+                        if (count < minOptions) {
+                            minOptions = count;
+                            bestNeighbor = neighbor;
+                        }
+                    }
+                }
+
+                const key = `${bestNeighbor.row},${bestNeighbor.col}`;
+                visited.add(key);
+                path.push(bestNeighbor);
+                current = bestNeighbor;
+            }
+
+            // Verify we found all letters
+            if (nextLetterIndex === word.length) {
+                return { path };
+            }
+
+            return null;
+        }
+
+        // Try to build a path that covers all cells
+        function tryBuildCoverAllPath(grid, letterPositions, word, rows, cols) {
+            // Get all cells that need to be visited (all of them)
+            const allCells = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    allCells.push({ row: r, col: c });
+                }
+            }
+
+            // Create a map of which cells contain which letters
+            const letterMap = new Map();
+            letterPositions.forEach((p, idx) => {
+                letterMap.set(`${p.row},${p.col}`, { letter: word[idx], index: idx });
+            });
+
+            // Build path using greedy approach with backtracking
+            const visited = new Set();
+            const path = [];
+
+            // Start from first letter position
+            const startLetter = letterPositions.find(p => p.index === 0);
+            if (!startLetter) return null;
+
+            let current = { row: startLetter.row, col: startLetter.col };
+            visited.add(`${current.row},${current.col}`);
+            path.push({ ...current });
+
+            // Track which letter we're looking for next
+            let nextLetterIndex = 1;
+
+            // Try to build path covering all cells
+            while (visited.size < rows * cols) {
+                const neighbors = getAvailableNeighbors(current.row, current.col, visited, rows, cols);
+
+                if (neighbors.length === 0) {
+                    return null; // Stuck, no valid path
+                }
+
+                // Prioritize neighbors that:
+                // 1. Contain the next letter we need
+                // 2. Have fewer available neighbors (to avoid dead ends)
+                const bestNeighbor = findBestNeighbor(
+                    neighbors,
+                    visited,
+                    letterMap,
+                    nextLetterIndex,
+                    rows,
+                    cols
+                );
+
+                // Check if this cell has the next letter we need
+                const cellKey = `${bestNeighbor.row},${bestNeighbor.col}`;
+                const letterInfo = letterMap.get(cellKey);
+
+                if (letterInfo && letterInfo.index === nextLetterIndex) {
+                    nextLetterIndex++;
+                }
+
+                visited.add(cellKey);
+                path.push(bestNeighbor);
+                current = bestNeighbor;
+            }
+
+            // Verify we found all letters in order
+            if (nextLetterIndex === word.length) {
+                return path;
+            }
+
+            return null;
+        }
+
+        // Get unvisited neighbors of a cell (orthogonal only: up, down, left, right)
+        function getAvailableNeighbors(row, col, visited, rows, cols) {
+            const neighbors = [];
+            const directions = [
+                [-1, 0],  // up
+                [1, 0],   // down
+                [0, -1],  // left
+                [0, 1]    // right
+            ];
+
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const key = `${newRow},${newCol}`;
+
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols &&
+                    !visited.has(key)) {
+                    neighbors.push({ row: newRow, col: newCol });
+                }
+            }
+
+            return neighbors;
+        }
+
+        // Find the best neighbor to move to
+        function findBestNeighbor(neighbors, visited, letterMap, nextLetterIndex, rows, cols) {
+            // First, check if any neighbor has the next letter we need
+            for (const neighbor of neighbors) {
+                const key = `${neighbor.row},${neighbor.col}`;
+                const letterInfo = letterMap.get(key);
+                if (letterInfo && letterInfo.index === nextLetterIndex) {
+                    return neighbor;
+                }
+            }
+
+            // If no next letter nearby, use Warnock's algorithm (prefer neighbors with fewer options)
+            let bestNeighbor = neighbors[0];
+            let minOptions = neighbors.length;
+
+            for (const neighbor of neighbors) {
+                const availableCount = getAvailableNeighbors(
+                    neighbor.row, neighbor.col, visited, rows, cols
+                ).length;
+
+                if (availableCount < minOptions) {
+                    minOptions = availableCount;
+                    bestNeighbor = neighbor;
+                }
+            }
+
+            return bestNeighbor;
+        }
+
+        // Find path between two points using BFS (shortest path)
+        function findPathBetween(startRow, startCol, endRow, endCol, grid, existingPath) {
+            const rows = grid.length;
+            const cols = grid[0].length;
+
+            const queue = [[{ row: startRow, col: startCol }]];
+            const visited = new Set();
+            visited.add(`${startRow},${startCol}`);
+
+            while (queue.length > 0) {
+                const currentPath = queue.shift();
+                const current = currentPath[currentPath.length - 1];
+
+                if (current.row === endRow && current.col === endCol) {
+                    return currentPath;
+                }
+
+                const directions = [
+                    [-1, 0],  // up
+                    [1, 0],   // down
+                    [0, -1],  // left
+                    [0, 1]    // right
+                ];
+
+                for (const [dr, dc] of directions) {
+                    const newRow = current.row + dr;
+                    const newCol = current.col + dc;
+                    const key = `${newRow},${newCol}`;
+
+                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols &&
+                        !visited.has(key)) {
+                        visited.add(key);
+                        queue.push([...currentPath, { row: newRow, col: newCol }]);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        // Calculate grid size based on word length
+        function calculateGridSize(wordLength, coverAll) {
+            if (coverAll) {
+                // For advanced challenge, create much larger grids with many empty cells
+                // Grid should have about 100-150% more cells than the word length for complex winding paths
+                const minTotalCells = Math.ceil(wordLength * 2.0); // At least 100% extra space
+
+                if (minTotalCells <= 8) {
+                    return { rows: 2, cols: 4 }; // 2x4 = 8 cells
+                } else if (minTotalCells <= 10) {
+                    return { rows: 2, cols: 5 }; // 2x5 = 10 cells
+                } else if (minTotalCells <= 12) {
+                    return { rows: 3, cols: 4 }; // 3x4 = 12 cells
+                } else if (minTotalCells <= 15) {
+                    return { rows: 3, cols: 5 }; // 3x5 = 15 cells
+                } else if (minTotalCells <= 18) {
+                    return { rows: 3, cols: 6 }; // 3x6 = 18 cells
+                } else if (minTotalCells <= 20) {
+                    return { rows: 4, cols: 5 }; // 4x5 = 20 cells
+                } else if (minTotalCells <= 24) {
+                    return { rows: 4, cols: 6 }; // 4x6 = 24 cells
+                } else if (minTotalCells <= 30) {
+                    return { rows: 5, cols: 6 }; // 5x6 = 30 cells
+                } else {
+                    return { rows: 6, cols: 6 }; // 6x6 = 36 cells
+                }
+            } else {
+                // For normal mode, create a grid that gives room for letters to spread
+                // Minimum 3x3, scale up based on word length
+                const minSize = Math.max(3, Math.ceil(Math.sqrt(wordLength * 2)));
+                return {
+                    rows: minSize,
+                    cols: minSize
+                };
+            }
+        }
+
+        // Display all puzzles
+        function displayPuzzles() {
+            const container = document.getElementById('gameContainer');
+            container.innerHTML = '';
+            container.classList.add('active');
+
+            puzzles.forEach((puzzle, index) => {
+                const section = createPuzzleSection(puzzle, index);
+                container.appendChild(section);
+            });
+
+            // Hide input section
+            document.getElementById('inputSection').style.display = 'none';
+
+            // Add print button at the bottom
+            const printAllBtn = document.createElement('div');
+            printAllBtn.style.cssText = 'text-align: center; margin: 30px 0; padding: 20px; background: rgba(212, 175, 55, 0.1); border-radius: 10px;';
+            printAllBtn.innerHTML = `
+                <div style="font-size: 1.1rem; color: #d4af37; margin-bottom: 15px; font-weight: bold;">🖨️ 打印选项</div>
+                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                    <button onclick="printPuzzlesWithAnswers()" style="font-size: 1rem; padding: 12px 30px;">
+                        📄 打印所有题目（含答案版）
+                    </button>
+                    <button onclick="printPuzzlesWithoutAnswers()" style="font-size: 1rem; padding: 12px 30px;">
+                        📝 打印所有题目（学生版 - 无答案）
+                    </button>
+                </div>
+            `;
+            container.appendChild(printAllBtn);
+
+            // Add window resize listener to redraw path lines
+            if (!window.pathResizeListenerAdded) {
+                window.addEventListener('resize', () => {
+                    puzzles.forEach((_, index) => {
+                        if (playerPaths[index] && playerPaths[index].length > 0) {
+                            drawPathLines(index, playerPaths[index]);
+                        }
+                    });
+                });
+                window.pathResizeListenerAdded = true;
+            }
+
+            // Initialize SVG sizes after a short delay to ensure DOM is ready
+            setTimeout(() => {
+                puzzles.forEach((_, index) => {
+                    const svg = document.getElementById(`path-svg-${index}`);
+                    const gridEl = document.getElementById(`grid-${index}`);
+                    if (svg && gridEl) {
+                        const gridRect = gridEl.getBoundingClientRect();
+                        svg.style.width = gridRect.width + 'px';
+                        svg.style.height = gridRect.height + 'px';
+                        svg.setAttribute('width', gridRect.width);
+                        svg.setAttribute('height', gridRect.height);
+                        svg.setAttribute('viewBox', `0 0 ${gridRect.width} ${gridRect.height}`);
+                    }
+                });
+            }, 100);
+        }
+
+        // Create puzzle section HTML
+        function createPuzzleSection(puzzle, index) {
+            const section = document.createElement('div');
+            section.className = 'word-section';
+
+            const word = puzzle.word;
+            const grid = puzzle.grid;
+            const path = puzzle.path;
+            const hint = puzzle.coverAll ? '高级挑战：覆盖所有方格' : '普通挑战：连接字母';
+            const wordLengthHint = puzzle.showWordLength ? ` (${word.length} 个字母)` : '';
+
+            section.innerHTML = `
+                <div class="word-header">
+                    <div>
+                        <div class="word-title">单词 #${index + 1}${wordLengthHint}</div>
+                        <div class="word-hint">${hint}</div>
+                    </div>
+                    <div>
+                        <button onclick="showHint(${index})" ${!puzzle.allowHints ? 'style="display:none"' : ''}>💡 显示提示</button>
+                        <button onclick="showSolution(${index})">🔍 显示答案</button>
+                        <button onclick="resetPuzzle(${index})">🔄 重置</button>
+                        <button onclick="printSinglePuzzle(${index})">🖨️ 打印此题</button>
+                    </div>
+                </div>
+                <div class="instructions">
+                    <p style="color: #8b6914; font-size: 0.9rem; margin-bottom: 15px;">
+                        📝 任务：按正确顺序连接字母拼出单词。字母已随机散布在网格中。
+                        从第一个字母开始，按顺序连接到最后一个字母。<strong>可以经过空格子来连接不相邻的字母。</strong>
+                        <strong>注意：只能连接上下左右相邻的格子，不能走对角线。</strong>
+                        ${puzzle.coverAll ? '高级挑战：必须覆盖所有格子！' : ''}
+                    </p>
+                </div>
+                <div class="grid-container" style="position: relative;">
+                    <svg id="path-svg-${index}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></svg>
+                    <div class="letter-grid" id="grid-${index}" data-puzzle-index="${index}"
+                         style="grid-template-columns: repeat(${grid[0].length}, 1fr); position: relative; z-index: 2;">
+                        ${createGridHTML(grid, path, puzzle.allowHints, index)}
+                    </div>
+                </div>
+                <div class="player-path" id="player-path-${index}" style="margin-top: 15px; min-height: 30px;">
+                    <span style="color: #8b6914;">你的答案：</span>
+                    <span id="player-answer-${index}" style="color: #d4af37; font-weight: bold;"></span>
+                </div>
+                <div class="solution-section" id="solution-${index}">
+                    <div class="solution-text">答案：<strong>${word}</strong></div>
+                    <div class="path-visualization">
+                        正确路径：${path.map((p, i) => `${puzzle.word[i]}(${p.row + 1},${p.col + 1})`).join(' → ')}
+                    </div>
+                </div>
+            `;
+
+            return section;
+        }
+
+        // Create grid HTML
+        function createGridHTML(grid, path, allowHints, puzzleIndex) {
+            let html = '';
+
+            grid.forEach((row, rowIndex) => {
+                row.forEach((cell, colIndex) => {
+                    const isEmpty = cell === '';
+                    const pathIndex = path.findIndex(p => p.row === rowIndex && p.col === colIndex);
+                    const isStart = pathIndex === 0;
+                    const isEnd = pathIndex === path.length - 1;
+
+                    let classes = 'grid-cell';
+                    if (isEmpty) {
+                        classes += ' empty';
+                    }
+                    // All cells are now playable (including empty ones)
+                    classes += ' playable';
+                    if (isStart) classes += ' start';
+                    if (isEnd) classes += ' end';
+
+                    let content = cell;
+
+                    // All cells are clickable now
+                    const onclick = `onclick="handleCellClick(${puzzleIndex}, ${rowIndex}, ${colIndex})"`;
+
+                    html += `<div class="${classes}" ${onclick}
+                                 data-row="${rowIndex}" data-col="${colIndex}"
+                                 id="cell-${puzzleIndex}-${rowIndex}-${colIndex}">${content}</div>`;
+                });
+            });
+
+            return html;
+        }
+
+        // Player state
+        let playerPaths = [];
+        let playerAnswers = [];
+
+        // Handle cell click
+        function handleCellClick(puzzleIndex, row, col) {
+            const cell = document.getElementById(`cell-${puzzleIndex}-${row}-${col}`);
+            const cellText = cell.textContent.trim();
+            const letter = cellText.charAt(0); // Get first character only (letter)
+            const isEmpty = cellText === '' || cell.classList.contains('empty');
+
+            // Initialize player path if needed
+            if (!playerPaths[puzzleIndex]) {
+                playerPaths[puzzleIndex] = [];
+                playerAnswers[puzzleIndex] = '';
+            }
+
+            // Check if this cell is already in the path
+            const existingIndex = playerPaths[puzzleIndex].findIndex(
+                p => p.row === row && p.col === col
+            );
+
+            if (existingIndex >= 0) {
+                // Remove from this point onwards
+                playerPaths[puzzleIndex] = playerPaths[puzzleIndex].slice(0, existingIndex);
+                // Recalculate answer based on remaining path (only letter cells count)
+                playerAnswers[puzzleIndex] = '';
+                playerPaths[puzzleIndex].forEach((pos) => {
+                    const c = document.getElementById(`cell-${puzzleIndex}-${pos.row}-${pos.col}`);
+                    const text = c ? c.textContent.trim() : '';
+                    if (text && !c.classList.contains('empty')) {
+                        playerAnswers[puzzleIndex] += text.charAt(0);
+                    }
+                });
+            } else {
+                // Check if the cell is adjacent to the last cell in path (no diagonals)
+                if (playerPaths[puzzleIndex].length > 0) {
+                    const lastPos = playerPaths[puzzleIndex][playerPaths[puzzleIndex].length - 1];
+                    const rowDiff = Math.abs(row - lastPos.row);
+                    const colDiff = Math.abs(col - lastPos.col);
+
+                    // Only allow orthogonal moves (up, down, left, right)
+                    // Not diagonals (where both rowDiff and colDiff are 1)
+                    // Not same cell (handled above)
+                    // Not distant cells
+                    if (!((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1))) {
+                        // Invalid move - not adjacent orthogonally
+                        return;
+                    }
+                }
+
+                // Add to path
+                playerPaths[puzzleIndex].push({ row, col });
+
+                // Only add to answer if this cell has a letter (not empty)
+                if (!isEmpty) {
+                    playerAnswers[puzzleIndex] += letter;
+                }
+            }
+
+            // Update display
+            updatePuzzleDisplay(puzzleIndex);
+        }
+
+        // Update puzzle display after player move
+        function updatePuzzleDisplay(puzzleIndex) {
+            const gridEl = document.getElementById(`grid-${puzzleIndex}`);
+            const cells = gridEl.querySelectorAll('.grid-cell');
+            const path = playerPaths[puzzleIndex] || [];
+
+            // Reset all cells
+            cells.forEach(cell => {
+                cell.classList.remove('selected', 'correct', 'wrong');
+            });
+
+            // Highlight selected path
+            path.forEach((pos, index) => {
+                const cell = document.getElementById(`cell-${puzzleIndex}-${pos.row}-${pos.col}`);
+                if (cell) {
+                    cell.classList.add('selected');
+                }
+            });
+
+            // Draw path lines using SVG
+            drawPathLines(puzzleIndex, path);
+
+            // Update answer display
+            const answerEl = document.getElementById(`player-answer-${puzzleIndex}`);
+            if (answerEl) {
+                answerEl.textContent = playerAnswers[puzzleIndex] || '';
+
+                // Check if answer is correct
+                const puzzle = puzzles[puzzleIndex];
+                const correctWord = puzzle.word;
+                const playerAnswer = playerAnswers[puzzleIndex] || '';
+
+                if (playerAnswer === correctWord) {
+                    // For advanced challenge, also check if all cells are covered
+                    if (puzzle.coverAll) {
+                        const totalCells = puzzle.grid.length * puzzle.grid[0].length;
+                        if (path.length === totalCells) {
+                            // Correct! All cells covered
+                            answerEl.style.color = '#22c55e';
+                            path.forEach(pos => {
+                                const cell = document.getElementById(`cell-${puzzleIndex}-${pos.row}-${pos.col}`);
+                                if (cell) cell.classList.add('correct');
+                            });
+                        } else {
+                            // Word is correct but not all cells covered yet
+                            answerEl.style.color = '#f59e0b'; // Orange/yellow for partial completion
+                            answerEl.innerHTML = `${playerAnswer} <span style="font-size: 0.8em">(${path.length}/${totalCells} 格子)</span>`;
+                        }
+                    } else {
+                        // Normal challenge: word is correct
+                        answerEl.style.color = '#22c55e';
+                        path.forEach(pos => {
+                            const cell = document.getElementById(`cell-${puzzleIndex}-${pos.row}-${pos.col}`);
+                            if (cell) cell.classList.add('correct');
+                        });
+                    }
+                } else if (playerAnswer.length >= correctWord.length) {
+                    answerEl.style.color = '#ef4444';
+                } else {
+                    answerEl.style.color = '#d4af37';
+                }
+            }
+        }
+
+        // Draw path lines connecting cells
+        function drawPathLines(puzzleIndex, path) {
+            const svg = document.getElementById(`path-svg-${puzzleIndex}`);
+            if (!svg || path.length < 2) {
+                if (svg) svg.innerHTML = '';
+                return;
+            }
+
+            const gridEl = document.getElementById(`grid-${puzzleIndex}`);
+            const gridRect = gridEl.getBoundingClientRect();
+            const containerRect = svg.parentElement.getBoundingClientRect();
+
+            // Set SVG size to match the grid
+            svg.style.width = gridRect.width + 'px';
+            svg.style.height = gridRect.height + 'px';
+            svg.setAttribute('width', gridRect.width);
+            svg.setAttribute('height', gridRect.height);
+            svg.setAttribute('viewBox', `0 0 ${gridRect.width} ${gridRect.height}`);
+
+            // Clear existing lines
+            svg.innerHTML = '';
+
+            // Draw lines between consecutive cells
+            for (let i = 0; i < path.length - 1; i++) {
+                const fromPos = path[i];
+                const toPos = path[i + 1];
+
+                const fromCell = document.getElementById(`cell-${puzzleIndex}-${fromPos.row}-${fromPos.col}`);
+                const toCell = document.getElementById(`cell-${puzzleIndex}-${toPos.row}-${toPos.col}`);
+
+                if (!fromCell || !toCell) continue;
+
+                const fromRect = fromCell.getBoundingClientRect();
+                const toRect = toCell.getBoundingClientRect();
+
+                // Calculate center points relative to container
+                const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+                const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
+                const x2 = toRect.left + toRect.width / 2 - containerRect.left;
+                const y2 = toRect.top + toRect.height / 2 - containerRect.top;
+
+                // Create line element
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#d4af37');
+                line.setAttribute('stroke-width', '4');
+                line.setAttribute('stroke-linecap', 'round');
+                line.style.opacity = '0.7';
+
+                svg.appendChild(line);
+
+                // Draw arrow at the end
+                const angle = Math.atan2(y2 - y1, x2 - x1);
+                const arrowSize = 10;
+                const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const midX = (x1 + x2) / 2;
+                const midY = (y1 + y2) / 2;
+
+                const points = [
+                    [midX + arrowSize * Math.cos(angle), midY + arrowSize * Math.sin(angle)],
+                    [midX + arrowSize * Math.cos(angle + 2.5), midY + arrowSize * Math.sin(angle + 2.5)],
+                    [midX + arrowSize * Math.cos(angle - 2.5), midY + arrowSize * Math.sin(angle - 2.5)]
+                ];
+
+                arrow.setAttribute('points', points.map(p => p.join(',')).join(' '));
+                arrow.setAttribute('fill', '#d4af37');
+                arrow.style.opacity = '0.7';
+
+                svg.appendChild(arrow);
+            }
+        }
+
+        // Show hint (reveal letter order)
+        function showHint(puzzleIndex) {
+            const gridEl = document.getElementById(`grid-${puzzleIndex}`);
+            const cells = gridEl.querySelectorAll('.grid-cell');
+            const path = puzzles[puzzleIndex].path;
+
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                const pathIndex = path.findIndex(p => p.row === row && p.col === col);
+
+                // Remove old hints
+                const oldHint = cell.querySelector('.path-indicator');
+                if (oldHint) oldHint.remove();
+
+                // Add hint for cells on the path
+                if (pathIndex >= 0) {
+                    const hint = document.createElement('span');
+                    hint.className = 'path-indicator';
+                    hint.textContent = pathIndex + 1;
+                    hint.style.color = '#d4af37';
+                    hint.style.fontWeight = 'bold';
+                    cell.appendChild(hint);
+                }
+            });
+        }
+
+        // Show solution
+        function showSolution(index) {
+            document.getElementById(`solution-${index}`).classList.add('visible');
+
+            // Also show the correct path on the grid
+            const gridEl = document.getElementById(`grid-${index}`);
+            const cells = gridEl.querySelectorAll('.grid-cell');
+            const path = puzzles[index].path;
+
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                const pathIndex = path.findIndex(p => p.row === row && p.col === col);
+
+                cell.classList.remove('selected', 'correct', 'wrong');
+                if (pathIndex >= 0) {
+                    cell.classList.add('correct');
+
+                    // Show letter order
+                    let content = cell.childNodes[0]?.textContent || cell.textContent.split('(')[0];
+                    cell.innerHTML = `${content}<span class="path-indicator" style="color: #22c55e;">${pathIndex + 1}</span>`;
+                }
+            });
+        }
+
+        // Reset puzzle
+        function resetPuzzle(index) {
+            // Clear player state
+            playerPaths[index] = [];
+            playerAnswers[index] = '';
+
+            // Hide solution
+            document.getElementById(`solution-${index}`).classList.remove('visible');
+
+            // Reset grid display
+            const gridEl = document.getElementById(`grid-${index}`);
+            const cells = gridEl.querySelectorAll('.grid-cell');
+
+            cells.forEach(cell => {
+                cell.classList.remove('selected', 'correct', 'wrong');
+                // Remove path indicators
+                const hint = cell.querySelector('.path-indicator');
+                if (hint) hint.remove();
+            });
+
+            // Clear SVG path lines
+            const svg = document.getElementById(`path-svg-${index}`);
+            if (svg) svg.innerHTML = '';
+
+            // Reset answer display
+            const answerEl = document.getElementById(`player-answer-${index}`);
+            if (answerEl) {
+                answerEl.textContent = '';
+                answerEl.style.color = '#d4af37';
+            }
+        }
+
+        // Print puzzles (with answers)
+        function printPuzzles() {
+            if (puzzles.length === 0) {
+                alert('请先生成拼字游戏');
+                return;
+            }
+
+            // Show all solutions for printing
+            puzzles.forEach((_, index) => {
+                showSolution(index);
+            });
+
+            // Wait a bit for DOM to update, then print
+            setTimeout(() => {
+                window.print();
+            }, 200);
+        }
+
+        // Print puzzles with answers (puzzle grid + answer grid + correct text)
+        function printPuzzlesWithAnswers() {
+            if (puzzles.length === 0) {
+                alert('请先生成拼字游戏');
+                return;
+            }
+
+            // Create a new window with only the grids
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Word Path Puzzle - 纯打印版</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 10px;
+                            background: white;
+                        }
+                        .print-container {
+                            max-width: 210mm;
+                            margin: 0 auto;
+                        }
+                        .print-title {
+                            text-align: center;
+                            font-size: 18px;
+                            margin-bottom: 5px;
+                            font-weight: bold;
+                        }
+                        .print-subtitle {
+                            text-align: center;
+                            font-size: 11px;
+                            margin-bottom: 10px;
+                            color: #666;
+                        }
+                        .puzzles-grid {
+                            display: grid;
+                            grid-template-columns: repeat(2, 1fr);
+                            gap: 12px;
+                            margin-bottom: 10px;
+                        }
+                        .puzzle-item {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+                        .puzzle-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 8px;
+                            padding-bottom: 5px;
+                            border-bottom: 1px solid #333;
+                        }
+                        .puzzle-number {
+                            font-size: 13px;
+                            font-weight: bold;
+                        }
+                        .puzzle-info {
+                            font-size: 11px;
+                            color: #666;
+                        }
+                        .letter-grid {
+                            display: grid;
+                            gap: 2px;
+                            background: #f0f0f0;
+                            padding: 6px;
+                            border-radius: 6px;
+                            margin: 0 auto;
+                            width: fit-content;
+                        }
+                        .grid-cell {
+                            width: 32px;
+                            height: 32px;
+                            background: white;
+                            border: 1px solid #333;
+                            border-radius: 3px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-family: 'Arial', sans-serif;
+                            font-size: 13px;
+                            font-weight: bold;
+                            color: #000;
+                        }
+                        .grid-cell.start {
+                            background: #90EE90;
+                        }
+                        .grid-cell.end {
+                            background: #FFB6C1;
+                        }
+                        .grid-cell.empty {
+                            background: #f9f9f9;
+                            border: 1px dashed #ccc;
+                        }
+                        .answer-section {
+                            margin-top: 8px;
+                            padding: 8px;
+                            background: #f5f5f5;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                        }
+                        .answer-title {
+                            font-weight: bold;
+                            margin-bottom: 5px;
+                            font-size: 11px;
+                        }
+                        .answer-grid {
+                            display: grid;
+                            gap: 2px;
+                            background: #e8e8e8;
+                            padding: 6px;
+                            border-radius: 5px;
+                            margin: 0 auto;
+                            width: fit-content;
+                        }
+                        .answer-cell {
+                            width: 32px;
+                            height: 32px;
+                            background: white;
+                            border: 1px solid #333;
+                            border-radius: 3px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 10px;
+                            color: #666;
+                            font-weight: normal;
+                        }
+                        .path-number {
+                            position: absolute;
+                            bottom: 1px;
+                            right: 2px;
+                            font-size: 8px;
+                            color: #666;
+                        }
+                        .answer-text {
+                            margin-top: 5px;
+                            font-size: 11px;
+                        }
+                        @media print {
+                            body { padding: 5mm; }
+                            .puzzles-grid {
+                                gap: 8mm;
+                            }
+                            .puzzle-item {
+                                break-inside: avoid;
+                                page-break-inside: avoid;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-container">
+                        <div class="print-title">Word Path Puzzle - 答案版</div>
+                        <div class="print-subtitle">单词路径拼字游戏</div>
+                        <div class="puzzles-grid">
+            `);
+
+            // Add each puzzle
+            puzzles.forEach((puzzle, index) => {
+                const grid = puzzle.grid;
+                const path = puzzle.path;
+                const word = puzzle.word;
+
+                printWindow.document.write(`
+                    <div class="puzzle-item">
+                        <div class="puzzle-header">
+                            <span class="puzzle-number">#${index + 1}</span>
+                            <span class="puzzle-info">${word.length}字母 | ${puzzle.coverAll ? '高级' : '普通'}</span>
+                        </div>
+                        <div class="letter-grid" style="grid-template-columns: repeat(${grid[0].length}, 1fr)">
+                `);
+
+                // Add grid cells
+                grid.forEach((row, rowIndex) => {
+                    row.forEach((cell, colIndex) => {
+                        const isEmpty = cell === '';
+                        const pathIndex = path.findIndex(p => p.row === rowIndex && p.col === colIndex);
+                        const isStart = pathIndex === 0;
+                        const isEnd = pathIndex === path.length - 1;
+
+                        let classes = 'grid-cell';
+                        if (isEmpty) classes += ' empty';
+                        if (isStart) classes += ' start';
+                        if (isEnd) classes += ' end';
+
+                        printWindow.document.write(`
+                            <div class="${classes}" style="position: relative;">
+                                ${cell}
+                            </div>
+                        `);
+                    });
+                });
+
+                printWindow.document.write(`
+                        </div>
+                        <div class="answer-section">
+                            <div class="answer-title">答案</div>
+                            <div class="answer-grid" style="grid-template-columns: repeat(${grid[0].length}, 1fr)">
+                `);
+
+                // Add answer grid with path numbers
+                grid.forEach((row, rowIndex) => {
+                    row.forEach((cell, colIndex) => {
+                        const isEmpty = cell === '';
+                        const pathIndex = path.findIndex(p => p.row === rowIndex && p.col === colIndex);
+                        const isStart = pathIndex === 0;
+                        const isEnd = pathIndex === path.length - 1;
+
+                        let classes = 'answer-cell';
+                        if (isEmpty) classes += ' empty';
+                        if (isStart) classes += ' start';
+                        if (isEnd) classes += ' end';
+
+                        let pathNumber = '';
+                        if (pathIndex >= 0) {
+                            pathNumber = `<span class="path-number">${pathIndex + 1}</span>`;
+                        }
+
+                        printWindow.document.write(`
+                            <div class="${classes}" style="position: relative;">
+                                ${cell || ''}
+                                ${pathNumber}
+                            </div>
+                        `);
+                    });
+                });
+
+                printWindow.document.write(`
+                            </div>
+                            <div class="answer-text"><strong>${word}</strong></div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            printWindow.document.write(`
+                        </div>
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.onafterprint = function() {
+                                window.close();
+                            };
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // Print only grids (without answers) for students to solve
+        function printPuzzlesWithoutAnswers() {
+            if (puzzles.length === 0) {
+                alert('请先生成拼字游戏');
+                return;
+            }
+
+            // Create a new window with only the puzzle grids (no answers)
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Word Path Puzzle - 学生版（无答案）</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 10px;
+                            background: white;
+                        }
+                        .print-container {
+                            max-width: 210mm;
+                            margin: 0 auto;
+                        }
+                        .print-title {
+                            text-align: center;
+                            font-size: 18px;
+                            margin-bottom: 5px;
+                            font-weight: bold;
+                        }
+                        .print-subtitle {
+                            text-align: center;
+                            font-size: 11px;
+                            margin-bottom: 10px;
+                            color: #666;
+                        }
+                        .puzzles-grid {
+                            display: grid;
+                            grid-template-columns: repeat(2, 1fr);
+                            gap: 12px;
+                            margin-bottom: 10px;
+                        }
+                        .puzzle-item {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+                        .puzzle-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 8px;
+                            padding-bottom: 5px;
+                            border-bottom: 1px solid #333;
+                        }
+                        .puzzle-number {
+                            font-size: 13px;
+                            font-weight: bold;
+                        }
+                        .puzzle-info {
+                            font-size: 11px;
+                            color: #666;
+                        }
+                        .instructions {
+                            margin-bottom: 8px;
+                            padding: 6px;
+                            background: #f9f9f9;
+                            border-left: 2px solid #333;
+                            font-size: 10px;
+                            color: #333;
+                            line-height: 1.3;
+                        }
+                        .letter-grid {
+                            display: grid;
+                            gap: 2px;
+                            background: #f0f0f0;
+                            padding: 6px;
+                            border-radius: 6px;
+                            margin: 0 auto;
+                            width: fit-content;
+                        }
+                        .grid-cell {
+                            width: 32px;
+                            height: 32px;
+                            background: white;
+                            border: 1px solid #333;
+                            border-radius: 3px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-family: 'Arial', sans-serif;
+                            font-size: 13px;
+                            font-weight: bold;
+                            color: #000;
+                        }
+                        .grid-cell.start {
+                            background: #90EE90;
+                        }
+                        .grid-cell.end {
+                            background: #FFB6C1;
+                        }
+                        .grid-cell.empty {
+                            background: #f9f9f9;
+                            border: 1px dashed #ccc;
+                        }
+                        .answer-space {
+                            margin-top: 8px;
+                            padding: 8px;
+                            background: #fafafa;
+                            border: 1px dashed #ccc;
+                            border-radius: 5px;
+                        }
+                        .answer-label {
+                            font-weight: bold;
+                            margin-bottom: 5px;
+                            font-size: 11px;
+                        }
+                        .answer-line {
+                            border-bottom: 1px solid #333;
+                            height: 22px;
+                            font-size: 12px;
+                        }
+                        @media print {
+                            body { padding: 5mm; }
+                            .puzzles-grid {
+                                gap: 8mm;
+                            }
+                            .puzzle-item {
+                                break-inside: avoid;
+                                page-break-inside: avoid;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-container">
+                        <div class="print-title">Word Path Puzzle - 学生练习版</div>
+                        <div class="print-subtitle">单词路径拼字游戏</div>
+                        <div class="puzzles-grid">
+            `);
+
+            // Add each puzzle (without answers)
+            puzzles.forEach((puzzle, index) => {
+                const grid = puzzle.grid;
+                const path = puzzle.path;
+                const word = puzzle.word;
+                const wordLengthHint = puzzle.showWordLength ? ` (${word.length}字母)` : '';
+
+                printWindow.document.write(`
+                    <div class="puzzle-item">
+                        <div class="puzzle-header">
+                            <span class="puzzle-number">#${index + 1}${wordLengthHint}</span>
+                            <span class="puzzle-info">${puzzle.coverAll ? '高级挑战' : '普通挑战'}</span>
+                        </div>
+                        <div class="instructions">
+                            📝 任务：按正确顺序连接字母拼出单词。从第一个字母开始，按顺序连接到最后一个字母。<strong>可以经过空格子来连接不相邻的字母。</strong><strong>只能连接相邻格子（上下左右），不能走对角线。</strong>${puzzle.coverAll ? '必须覆盖所有格子！' : ''}
+                        </div>
+                        <div class="letter-grid" style="grid-template-columns: repeat(${grid[0].length}, 1fr)">
+                `);
+
+                // Add grid cells
+                grid.forEach((row, rowIndex) => {
+                    row.forEach((cell, colIndex) => {
+                        const isEmpty = cell === '';
+                        const pathIndex = path.findIndex(p => p.row === rowIndex && p.col === colIndex);
+                        const isStart = pathIndex === 0;
+                        const isEnd = pathIndex === path.length - 1;
+
+                        let classes = 'grid-cell';
+                        if (isEmpty) classes += ' empty';
+                        if (isStart) classes += ' start';
+                        if (isEnd) classes += ' end';
+
+                        printWindow.document.write(`
+                            <div class="${classes}">${cell}</div>
+                        `);
+                    });
+                });
+
+                printWindow.document.write(`
+                        </div>
+                        <div class="answer-space">
+                            <div class="answer-label">我的答案：</div>
+                            <div class="answer-line"></div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            printWindow.document.write(`
+                        </div>
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.onafterprint = function() {
+                                window.close();
+                            };
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // Print a single puzzle
+        function printSinglePuzzle(index) {
+            const puzzle = puzzles[index];
+            const grid = puzzle.grid;
+            const path = puzzle.path;
+            const word = puzzle.word;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Word Path Puzzle - ${word}</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 20px;
+                            background: white;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            min-height: 100vh;
+                        }
+                        .puzzle-header {
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        .puzzle-title {
+                            font-size: 24px;
+                            font-weight: bold;
+                            margin-bottom: 5px;
+                        }
+                        .puzzle-info {
+                            font-size: 14px;
+                            color: #666;
+                        }
+                        .letter-grid {
+                            display: grid;
+                            gap: 4px;
+                            background: #f0f0f0;
+                            padding: 15px;
+                            border-radius: 10px;
+                            margin-bottom: 30px;
+                        }
+                        .grid-cell {
+                            width: 55px;
+                            height: 55px;
+                            background: white;
+                            border: 2px solid #333;
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: #000;
+                        }
+                        .grid-cell.start {
+                            background: #90EE90;
+                        }
+                        .grid-cell.end {
+                            background: #FFB6C1;
+                        }
+                        .grid-cell.empty {
+                            background: #f9f9f9;
+                            border: 1px dashed #ccc;
+                        }
+                        .answer-section {
+                            margin-top: 20px;
+                            padding: 20px;
+                            background: #f5f5f5;
+                            border-radius: 10px;
+                            text-align: center;
+                        }
+                        .answer-text {
+                            font-size: 20px;
+                            font-weight: bold;
+                        }
+                        .path-info {
+                            margin-top: 10px;
+                            font-size: 14px;
+                            color: #666;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="puzzle-header">
+                        <div class="puzzle-title">Word Path Puzzle</div>
+                        <div class="puzzle-info">单词：${word} | ${word.length} 个字母 | ${puzzle.coverAll ? '高级挑战' : '普通挑战'}</div>
+                    </div>
+                    <div class="letter-grid" style="grid-template-columns: repeat(${grid[0].length}, 1fr)">
+            `);
+
+            // Add grid cells
+            grid.forEach((row, rowIndex) => {
+                row.forEach((cell, colIndex) => {
+                    const isEmpty = cell === '';
+                    const pathIndex = path.findIndex(p => p.row === rowIndex && p.col === colIndex);
+                    const isStart = pathIndex === 0;
+                    const isEnd = pathIndex === path.length - 1;
+
+                    let classes = 'grid-cell';
+                    if (isEmpty) classes += ' empty';
+                    if (isStart) classes += ' start';
+                    if (isEnd) classes += ' end';
+
+                    printWindow.document.write(`
+                        <div class="${classes}">${cell}</div>
+                    `);
+                });
+            });
+
+            // Add answer section
+            printWindow.document.write(`
+                    </div>
+                    <div class="answer-section">
+                        <div class="answer-text">✅ 答案：${word}</div>
+                        <div class="path-info">
+                            正确路径：${path.map((p, i) => `${i + 1}. ${word[i]}(${p.row + 1},${p.col + 1})`).join(' → ')}
+                        </div>
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.onafterprint = function() {
+                                window.close();
+                            };
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // Clear all
+        function clearAll() {
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('gameContainer').classList.remove('active');
+            document.getElementById('gameContainer').innerHTML = '';
+            puzzles = [];
+            playerPaths = [];
+            playerAnswers = [];
+        }
+    </script>
+</body>
+</html>

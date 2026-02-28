@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词测验 - 魔法石</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header-nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c2a 100%);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #4a2c2a 0%, #2c1810 100%);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-family: 'Cinzel Decorative', cursive;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #c9a227;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            font-style: italic;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* 开始界面 */
+        .start-screen, .result-screen {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .result-screen {
+            display: none;
+        }
+
+        .quiz-info {
+            color: #c9a830;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+
+        .quiz-info strong {
+            color: #d4af37;
+        }
+
+        .start-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a830);
+            color: #1a0f00;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.3rem;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+            margin-top: 20px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        /* 测验界面 */
+        .quiz-screen {
+            display: none;
+        }
+
+        .progress-bar {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-text {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #d4af37, #f0d060);
+            height: 10px;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .question-word {
+            font-size: 2rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 15px;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+        }
+
+        .question-type {
+            text-align: center;
+            color: #c9a830;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: linear-gradient(145deg, rgba(40, 30, 15, 0.9), rgba(25, 15, 5, 0.95));
+            border: 2px solid #c9a830;
+            color: #d4af37;
+            padding: 18px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, rgba(50, 40, 20, 0.9), rgba(35, 25, 10, 0.95));
+            border-color: #f0d060;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(145deg, rgba(34, 139, 34, 0.4), rgba(0, 100, 0, 0.5));
+            border-color: #4CAF50;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(145deg, rgba(220, 20, 60, 0.4), rgba(139, 0, 0, 0.5));
+            border-color: #DC143C;
+        }
+
+        /* 结果界面 */
+        .score-display {
+            font-size: 4rem;
+            color: #d4af37;
+            font-weight: bold;
+            margin: 20px 0;
+            font-family: 'Cinzel Decorative', cursive;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+        }
+
+        .score-detail {
+            color: #c9a830;
+            font-size: 1.3rem;
+            margin: 10px 0;
+        }
+
+        .coins-earned {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.2), rgba(201, 168, 48, 0.1));
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .coins-amount {
+            font-size: 3rem;
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .coins-label {
+            color: #d4af37;
+            font-size: 1.2rem;
+        }
+
+        .reward-breakdown {
+            color: #c9a830;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .retry-btn, .back-btn {
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .retry-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a830);
+            color: #1a0f00;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+        }
+
+        .back-btn {
+            background: linear-gradient(145deg, #666, #888);
+            color: white;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .message {
+            color: #e74c3c;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            color: #4CAF50;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .start-screen, .result-screen {
+                padding: 30px 20px;
+            }
+
+            .question-card {
+                padding: 25px 20px;
+            }
+
+            .question-word {
+                font-size: 1.5rem;
+            }
+
+            .option-btn {
+                padding: 15px 20px;
+                font-size: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .coin-display {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+            }
+
+            .coin-icon {
+                font-size: 1.3rem;
+            }
+
+            .coin-amount {
+                font-size: 1.2rem;
+            }
+
+            .coin-label {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">金加隆</span>
+    </div>
+
+    <div class="container">
+        <div class="header-nav">
+            <button class="back-button" onclick="goBack()">← 返回学习区</button>
+        </div>
+        <h1>✨ 魔法石单词测验 ✨</h1>
+        <p class="subtitle">Harry Potter and the Sorcerer's Stone Vocabulary Quiz</p>
+
+        <!-- 开始界面 -->
+        <div class="start-screen" id="startScreen">
+            <div class="quiz-info">
+                <p>📚 <strong>测验内容：</strong>哈利·波特与魔法石单词</p>
+                <p>📝 <strong>题目数量：</strong>20道选择题</p>
+                <p>⏱️ <strong>时间限制：</strong>无限制</p>
+                <p>🎯 <strong>及格分数：</strong>60分</p>
+                <br>
+                <p style="color: #a08050;">💰 金币奖励：</p>
+                <p style="font-size: 0.95rem;">• 60-70分：1 金加隆</p>
+                <p style="font-size: 0.95rem;">• 70-80分：3 金加隆</p>
+                <p style="font-size: 0.95rem;">• 80-90分：20 金加隆</p>
+                <p style="font-size: 0.95rem;">• 90-100分：50 金加隆</p>
+            </div>
+            <button class="start-btn" onclick="startQuiz()">开始测验</button>
+        </div>
+
+        <!-- 测验界面 -->
+        <div class="quiz-screen" id="quizScreen">
+            <div class="progress-bar">
+                <span class="progress-text" id="progressText">题目 1 / 20</span>
+                <span class="progress-text" id="scoreText">得分: 0</span>
+            </div>
+
+            <div class="question-card">
+                <div class="question-word" id="questionWord">-</div>
+                <div class="question-type" id="questionType">选择正确的中文意思</div>
+                <div class="options-grid" id="optionsGrid"></div>
+            </div>
+        </div>
+
+        <!-- 结果界面 -->
+        <div class="result-screen" id="resultScreen">
+            <h2 style="color: #d4af37; font-family: 'Cinzel Decorative', cursive; font-size: 2rem;">✨ 测验完成 ✨</h2>
+            <div class="score-display" id="finalScore">0</div>
+            <div class="score-detail" id="scoreDetail">正确: 0 / 20</div>
+
+            <div class="coins-earned">
+                <div class="coins-label">获得金币</div>
+                <div class="coins-amount" id="coinsAmount">0 🪙</div>
+                <div class="reward-breakdown" id="rewardBreakdown"></div>
+            </div>
+
+            <div class="message" id="resultMessage"></div>
+
+            <div class="button-group">
+                <button class="retry-btn" onclick="startQuiz()">再来一次</button>
+                <button class="back-btn" onclick="goBack()">返回学习区</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 从单词卡片文件中获取的所有单词
+        const wordsData = [
+            { word: "be involved in", chineseMeaning: "卷入，牵涉入，参与" },
+            { word: "nonsense", chineseMeaning: "胡言乱语，荒谬的事" },
+            { word: "shudder", chineseMeaning: "战栗，发抖" },
+            { word: "peculiar", chineseMeaning: "奇怪的，古怪的，不同寻常的" },
+            { word: "enrage", chineseMeaning: "激怒，使暴怒" },
+            { word: "concentrate on", chineseMeaning: "集中注意力于，专心于" },
+            { word: "swoop", chineseMeaning: "俯冲，猛扑" },
+            { word: "uneasy", chineseMeaning: "不安的，忧虑的" },
+            { word: "clutch", chineseMeaning: "紧握，紧抓" },
+            { word: "stumble", chineseMeaning: "绊倒，蹒跚" },
+            { word: "approve of", chineseMeaning: "赞成，同意" },
+            { word: "stern", chineseMeaning: "严厉的，坚决的" },
+            { word: "rummage", chineseMeaning: "翻找，搜寻" },
+            { word: "severe", chineseMeaning: "严厉的，严肃的（也可指严重的）" },
+            { word: "downright", chineseMeaning: "完全地，彻头彻尾地（常用于负面强调）" },
+            { word: "persuade", chineseMeaning: "说服，劝说" },
+            { word: "flatter", chineseMeaning: "奉承，讨好，过奖" },
+            { word: "tremble", chineseMeaning: "发抖，颤抖" },
+            { word: "astounding", chineseMeaning: "令人震惊的，使人惊骇的" },
+            { word: "come in handy", chineseMeaning: "派上用场，有用" },
+            { word: "muffled", chineseMeaning: "听不清的，压低声音的" },
+            { word: "astonishing", chineseMeaning: "惊人的，令人惊讶的" },
+            { word: "shrill", chineseMeaning: "刺耳的，尖声的" },
+            { word: "furiously", chineseMeaning: "狂怒地，极其生气地" },
+            { word: "slither", chineseMeaning: "蜿蜒滑行" },
+            { word: "budge", chineseMeaning: "稍微移动，改变立场" },
+            { word: "vigorously", chineseMeaning: "精力充沛地，大力地" },
+            { word: "vanish", chineseMeaning: "突然消失，绝迹" },
+            { word: "strain", chineseMeaning: "尽力，拉伤，承受压力" },
+            { word: "wander", chineseMeaning: "漫步，游荡" },
+            { word: "gruffly", chineseMeaning: "粗声粗气地，生硬地" },
+            { word: "stamp out", chineseMeaning: "扑灭，彻底消除" },
+            { word: "get out of hand", chineseMeaning: "失去控制，无法收拾" },
+            { word: "gloomy", chineseMeaning: "阴暗的，忧郁的" },
+            { word: "ferociously", chineseMeaning: "凶猛地，残忍地，猛烈地" },
+            { word: "stoop", chineseMeaning: "弯腰，俯身" },
+            { word: "bewildered", chineseMeaning: "困惑的，不知所措的" },
+            { word: "stammer", chineseMeaning: "结巴，口吃" },
+            { word: "outrage", chineseMeaning: "暴行，愤慨，引起公愤的事" },
+            { word: "clamber", chineseMeaning: "攀爬，费力地爬" },
+            { word: "shabby", chineseMeaning: "破旧的，寒酸的" },
+            { word: "brilliant", chineseMeaning: "极好的，聪颖的，明亮的" },
+            { word: "plunge", chineseMeaning: "纵身投入，猛冲，急降" },
+            { word: "smuggle", chineseMeaning: "走私，偷偷带入" },
+            { word: "fascinating", chineseMeaning: "迷人的，极有吸引力的" },
+            { word: "pliable", chineseMeaning: "易弯曲的，柔韧的" },
+            { word: "depressing", chineseMeaning: "令人沮丧的，压抑的" },
+            { word: "stranded", chineseMeaning: "滞留的，进退两难的" },
+            { word: "briskly", chineseMeaning: "轻快地，敏捷地，生气勃勃地" },
+            { word: "jostle", chineseMeaning: "推挤，撞，推搡" }
+        ];
+
+        // 游戏状态
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = [];
+        let totalQuestions = 20;
+        let selectedAnswer = null;
+        let canAnswer = true;
+
+        // 初始化金币
+        let coins = 0;
+        function initCoins() {
+            const savedCoins = localStorage.getItem('hogwartsCoins');
+            coins = savedCoins ? parseInt(savedCoins) : 0;
+            updateCoinDisplay();
+        }
+
+        // 更新金币显示
+        function updateCoinDisplay() {
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        // 保存金币
+        function saveCoins() {
+            localStorage.setItem('hogwartsCoins', coins.toString());
+        }
+
+        // 更新累计金币（用于等级计算）
+        function updateCumulativeCoins(amount) {
+            let playerData = localStorage.getItem('hogwartsPlayer');
+            if (!playerData) {
+                playerData = {
+                    nickname: '魔法学徒',
+                    avatar: '🧙',
+                    cumulativeCoins: amount,
+                    inventory: [],
+                    level: 0
+                };
+            } else {
+                playerData = JSON.parse(playerData);
+                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
+            }
+
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+        }
+
+        // 打乱数组
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // 生成测验题目
+        function generateQuestions() {
+            // 随机选择20个单词
+            const selectedWords = shuffleArray(wordsData).slice(0, totalQuestions);
+
+            questions = selectedWords.map(correctWord => {
+                // 获取3个错误选项
+                const wrongOptions = shuffleArray(wordsData.filter(w => w.word !== correctWord.word)).slice(0, 3);
+
+                // 组合所有选项并打乱
+                const allOptions = shuffleArray([
+                    { word: correctWord.word, chineseMeaning: correctWord.chineseMeaning, isCorrect: true },
+                    ...wrongOptions.map(w => ({ word: w.word, chineseMeaning: w.chineseMeaning, isCorrect: false }))
+                ]);
+
+                return {
+                    questionWord: correctWord.word,
+                    options: allOptions
+                };
+            });
+        }
+
+        // 开始测验
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+            canAnswer = true;
+
+            generateQuestions();
+
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+
+            showQuestion();
+        }
+
+        // 显示题目
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            selectedAnswer = null;
+            canAnswer = true;
+
+            document.getElementById('questionWord').textContent = question.questionWord;
+            document.getElementById('progressText').textContent = `题目 ${currentQuestion + 1} / ${totalQuestions}`;
+            document.getElementById('scoreText').textContent = `得分: ${score}`;
+
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option.chineseMeaning;
+                btn.onclick = () => selectAnswer(index, option.isCorrect, btn);
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        // 选择答案
+        function selectAnswer(index, isCorrect, btn) {
+            if (!canAnswer) return;
+            canAnswer = false;
+
+            const allBtns = document.querySelectorAll('.option-btn');
+
+            if (isCorrect) {
+                score += 5;
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('incorrect');
+                // 显示正确答案
+                allBtns.forEach((b, i) => {
+                    if (questions[currentQuestion].options[i].isCorrect) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+
+            // 禁用所有按钮
+            allBtns.forEach(b => b.disabled = true);
+
+            document.getElementById('scoreText').textContent = `得分: ${score}`;
+
+            // 延迟进入下一题
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < totalQuestions) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }, 1500);
+        }
+
+        // 计算金币奖励
+        function calculateCoins(finalScore) {
+            if (finalScore < 60) return 0;
+            if (finalScore < 70) return 1;
+            if (finalScore < 80) return 3;
+            if (finalScore < 90) return 20;
+            return 50;
+        }
+
+        // 显示结果
+        function showResult() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+
+            const correctAnswers = score / 5;
+            const finalScore = score;
+            const earnedCoins = calculateCoins(finalScore);
+
+            // 更新金币
+            initCoins();
+            coins += earnedCoins;
+            saveCoins();
+            updateCoinDisplay();
+
+            // 更新累计金币（用于等级计算）
+            updateCumulativeCoins(earnedCoins);
+
+            document.getElementById('finalScore').textContent = finalScore;
+            document.getElementById('scoreDetail').textContent = `正确: ${correctAnswers} / ${totalQuestions}`;
+            document.getElementById('coinsAmount').textContent = `${earnedCoins} 🪙`;
+
+            // 显示奖励明细
+            let breakdown = '';
+            if (finalScore < 60) {
+                breakdown = '不及格 - 需要达到60分才能获得金币';
+                document.getElementById('resultMessage').textContent = '💪 继续努力！再试一次吧！';
+                document.getElementById('resultMessage').className = 'message';
+            } else if (finalScore < 70) {
+                breakdown = '60-70分段 - 每次测验获得1金币';
+                document.getElementById('resultMessage').textContent = '👏 恭喜及格！继续加油！';
+                document.getElementById('resultMessage').className = 'message success';
+            } else if (finalScore < 80) {
+                breakdown = '70-80分段 - 每次测验获得3金币';
+                document.getElementById('resultMessage').textContent = '🌟 做得不错！继续保持！';
+                document.getElementById('resultMessage').className = 'message success';
+            } else if (finalScore < 90) {
+                breakdown = '80-90分段 - 每次测验获得20金币';
+                document.getElementById('resultMessage').textContent = '🏆 非常棒！你是个优秀的巫师！';
+                document.getElementById('resultMessage').className = 'message success';
+            } else {
+                breakdown = '90-100分段 - 每次测验获得50金币';
+                document.getElementById('resultMessage').textContent = '⭐ 完美！你是霍格沃茨的学霸！';
+                document.getElementById('resultMessage').className = 'message success';
+            }
+            document.getElementById('rewardBreakdown').textContent = breakdown;
+        }
+
+        // 返回学习区
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'learning-zone.html';
+            }, 500);
+        }
+
+        // 页面加载时初始化金币显示
+        initCoins();
+    </script>
+</body>
+</html>

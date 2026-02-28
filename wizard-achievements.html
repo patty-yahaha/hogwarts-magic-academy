@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>巫师成就墙 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .achievements-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .achievements-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .achievements-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .achievements-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        /* 统计概览 */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .stat-label-zh {
+            font-size: 0.9rem;
+            color: #c9a227;
+        }
+
+        .stat-label-en {
+            font-size: 0.85rem;
+            color: #8b6914;
+            font-style: italic;
+        }
+
+        /* 成就分类 */
+        .achievement-category {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            color: #d4af37;
+            margin-bottom: 25px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        /* 成就卡片 */
+        .achievement-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.6;
+        }
+
+        .achievement-card.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .achievement-card.unlocked {
+            border-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .achievement-card.unlocked:hover {
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .achievement-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #c9a227;
+            font-style: italic;
+        }
+
+        .achievement-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #666, #888);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .achievement-card.unlocked .achievement-badge {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .achievement-desc-zh {
+            font-size: 0.9rem;
+            color: #a08050;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .achievement-desc-en {
+            font-size: 0.85rem;
+            color: #8b6914;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        /* 进度条 */
+        .progress-container {
+            margin-top: 15px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-text-zh {
+            font-size: 0.85rem;
+            color: #c9a227;
+        }
+
+        .progress-text-en {
+            font-size: 0.8rem;
+            color: #8b6914;
+            font-style: italic;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .achievement-card.locked .progress-fill {
+            background: linear-gradient(90deg, #666, #888);
+        }
+
+        .progress-value {
+            font-size: 0.85rem;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        /* 奖励信息 */
+        .reward-info {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reward-icon {
+            font-size: 1.2rem;
+        }
+
+        .reward-text-zh {
+            font-size: 0.85rem;
+            color: #27ae60;
+        }
+
+        .reward-text-en {
+            font-size: 0.8rem;
+            color: #1e8449;
+            font-style: italic;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b7355;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text-zh {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text-en {
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        /* 语言切换默认隐藏英文 */
+        .stat-label-en,
+        .achievement-name-en,
+        .achievement-desc-en,
+        .progress-text-en,
+        .reward-text-en,
+        .category-title-en,
+        .empty-state-text-en {
+            display: none;
+        }
+
+        /* Body class based language switching */
+        body.lang-en .stat-label-en,
+        body.lang-en .achievement-name-en,
+        body.lang-en .achievement-desc-en,
+        body.lang-en .progress-text-en,
+        body.lang-en .reward-text-en,
+        body.lang-en .category-title-en,
+        body.lang-en .empty-state-text-en {
+            display: block !important;
+        }
+
+        body.lang-en .stat-label-zh,
+        body.lang-en .achievement-name-zh,
+        body.lang-en .achievement-desc-zh,
+        body.lang-en .progress-text-zh,
+        body.lang-en .reward-text-zh,
+        body.lang-en .category-title-zh,
+        body.lang-en .empty-state-text-zh {
+            display: none !important;
+        }
+
+        body.lang-zh .stat-label-zh,
+        body.lang-zh .achievement-name-zh,
+        body.lang-zh .achievement-desc-zh,
+        body.lang-zh .progress-text-zh,
+        body.lang-zh .reward-text-zh,
+        body.lang-zh .category-title-zh,
+        body.lang-zh .empty-state-text-zh {
+            display: block !important;
+        }
+
+        body.lang-zh .stat-label-en,
+        body.lang-zh .achievement-name-en,
+        body.lang-zh .achievement-desc-en,
+        body.lang-zh .progress-text-en,
+        body.lang-zh .reward-text-en,
+        body.lang-zh .category-title-en,
+        body.lang-zh .empty-state-text-en {
+            display: none !important;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-title {
+                font-size: 2rem;
+            }
+
+            .achievement-icon {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">巫师成就墙</span>
+                <span class="title-text-en">Achievement Wall</span>
+            </h1>
+        </header>
+
+        <div class="achievements-container">
+            <!-- 成就标题 -->
+            <div class="achievements-header">
+                <h2 class="achievements-title">
+                    <span class="title-text-zh">🏆 你的魔法成就 🏆</span>
+                    <span class="title-text-en">🏆 Your Magical Achievements 🏆</span>
+                </h2>
+                <p class="achievements-subtitle">
+                    <span class="subtitle-text-zh">完成任务，解锁成就，获得奖励</span>
+                    <span class="subtitle-text-en">Complete Tasks, Unlock Achievements, Earn Rewards</span>
+                </p>
+            </div>
+
+            <!-- 统计概览 -->
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon">🏅</div>
+                    <div class="stat-value" id="totalUnlocked">0/0</div>
+                    <div class="stat-label-zh">已解锁成就</div>
+                    <div class="stat-label-en">Unlocked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-value" id="studyMinutes">0</div>
+                    <div class="stat-label-zh">学习分钟</div>
+                    <div class="stat-label-en">Study Minutes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🧹</div>
+                    <div class="stat-value" id="flyingRecord">0</div>
+                    <div class="stat-label-zh">飞行记录</div>
+                    <div class="stat-label-en">Flying Record</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚗️</div>
+                    <div class="stat-value" id="potionsCount">0</div>
+                    <div class="stat-label-zh">魔药完成</div>
+                    <div class="stat-label-en">Potions Made</div>
+                </div>
+            </div>
+
+            <!-- 学习成就 -->
+            <div class="achievement-category">
+                <h3 class="category-title">
+                    <span class="category-title-zh">📚 学习成就</span>
+                    <span class="category-title-en">📚 Learning Achievements</span>
+                </h3>
+                <div class="achievements-grid" id="learningAchievements">
+                    <!-- 成就卡片将由JavaScript生成 -->
+                </div>
+            </div>
+
+            <!-- 飞行成就 -->
+            <div class="achievement-category">
+                <h3 class="category-title">
+                    <span class="category-title-zh">🧹 飞行成就</span>
+                    <span class="category-title-en">🧹 Flying Achievements</span>
+                </h3>
+                <div class="achievements-grid" id="flyingAchievements">
+                    <!-- 成就卡片将由JavaScript生成 -->
+                </div>
+            </div>
+
+            <!-- 魔药成就 -->
+            <div class="achievement-category">
+                <h3 class="category-title">
+                    <span class="category-title-zh">⚗️ 魔药成就</span>
+                    <span class="category-title-en">⚗️ Potions Achievements</span>
+                </h3>
+                <div class="achievements-grid" id="potionsAchievements">
+                    <!-- 成就卡片将由JavaScript生成 -->
+                </div>
+            </div>
+
+            <!-- 测验成就 -->
+            <div class="achievement-category">
+                <h3 class="category-title">
+                    <span class="category-title-zh">📝 测验成就</span>
+                    <span class="category-title-en">📝 Quiz Achievements</span>
+                </h3>
+                <div class="achievements-grid" id="quizAchievements">
+                    <!-- 成就卡片将由JavaScript生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        function updateLanguage() {
+            // 设置body的语言类
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            // 更新返回按钮
+            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ?
+                '← 返回' : '← Back';
+
+            // 重新渲染成就以更新语言
+            renderAchievements();
+        }
+
+        // 成就定义
+        const achievements = {
+            learning: [
+                {
+                    id: 'study_15min',
+                    icon: '📖',
+                    name: { zh: '初学者', en: 'Beginner Scholar' },
+                    desc: { zh: '学习单词卡片满15分钟', en: 'Study flashcards for 15 minutes' },
+                    requirement: 15,
+                    unit: 'minutes',
+                    reward: { type: 'avatarFrame', id: 'frame_beginner', name: { zh: '初学者光环', en: 'Beginner Aura' }, icon: '✨' }
+                },
+                {
+                    id: 'study_60min',
+                    icon: '📚',
+                    name: { zh: '刷题小能手', en: 'Study Master' },
+                    desc: { zh: '学习单词卡片满60分钟', en: 'Study flashcards for 60 minutes' },
+                    requirement: 60,
+                    unit: 'minutes',
+                    reward: { type: 'avatar', id: 'avatar_dobby', name: { zh: '多比头像', en: 'Dobby Avatar' }, icon: '🧝' }
+                },
+                {
+                    id: 'study_180min',
+                    icon: '🎓',
+                    name: { zh: '魔法学者', en: 'Magic Scholar' },
+                    desc: { zh: '学习单词卡片满180分钟', en: 'Study flashcards for 180 minutes' },
+                    requirement: 180,
+                    unit: 'minutes',
+                    reward: { type: 'avatarFrame', id: 'frame_scholar', name: { zh: '学者光环', en: 'Scholar Aura' }, icon: '🌟' }
+                }
+            ],
+            flying: [
+                {
+                    id: 'flying_5',
+                    icon: '🌤️',
+                    name: { zh: '飞行学徒', en: 'Flying Apprentice' },
+                    desc: { zh: '连续飞过5根飞行课的柱子', en: 'Pass 5 consecutive flying pillars' },
+                    requirement: 5,
+                    unit: 'pillars',
+                    reward: { type: 'broomFragment', amount: 2 }
+                },
+                {
+                    id: 'flying_15',
+                    icon: '🦅',
+                    name: { zh: '飞行达人', en: 'Flying Expert' },
+                    desc: { zh: '连续飞过15根飞行课的柱子', en: 'Pass 15 consecutive flying pillars' },
+                    requirement: 15,
+                    unit: 'pillars',
+                    reward: { type: 'broomFragment', amount: 5 }
+                },
+                {
+                    id: 'flying_30',
+                    icon: '🐉',
+                    name: { zh: '飞天巫师', en: 'Sky Wizard' },
+                    desc: { zh: '连续飞过30根飞行课的柱子', en: 'Pass 30 consecutive flying pillars' },
+                    requirement: 30,
+                    unit: 'pillars',
+                    reward: { type: 'broomFragment', amount: 10 }
+                }
+            ],
+            potions: [
+                {
+                    id: 'potions_10',
+                    icon: '🧪',
+                    name: { zh: '魔药学徒', en: 'Potion Apprentice' },
+                    desc: { zh: '完成10个魔药课', en: 'Complete 10 potion lessons' },
+                    requirement: 10,
+                    unit: 'potions',
+                    reward: { type: 'potion', id: 'potion_health', amount: 2, name: { zh: '生命药水', en: 'Health Potion' }, icon: '❤️' }
+                },
+                {
+                    id: 'potions_50',
+                    icon: '⚗️',
+                    name: { zh: '魔药大师', en: 'Potion Master' },
+                    desc: { zh: '完成50个魔药课', en: 'Complete 50 potion lessons' },
+                    requirement: 50,
+                    unit: 'potions',
+                    reward: { type: 'potion', id: 'potion_attack', amount: 5, name: { zh: '攻击药水', en: 'Attack Potion' }, icon: '⚔️' }
+                },
+                {
+                    id: 'potions_streak_5',
+                    icon: '🔥',
+                    name: { zh: '连续炼金', en: 'Consecutive Brewer' },
+                    desc: { zh: '连续成功完成5个魔药', en: 'Complete 5 potions consecutively' },
+                    requirement: 5,
+                    unit: 'streak',
+                    reward: { type: 'potion', id: 'potion_defense', amount: 3, name: { zh: '防御药水', en: 'Defense Potion' }, icon: '🛡️' }
+                }
+            ],
+            quiz: [
+                {
+                    id: 'quiz_perfect',
+                    icon: '💯',
+                    name: { zh: '完美巫师', en: 'Perfect Wizard' },
+                    desc: { zh: '获得一次满分（100分）', en: 'Get a perfect score (100)' },
+                    requirement: 1,
+                    unit: 'count',
+                    reward: { type: 'avatar', id: 'avatar_vampire', name: { zh: '吸血鬼巫师', en: 'Vampire Wizard' }, icon: '🧛‍♂️' }
+                },
+                {
+                    id: 'quiz_10',
+                    icon: '📝',
+                    name: { zh: '测验达人', en: 'Quiz Enthusiast' },
+                    desc: { zh: '完成10次测验', en: 'Complete 10 quizzes' },
+                    requirement: 10,
+                    unit: 'count',
+                    reward: { type: 'potion', id: 'potion_speed', amount: 2, name: { zh: '速度药水', en: 'Speed Potion' }, icon: '💨' }
+                },
+                {
+                    id: 'quiz_high_score',
+                    icon: '⭐',
+                    name: { zh: '高分高手', en: 'High Scorer' },
+                    desc: { zh: '获得5次90分以上', en: 'Get 5 scores above 90' },
+                    requirement: 5,
+                    unit: 'count',
+                    reward: { type: 'avatarFrame', id: 'frame_golden', name: { zh: '黄金边框', en: 'Golden Frame' }, icon: '👑' }
+                }
+            ]
+        };
+
+        // 获取进度数据
+        function getProgressData() {
+            return {
+                learningMinutes: parseInt(localStorage.getItem('learningMinutes') || '0'),
+                flyingConsecutive: parseInt(localStorage.getItem('flyingClassHighScore') || '0'),
+                potionsCompleted: parseInt(localStorage.getItem('potionsCompleted') || '0'),
+                potionsStreak: parseInt(localStorage.getItem('potionsStreak') || '0'),
+                perfectQuizCount: parseInt(localStorage.getItem('perfectQuizCount') || '0'),
+                quizCompletedCount: parseInt(localStorage.getItem('quizCompletedCount') || '0'),
+                highScoreCount: parseInt(localStorage.getItem('highScoreCount') || '0')
+            };
+        }
+
+        // 获取已解锁的成就
+        function getUnlockedAchievements() {
+            return JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+        }
+
+        // 检查成就是否已解锁
+        function isAchievementUnlocked(achievementId) {
+            const unlocked = getUnlockedAchievements();
+            return unlocked.includes(achievementId);
+        }
+
+        // 解锁成就并发放奖励
+        function unlockAchievement(achievementId) {
+            let unlocked = getUnlockedAchievements();
+            if (!unlocked.includes(achievementId)) {
+                unlocked.push(achievementId);
+                localStorage.setItem('unlockedAchievements', JSON.stringify(unlocked));
+
+                // 发放奖励
+                grantAchievementReward(achievementId);
+
+                return true;
+            }
+            return false;
+        }
+
+        // 发放成就奖励
+        function grantAchievementReward(achievementId) {
+            // 查找成就是否已解锁（避免重复发放）
+            const grantedRewards = JSON.parse(localStorage.getItem('grantedAchievementRewards') || '[]');
+            if (grantedRewards.includes(achievementId)) {
+                return; // 奖励已发放
+            }
+
+            // 在所有成就类别中查找该成就
+            let achievement = null;
+            ['learning', 'flying', 'potions', 'quiz'].forEach(category => {
+                const found = achievements[category].find(a => a.id === achievementId);
+                if (found) achievement = found;
+            });
+
+            if (!achievement || !achievement.reward) return;
+
+            const reward = achievement.reward;
+
+            // 发放碎片奖励
+            if (reward.type === 'broomFragment') {
+                const currentFragments = parseInt(localStorage.getItem('broomFragments') || '0');
+                localStorage.setItem('broomFragments', (currentFragments + reward.amount).toString());
+
+                // 记录已发放的奖励
+                grantedRewards.push(achievementId);
+                localStorage.setItem('grantedAchievementRewards', JSON.stringify(grantedRewards));
+            }
+
+            // 发放头像奖励
+            if (reward.type === 'avatar') {
+                // 头像奖励会在个人资料页面自动可用，不需要额外存储
+                grantedRewards.push(achievementId);
+                localStorage.setItem('grantedAchievementRewards', JSON.stringify(grantedRewards));
+            }
+
+            // 发放头像框奖励
+            if (reward.type === 'avatarFrame') {
+                let unlockedFrames = JSON.parse(localStorage.getItem('unlockedFrames') || '[]');
+                if (!unlockedFrames.includes(reward.id)) {
+                    unlockedFrames.push(reward.id);
+                    localStorage.setItem('unlockedFrames', JSON.stringify(unlockedFrames));
+                }
+                grantedRewards.push(achievementId);
+                localStorage.setItem('grantedAchievementRewards', JSON.stringify(grantedRewards));
+            }
+
+            // 发放药水奖励
+            if (reward.type === 'potion') {
+                let inventoryPotions = JSON.parse(localStorage.getItem('inventoryPotions') || '{}');
+                inventoryPotions[reward.id] = (inventoryPotions[reward.id] || 0) + reward.amount;
+                localStorage.setItem('inventoryPotions', JSON.stringify(inventoryPotions));
+
+                grantedRewards.push(achievementId);
+                localStorage.setItem('grantedAchievementRewards', JSON.stringify(grantedRewards));
+            }
+        }
+
+        // 检查并解锁所有符合条件的成就
+        function checkAndUnlockAchievements() {
+            const progress = getProgressData();
+            let newUnlocks = [];
+
+            // 检查学习成就
+            achievements.learning.forEach(achievement => {
+                if (!isAchievementUnlocked(achievement.id) && progress.learningMinutes >= achievement.requirement) {
+                    if (unlockAchievement(achievement.id)) {
+                        newUnlocks.push(achievement);
+                    }
+                }
+            });
+
+            // 检查飞行成就
+            achievements.flying.forEach(achievement => {
+                if (!isAchievementUnlocked(achievement.id) && progress.flyingConsecutive >= achievement.requirement) {
+                    if (unlockAchievement(achievement.id)) {
+                        newUnlocks.push(achievement);
+                    }
+                }
+            });
+
+            // 检查魔药成就
+            achievements.potions.forEach(achievement => {
+                let currentProgress = 0;
+                if (achievement.id === 'potions_10' || achievement.id === 'potions_50') {
+                    currentProgress = progress.potionsCompleted;
+                } else if (achievement.id === 'potions_streak_5') {
+                    currentProgress = progress.potionsStreak;
+                }
+                if (!isAchievementUnlocked(achievement.id) && currentProgress >= achievement.requirement) {
+                    if (unlockAchievement(achievement.id)) {
+                        newUnlocks.push(achievement);
+                    }
+                }
+            });
+
+            // 检查测验成就
+            achievements.quiz.forEach(achievement => {
+                let currentProgress = 0;
+                if (achievement.id === 'quiz_perfect') {
+                    currentProgress = progress.perfectQuizCount;
+                } else if (achievement.id === 'quiz_10') {
+                    currentProgress = progress.quizCompletedCount;
+                } else if (achievement.id === 'quiz_high_score') {
+                    currentProgress = progress.highScoreCount;
+                }
+                if (!isAchievementUnlocked(achievement.id) && currentProgress >= achievement.requirement) {
+                    if (unlockAchievement(achievement.id)) {
+                        newUnlocks.push(achievement);
+                    }
+                }
+            });
+
+            return newUnlocks;
+        }
+
+        // 显示解锁通知
+        function showUnlockNotifications(newUnlocks) {
+            if (newUnlocks.length === 0) return;
+
+            // 创建通知容器
+            let container = document.getElementById('achievementNotifications');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'achievementNotifications';
+                container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;';
+                document.body.appendChild(container);
+            }
+
+            newUnlocks.forEach((achievement, index) => {
+                setTimeout(() => {
+                    const notification = document.createElement('div');
+                    notification.className = 'achievement-unlock-notification';
+                    notification.style.cssText = `
+                        background: linear-gradient(135deg, rgba(212, 175, 55, 0.95), rgba(193, 154, 107, 0.95));
+                        border: 3px solid #ffd700;
+                        border-radius: 15px;
+                        padding: 15px 20px;
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+                        animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+                        min-width: 300px;
+                    `;
+                    notification.innerHTML = `
+                        <div style="font-size: 2.5rem; filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));">${achievement.icon}</div>
+                        <div>
+                            <div style="font-family: 'Cinzel', serif; font-size: 1rem; color: #2c1810; font-weight: bold;">🎉 ${currentLang === 'zh' ? '成就解锁!' : 'Achievement Unlocked!'}</div>
+                            <div style="font-family: 'Cinzel', serif; font-size: 0.9rem; color: #5a4a3a;">${currentLang === 'zh' ? achievement.name.zh : achievement.name.en}</div>
+                        </div>
+                    `;
+
+                    // 添加动画样式
+                    if (!document.getElementById('achievementAnimationStyles')) {
+                        const style = document.createElement('style');
+                        style.id = 'achievementAnimationStyles';
+                        style.textContent = `
+                            @keyframes slideIn {
+                                from { transform: translateX(100%); opacity: 0; }
+                                to { transform: translateX(0); opacity: 1; }
+                            }
+                            @keyframes fadeOut {
+                                from { opacity: 1; }
+                                to { opacity: 0; }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+
+                    container.appendChild(notification);
+
+                    // 5秒后移除
+                    setTimeout(() => {
+                        notification.remove();
+                        if (container.children.length === 0) {
+                            container.remove();
+                        }
+                    }, 5000);
+                }, index * 600);
+            });
+        }
+
+        // 渲染成就卡片
+        function renderAchievementCard(achievement, progress) {
+            // 根据成就ID确定应该使用哪个进度值
+            let currentProgress = 0;
+            if (achievement.id.startsWith('study_')) {
+                currentProgress = progress.learningMinutes;
+            } else if (achievement.id.startsWith('flying_')) {
+                currentProgress = progress.flyingConsecutive;
+            } else if (achievement.id === 'potions_10' || achievement.id === 'potions_50') {
+                currentProgress = progress.potionsCompleted;
+            } else if (achievement.id === 'potions_streak_5') {
+                currentProgress = progress.potionsStreak;
+            } else if (achievement.id === 'quiz_perfect') {
+                currentProgress = progress.perfectQuizCount;
+            } else if (achievement.id === 'quiz_10') {
+                currentProgress = progress.quizCompletedCount;
+            } else if (achievement.id === 'quiz_high_score') {
+                currentProgress = progress.highScoreCount;
+            }
+
+            const isUnlocked = isAchievementUnlocked(achievement.id);
+            const progressPercent = Math.min((currentProgress / achievement.requirement) * 100, 100);
+
+            const unitText = {
+                zh: { minutes: '分钟', pillars: '根', potions: '个', streak: '个', count: '次' },
+                en: { minutes: 'min', pillars: 'pillars', potions: 'potions', streak: 'streak', count: 'times' }
+            };
+
+            // 生成奖励显示
+            let rewardDisplay = '';
+            const reward = achievement.reward;
+
+            if (reward.type === 'broomFragment') {
+                rewardDisplay = `
+                    <span class="reward-icon">🧹</span>
+                    <span class="reward-text-zh">奖励: ${reward.amount} 飞天扫帚碎片 (10/500金加隆兑换券)</span>
+                    <span class="reward-text-en">Reward: ${reward.amount} Broom Fragments (10 = 500 Galleon Voucher)</span>
+                `;
+            } else if (reward.type === 'avatar') {
+                rewardDisplay = `
+                    <span class="reward-icon">${reward.icon}</span>
+                    <span class="reward-text-zh">奖励: ${reward.name.zh}</span>
+                    <span class="reward-text-en">Reward: ${reward.name.en}</span>
+                `;
+            } else if (reward.type === 'avatarFrame') {
+                rewardDisplay = `
+                    <span class="reward-icon">${reward.icon}</span>
+                    <span class="reward-text-zh">奖励: ${reward.name.zh}</span>
+                    <span class="reward-text-en">Reward: ${reward.name.en}</span>
+                `;
+            } else if (reward.type === 'potion') {
+                rewardDisplay = `
+                    <span class="reward-icon">${reward.icon}</span>
+                    <span class="reward-text-zh">奖励: ${reward.amount}瓶 ${reward.name.zh}</span>
+                    <span class="reward-text-en">Reward: ${reward.amount}x ${reward.name.en}</span>
+                `;
+            }
+
+            return `
+                <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                    <div class="achievement-header">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-info">
+                            <div class="achievement-name-zh">${achievement.name.zh}</div>
+                            <div class="achievement-name-en">${achievement.name.en}</div>
+                            <span class="achievement-badge">${isUnlocked ? (currentLang === 'zh' ? '已解锁' : 'Unlocked') : (currentLang === 'zh' ? '未解锁' : 'Locked')}</span>
+                        </div>
+                    </div>
+                    <div class="achievement-desc-zh">${achievement.desc.zh}</div>
+                    <div class="achievement-desc-en">${achievement.desc.en}</div>
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-text-zh">进度: ${currentProgress} / ${achievement.requirement} ${unitText.zh[achievement.unit]}</span>
+                            <span class="progress-text-en">Progress: ${currentProgress} / ${achievement.requirement} ${unitText.en[achievement.unit]}</span>
+                            <span class="progress-value">${progressPercent.toFixed(0)}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                    </div>
+                    <div class="reward-info">
+                        ${rewardDisplay}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 渲染所有成就
+        function renderAchievements() {
+            const progress = getProgressData();
+
+            // 渲染学习成就
+            const learningContainer = document.getElementById('learningAchievements');
+            learningContainer.innerHTML = achievements.learning.map(a => renderAchievementCard(a, progress)).join('');
+
+            // 渲染飞行成就
+            const flyingContainer = document.getElementById('flyingAchievements');
+            flyingContainer.innerHTML = achievements.flying.map(a => renderAchievementCard(a, progress)).join('');
+
+            // 渲染魔药成就
+            const potionsContainer = document.getElementById('potionsAchievements');
+            potionsContainer.innerHTML = achievements.potions.map(a => renderAchievementCard(a, progress)).join('');
+
+            // 渲染测验成就
+            const quizContainer = document.getElementById('quizAchievements');
+            quizContainer.innerHTML = achievements.quiz.map(a => renderAchievementCard(a, progress)).join('');
+
+            // 更新统计
+            updateStats(progress);
+        }
+
+        // 更新统计
+        function updateStats(progress) {
+            const allAchievements = [
+                ...achievements.learning,
+                ...achievements.flying,
+                ...achievements.potions,
+                ...achievements.quiz
+            ];
+            const unlocked = getUnlockedAchievements();
+            const unlockedCount = unlocked.length;
+
+            document.getElementById('totalUnlocked').textContent = `${unlockedCount}/${allAchievements.length}`;
+            document.getElementById('studyMinutes').textContent = progress.learningMinutes;
+            document.getElementById('flyingRecord').textContent = progress.flyingConsecutive;
+            document.getElementById('potionsCount').textContent = progress.potionsCompleted;
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'wizard-camp.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 初始化
+        updateLanguage();
+
+        // 先检查并解锁符合条件的成就
+        const newUnlocks = checkAndUnlockAchievements();
+
+        // 渲染成就（此时已解锁的成就会正确显示）
+        renderAchievements();
+
+        // 显示新解锁的成就通知（延迟显示，让用户先看到页面）
+        setTimeout(() => {
+            showUnlockNotifications(newUnlocks);
+        }, 500);
+    </script>
+</body>
+</html>

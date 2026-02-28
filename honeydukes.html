@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蜂蜜公爵 - 对角巷</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #2a1a3a 0%, #1a2a4a 50%, #0f3460 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header-nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #4a2a5a 0%, #6a3a7a 100%);
+            border: 2px solid #ff69b4;
+            color: #ffb6c1;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #6a3a7a 0%, #4a2a5a 100%);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff69b4;
+            margin-bottom: 10px;
+            font-size: 3rem;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+            font-family: 'Cinzel Decorative', cursive;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #ffb6c1;
+            margin-bottom: 40px;
+            font-size: 1.3rem;
+            font-style: italic;
+        }
+
+        /* 零食网格 */
+        .snacks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .snack-card {
+            background: linear-gradient(145deg, rgba(50, 20, 40, 0.95), rgba(30, 10, 25, 0.98));
+            border: 3px solid #ff69b4;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .snack-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 105, 180, 0.1) 0%, transparent 70%);
+            animation: snackMagicRotate 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes snackMagicRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .snack-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(255, 105, 180, 0.4);
+            border-color: #ff1493;
+        }
+
+        .snack-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5));
+            position: relative;
+            z-index: 1;
+        }
+
+        .snack-name-zh {
+            font-size: 1.4rem;
+            color: #ff69b4;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+        }
+
+        .snack-name-en {
+            font-size: 0.9rem;
+            color: #ffb6c1;
+            margin-bottom: 12px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .snack-description {
+            font-size: 0.85rem;
+            color: #dda0dd;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .snack-price {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0f00;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 3px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .snack-price.out-of-stock {
+            background: linear-gradient(135deg, #888, #aaa);
+            color: #333;
+        }
+
+        .special-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #ff1493, #ff69b4);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            animation: badgePulse 2s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+
+        /* 购买弹窗 */
+        .purchase-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, rgba(50, 20, 40, 0.98), rgba(30, 10, 25, 1));
+            border: 4px solid #ff69b4;
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            animation: modalPopIn 0.3s ease-out;
+        }
+
+        @keyframes modalPopIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 5rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            color: #ff69b4;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-family: 'Cinzel Decorative', cursive;
+        }
+
+        .modal-price {
+            color: #ffd700;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn-buy, .btn-cancel {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-buy {
+            background: linear-gradient(145deg, #ff69b4, #ff1493);
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-buy:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.5);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(145deg, #666, #888);
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .snacks-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .coin-display {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+            }
+
+            .coin-icon {
+                font-size: 1.3rem;
+            }
+
+            .coin-amount {
+                font-size: 1.2rem;
+            }
+
+            .coin-label {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 购买消息模态框 */
+        .purchase-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.98), rgba(20, 10, 5, 0.99));
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px 40px;
+            z-index: 2000;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+            min-width: 300px;
+        }
+
+        .purchase-message.active {
+            display: block;
+        }
+
+        .purchase-message.success {
+            border-color: #27ae60;
+        }
+
+        .purchase-message.error {
+            border-color: #e74c3c;
+        }
+
+        .message-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .message-title {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .message-text {
+            color: #c9a830;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .close-purchase-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-purchase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">金加隆</span>
+    </div>
+
+    <div class="container">
+        <div class="header-nav">
+            <button class="back-button" onclick="goBack()">← 返回对角巷</button>
+        </div>
+        <h1>🍬 蜂蜜公爵 🍬</h1>
+        <p class="subtitle">Honeydukes Sweetshop - 魔法世界的糖果天堂</p>
+
+        <div class="snacks-grid" id="snacksContainer">
+            <!-- 零食卡片将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <!-- 购买弹窗 -->
+    <div class="purchase-modal" id="purchaseModal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">🍬</div>
+            <h3 class="modal-title" id="modalTitle">零食名称</h3>
+            <p style="color: #ffb6c1;" id="modalDescription">描述</p>
+            <div class="modal-price" id="modalPrice">50 🪙</div>
+            <div class="modal-buttons">
+                <button class="btn-buy" onclick="confirmPurchase()">购买</button>
+                <button class="btn-cancel" onclick="closeModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // 零食数据
+        const snacksData = [
+            {
+                icon: "🫘",
+                nameZh: "比比多味豆",
+                nameEn: "Bertie Bott's Every Flavour Beans",
+                description: "魔法界最著名糖果！包含巧克力、薄荷到鼻屎、耳屎等各种口味，每一颗都是惊喜！",
+                price: 50
+            },
+            {
+                icon: "🐸",
+                nameZh: "巧克力蛙",
+                nameEn: "Chocolate Frogs",
+                description: "会跳动的青蛙形巧克力！每包都附赠著名巫师卡片，人物还能活动消失。",
+                price: 35
+            },
+            {
+                icon: "🫧",
+                nameZh: "吹宝超级泡泡糖",
+                nameEn: "Drooble's Best Blowing Gum",
+                description: "能吹出漂亮蓝色泡泡，泡泡能保留好几天不破灭！",
+                price: 15
+            },
+            {
+                icon: "🥧",
+                nameZh: "南瓜馅饼",
+                nameEn: "Pumpkin Pasties",
+                description: "霍格沃茨特快列车上的经典充饥点心，香甜的南瓜馅饼。",
+                price: 20
+            },
+            {
+                icon: "🍲",
+                nameZh: "锅形蛋糕",
+                nameEn: "Cauldron Cakes",
+                description: "做成巫师熬药用坩埚形状的美味蛋糕。",
+                price: 25
+            },
+            {
+                icon: "🪄",
+                nameZh: "甘草魔棒",
+                nameEn: "Liquorice Wands",
+                description: "做成魔杖形状的甘草糖果棒！",
+                price: 12
+            },
+            {
+                icon: "🔥",
+                nameZh: "胡椒小顽童",
+                nameEn: "Pepper Imps",
+                description: "小巧的黑色糖果，吃了会从鼻孔向外喷火！嘴里会冒烟。",
+                price: 18
+            },
+            {
+                icon: "🍫",
+                nameZh: "巧克力球",
+                nameEn: "Chocoballs",
+                description: "油亮的大胖巧克力球，里面装满了草莓奶油冻！",
+                price: 30
+            },
+            {
+                icon: "🪶",
+                nameZh: "糖羽毛笔",
+                nameEn: "Sugar Quills",
+                description: "松脆易碎的糖羽毛笔，可以在课堂上吮吸，假装在思考写作！",
+                price: 18
+            },
+            {
+                icon: "🧚",
+                nameZh: "滋滋蜜蜂糖",
+                nameEn: "Fizzing Whizzbees",
+                description: "装在大桶里的果子露球形糖果，吃了能让你飘浮在空中！",
+                price: 45
+            },
+            {
+                icon: "🦷",
+                nameZh: "毛毛牙薄荷糖",
+                nameEn: "Toothflossing Stringmints",
+                description: "形状奇异的碎片状薄荷糖，保持牙齿清洁！",
+                price: 15
+            },
+            {
+                icon: "❄️",
+                nameZh: "冰耗子",
+                nameEn: "Ice Mice",
+                description: "带来冰冷感的魔法糖果，吃下能听到牙齿打战咯吱咯吱的声音！",
+                price: 22
+            },
+            {
+                icon: "🐸",
+                nameZh: "蟾蜍薄荷糖",
+                nameEn: "Peppermint Toads",
+                description: "形状像蟾蜍的奶油薄荷糖，吃下去后感觉在胃里跳动！",
+                price: 28
+            },
+            {
+                icon: "🪲",
+                nameZh: "蟑螂团子",
+                nameEn: "Cockroach Cluster",
+                description: "放在广口瓶里的诡异糖果，外表像花生但包含蟑螂口味！",
+                price: 16
+            },
+            {
+                icon: "🩸",
+                nameZh: "血腥气的棒棒糖",
+                nameEn: "Blood-flavoured Lollipops",
+                description: "专门给吸血鬼准备的血腥味棒棒糖，摆在'不同寻常口味'角落。",
+                price: 20
+            },
+            {
+                icon: "🐛",
+                nameZh: "果冻鼻涕虫",
+                nameEn: "Jelly Slugs",
+                description: "做成鼻涕虫形状的果冻软糖，非常畅销经常被学生们买空！",
+                price: 25
+            },
+            {
+                icon: "🍋",
+                nameZh: "酸棒糖",
+                nameEn: "Acid Pops",
+                description: "酸性极强！罗恩七岁时吃了一根，在舌头上烧穿了一个洞！",
+                price: 20
+            },
+            {
+                icon: "💥",
+                nameZh: "会爆炸的夹心糖",
+                nameEn: "Exploding Bonbons",
+                description: "包含特殊爆炸效果的夹心糖果，甜味伴随爆炸感！",
+                price: 35
+            },
+            {
+                icon: "🥜",
+                nameZh: "奶油花生糖",
+                nameEn: "Nougat",
+                description: "蜂蜜公爵常规甜品，大块的奶油花生糖。",
+                price: 22
+            },
+            {
+                icon: "🍥",
+                nameZh: "椰子冰糕",
+                nameEn: "Coconut Ice",
+                description: "发微光的粉红色椰子味冰糕！",
+                price: 24
+            },
+            {
+                icon: "🍬",
+                nameZh: "蜂蜜太妃糖",
+                nameEn: "Toffees",
+                description: "胖胖的蜜色太妃糖，蜂蜜公爵招牌甜品。",
+                price: 18
+            },
+            {
+                icon: "👅",
+                nameZh: "肥舌太妃糖",
+                nameEn: "Ton-Tongue Toffee",
+                description: "韦斯莱双子的发明！吃下后舌头会肿胀并伸出一尺长的紫红色东西。",
+                price: 50
+            },
+            {
+                icon: "🍮",
+                nameZh: "自制乳脂软糖",
+                nameEn: "Home-made Fudge",
+                description: "韦斯莱夫人的圣诞节亲手制作，味道非常甜美！",
+                price: 28
+            },
+            {
+                icon: "🪰",
+                nameZh: "福吉苍蝇",
+                nameEn: "Fudge Flies",
+                description: "做成苍蝇形状的乳脂软糖，斑斑以前很喜欢吃！",
+                price: 20
+            },
+            {
+                icon: "🥨",
+                nameZh: "松脆花生薄片糖",
+                nameEn: "Peanut Brittle",
+                description: "韦斯莱夫人的圣诞节糕点，花生薄脆甜味！",
+                price: 25
+            },
+            {
+                icon: "🍫",
+                nameZh: "火星棒",
+                nameEn: "Mars Bars",
+                description: "麻瓜世界的巧克力焦糖棒，巫师推车上可买不到哦！",
+                price: 15
+            }
+        ];
+
+        let currentSnack = null;
+        let coins = 0;
+
+        // 初始化金币
+        function initCoins() {
+            const savedCoins = localStorage.getItem('hogwartsCoins');
+            coins = savedCoins ? parseInt(savedCoins) : 0;
+            updateCoinDisplay();
+        }
+
+        // 更新金币显示
+        function updateCoinDisplay() {
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        // 保存金币
+        function saveCoins() {
+            localStorage.setItem('hogwartsCoins', coins.toString());
+        }
+
+        // 创建零食卡片
+        function createSnackCard(snack, index) {
+            return `
+                <div class="snack-card" onclick="showPurchaseModal(${index})">
+                    <span class="special-badge">热销</span>
+                    <div class="snack-icon">${snack.icon}</div>
+                    <div class="snack-name-zh">${snack.nameZh}</div>
+                    <div class="snack-name-en">${snack.nameEn}</div>
+                    <div class="snack-description">${snack.description}</div>
+                    <div class="snack-price">🪙 ${snack.price}</div>
+                </div>
+            `;
+        }
+
+        // 显示购买弹窗
+        function showPurchaseModal(index) {
+            currentSnack = snacksData[index];
+            document.getElementById('modalIcon').textContent = currentSnack.icon;
+            document.getElementById('modalTitle').textContent = currentSnack.nameZh;
+            document.getElementById('modalDescription').textContent = currentSnack.description;
+            document.getElementById('modalPrice').textContent = `${currentSnack.price} 🪙`;
+            document.getElementById('purchaseModal').style.display = 'flex';
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('purchaseModal').style.display = 'none';
+            currentSnack = null;
+        }
+
+        // 确认购买
+        function confirmPurchase() {
+            if (!currentSnack) return;
+
+            // 检查精力值（精力值小于10不准购买）
+            const playerEnergy = parseInt(localStorage.getItem('playerEnergy') || '100');
+            if (playerEnergy < 10) {
+                showMessage('error', '😫',
+                    '精力值不足！',
+                    '你的精力值太低了，去三把扫帚休息一下吧！'
+                );
+                return;
+            }
+
+            if (coins >= currentSnack.price) {
+                coins -= currentSnack.price;
+                saveCoins();
+                updateCoinDisplay();
+
+                // 添加到背包（购买不增加累计金币，只有收入才计入累计）
+                addToInventory(currentSnack, '零食');
+
+                showMessage('success', '🎉',
+                    '购买成功！',
+                    `你获得了：${currentSnack.nameZh}\n花费：${currentSnack.price} 金加隆`
+                );
+                closeModal();
+            } else {
+                showMessage('error', '💸',
+                    '金币不足！',
+                    `需要：${currentSnack.price} 金加隆\n当前拥有：${coins} 金加隆`
+                );
+            }
+        }
+
+        // 添加物品到背包
+        function addToInventory(item, category) {
+            let playerData = localStorage.getItem('hogwartsPlayer');
+            if (!playerData) {
+                playerData = {
+                    nickname: '魔法学徒',
+                    avatar: '🧙',
+                    cumulativeCoins: 0,
+                    inventory: [],
+                    level: 0
+                };
+            } else {
+                playerData = JSON.parse(playerData);
+            }
+
+            if (!playerData.inventory) {
+                playerData.inventory = [];
+            }
+
+            // 添加物品到背包
+            playerData.inventory.push({
+                icon: item.icon,
+                nameZh: item.nameZh,
+                nameEn: item.nameEn,
+                category: category
+            });
+
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+        }
+
+        // 更新累计金币（用于等级计算）
+        function updateCumulativeCoins(amount) {
+            let playerData = localStorage.getItem('hogwartsPlayer');
+            if (!playerData) {
+                playerData = {
+                    nickname: '魔法学徒',
+                    avatar: '🧙',
+                    cumulativeCoins: amount,
+                    inventory: [],
+                    level: 0
+                };
+            } else {
+                playerData = JSON.parse(playerData);
+                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
+            }
+
+            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+        }
+
+        // 返回对角巷
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'diagon-alley.html';
+            }, 500);
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initCoins();
+
+            // 生成零食卡片
+            const container = document.getElementById('snacksContainer');
+            snacksData.forEach((snack, index) => {
+                container.innerHTML += createSnackCard(snack, index);
+            });
+        });
+
+        // ========== 显示消息 ==========
+        function showMessage(type, icon, title, text) {
+            const modal = document.getElementById('purchaseMessage');
+            const iconEl = document.getElementById('messageIcon');
+            const titleEl = document.getElementById('messageTitle');
+            const textEl = document.getElementById('messageText');
+
+            iconEl.textContent = icon;
+            titleEl.textContent = title;
+            textEl.textContent = text;
+
+            modal.className = 'purchase-message active ' + type;
+        }
+
+        // ========== 关闭消息 ==========
+        function closePurchaseMessage() {
+            const modal = document.getElementById('purchaseMessage');
+            modal.classList.remove('active');
+        }
+    </script>
+
+    <!-- 购买消息模态框 -->
+    <div class="purchase-message" id="purchaseMessage">
+        <div class="message-icon" id="messageIcon">🎉</div>
+        <div class="message-title" id="messageTitle">购买成功</div>
+        <div class="message-text" id="messageText">购买成功！</div>
+        <button class="close-purchase-btn" onclick="closePurchaseMessage()">关闭</button>
+    </div>
+</body>
+</html>

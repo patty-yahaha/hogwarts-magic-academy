@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>哈利波特魔法测试</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .quiz-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-nav {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-nav button {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-nav button:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227) !important;
+            border: 2px solid #d4af37 !important;
+            color: #1a1a3e !important;
+        }
+
+        .lang-btn:hover {
+            background: linear-gradient(135deg, #c9a227, #b8911f) !important;
+        }
+
+        .page-title {
+            text-align: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #c9a227;
+            margin-bottom: 50px;
+            font-style: italic;
+        }
+
+        .difficulty-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .difficulty-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .difficulty-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .difficulty-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.4);
+        }
+
+        .difficulty-card:hover::before {
+            opacity: 1;
+        }
+
+        .difficulty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .difficulty-desc {
+            font-size: 1rem;
+            color: #c9a227;
+            margin-bottom: 15px;
+        }
+
+        .difficulty-level {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .easy .difficulty-level {
+            background: linear-gradient(135deg, #2a1a3e, #1a472a);
+            color: #90ee90;
+        }
+
+        .medium .difficulty-level {
+            background: linear-gradient(135deg, #2a1a3e, #d4af37);
+            color: #fff;
+        }
+
+        .hard .difficulty-level {
+            background: linear-gradient(135deg, #2a1a3e, #ae0001);
+            color: #ffcccb;
+        }
+
+        /* 测试界面 */
+        .quiz-interface {
+            display: none;
+        }
+
+        .quiz-progress {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            color: #d4af37;
+        }
+
+        .question-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: #c9a227;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+
+        .question-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            padding: 18px 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.6);
+            transform: translateX(10px);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, rgba(42, 71, 42, 0.4), rgba(42, 71, 42, 0.6));
+            border-color: #2a472a;
+            color: #90ee90;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, rgba(174, 0, 1, 0.4), rgba(174, 0, 1, 0.6));
+            border-color: #ae0001;
+            color: #ffcccb;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .explanation h4 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation p {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+            color: #c9a227;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quiz-footer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .quiz-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a3e;
+            padding: 15px 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .quiz-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-card {
+            display: none;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-score {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 4rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+
+        .result-message {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.5rem;
+            color: #c9a227;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .difficulty-selection {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="quiz-container">
+            <div class="back-nav">
+                <button onclick="goBack()" id="backBtn">← 返回大厅</button>
+                <button onclick="toggleLanguage()" id="langBtn" class="lang-btn">English</button>
+            </div>
+
+            <h1 class="page-title" id="pageTitle">⚡ 魔法测试 ⚡</h1>
+            <p class="page-subtitle" id="pageSubtitle">Test Your Magical Knowledge</p>
+            <p class="page-info" style="text-align: center; font-family: 'MedievalSharp', cursive; font-size: 0.9rem; color: #8b6914; margin-bottom: 30px;" id="pageInfo">初级挑战30题 | 中级挑战5题 | 高级挑战30题</p>
+
+            <!-- 难度选择 -->
+            <div id="difficultySelection" class="difficulty-selection">
+                <div class="difficulty-card easy" onclick="startQuiz('easy')">
+                    <div class="difficulty-icon">🌟</div>
+                    <div class="difficulty-name" data-zh="初级挑战" data-en="Easy Challenge">初级挑战</div>
+                    <div class="difficulty-desc" data-zh="适合新手的魔法基础测试" data-en="Basic magic test for beginners">适合新手的魔法基础测试</div>
+                    <span class="difficulty-level">EASY</span>
+                </div>
+
+                <div class="difficulty-card medium" onclick="startQuiz('medium')">
+                    <div class="difficulty-icon">⚡</div>
+                    <div class="difficulty-name" data-zh="中级挑战" data-en="Medium Challenge">中级挑战</div>
+                    <div class="difficulty-desc" data-zh="需要一定魔法知识的挑战" data-en="Challenge requiring some magical knowledge">需要一定魔法知识的挑战</div>
+                    <span class="difficulty-level">MEDIUM</span>
+                </div>
+
+                <div class="difficulty-card hard" onclick="startQuiz('hard')">
+                    <div class="difficulty-icon">🔥</div>
+                    <div class="difficulty-name" data-zh="高级挑战" data-en="Hard Challenge">高级挑战</div>
+                    <div class="difficulty-desc" data-zh="只有真正的巫师才能通过" data-en="Only true wizards can pass">只有真正的巫师才能通过</div>
+                    <span class="difficulty-level">HARD</span>
+                </div>
+            </div>
+
+            <!-- 测试界面 -->
+            <div id="quizInterface" class="quiz-interface">
+                <div class="quiz-progress">
+                    <span id="progressText">问题 1 / 30</span>
+                </div>
+
+                <div class="question-card">
+                    <div id="questionText" class="question-text"></div>
+                    <div id="optionsGrid" class="options-grid"></div>
+                </div>
+
+                <div class="quiz-footer">
+                    <button id="nextBtn" class="quiz-btn" onclick="nextQuestion()" disabled data-zh="下一题" data-en="Next Question">下一题</button>
+                </div>
+            </div>
+
+            <!-- 结果界面 -->
+            <div id="resultCard" class="result-card">
+                <div class="result-score" id="finalScore"></div>
+                <div class="result-message" id="resultMessage"></div>
+                <button class="quiz-btn" onclick="restartQuiz()" data-zh="重新挑战" data-en="Try Again">重新挑战</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 测试数据
+        const quizData = {
+            easy: [
+                {
+                    question: "《哈利·波特》系列丛书的作者是谁？",
+                    questionEn: "Who is the author of the Harry Potter series?",
+                    options: ["J.K. 罗琳", "马爱农", "玛丽·格兰普雷", "布鲁姆斯伯里"],
+                    optionsEn: ["J.K. Rowling", "Ma Ainong", "Mary Grandpré", "Bloomsbury"],
+                    correct: 0,
+                    explanation: "文中明确提到《哈利·波特》全集的作者是J.K. 罗琳，她以此系列闻名全球。",
+                    explanationEn: "The text explicitly mentions that J.K. Rowling is the author of the complete Harry Potter series."
+                },
+                {
+                    question: "截至2008年，《哈利·波特》系列小说一共出版了多少本？",
+                    questionEn: "As of 2008, how many books were published in the Harry Potter series?",
+                    options: ["5本", "6本", "7本", "8本"],
+                    optionsEn: ["5 books", "6 books", "7 books", "8 books"],
+                    correct: 2,
+                    explanation: "文中明确指出截至2008年，系列7本小说被翻译成67种文字。",
+                    explanationEn: "The text explicitly states that as of 2008, 7 books in the series were translated into 67 languages."
+                },
+                {
+                    question: "哈利·波特住在女贞路几号？",
+                    questionEn: "What number does Harry Potter live at on Privet Drive?",
+                    options: ["2号", "4号", "9¾号", "10号"],
+                    optionsEn: ["Number 2", "Number 4", "Number 9¾", "Number 10"],
+                    correct: 1,
+                    explanation: "文中第一章明确提到德思礼夫妇住在女贞路四号。",
+                    explanationEn: "Chapter 1 explicitly mentions that the Dursleys live at number 4, Privet Drive."
+                },
+                {
+                    question: "海格在霍格沃茨的职务是什么？",
+                    questionEn: "What is Hagrid's position at Hogwarts?",
+                    options: ["校长", "魔药课老师", "钥匙保管员", "飞行课教练"],
+                    optionsEn: ["Headmaster", "Potions Master", "Keeper of Keys", "Flight Instructor"],
+                    correct: 2,
+                    explanation: "文中第四章的标题直接指出了海格的身份是钥匙保管员。",
+                    explanationEn: "The title of Chapter 4 directly points out Hagrid's identity as the Keeper of Keys."
+                },
+                {
+                    question: "一年级新生不准自带哪种物品？",
+                    questionEn: "What item are first-year students not allowed to bring?",
+                    options: ["魔杖", "大锅", "飞天扫帚", "猫头鹰"],
+                    optionsEn: ["Wand", "Cauldron", "Broomstick", "Owl"],
+                    correct: 2,
+                    explanation: "录取通知书中特别提请家长注意，一年级新生不准自带飞天扫帚。",
+                    explanationEn: "The admission letter specifically reminds parents that first-year students are not allowed to bring their own broomsticks."
+                },
+                {
+                    question: "根据文中的价格，一勺乌黑亮闪闪的甲虫小眼珠多少钱？",
+                    questionEn: "According to the text, how much is a scoop of black beetle eyes?",
+                    options: ["21加隆", "5纳特", "7加隆", "10西可"],
+                    optionsEn: ["21 Galleons", "5 Knuts", "7 Galleons", "10 Sickles"],
+                    correct: 1,
+                    explanation: "药店中明确标出甲虫小眼珠的价格为五纳特一勺。",
+                    explanationEn: "The apothecary clearly marks the price of beetle eyes as five Knuts per scoop."
+                },
+                {
+                    question: "哈利的魔杖是什么材质的？",
+                    questionEn: "What material is Harry's wand made of?",
+                    options: ["紫杉木和凤凰羽毛", "冬青木和凤凰羽毛", "黑檀木和独角兽毛", "山毛榉木和龙心弦"],
+                    optionsEn: ["Yew and Phoenix feather", "Holly and Phoenix feather", "Ebony and Unicorn hair", "Beechwood and Dragon heartstring"],
+                    correct: 1,
+                    explanation: "奥利凡德提到这是一种非凡的组合，长度为十一英寸。",
+                    explanationEn: "Ollivander mentions this is an extraordinary combination, eleven inches in length."
+                },
+                {
+                    question: "阿不思·邓布利多在哪一年击败了黑巫师格林德沃？",
+                    questionEn: "In which year did Albus Dumbledore defeat the dark wizard Grindelwald?",
+                    options: ["1926年", "1945年", "1997年", "2001年"],
+                    optionsEn: ["1926", "1945", "1997", "2001"],
+                    correct: 1,
+                    explanation: "邓布利多广为人知的贡献包括在1945年击败了格林德沃。",
+                    explanationEn: "Dumbledore's well-known contributions include defeating Grindelwald in 1945."
+                },
+                {
+                    question: "罗恩在火车上吃到的带干鼻子牛儿味的豆子是什么品牌的？",
+                    questionEn: "What brand of beans did Ron eat on the train that tasted like bogey?",
+                    options: ["比比多味豆", "巧克力蛙", "吹宝超级泡泡糖", "坩埚蛋糕"],
+                    optionsEn: ["Bertie Bott's Every Flavor Beans", "Chocolate Frogs", "Droobles Best Blowing Gum", "Cauldron Cakes"],
+                    correct: 0,
+                    explanation: "文中描述了这种豆子味道一应俱全，包括奇怪的味道。",
+                    explanationEn: "The text describes that these beans come in all flavors, including strange ones."
+                },
+                {
+                    question: "吉德罗·洛哈特在课上放出的蓝色小生物是什么？",
+                    questionEn: "What were the small blue creatures Gilderoy Lockhart released in class?",
+                    options: ["康奈尔郡小精灵", "地精", "博格特", "食尸鬼"],
+                    optionsEn: ["Cornish Pixies", "Gnomes", "Boggarts", "Ghouls"],
+                    correct: 0,
+                    explanation: "文中提到洛哈特掀开了笼子上的罩子，里面是刚抓到的康奈尔郡小精灵。",
+                    explanationEn: "The text mentions Lockhart lifted the cover on the cage, revealing newly caught Cornish Pixies."
+                },
+                {
+                    question: "费尔奇为了学习魔法，订阅了什么函授课程？",
+                    questionEn: "What correspondence course did Filch subscribe to in order to learn magic?",
+                    options: ["高级魔药制作", "快速念咒", "标准咒语", "黑魔法防御术"],
+                    optionsEn: ["Advanced Potion Making", "Kwikspell", "Standard Book of Spells", "Defense Against the Dark Arts"],
+                    correct: 1,
+                    explanation: "哈利在费尔奇的桌上看到了写着快速念咒的信封。",
+                    explanationEn: "Harry saw an envelope marked Kwikspell on Filch's desk."
+                },
+                {
+                    question: "哪位学生被石化时手中还举着照相机？",
+                    questionEn: "Which student was petrified while holding a camera?",
+                    options: ["纳威·隆巴顿", "科林·克里维", "贾斯廷·芬列里", "西莫·斐尼甘"],
+                    optionsEn: ["Neville Longbottom", "Colin Creevey", "Justin Finch-Fletchley", "Seamus Finnigan"],
+                    correct: 1,
+                    explanation: "庞弗雷夫人和麦格教授检查时，科林正举着他的照相机。",
+                    explanationEn: "When Madam Pomfrey and Professor McGonagall examined him, Colin was still holding his camera."
+                },
+                {
+                    question: "亚瑟·韦斯莱得到的《预言家日报》大奖金额是多少？",
+                    questionEn: "What was the amount of the prize Arthur Weasley won from the Daily Prophet?",
+                    options: ["500加隆", "700加隆", "1000加隆", "100加隆"],
+                    optionsEn: ["500 Galleons", "700 Galleons", "1000 Galleons", "100 Galleons"],
+                    correct: 1,
+                    explanation: "罗恩在给哈利的信中提到他爸得到了七百加隆的抽奖。",
+                    explanationEn: "In his letter to Harry, Ron mentions his dad won 700 Galleons in the draw."
+                },
+                {
+                    question: "玛姬姑妈在发怒后发生了什么变化？",
+                    questionEn: "What happened to Aunt Marge after she got angry?",
+                    options: ["变成了一头牦牛", "像气球一样膨胀并飘走", "变成了一只蟾蜍", "消失得无影无踪"],
+                    optionsEn: ["Turned into a yak", "Inflated like a balloon and floated away", "Turned into a toad", "Vanished without a trace"],
+                    correct: 1,
+                    explanation: "文中描述她由于没法形容的愤怒而膨胀，最后飞向了天花板。",
+                    explanationEn: "The text describes her inflating with unspeakable anger and finally flying toward the ceiling."
+                },
+                {
+                    question: "火弩箭飞天扫帚的手柄是什么木材制作的？",
+                    questionEn: "What wood is the handle of the Firebolt broomstick made of?",
+                    options: ["橡木", "白梣树", "桦木", "红杉木"],
+                    optionsEn: ["Oak", "Ash", "Birch", "Redwood"],
+                    correct: 1,
+                    explanation: "文中产品说明明确指出其帚把系用白梣树木材精制而成。",
+                    explanationEn: "The product description explicitly states the handle is made of ash wood."
+                },
+                {
+                    question: "火弩箭在十秒之内最高加速可达多少英里？",
+                    questionEn: "What is the top acceleration of the Firebolt within ten seconds?",
+                    options: ["100英里", "150英里", "200英里", "50英里"],
+                    optionsEn: ["100 miles per hour", "150 miles per hour", "200 miles per hour", "50 miles per hour"],
+                    correct: 1,
+                    explanation: "产品说明提到十秒之内加速可达每小时一百五十英里。",
+                    explanationEn: "The product description mentions acceleration can reach 150 miles per hour within ten seconds."
+                },
+                {
+                    question: "达力的身材被哈利形容为接近什么动物？",
+                    questionEn: "What animal does Harry compare Dudley's size to?",
+                    options: ["河马", "幼年的鲸鱼", "大象", "犀牛"],
+                    optionsEn: ["Hippopotamus", "A baby whale", "Elephant", "Rhinoceros"],
+                    correct: 1,
+                    explanation: "文中描写达力不需要额外补充营养，块头已经接近一头幼年的鲸鱼了。",
+                    explanationEn: "The text describes Dudley not needing extra nutrition, his size already approaching that of a baby whale."
+                },
+                {
+                    question: "在魁地奇世界杯决赛中，爱尔兰队的对手是哪支球队？",
+                    questionEn: "In the Quidditch World Cup final, who was Ireland's opponent?",
+                    options: ["英格兰队", "保加利亚队", "德国队", "埃及队"],
+                    optionsEn: ["England", "Bulgaria", "Germany", "Egypt"],
+                    correct: 1,
+                    explanation: "文中多次提到保加利亚队员上台和克鲁姆的精彩表现。",
+                    explanationEn: "The text repeatedly mentions Bulgarian players taking the stage and Krum's brilliant performance."
+                },
+                {
+                    question: "威克多尔·克鲁姆在决赛中抓到了什么？",
+                    questionEn: "What did Viktor Krum catch in the final?",
+                    options: ["鬼飞球", "金色飞贼", "游走球", "裁判的哨子"],
+                    optionsEn: ["Quaffle", "Golden Snitch", "Bludger", "The referee's whistle"],
+                    correct: 1,
+                    explanation: "克鲁姆虽然输了比赛，但他最后手里仍然攥着金色飞贼。",
+                    explanationEn: "Although Krum lost the match, he was still holding the Golden Snitch at the end."
+                },
+                {
+                    question: "德姆斯特朗魔法学校对哪方面的教育非常重视？",
+                    questionEn: "What area of education does Durmstrang Institute focus heavily on?",
+                    options: ["麻瓜研究", "黑魔法", "占卜术", "草药学"],
+                    optionsEn: ["Muggle Studies", "The Dark Arts", "Divination", "Herbology"],
+                    correct: 1,
+                    explanation: "赫敏引用书中的说法称，这所学校对黑魔法非常重视。",
+                    explanationEn: "Hermione quoted from a book saying this school places great importance on the Dark Arts."
+                },
+                {
+                    question: "麻瓜看霍格沃茨城堡时会看到什么？",
+                    questionEn: "What do Muggles see when they look at Hogwarts Castle?",
+                    options: ["金碧辉煌的宫殿", "一堆破败的废墟", "一片茂密的森林", "什么也看不见"],
+                    optionsEn: ["A magnificent palace", "A heap of broken ruins", "A dense forest", "Nothing at all"],
+                    correct: 1,
+                    explanation: "赫敏说麻瓜只能看见废墟，上面挂着危险，不得进入的牌子。",
+                    explanationEn: "Hermione says Muggles only see ruins, with a sign saying Danger, Do Not Enter."
+                },
+                {
+                    question: "邓布利多教授最喜欢的室外体育戏是什么？",
+                    questionEn: "What is Professor Dumbledore's favorite outdoor sport?",
+                    options: ["魁地奇", "十柱滚木球戏", "巫师棋", "高尔夫"],
+                    optionsEn: ["Quidditch", "Ten-pin bowling", "Wizard Chess", "Golf"],
+                    correct: 1,
+                    explanation: "邓布利多的个人简介提到他爱好室内乐及十柱滚木球戏。",
+                    explanationEn: "Dumbledore's biography mentions he enjoys chamber music and ten-pin bowling."
+                },
+                {
+                    question: "哈利在奥利凡德魔杖店支付了多少钱购买魔杖？",
+                    questionEn: "How much did Harry pay for his wand at Ollivander's?",
+                    options: ["10加隆", "7加隆", "5加隆", "21加隆"],
+                    optionsEn: ["10 Galleons", "7 Galleons", "5 Galleons", "21 Galleons"],
+                    correct: 1,
+                    explanation: "文中明确写道哈利付给奥利凡德先生七个加隆买下魔杖。",
+                    explanationEn: "The text explicitly states Harry paid Mr. Ollivander seven Galleons for the wand."
+                },
+                {
+                    question: "是谁把第一本哈利波特小说搬上了银幕？",
+                    questionEn: "Who brought the first Harry Potter novel to the screen?",
+                    options: ["环球影业", "华纳兄弟电影公司", "迪士尼公司", "索尼影业"],
+                    optionsEn: ["Universal Studios", "Warner Bros.", "Disney", "Sony Pictures"],
+                    correct: 1,
+                    explanation: "文中提到2001年美国华纳兄弟电影公司决定将小说搬上银幕。",
+                    explanationEn: "The text mentions Warner Bros. decided to bring the novel to the screen in 2001."
+                },
+                {
+                    question: "罗琳在写第一本书时，生活状况如何？",
+                    questionEn: "What were Rowling's living conditions like when writing the first book?",
+                    options: ["非常富有", "生活极其艰辛", "拥有王室支持", "一直很默默无闻"],
+                    optionsEn: ["Extremely wealthy", "Life was extremely difficult", "Supported by royalty", "Always remained obscure"],
+                    correct: 1,
+                    explanation: "文中提到她作为一个单身母亲，生活极其艰辛，常在咖啡馆写作。",
+                    explanationEn: "The text mentions she was a single mother, life was extremely difficult, often writing in cafes."
+                },
+                {
+                    question: "文中提到的不可标绘魔咒是什么意思？",
+                    questionEn: "What does the Unplottable charm mentioned in the text mean?",
+                    options: ["让建筑物隐形", "让别人无法在地图上标绘出来", "让指南针失效", "让城堡自动移动"],
+                    optionsEn: ["Makes buildings invisible", "Makes it impossible to draw on a map", "Makes compasses fail", "Makes the castle move automatically"],
+                    correct: 1,
+                    explanation: "赫敏解释说别人无法在地图上把它标绘出来。",
+                    explanationEn: "Hermione explains that others cannot plot it on a map."
+                },
+                {
+                    question: "海格说哪位神秘人也是从斯莱特林学院出来的？",
+                    questionEn: "Which You-Know-Who did Hagrid say also came from Slytherin house?",
+                    options: ["伏地魔", "格林德沃", "斯内普", "卢修斯·马尔福"],
+                    optionsEn: ["Voldemort", "Grindelwald", "Snape", "Lucius Malfoy"],
+                    correct: 0,
+                    explanation: "海格告诉哈利，神秘人就是从斯莱特林出来的。",
+                    explanationEn: "Hagrid told Harry that You-Know-Who came from Slytherin."
+                },
+                {
+                    question: "哈利的入学通知书是由哪种动物投递的？",
+                    questionEn: "Which animal delivered Harry's school admission letters?",
+                    options: ["猫", "猫头鹰", "蟾蜍", "凤凰"],
+                    optionsEn: ["Cat", "Owl", "Toad", "Phoenix"],
+                    correct: 1,
+                    explanation: "文中第三章标题为猫头鹰传书，并描述了大量猫头鹰飞来的情景。",
+                    explanationEn: "Chapter 3 is titled Owl Post, describing the scene of many owls flying in."
+                },
+                {
+                    question: "在海格带哈利买东西时，哈利想买一本书来诅咒谁？",
+                    questionEn: "When Hagrid took Harry shopping, who did Harry want to find a spell to curse?",
+                    options: ["德拉科·马尔福", "达力", "斯内普", "弗农姨父"],
+                    optionsEn: ["Draco Malfoy", "Dudley", "Snape", "Uncle Vernon"],
+                    correct: 1,
+                    explanation: "哈利拿起《诅咒与反诅咒》时说，他想找出办法来诅咒达力。",
+                    explanationEn: "When Harry picked up Curses and Counter-Curses, he said he wanted to find a way to curse Dudley."
+                },
+                {
+                    question: "文中提到的魔法界最伟大的四位男女巫师创办了什么？",
+                    questionEn: "What did the four greatest witches and wizards in the magical world found?",
+                    options: ["魔法部", "霍格沃茨学校", "古灵阁银行", "对角巷"],
+                    optionsEn: ["The Ministry of Magic", "Hogwarts School", "Gringotts Bank", "Diagon Alley"],
+                    correct: 1,
+                    explanation: "麦格教授解释说，学校是由一千多年前最伟大的四个巫师创办的。",
+                    explanationEn: "Professor McGonagall explains that the school was founded by the four greatest wizards over a thousand years ago."
+                }
+            ],
+            medium: [
+                {
+                    question: "守护神咒的咒语是什么？",
+                    questionEn: "What is the incantation for the Patronus Charm?",
+                    options: ["Expecto Patronum", "Expelliarmus", "Lumos", "Alohomora"],
+                    optionsEn: ["Expecto Patronum", "Expelliarmus", "Lumos", "Alohomora"],
+                    correct: 0,
+                    explanation: "守护神咒的咒语是Expecto Patronum，用于召唤守护神抵御摄魂怪。",
+                    explanationEn: "The incantation for the Patronus Charm is Expecto Patronum, used to summon a Patronus to defend against Dementors."
+                },
+                {
+                    question: "死亡圣器不包括以下哪一项？",
+                    questionEn: "Which of the following is NOT one of the Deathly Hallows?",
+                    options: ["老魔杖", "复活石", "隐形衣", "时间转换器"],
+                    optionsEn: ["Elder Wand", "Resurrection Stone", "Invisibility Cloak", "Time-Turner"],
+                    correct: 3,
+                    explanation: "死亡圣器包括老魔杖、复活石和隐形衣，时间转换器不是死亡圣器之一。",
+                    explanationEn: "The Deathly Hallows include the Elder Wand, Resurrection Stone, and Invisibility Cloak. The Time-Turner is not one of them."
+                },
+                {
+                    question: "斯内普教授的守护神是什么动物？",
+                    questionEn: "What animal is Professor Snape's Patronus?",
+                    options: ["鹿", "牡鹿", "凤凰", "狼"],
+                    optionsEn: ["Doe", "Stag", "Phoenix", "Wolf"],
+                    correct: 1,
+                    explanation: "斯内普的守护神是一头牡鹿，与莉莉·波特的守护神相同，象征他对莉莉永恒的爱。",
+                    explanationEn: "Snape's Patronus is a stag, the same as Lily Potter's, symbolizing his eternal love for Lily."
+                },
+                {
+                    question: "伏地魔的魔杖是用什么木材制成的？",
+                    questionEn: "What wood is Voldemort's wand made of?",
+                    options: ["冬青木", "紫杉木", "胡桃木", "接骨木"],
+                    optionsEn: ["Holly", "Yew", "Walnut", "Elder"],
+                    correct: 1,
+                    explanation: "伏地魔的魔杖由紫杉木制成，芯材是凤凰羽毛。紫杉木象征着死亡和重生。",
+                    explanationEn: "Voldemort's wand is made of yew wood with a phoenix feather core. Yew symbolizes death and rebirth."
+                },
+                {
+                    question: "魔法部的神秘事务司位于第几层？",
+                    questionEn: "On which level is the Department of Mysteries located?",
+                    options: ["七层", "八层", "九层", "十层"],
+                    optionsEn: ["Level Seven", "Level Eight", "Level Nine", "Level Ten"],
+                    correct: 2,
+                    explanation: "神秘事务司位于魔法部第九层，是魔法部最神秘的部门。",
+                    explanationEn: "The Department of Mysteries is located on Level Nine of the Ministry of Magic, the most mysterious department."
+                }
+            ],
+            hard: [
+                {
+                    question: "在《哈利·波特与魔法石》的献辞中，谁被描述为故事的第一位听众？",
+                    questionEn: "In the dedication of Harry Potter and the Philosopher's Stone, who is described as the first audience of the story?",
+                    options: ["安妮", "戴", "杰西卡", "马爱农"],
+                    optionsEn: ["Anne", "Di", "Jessica", "Ma Ainong"],
+                    correct: 1,
+                    explanation: "献辞明确列出了杰西卡、安妮和戴，其中戴是第一个听到这个故事的人。",
+                    explanationEn: "The dedication explicitly lists Jessica, Anne, and Di, with Di being the one who first heard the story."
+                },
+                {
+                    question: "哈利在丽痕书店看到温迪克教授写的哪本书时，想用它来诅咒达力？",
+                    questionEn: "Which book by Professor Vindictus Viridian did Harry see in Flourish and Blotts and want to use to curse Dudley?",
+                    options: ["《标准咒语（初级）》", "《黑魔法的兴衰》", "《诅咒与反诅咒》", "《黑暗力量：自卫指南》"],
+                    optionsEn: ["The Standard Book of Spells Grade 1", "The Rise and Fall of the Dark Arts", "Curses and Counter-Curses", "The Dark Forces: A Guide to Self-Protection"],
+                    correct: 2,
+                    explanation: "书中提到该书包含脱发、打折腿等手法，哈利认为这主意不错。",
+                    explanationEn: "The text mentions this book includes methods like hair loss and leg-breaking, which Harry found appealing."
+                },
+                {
+                    question: "在对角巷的药店里，银色的独角兽角单价是多少？",
+                    questionEn: "In the Diagon Alley apothecary, what is the unit price of silver unicorn horns?",
+                    options: ["21加隆", "5纳特", "10西可", "7加隆"],
+                    optionsEn: ["21 Galleons", "5 Knuts", "10 Sickles", "7 Galleons"],
+                    correct: 0,
+                    explanation: "文中明确提到哈利在药店看到银色独角兽角每个价值二十一加隆。",
+                    explanationEn: "The text explicitly mentions Harry saw silver unicorn horns valued at 21 Galleons each in the shop."
+                },
+                {
+                    question: "罗恩提到乔治曾经吃到了什么味道的比比多味豆？",
+                    questionEn: "What flavor of Bertie Bott's Every Flavor Beans did Ron mention George once ate?",
+                    options: ["胡椒口味", "沙丁鱼味", "菠菜味", "干鼻子牛儿味"],
+                    optionsEn: ["Pepper flavor", "Sardine flavor", "Spinach flavor", "Bogey flavor"],
+                    correct: 3,
+                    explanation: "罗恩警告哈利时，提到了乔治吃过这种极不寻常且令人恶心的味道。",
+                    explanationEn: "While warning Harry, Ron mentioned George had eaten this highly unusual and disgusting flavor."
+                },
+                {
+                    question: "赫敏在火车上寻找纳威丢失的蟾蜍时，提到的第一本包含哈利名字的参考书是？",
+                    questionEn: "When Hermione was looking for Neville's toad, what was the first reference book she mentioned that included Harry's name?",
+                    options: ["《现代魔法史》", "《黑魔法的兴衰》", "《二十世纪重要魔法事件》", "《魔法史》"],
+                    optionsEn: ["A History of Magic Modern", "The Rise and Fall of the Dark Arts", "Great Wizarding Events of the Twentieth Century", "A History of Magic Standard"],
+                    correct: 0,
+                    explanation: "赫敏在自我介绍后，列举了三本提到哈利的书，第一本就是《现代魔法史》。",
+                    explanationEn: "After introducing herself, Hermione listed three books mentioning Harry, starting with A History of Magic."
+                },
+                {
+                    question: "在《哈利·波特与密室》中，撞击飞天汽车的那棵树的树枝被描述为有多粗？",
+                    questionEn: "In Chamber of Secrets, how thick were the branches of the tree that attacked the flying car described as being?",
+                    options: ["像大象腿那么粗", "像攻城槌那么粗", "像蟒蛇那么粗", "像电线杆那么粗"],
+                    optionsEn: ["As thick as an elephant's leg", "As thick as a battering ram", "As thick as a python", "As thick as a utility pole"],
+                    correct: 2,
+                    explanation: "文中描述哈利转过头，刚好看见一条像蟒蛇那么粗的树枝撞到玻璃上。",
+                    explanationEn: "The text states Harry turned and saw a branch as thick as a python hitting the glass."
+                },
+                {
+                    question: "吉德罗·洛哈特在驱赶康奈尔郡小精灵时使用的咒语是什么？",
+                    questionEn: "What spell did Gilderoy Lockhart use when trying to banish the Cornish Pixies?",
+                    options: ["除你武器", "阿拉霍洞开", "羽加迪姆 勒维奥萨", "佩斯奇皮克西佩斯特诺米"],
+                    optionsEn: ["Expelliarmus", "Alohomora", "Wingardium Leviosa", "Peskipiksi Pesternomi"],
+                    correct: 3,
+                    explanation: "洛哈特卷起袖子吼出的这个咒语全然无效，且显得非常滑稽。",
+                    explanationEn: "Lockhart rolled up his sleeves and shouted this spell, which was completely ineffective and sounded ridiculous."
+                },
+                {
+                    question: "费尔奇办公桌上的信封显示他在学习什么课程？",
+                    questionEn: "The envelope on Filch's desk showed he was studying what course?",
+                    options: ["快速念咒", "标准咒语（初级）", "黑魔法防御术", "魔药学"],
+                    optionsEn: ["Kwikspell", "Standard Book of Spells Grade 1", "Defense Against the Dark Arts", "Potions"],
+                    correct: 0,
+                    explanation: "哈利在费尔奇桌上看到了快速念咒课程的信封，这暗示费尔奇是个哑炮。",
+                    explanationEn: "Harry saw the Kwikspell envelope on Filch's desk, hinting that Filch is a Squib."
+                },
+                {
+                    question: "当科林·克里维被石化送入医务室时，他的照相机发生了什么？",
+                    questionEn: "What happened to Colin Creevey's camera when he was petrified and brought to the hospital wing?",
+                    options: ["底片拍下了攻击者", "内部全部熔化了", "镜头破裂了", "被蛇怪吃掉了"],
+                    optionsEn: ["The film captured the attacker", "The inside completely melted", "The lens cracked", "It was eaten by the Basilisk"],
+                    correct: 1,
+                    explanation: "邓布利多撬开盖子后，里面冒出热气和塑料燃烧的气味，显示底片和内部已熔化。",
+                    explanationEn: "When Dumbledore pried open the back, steam and a smell of burning plastic came out, showing the film and interior had melted."
+                },
+                {
+                    question: "汤姆·里德尔说他的父亲为什么抛弃了他的母亲？",
+                    questionEn: "Why did Tom Riddle say his father abandoned his mother?",
+                    options: ["因为他爱上了别人", "因为他的母亲去世了", "因为他害怕萨拉查·斯莱特林", "因为他发现妻子是个女巫"],
+                    optionsEn: ["Because he fell in love with someone else", "Because his mother died", "Because he was afraid of Salazar Slytherin", "Because he discovered his wife was a witch"],
+                    correct: 3,
+                    explanation: "里德尔提到他那个麻瓜父亲在发现妻子会法术后就逃跑了。",
+                    explanationEn: "Riddle mentioned his Muggle father fled after discovering his wife could use magic."
+                },
+                {
+                    question: "亚瑟·韦斯莱得到的《预言家日报》年度大奖加隆奖金额是多少？",
+                    questionEn: "How much was the Daily Prophet Grand Prize Galleon Draw won by Arthur Weasley?",
+                    options: ["1000加隆", "700加隆", "500加隆", "21加隆"],
+                    optionsEn: ["1000 Galleons", "700 Galleons", "500 Galleons", "21 Galleons"],
+                    correct: 1,
+                    explanation: "罗恩在给哈利的信中提到他爸得到了700加隆，这笔钱大部分用于埃及旅游。",
+                    explanationEn: "Ron's letter to Harry mentions his dad won 700 Galleons, most of which went toward the Egypt trip."
+                },
+                {
+                    question: "火弩箭在十秒之内最高加速可达多少英里？",
+                    questionEn: "What is the top acceleration of the Firebolt within ten seconds?",
+                    options: ["每小时200英里", "每小时150英里", "每小时100英里", "每小时120英里"],
+                    optionsEn: ["200 miles per hour", "150 miles per hour", "100 miles per hour", "120 miles per hour"],
+                    correct: 1,
+                    explanation: "魁地奇精品专卖店外的说明明确指出，火弩箭十秒内加速可达每小时150英里。",
+                    explanationEn: "The description outside Quality Quidditch Supplies states it can reach 150 mph in 10 seconds."
+                },
+                {
+                    question: "火弩箭的帚把是用哪种木材精制而成的？",
+                    questionEn: "What wood is the handle of the Firebolt crafted from?",
+                    options: ["白蜡树", "桃花心木", "桦木", "橡木"],
+                    optionsEn: ["Ash", "Mahogany", "Birch", "Oak"],
+                    correct: 0,
+                    explanation: "商品说明中提到帚把系用白蜡树木材精制而成，呈流线型。",
+                    explanationEn: "The product description mentions the handle is made of ash wood and is streamlined."
+                },
+                {
+                    question: "卢平教授在费尔奇的档案柜里找到了什么来教哈利练习守护神咒？",
+                    questionEn: "What did Professor Lupin find in Filch's filing cabinet to help Harry practice the Patronus Charm?",
+                    options: ["一张摄魂怪的照片", "一只真的摄魂怪", "一个消失柜", "另一个博格特"],
+                    optionsEn: ["A photograph of a Dementor", "A real Dementor", "A Vanishing Cabinet", "Another Boggart"],
+                    correct: 3,
+                    explanation: "卢平利用博格特遇到哈利会变成摄魂怪的特性来进行针对性练习。",
+                    explanationEn: "Lupin used the fact that a Boggart would turn into a Dementor in front of Harry to facilitate targeted practice."
+                },
+                {
+                    question: "卢平教授提到守护神咒的魔法水平如何？",
+                    questionEn: "What level of magic did Professor Lupin say the Patronus Charm is?",
+                    options: ["大大高于普通巫师考试水平", "一年级学生的必修课", "类似于开锁咒的初级魔法", "属于禁止学习的黑魔法"],
+                    optionsEn: ["Far beyond the level of Ordinary Wizarding Levels O.W.L.s", "A compulsory subject for first-years", "Basic magic similar to an unlocking spell", "A forbidden Dark Arts spell"],
+                    correct: 0,
+                    explanation: "卢平告诉哈利这是一种十分高深的魔法。",
+                    explanationEn: "Lupin told Harry this is an extremely advanced form of magic."
+                },
+                {
+                    question: "由于达力在暑假前胖得像头幼年的鲸鱼，佩妮姨妈不得不采取什么措施？",
+                    questionEn: "Because Dudley was as fat as a baby whale before summer break, what measure did Aunt Petunia have to take?",
+                    options: ["送达力去参加减肥夏令营", "全家实行新的饮食方案", "给达力买加大码的校服", "让他停止吃汉堡专卖店的食物"],
+                    optionsEn: ["Sending Dudley to a weight-loss summer camp", "The whole family followed a new diet plan", "Buying extra-large school uniforms for Dudley", "Stopping him from eating food from hamburger shops"],
+                    correct: 1,
+                    explanation: "文中提到在没完没了的发脾气和争吵后，开始了新的饮食方案。",
+                    explanationEn: "The text mentions that after endless tantrums and arguments, a new diet plan began."
+                },
+                {
+                    question: "在魁地奇世界杯决赛中，保加利亚队的哪两名击球手开始愤怒地与裁判争吵？",
+                    questionEn: "At the Quidditch World Cup final, which two Bulgarian beaters began arguing angrily with the referee?",
+                    options: ["沃尔科夫和沃卡诺夫", "克鲁姆和佐格拉夫", "迪米特洛夫和列夫斯基", "莫兰和奎格利"],
+                    optionsEn: ["Volkov and Vulkanov", "Krum and Zograf", "Dimitrov and Levski", "Moran and Quigley"],
+                    correct: 0,
+                    explanation: "文中提到这两个击球手降落在裁判穆斯塔发两边，开始愤怒争吵。",
+                    explanationEn: "The text mentions these two beaters landed on either side of referee Mostafa and began arguing angrily."
+                },
+                {
+                    question: "保加利亚队的追球手迪米特洛夫因为对爱尔兰队的莫兰做了什么动作而被判犯规？",
+                    questionEn: "What action did the Bulgarian Chaser Dimitrov perform on Ireland's Moran to be called for a foul?",
+                    options: ["用球棒击打对方头部", "抢走对方的金色飞贼", "故意飞过去冲撞", "拉扯对方的扫帚尾巴"],
+                    optionsEn: ["Hitting her head with a Beater's bat", "Stealing her Snitch", "Deliberately flying into her to crash", "Pulling her broom tail"],
+                    correct: 2,
+                    explanation: "卢多·巴格曼解说时明确指出迪米特洛夫故意飞过去冲撞莫兰。",
+                    explanationEn: "Ludo Bagman's commentary explicitly stated Dimitrov deliberately flew into Moran to crash."
+                },
+                {
+                    question: "哈利注意到，找球手维克多·克鲁姆一旦落到地面上，动作看上去有何特点？",
+                    questionEn: "Harry noticed that once Seeker Viktor Krum landed on the ground, what were his movements like?",
+                    options: ["像芭蕾舞演员一样轻盈", "动作看上去不那么协调，两条腿有点外八字", "步伐极其快速且充满活力", "没有任何异常，和普通人一样"],
+                    optionsEn: ["Light as a ballet dancer", "His movements were less coordinated and he was a bit duck-footed", "Extremely fast and energetic strides", "No different from a normal person"],
+                    correct: 1,
+                    explanation: "文中描述克鲁姆在空中极具天赋，但在地面上动作笨拙，且肩膀向前弯曲。",
+                    explanationEn: "The text describes Krum as exceptionally gifted in the air but clumsy on the ground, with rounded shoulders."
+                },
+                {
+                    question: "根据文中关于英国教育制度的注释，14岁学生参加什么考试以取得Key Stage 3成绩？",
+                    questionEn: "According to the notes on the British education system, what exam do 14-year-old students take for Key Stage 3?",
+                    options: ["SATS考试", "GCSE证书考试", "A-Level证书考试", "O.W.Ls考试"],
+                    optionsEn: ["SATS exams", "GCSE certificate exams", "A-Level certificate exams", "O.W.Ls exams"],
+                    correct: 0,
+                    explanation: "注释a明确提到学生14岁参加SATS考试取得Key Stage 3成绩。",
+                    explanationEn: "Note a states students take SATS exams at age 14 to obtain Key Stage 3 grades."
+                },
+                {
+                    question: "哈利在对角巷药店看到的乌黑甲虫小眼珠的价格是多少？",
+                    questionEn: "What was the price of the black beetle eyes Harry saw in the Diagon Alley apothecary?",
+                    options: ["一加隆一瓶", "两西可一罐", "五纳特一勺", "免费赠送"],
+                    optionsEn: ["One Galleon a bottle", "Two Sickles a jar", "Five Knuts a scoop", "Free of charge"],
+                    correct: 2,
+                    explanation: "文中提到哈利正在细看这些甲虫小眼珠，价格是五纳特一勺。",
+                    explanationEn: "The text mentions Harry was examining the beetle eyes, priced at five Knuts a scoop."
+                },
+                {
+                    question: "费尔奇因为皮皮鬼弄坏了什么东西而感到大获全胜？",
+                    questionEn: "What item did Filch feel victorious about after Peeves broke it?",
+                    options: ["一个大墨水瓶", "一架黄铜望远镜", "海格的小木屋", "一个消失柜"],
+                    optionsEn: ["A large ink bottle", "A brass telescope", "Hagrid's hut", "A Vanishing Cabinet"],
+                    correct: 3,
+                    explanation: "费尔奇高兴地对洛丽丝夫人说那个消失柜特别珍贵，这次可以叫皮皮鬼滚蛋了。",
+                    explanationEn: "Filch happily told Mrs. Norris that the cabinet was very precious and they could finally get rid of Peeves."
+                },
+                {
+                    question: "在《哈利·波特与火焰杯》中，韦斯莱一家九个人站在哪里的金字塔前拍照？",
+                    questionEn: "In Goblet of Fire, where were the nine Weasleys photographed standing in front of pyramids?",
+                    options: ["阿尔巴尼亚", "墨西哥", "埃及", "罗马尼亚"],
+                    optionsEn: ["Albania", "Mexico", "Egypt", "Romania"],
+                    correct: 2,
+                    explanation: "文中明确提到他们去埃及旅游，因为大儿子比尔在那儿工作。",
+                    explanationEn: "The text explicitly states they went to Egypt because their eldest son Bill works there."
+                },
+                {
+                    question: "根据注释，夏季划船时常戴的帽子在文中被称为？",
+                    questionEn: "According to the notes, what is the hat often worn during summer rowing called?",
+                    options: ["平顶草帽", "巴拉克拉瓦帽", "分院帽", "巫师帽"],
+                    optionsEn: ["Boater", "Balaclava", "Sorting Hat", "Wizard's Hat"],
+                    correct: 0,
+                    explanation: "注释b提到旧时夏季划船戴的一种帽子，即平顶草帽。",
+                    explanationEn: "Note b mentions a kind of hat worn during summer rowing in old times, which refers to a boater."
+                },
+                {
+                    question: "谁是哈利波特系列中文版的制作说明中提到的哈利·波特系列错译选集的作者？",
+                    questionEn: "Who is the author of the Selected Collection of Mistranslations in Harry Potter mentioned in the production notes?",
+                    options: ["马爱新", "米赫普", "罗琳", "Jim Kay"],
+                    optionsEn: ["Ma Aixin", "Mihepu", "Rowling", "Jim Kay"],
+                    correct: 1,
+                    explanation: "制作说明第一条指出，正文译文修正参考了米赫普的作品。",
+                    explanationEn: "The first production note states the translation corrections were based on Mihepu's work."
+                },
+                {
+                    question: "海格在去往对角巷的地铁上向哈利抱怨了什么？",
+                    questionEn: "What did Hagrid complain about to Harry while on the subway to Diagon Alley?",
+                    options: ["空气太浑浊，人太多", "麻瓜的钱太难用", "座位太窄，车速太慢", "他忘记带魔杖了"],
+                    optionsEn: ["Air too stale, too many people", "Muggle money too hard to use", "Seats too narrow, speed too slow", "He forgot his wand"],
+                    correct: 2,
+                    explanation: "文中提到他在地铁验票口被卡住，接着大声抱怨座位和车速。",
+                    explanationEn: "The text states he got stuck at the ticket gate and then complained loudly about the seats and speed."
+                },
+                {
+                    question: "在哈利一年级的购物清单中，大锅的规定标准尺寸是多少？",
+                    questionEn: "In Harry's first-year shopping list, what is the required standard size for a cauldron?",
+                    options: ["1号", "2号", "3号", "纯金标准尺寸"],
+                    optionsEn: ["Size 1", "Size 2", "Size 3", "Solid gold standard size"],
+                    correct: 1,
+                    explanation: "清单上写着一只大锅（锡镀制，标准尺寸2号）。",
+                    explanationEn: "The list specifies one cauldron pewter, standard size 2."
+                },
+                {
+                    question: "哈利刚回德思礼家过暑假时，弗农姨父把他的什么贵重飞行器材锁进了楼梯下的柜子？",
+                    questionEn: "When Harry first returned to the Dursleys for summer break, what precious flying equipment did Uncle Vernon lock in the cupboard under the stairs?",
+                    options: ["火弩箭", "横扫七星", "银箭", "光轮2000"],
+                    optionsEn: ["Firebolt", "Cleansweep Seven", "Silver Arrow", "Nimbus 2000"],
+                    correct: 3,
+                    explanation: "文中提到弗农姨父把咒语书、魔杖和最高级的光轮2000锁进了柜子里。",
+                    explanationEn: "The text mentions Uncle Vernon locked the spellbooks, wand, and the top-of-the-line Nimbus 2000 in the cupboard."
+                },
+                {
+                    question: "玛姬姑妈提到哈利的父母是因为什么原因去世的（这是德思礼家的谎言）？",
+                    questionEn: "What did Aunt Marge say was the cause of Harry's parents' death according to the Dursleys' lie?",
+                    options: ["飞机失事", "被谋杀", "车祸", "生病去世"],
+                    optionsEn: ["A plane crash", "They were murdered", "A car crash", "They died of illness"],
+                    correct: 2,
+                    explanation: "玛姬姑妈坚称他们出门遇到车祸死了，并猜测他们喝醉了。",
+                    explanationEn: "Aunt Marge insisted they died in a car crash and speculated they were drunk."
+                },
+                {
+                    question: "在《哈利·波特与死亡圣器》的目录中，第19章的标题是什么？",
+                    questionEn: "In the table of contents for Deathly Hallows, what is the title of Chapter 19?",
+                    options: ["银色的牝鹿", "死亡圣器", "三兄弟的传说", "王子的故事"],
+                    optionsEn: ["The Silver Doe", "The Deathly Hallows", "The Tale of the Three Brothers", "The Prince's Tale"],
+                    correct: 0,
+                    explanation: "目录中清晰列出第19章为银色的牝鹿。",
+                    explanationEn: "The table of contents clearly lists Chapter 19 as The Silver Doe."
+                }
+            ]
+        };
+
+        let currentDifficulty = 'easy';
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        let currentLanguage = 'zh'; // 'zh' for Chinese, 'en' for English
+
+        // Language strings
+        const translations = {
+            zh: {
+                backBtn: '← 返回大厅',
+                langBtn: 'English',
+                pageTitle: '⚡ 魔法测试 ⚡',
+                pageSubtitle: 'Test Your Magical Knowledge',
+                pageInfo: '初级挑战30题 | 中级挑战5题 | 高级挑战30题',
+                question: '问题',
+                challenge: '挑战',
+                explanationTitle: '📖 答案解析',
+                noExplanation: '暂无解析',
+                perfect: '🏆 完美！你是真正的魔法大师！',
+                excellent: '⚡ 优秀！你是一名出色的巫师！',
+                good: '✨ 不错！继续学习魔法知识！',
+                needPractice: '📚 需要更多练习，加油！'
+            },
+            en: {
+                backBtn: '← Back to Academy',
+                langBtn: '中文',
+                pageTitle: '⚡ Magic Quiz ⚡',
+                pageSubtitle: 'Test Your Magical Knowledge',
+                pageInfo: 'Easy: 30 | Medium: 5 | Hard: 30',
+                question: 'Question',
+                challenge: 'Challenge',
+                explanationTitle: '📖 Explanation',
+                noExplanation: 'No explanation available',
+                perfect: '🏆 Perfect! You are a true magic master!',
+                excellent: '⚡ Excellent! You are an outstanding wizard!',
+                good: '✨ Good! Keep learning magic!',
+                needPractice: '📚 Need more practice, keep going!'
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+            updateLanguage();
+
+            // If quiz is in progress, refresh current question
+            if (document.getElementById('quizInterface').style.display === 'block') {
+                showQuestion();
+            }
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+
+            // Update main page elements
+            document.getElementById('backBtn').textContent = t.backBtn;
+            document.getElementById('langBtn').textContent = t.langBtn;
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.getElementById('pageSubtitle').textContent = t.pageSubtitle;
+            document.getElementById('pageInfo').textContent = t.pageInfo;
+
+            // Update difficulty cards
+            document.querySelectorAll('[data-zh]').forEach(el => {
+                el.textContent = el.getAttribute(`data-${currentLanguage}`);
+            });
+
+            // Update buttons
+            document.querySelectorAll('[data-zh]').forEach(el => {
+                if (el.tagName === 'BUTTON') {
+                    el.textContent = el.getAttribute(`data-${currentLanguage}`);
+                }
+            });
+        }
+
+        function getQuestionText(q) {
+            return currentLanguage === 'zh' ? q.question : (q.questionEn || q.question);
+        }
+
+        function getOptionText(option, index, q) {
+            if (currentLanguage === 'zh') {
+                return option;
+            }
+            return q.optionsEn ? q.optionsEn[index] : option;
+        }
+
+        function getExplanationText(q) {
+            if (currentLanguage === 'zh') {
+                return q.explanation || translations[currentLanguage].noExplanation;
+            }
+            return q.explanationEn || q.explanation || translations[currentLanguage].noExplanation;
+        }
+
+        function startQuiz(difficulty) {
+            currentDifficulty = difficulty;
+            currentQuestion = 0;
+            score = 0;
+            answered = false;
+
+            document.getElementById('difficultySelection').style.display = 'none';
+            document.getElementById('quizInterface').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const questions = quizData[currentDifficulty];
+            const q = questions[currentQuestion];
+
+            const t = translations[currentLanguage];
+            const challengeName = currentDifficulty === 'easy' ? (currentLanguage === 'zh' ? '初级' : 'Easy') :
+                                  currentDifficulty === 'medium' ? (currentLanguage === 'zh' ? '中级' : 'Medium') :
+                                  (currentLanguage === 'zh' ? '高级' : 'Hard');
+
+            document.getElementById('progressText').textContent =
+                `${t.question} ${currentQuestion + 1} / ${questions.length} (${challengeName} ${t.challenge})`;
+
+            const questionCard = document.querySelector('.question-card');
+            questionCard.innerHTML = `
+                <div class="question-header">
+                    <span class="question-number">${currentLanguage === 'zh' ? '第' : ''} ${currentQuestion + 1} ${t.question}</span>
+                </div>
+                <div class="question-text">${getQuestionText(q)}</div>
+                <div id="optionsGrid" class="options-grid"></div>
+                <div id="explanation" class="explanation">
+                    <h4>${t.explanationTitle}</h4>
+                    <p>${getExplanationText(q)}</p>
+                </div>
+            `;
+
+            const optionsGrid = document.getElementById('optionsGrid');
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = getOptionText(option, index, q);
+                btn.onclick = () => selectAnswer(index);
+                optionsGrid.appendChild(btn);
+            });
+
+            // Update next button text
+            document.getElementById('nextBtn').textContent =
+                document.getElementById('nextBtn').getAttribute(`data-${currentLanguage}`);
+
+            document.getElementById('nextBtn').disabled = true;
+            answered = false;
+        }
+
+        function selectAnswer(index) {
+            if (answered) return;
+            answered = true;
+
+            const questions = quizData[currentDifficulty];
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option-btn');
+
+            options.forEach((btn, i) => {
+                btn.style.pointerEvents = 'none';
+                if (i === q.correct) {
+                    btn.classList.add('correct');
+                } else if (i === index) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            if (index === q.correct) {
+                score++;
+            }
+
+            const explanation = document.getElementById('explanation');
+            if (explanation && (q.explanation || q.explanationEn)) {
+                explanation.classList.add('show');
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            const questions = quizData[currentDifficulty];
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quizInterface').style.display = 'none';
+            document.getElementById('resultCard').style.display = 'block';
+
+            const questions = quizData[currentDifficulty];
+            const percentage = (score / questions.length) * 100;
+
+            document.getElementById('finalScore').textContent = `${score} / ${questions.length}`;
+
+            const t = translations[currentLanguage];
+            let message = '';
+            if (percentage === 100) {
+                message = t.perfect;
+            } else if (percentage >= 80) {
+                message = t.excellent;
+            } else if (percentage >= 60) {
+                message = t.good;
+            } else {
+                message = t.needPractice;
+            }
+
+            document.getElementById('resultMessage').textContent = message;
+
+            // Update restart button
+            const restartBtn = document.querySelector('#resultCard .quiz-btn');
+            if (restartBtn) {
+                restartBtn.textContent = restartBtn.getAttribute(`data-${currentLanguage}`);
+            }
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('difficultySelection').style.display = 'grid';
+        }
+    </script>
+</body>
+</html>

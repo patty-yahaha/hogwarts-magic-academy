@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人物介绍</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .characters-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-nav {
+            margin-bottom: 30px;
+        }
+
+        .back-nav button {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-nav button:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+        }
+
+        .page-title {
+            text-align: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #c9a227;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            padding: 12px 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+            border-color: #d4af37;
+            font-weight: 600;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .character-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .character-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+        }
+
+        .character-card:hover::before {
+            opacity: 1;
+        }
+
+        .character-image {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.1), transparent);
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .character-info {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .character-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .character-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: #c9a227;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .character-house {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+        }
+
+        .house-gryffindor {
+            background: linear-gradient(135deg, #740001, #ae0001);
+            color: #ffd700;
+        }
+
+        .house-slytherin {
+            background: linear-gradient(135deg, #1a472a, #2a623d);
+            color: #c9a227;
+        }
+
+        .house-ravenclaw {
+            background: linear-gradient(135deg, #222f5b, #0e1a40);
+            color: #946b2d;
+        }
+
+        .house-hufflepuff {
+            background: linear-gradient(135deg, #372e29, #ecb939);
+            color: #ffd700;
+        }
+
+        .house-staff {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            color: #d4af37;
+        }
+
+        .house-muggles {
+            background: linear-gradient(135deg, #4a4a4a, #2a2a2a);
+            color: #d4af37;
+        }
+
+        .house-creatures {
+            background: linear-gradient(135deg, #2d4a2d, #1a2e1a);
+            color: #90ee90;
+        }
+
+        .house-protagonists {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+        }
+
+        .house-villains {
+            background: linear-gradient(135deg, #ae0001, #8b0000);
+            color: #ffcccb;
+        }
+
+        .character-role {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.85rem;
+            color: #8b6914;
+            line-height: 1.6;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.98), rgba(10, 20, 40, 0.98));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 80px rgba(212, 175, 55, 0.5);
+        }
+
+        .modal-header {
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-avatar {
+            font-size: 5rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #c9a227;
+            font-style: italic;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-section {
+            margin-bottom: 25px;
+        }
+
+        .modal-section h4 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #d4af37;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-section h4::before {
+            content: '✨';
+        }
+
+        .modal-text {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            color: #c9a227;
+            line-height: 1.8;
+        }
+
+        .modal-close {
+            text-align: center;
+            padding: 20px;
+            border-top: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .close-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a3e;
+            padding: 12px 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .character-image {
+                height: 150px;
+                font-size: 4rem;
+            }
+
+            .filter-buttons {
+                gap: 10px;
+            }
+
+            .filter-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="characters-container">
+            <div class="back-nav">
+                <button onclick="goBack()">← 返回大厅</button>
+            </div>
+
+            <h1 class="page-title">👥 人物介绍 👥</h1>
+            <p class="page-subtitle">Characters of Harry Potter and the Sorcerer's Stone</p>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterCharacters('all')">全部</button>
+                <button class="filter-btn" onclick="filterCharacters('protagonists')">核心主角</button>
+                <button class="filter-btn" onclick="filterCharacters('staff')">教职员工</button>
+                <button class="filter-btn" onclick="filterCharacters('students')">在校学生</button>
+                <button class="filter-btn" onclick="filterCharacters('muggles')">麻瓜</button>
+                <button class="filter-btn" onclick="filterCharacters('creatures')">神奇生物</button>
+            </div>
+
+            <div class="characters-grid" id="charactersGrid">
+                <!-- 卡片将通过JavaScript生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="characterModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div id="modalAvatar" class="modal-avatar"></div>
+                <div id="modalName" class="modal-name"></div>
+                <div id="modalTitle" class="modal-title"></div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 详情内容将动态填充 -->
+            </div>
+            <div class="modal-close">
+                <button class="close-btn" onclick="closeModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const characters = [
+            // ===== 核心主角 =====
+            {
+                name: "哈利·波特",
+                nameEn: "Harry Potter",
+                emoji: "👦🏻",
+                title: "大难不死的男孩",
+                gender: "男",
+                house: "gryffindor",
+                role: "protagonists",
+                description: "霍格沃茨一年级学生，格兰芬多学院。在婴儿时期从伏地魔的杀戮咒下幸存，额头上留下闪电形伤疤。从小在麻瓜德思礼家中受尽虐待，直到11岁得知自己是一名巫师。勇敢、忠诚、热爱魁地奇，是霍格沃茨寻找魔法石的冒险核心人物。",
+                chapters: "第1-17章"
+            },
+            {
+                name: "罗恩·韦斯莱",
+                nameEn: "Ron Weasley",
+                emoji: "👦🏼",
+                title: "哈利的好朋友",
+                gender: "男",
+                house: "gryffindor",
+                role: "protagonists",
+                description: "霍格沃茨一年级学生，格兰芬多学院。韦斯莱家的第六个儿子，来自古老但贫困的纯血统巫师家族。在霍格沃茨特快列车上与哈利相识并成为挚友。擅长巫师棋，有时会嫉妒哈利的光环，但始终保持忠诚。性格直率、幽默、勇敢。",
+                chapters: "第6-17章"
+            },
+            {
+                name: "赫敏·格兰杰",
+                nameEn: "Hermione Granger",
+                emoji: "👩🏻",
+                title: "同龄人中最聪明的女巫",
+                gender: "女",
+                house: "gryffindor",
+                role: "protagonists",
+                description: "霍格沃茨一年级学生，格兰芬多学院。麻瓜出身的女巫，父母是牙医。极其聪明、勤奋好学，熟读所有魔法课本，是同龄人中最优秀的学生。性格认真严谨、重视规则，但为了朋友愿意打破规则。在寻找魔法石的冒险中发挥了关键作用。",
+                chapters: "第6-17章"
+            },
+
+            // ===== 霍格沃茨教职员工 =====
+            {
+                name: "阿不思·邓布利多",
+                nameEn: "Albus Dumbledore",
+                emoji: "🧙‍♂️",
+                title: "霍格沃茨校长",
+                gender: "男",
+                house: "staff",
+                role: "staff",
+                description: "霍格沃茨魔法学校校长，被公认为当代最伟大的巫师。银发银须，半月形眼镜，身材瘦高。智慧、公正、强大，是伏地魔唯一惧怕的人。深爱学生，但有时显得神秘莫测。关键时刻总是出现并给予哈利指引。",
+                chapters: "第1、8、10、12、17章"
+            },
+            {
+                name: "米勒娃·麦格",
+                nameEn: "Minerva McGonagall",
+                emoji: "👩🏻",
+                title: "副校长/变形术教授",
+                gender: "女",
+                house: "gryffindor",
+                role: "staff",
+                description: "霍格沃茨副校长，格兰芬多学院院长，变形术教授。严肃、严厉但公正，戴着方形眼镜，黑色头发总是紧束成髻。可以变成一只斑猫。虽然严格，但深爱学生，是霍格沃茨的中流砥柱。",
+                chapters: "第1、4、7-9、15-17章"
+            },
+            {
+                name: "西弗勒斯·斯内普",
+                nameEn: "Severus Snape",
+                emoji: "🧔🏻",
+                title: "魔药课教授",
+                gender: "男",
+                house: "slytherin",
+                role: "staff",
+                description: "霍格沃茨魔药课教师，斯莱特林学院院长。皮肤蜡黄，头发油腻黑色，眼神冷漠。曾是食死徒，被邓布利多接纳并聘用。极度偏袒斯莱特林学生，对哈利充满敌意。看似反派，实则复杂神秘。",
+                chapters: "第7-8、11、13-14章"
+            },
+            {
+                name: "奇洛",
+                nameEn: "Quirinus Quirrell",
+                emoji: "👨🏻",
+                title: "黑魔法防御术教授",
+                gender: "男",
+                house: "staff",
+                role: "staff",
+                description: "霍格沃茨黑魔法防御术教师。性格神经质，总是穿着厚厚的紫色围巾，身上有大蒜味。表面上是胆小的教师，实际上后脑勺附着着伏地魔的灵魂，是试图窃取魔法石的幕后黑手。",
+                chapters: "第5、8、11-12、15-17章"
+            },
+            {
+                name: "鲁伯·海格",
+                nameEn: "Rubeus Hagrid",
+                emoji: "🧔",
+                title: "狩猎场看守/钥匙保管员",
+                gender: "男",
+                house: "gryffindor",
+                role: "staff",
+                description: "霍格沃茨狩猎场看守和钥匙保管员，半巨人。体型巨大魁梧，身高几乎是普通人的两倍，头发和胡须浓密杂乱。心地善良，热爱所有神奇动物。被错误指控打开密室而被开除，但被邓布利多保留为员工。哈利最忠实的朋友之一。",
+                chapters: "第4-5、8、10、12-17章"
+            },
+            {
+                name: "菲利乌斯·弗立维",
+                nameEn: "Filius Flitwick",
+                emoji: "🧙‍♂️",
+                title: "魔咒课教授",
+                gender: "男",
+                house: "ravenclaw",
+                role: "staff",
+                description: "霍格沃茨魔咒课教师，拉文克劳学院院长。身材非常矮小，需要站在书本堆上才能看到全班同学。和蔼可亲，教学认真。",
+                chapters: "第8、10、13章"
+            },
+            {
+                name: "阿格斯·费尔奇",
+                nameEn: "Argus Filch",
+                emoji: "👨🏻",
+                title: "看门人",
+                gender: "男",
+                house: "staff",
+                role: "staff",
+                description: "霍格沃茨看门人，是个哑炮（巫师家庭出身但不会魔法）。骨瘦如柴，总是带着他的猫Mrs. Norris四处巡逻。极度讨厌学生，总是试图抓住违反校规的学生。性格阴郁、冷酷。",
+                chapters: "第7、9、12、15章"
+            },
+            {
+                name: "霍琦夫人",
+                nameEn: "Madam Hooch",
+                emoji: "👩🏻",
+                title: "魁地奇飞行教练",
+                gender: "女",
+                house: "staff",
+                role: "staff",
+                description: "霍格沃茨魁地奇飞行教练。头发灰色，眼神锐利如鹰。负责一年级新生飞行课和魁地奇比赛裁判。严格而公正。",
+                chapters: "第9-11章"
+            },
+            {
+                name: "庞弗雷夫人",
+                nameEn: "Madam Pomfrey",
+                emoji: "👩🏻",
+                title: "校医院护士长",
+                gender: "女",
+                house: "staff",
+                role: "staff",
+                description: "霍格沃茨校医院护士长。医术高明，负责治疗学生和教师的各种伤病。严格但充满关怀，总是为学生着想。",
+                chapters: "第13章"
+            },
+
+            // ===== 德思礼一家及相关麻瓜 =====
+            {
+                name: "弗农·德思礼",
+                nameEn: "Vernon Dursley",
+                emoji: "👨🏻",
+                title: "哈利的姨父",
+                gender: "男",
+                house: "muggles",
+                role: "muggles",
+                description: "哈利的姨父，Grunnings钻床公司的经理。身材肥胖，几乎没有脖子。极度讨厌和恐惧任何不寻常的事物，尤其是魔法。对哈利残忍、冷漠，试图'扼杀'哈利的魔法天赋。",
+                chapters: "第1-3章"
+            },
+            {
+                name: "佩妮·德思礼",
+                nameEn: "Petunia Dursley",
+                emoji: "👩🏻",
+                title: "哈利的姨妈",
+                gender: "女",
+                house: "muggles",
+                role: "muggles",
+                description: "哈利的姨妈，莉莉·波特的姐姐。身材瘦高，脖子极长。同样讨厌魔法和哈利，对哈利刻薄寡情。内心深处可能对妹妹有复杂的感情。",
+                chapters: "第1-3章"
+            },
+            {
+                name: "达力·德思礼",
+                nameEn: "Dudley Dursley",
+                emoji: "👦🏻",
+                title: "哈利的表哥",
+                gender: "男",
+                house: "muggles",
+                role: "muggles",
+                description: "德思礼家的独生子，哈利的表哥。身材肥胖，被父母宠坏。总是欺负哈利，是哈利童年噩梦的来源。",
+                chapters: "第1-3章"
+            },
+            {
+                name: "皮尔·波奇斯",
+                nameEn: "Piers Polkiss",
+                emoji: "👦🏻",
+                title: "达力的朋友",
+                gender: "男",
+                house: "muggles",
+                role: "muggles",
+                description: "达力最好的朋友，瘦长脸，总是和达力一起欺负哈利。在达力生日那天一起去了动物园。",
+                chapters: "第2章"
+            },
+            {
+                name: "费格太太",
+                nameEn: "Mrs. Figg",
+                emoji: "👩🏻",
+                title: "哈利的临时照看者",
+                gender: "女",
+                house: "muggles",
+                role: "muggles",
+                description: "住在女贞路的邻居老太太，曾多次照看哈利。家里弥漫着卷心菜的味道，养了很多只猫。哈利讨厌去她家，因为她总是让他看照片。",
+                chapters: "第2-3章"
+            },
+
+            // ===== 霍格沃茨学生 =====
+            {
+                name: "德拉科·马尔福",
+                nameEn: "Draco Malfoy",
+                emoji: "👦🏻",
+                title: "斯莱特林学生",
+                gender: "男",
+                house: "slytherin",
+                role: "students",
+                description: "霍格沃茨一年级学生，斯莱特林学院。卢修斯·马尔福的儿子，出身富有的纯血统巫师家族。肤色苍白，金发，神情傲慢。从小就鄙视麻瓜出身者。在霍格沃茨成为哈利的主要对头，经常挑衅和嘲讽哈利及其朋友。",
+                chapters: "第5-9、11-13章"
+            },
+            {
+                name: "纳威·隆巴顿",
+                nameEn: "Neville Longbottom",
+                emoji: "👦🏻",
+                title: "健忘的男孩",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "霍格沃茨一年级学生，格兰芬多学院。圆脸，身材健壮但总是健忘、笨手笨脚。来自纯血统巫师家族，但魔法天赋不高，总是被奶奶嫌弃。经常被马尔福欺负，但内心善良、勇敢。",
+                chapters: "第7-9、13-16章"
+            },
+            {
+                name: "弗雷德·韦斯莱",
+                nameEn: "Fred Weasley",
+                emoji: "👦🏼",
+                title: "双胞胎哥哥",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "霍格沃茨五年级学生，罗恩的双胞胎哥哥之一。和乔治极其相似，都喜欢恶作剧和调皮捣蛋。是霍格沃茨有名的'麻烦制造者'。",
+                chapters: "第6章"
+            },
+            {
+                name: "乔治·韦斯莱",
+                nameEn: "George Weasley",
+                emoji: "👦🏼",
+                title: "双胞胎弟弟",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "霍格沃茨五年级学生，罗恩的双胞胎弟弟之一。和弗雷德极其相似，都喜欢恶作剧和调皮捣蛋。",
+                chapters: "第6章"
+            },
+            {
+                name: "珀西·韦斯莱",
+                nameEn: "Percy Weasley",
+                emoji: "👦🏼",
+                title: "韦斯莱家三儿子",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "霍格沃茨六年级学生，韦斯莱家的第三子。格兰芬多级长，性格严肃认真，热爱规则和学习。总是对双胞胎的恶作剧感到不满。",
+                chapters: "第6章"
+            },
+            {
+                name: "西莫·斐尼甘",
+                nameEn: "Seamus Finnigan",
+                emoji: "👦🏻",
+                title: "格兰芬多学生",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "霍格沃茨一年级学生，格兰芬多学院。沙色头发，来自爱尔兰。母亲是女巫，父亲是麻瓜（麻瓜出身巫师）。",
+                chapters: "第7章"
+            },
+            {
+                name: "迪安·托马斯",
+                nameEn: "Dean Thomas",
+                emoji: "👦🏻",
+                title: "格兰芬多学生",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "霍格沃茨一年级学生，格兰芬多学院。黑发，喜欢绘画和足球。被父母收养，不知道自己是麻瓜出身还是混血。",
+                chapters: "第7章"
+            },
+            {
+                name: "文森特·克拉布",
+                nameEn: "Vincent Crabbe",
+                emoji: "👦🏻",
+                title: "马尔福的跟班",
+                gender: "男",
+                house: "slytherin",
+                role: "students",
+                description: "霍格沃茨一年级学生，斯莱特林学院。身材肥硕，总是和马尔福及高尔一起行动。性格粗暴，智商不高。",
+                chapters: "第6-7、12章"
+            },
+            {
+                name: "格雷戈里·高尔",
+                nameEn: "Gregory Goyle",
+                emoji: "👦🏻",
+                title: "马尔福的跟班",
+                gender: "男",
+                house: "slytherin",
+                role: "students",
+                description: "霍格沃茨一年级学生，斯莱特林学院。身材肥硕，总是和马尔福及克拉布一起行动。和克拉布一样，性格粗暴，智商不高。",
+                chapters: "第6-7、12章"
+            },
+            {
+                name: "奥利弗·伍德",
+                nameEn: "Oliver Wood",
+                emoji: "👦🏻",
+                title: "格兰芬多魁地奇队长",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "霍格沃茨五年级学生，格兰芬多魁地奇球队队长。对魁地奇充满热情，严格训练队员。",
+                chapters: "第10-11章"
+            },
+            {
+                name: "李·乔丹",
+                nameEn: "Lee Jordan",
+                emoji: "👦🏻",
+                title: "魁地奇解说员",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "霍格沃茨学生，格兰芬多学院。弗雷德和乔治的好友，负责魁地奇比赛解说。解说时充满热情，但偏袒格兰芬多。",
+                chapters: "第11章"
+            },
+            {
+                name: "马库斯·弗林特",
+                nameEn: "Marcus Flint",
+                emoji: "👦🏻",
+                title: "斯莱特林魁地奇队长",
+                gender: "男",
+                house: "slytherin",
+                role: "students",
+                description: "霍格沃茨六年级学生，斯莱特林魁地奇球队队长。长相像猢狲，性格粗鲁。",
+                chapters: "第11章"
+            },
+
+            // ===== 其他人类巫师 =====
+            {
+                name: "伏地魔",
+                nameEn: "Lord Voldemort",
+                emoji: "🦹",
+                title: "黑魔王",
+                gender: "男",
+                house: "villains",
+                role: "creatures",
+                description: "原名汤姆·马沃罗·里德尔，魔法历史上最危险的黑巫师。杀害哈利的父母，试图杀死哈利时被反弹的杀戮咒摧毁肉身，只剩灵魂。本书中附着在奇洛教授后脑勺，试图窃取魔法石恢复肉身。冷酷、残忍、追求永生。",
+                chapters: "第1、5、11、15-17章"
+            },
+            {
+                name: "查理·韦斯莱",
+                nameEn: "Charlie Weasley",
+                emoji: "👦🏼",
+                title: "罗恩的二哥",
+                gender: "男",
+                house: "gryffindor",
+                role: "students",
+                description: "韦斯莱家的第二子，在罗马尼亚研究龙。曾是格兰芬多魁地奇球队队长。书中被提及，但未正式出场。",
+                chapters: "第6章"
+            },
+            {
+                name: "尼勒·勒梅",
+                nameEn: "Nicolas Flamel",
+                emoji: "👨🏻",
+                title: "魔法石制造者",
+                gender: "男",
+                house: "staff",
+                role: "staff",
+                description: "邓布利多的朋友，著名的炼金术士，制造了魔法石，能点石成金并制造长生不老药。年过六百岁，与妻子住在德文郡。魔法石被摧毁后最终去世。",
+                chapters: "第11、13-14章"
+            },
+            {
+                name: "加里克·奥利凡德",
+                nameEn: "Garrick Ollivander",
+                emoji: "👨🏻",
+                title: "魔杖制作师",
+                gender: "男",
+                house: "staff",
+                role: "staff",
+                description: "对角巷奥利凡德魔杖店的老板，全英国最好的魔杖制作师。身材瘦小，眼睛像月亮一样大而浅白。记得每一根他售出的魔杖。为哈利、罗恩和赫敏选择了他们的魔杖。",
+                chapters: "第5章"
+            },
+
+            // ===== 魔法生物、幽灵与画像 =====
+            {
+                name: "拉环",
+                nameEn: "Griphook",
+                emoji: "👺",
+                title: "古灵阁妖精",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "古灵阁巫师银行的妖精职员。曾带领海格和哈利前往哈利的金库。",
+                chapters: "第5章"
+            },
+            {
+                name: "皮皮鬼",
+                nameEn: "Peeves",
+                emoji: "👻",
+                title: "霍格沃茨捣蛋鬼",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "霍格沃茨的恶作剧幽灵，喜欢捣乱和制造混乱。邓布利多允许他留在学校。曾把教室弄乱，也会帮助学生（例如给费尔奇制造混乱）。",
+                chapters: "第7-9、14章"
+            },
+            {
+                name: "尼古拉斯·德·敏西-波平顿爵士",
+                nameEn: "Nearly Headless Nick",
+                emoji: "👻",
+                title: "差点没头的尼克",
+                gender: "男",
+                house: "gryffindor",
+                role: "creatures",
+                description: "格兰芬多学院的幽灵，因为行刑失败而差点被斩首，头几乎与身体分离，只有一层皮相连。友善、喜欢聚会，邀请哈利参加他的忌辰晚会。",
+                chapters: "第7、10、12章"
+            },
+            {
+                name: "胖夫人",
+                nameEn: "Fat Lady",
+                emoji: "🖼️",
+                title: "格兰芬多入口画像",
+                gender: "女",
+                house: "gryffindor",
+                role: "creatures",
+                description: "格兰芬多公共休息室入口的画像人物。身穿粉色丝绸长裙，喜欢酒和宴会。需要密码才能进入。",
+                chapters: "第7-9章"
+            },
+            {
+                name: "费伦泽",
+                nameEn: "Firenze",
+                emoji: "🐴",
+                title: "马人",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "禁林中的马人，身体是人，腰以下是马。金发、蓝眼、异常英俊。违背马人传统，同意背负哈利离开禁林，并解释关于伏地魔的事情。因此被其他马人排斥。",
+                chapters: "第15章"
+            },
+            {
+                name: "罗南",
+                nameEn: "Ronan",
+                emoji: "🐴",
+                title: "马人",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "禁林中的马人，红发、红须。与其他马人一样，不愿意与巫师打交道，认为从星星能读到的已经足够，不需要干预人类事务。",
+                chapters: "第15章"
+            },
+            {
+                name: "贝恩",
+                nameEn: "Bane",
+                emoji: "🐴",
+                title: "马人",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "禁林中的马人，黑发黑须。对费伦泽帮助哈利的行为感到愤怒，认为这是背叛马人的传统。",
+                chapters: "第15章"
+            },
+            {
+                name: "海德薇",
+                nameEn: "Hedwig",
+                emoji: "🦉",
+                title: "哈利的猫头鹰",
+                gender: "女",
+                house: "creatures",
+                role: "creatures",
+                description: "哈利11岁生日时从海格手中收到的白色雪鸮。聪明、忠诚，是哈利的信使和伙伴。在德思礼家期间一直被关在笼子里，到霍格沃茨后可以自由飞翔。",
+                chapters: "第4-5、10章"
+            },
+            {
+                name: "斑斑",
+                nameEn: "Scabbers",
+                emoji: "🐀",
+                title: "罗恩的老鼠",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "罗恩的宠物老鼠，老旧、贪睡。在霍格沃茨特快列车上被赫敏发现，之后与克鲁克香克有矛盾。实际上是被认为已死的彼得·佩迪鲁的阿尼马格斯形态。",
+                chapters: "第6章"
+            },
+            {
+                name: "牙牙",
+                nameEn: "Fang",
+                emoji: "🐕",
+                title: "海格的狗",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "海格养的黑色猎犬，体型巨大但性格胆小友好。曾陪伴哈利和赫敏进入禁林。",
+                chapters: "第14-15章"
+            },
+            {
+                name: "路威",
+                nameEn: "Fluffy",
+                emoji: "🐕",
+                title: "三头犬",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "海格从希腊酒吧赢来的三头巨犬，负责看守魔法石陷阱。只有听到音乐才会睡着。曾被哈利和朋友们用音乐催眠以通过。",
+                chapters: "第11、16章"
+            },
+            {
+                name: "诺伯",
+                nameEn: "Norbert",
+                emoji: "🐉",
+                title: "挪威脊背龙",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "海格通过陌生巫师（奇洛）获得的龙蛋，孵化出的挪威脊背龙宝宝。被海格秘密饲养在小木屋，后被查理·韦斯莱的朋友带到罗马尼亚。实际上雌性。",
+                chapters: "第14-15章"
+            },
+            {
+                name: "费尔奇的猫",
+                nameEn: "Mrs. Norris",
+                emoji: "🐈",
+                title: "费尔奇的猫",
+                gender: "女",
+                house: "creatures",
+                role: "creatures",
+                description: "阿格斯·费尔奇的宠物猫，骨瘦如柴，灯泡般的黄色眼睛。总是跟着费尔奇四处巡逻，帮助他抓住违反校规的学生。学生们都很怕她。",
+                chapters: "第7章"
+            },
+            {
+                name: "崔斯坦",
+                nameEn: "Trevor",
+                emoji: "🐸",
+                title: "纳威的蟾蜍",
+                gender: "男",
+                house: "creatures",
+                role: "creatures",
+                description: "纳威的宠物蟾蜍，多次逃跑。曾在霍格沃茨特快列车上被赫敏帮忙寻找。",
+                chapters: "第6、10章"
+            }
+        ];
+
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        function renderCharacters(filter = 'all') {
+            const grid = document.getElementById('charactersGrid');
+            grid.innerHTML = '';
+
+            const filteredCharacters = filter === 'all'
+                ? characters
+                : characters.filter(c => c.role === filter);
+
+            filteredCharacters.forEach((char, index) => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.onclick = () => showCharacterDetail(index);
+
+                card.innerHTML = `
+                    <div class="character-image">${char.emoji}</div>
+                    <div class="character-info">
+                        <div class="character-name">${char.name}</div>
+                        <div class="character-title">${char.title}</div>
+                        <span class="character-house house-${char.house}">${getHouseName(char.house)}</span>
+                        <div class="character-role">${char.description.substring(0, 50)}...</div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function getHouseName(house) {
+            const houseNames = {
+                'gryffindor': '格兰芬多',
+                'slytherin': '斯莱特林',
+                'ravenclaw': '拉文克劳',
+                'hufflepuff': '赫奇帕奇',
+                'staff': '教职员工',
+                'protagonists': '核心主角',
+                'students': '在校学生',
+                'muggles': '麻瓜',
+                'creatures': '神奇生物',
+                'villains': '反派角色'
+            };
+            return houseNames[house] || house;
+        }
+
+        function filterCharacters(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderCharacters(filter);
+        }
+
+        function showCharacterDetail(index) {
+            const char = characters[index];
+            const modal = document.getElementById('characterModal');
+
+            document.getElementById('modalAvatar').textContent = char.emoji;
+            document.getElementById('modalName').textContent = char.name + ' (' + char.nameEn + ')';
+            document.getElementById('modalTitle').textContent = char.title;
+
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <div class="modal-section">
+                    <h4>基本信息</h4>
+                    <p class="modal-text">
+                        <strong>性别：</strong>${char.gender}<br>
+                        <strong>所属：</strong>${getHouseName(char.house)}<br>
+                        <strong>出场章节：</strong>${char.chapters}
+                    </p>
+                </div>
+                <div class="modal-section">
+                    <h4>人物描述</h4>
+                    <p class="modal-text">${char.description}</p>
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== document.getElementById('characterModal')) {
+                document.getElementById('characterModal').style.display = 'none';
+            } else {
+                document.getElementById('characterModal').style.display = 'none';
+            }
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 从URL获取参数
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split('&');
+
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i].split('=');
+                if (pair[0]) {
+                    params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+                }
+            }
+            return params;
+        }
+
+        // 查找并高亮角色
+        function findAndHighlightCharacter(searchTerm) {
+            if (!searchTerm) return;
+
+            const foundIndex = characters.findIndex(char => {
+                return char.name.includes(searchTerm) ||
+                       char.nameEn.toLowerCase().includes(searchTerm.toLowerCase());
+            });
+
+            if (foundIndex !== -1) {
+                // 先应用过滤器
+                const char = characters[foundIndex];
+                const filterBtn = document.querySelector(`.filter-btn[onclick*="'${char.role}'"]`);
+                if (filterBtn) {
+                    filterBtn.click();
+                }
+
+                // 等待渲染完成后滚动
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('.character-card');
+                    if (cards[foundIndex]) {
+                        cards[foundIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        cards[foundIndex].style.animation = 'highlight 2s ease-in-out 3';
+                    }
+                }, 500);
+            }
+        }
+
+        // 添加高亮动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes highlight {
+                0%, 100% { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3); }
+                50% { transform: translateY(-15px) scale(1.05); box-shadow: 0 30px 80px rgba(212, 175, 55, 0.6), 0 0 40px rgba(212, 175, 55, 0.8); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            const params = getUrlParams();
+
+            if (params.filter) {
+                const filterBtn = document.querySelector(`.filter-btn[onclick*="'${params.filter}'"]`);
+                if (filterBtn) {
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    filterBtn.classList.add('active');
+                    renderCharacters(params.filter);
+                }
+            } else {
+                renderCharacters();
+            }
+
+            if (params.search) {
+                findAndHighlightCharacter(params.search);
+            }
+        });
+    </script>
+</body>
+</html>

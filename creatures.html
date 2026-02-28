@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神奇动物介绍</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .creatures-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-nav {
+            margin-bottom: 30px;
+        }
+
+        .back-nav button {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-nav button:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+        }
+
+        .page-title {
+            text-align: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #c9a227;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .page-info {
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.95rem;
+            color: #8b6914;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            padding: 12px 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+            border-color: #d4af37;
+            font-weight: 600;
+        }
+
+        .creatures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .creature-card {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .creature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .creature-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+        }
+
+        .creature-card:hover::before {
+            opacity: 1;
+        }
+
+        .creature-header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+        }
+
+        .creature-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+        }
+
+        .creature-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        .creature-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: #c9a227;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .creature-aliases {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.8rem;
+            color: #8b6914;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .creature-danger {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .danger-x {
+            background: linear-gradient(135deg, #2a1a3e, #1a472a);
+            color: #90ee90;
+        }
+
+        .danger-xx {
+            background: linear-gradient(135deg, #2a1a3e, #d4af37);
+            color: #fff;
+        }
+
+        .danger-xxx {
+            background: linear-gradient(135deg, #ff6b35, #d4af37);
+            color: #fff;
+        }
+
+        .danger-xxxx {
+            background: linear-gradient(135deg, #ae0001, #ff6b35);
+            color: #fff;
+        }
+
+        .danger-xxxxx {
+            background: linear-gradient(135deg, #ae0001, #8b0000);
+            color: #ffcccb;
+            animation: pulse-danger 2s infinite;
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(174, 0, 1, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(174, 0, 1, 0.8);
+            }
+        }
+
+        .creature-info {
+            padding: 20px 25px;
+        }
+
+        .info-section {
+            margin-bottom: 18px;
+        }
+
+        .info-label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: #d4af37;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-label::before {
+            content: '✨';
+        }
+
+        .info-text {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+            color: #c9a227;
+            line-height: 1.7;
+            padding-left: 25px;
+        }
+
+        .creature-abilities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            padding-left: 25px;
+        }
+
+        .ability-tag {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: #d4af37;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+            padding: 25px;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.5), rgba(10, 20, 40, 0.5));
+            border-radius: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+            color: #c9a227;
+        }
+
+        .legend-badge {
+            width: 50px;
+            height: 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: 'Cinzel', serif;
+        }
+
+        @media (max-width: 768px) {
+            .creatures-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .filter-buttons {
+                gap: 10px;
+            }
+
+            .filter-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+
+            .legend {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="creatures-container">
+            <div class="back-nav">
+                <button onclick="goBack()">← 返回大厅</button>
+            </div>
+
+            <h1 class="page-title">🦲 神奇动物介绍 🦲</h1>
+            <p class="page-subtitle">Fantastic Beasts of the Wizarding World</p>
+            <p class="page-info">收录《神奇动物在哪里》中74种神奇动物<br>根据魔法部分类级别（X-XXXXX）标注危险程度</p>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterCreatures('all')">全部 (74)</button>
+                <button class="filter-btn" onclick="filterCreatures('X')">X - 无害</button>
+                <button class="filter-btn" onclick="filterCreatures('XX')">XX - 无害/可驯养</button>
+                <button class="filter-btn" onclick="filterCreatures('XXX')">XXX - 有竞争能力</button>
+                <button class="filter-btn" onclick="filterCreatures('XXXX')">XXXX - 危险</button>
+                <button class="filter-btn" onclick="filterCreatures('XXXXX')">XXXXX - 已知杀手</button>
+            </div>
+
+            <div class="creatures-grid" id="creaturesGrid">
+                <!-- 卡片将通过JavaScript生成 -->
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-badge danger-x">X</span>
+                    <span>无聊/无害</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-badge danger-xx">XX</span>
+                    <span>无害/可驯养</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-badge danger-xxx">XXX</span>
+                    <span>有竞争能力</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-badge danger-xxxx">XXXX</span>
+                    <span>危险/需专业</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-badge danger-xxxxx">XXXXX</span>
+                    <span>已知杀手</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const creatures = [
+            // X - 无害
+            {
+                name: "弗洛伯黏虫",
+                nameEn: "Flobberworm",
+                emoji: "🪱",
+                aliases: "",
+                classification: "X",
+                description: "生活在潮湿沟渠中的褐色蠕形动物，不爱动。它的两端都会分泌黏液，这种黏液有时被用来增稠药剂。",
+                habitat: "潮湿沟渠",
+                abilities: ["分泌黏液", "增稠药剂"]
+            },
+            {
+                name: "霍克拉普",
+                nameEn: "Horklump",
+                emoji: "🍄",
+                aliases: "",
+                classification: "X",
+                description: "长得像覆盖着黑色硬毛的肉红色蘑菇，是极其不受欢迎的花园覆盖物，常被地精吃掉。",
+                habitat: "花园",
+                abilities: ["被地精食用", "花园害虫"]
+            },
+
+            // XX - 无害/可驯养
+            {
+                name: "卜鸟",
+                nameEn: "Augurey",
+                emoji: "🐦",
+                aliases: "爱尔兰凤凰 (Irish Phoenix)",
+                classification: "XX",
+                description: "一种神情哀伤、身体瘦小、全身呈绿色光泽的黑鸟。它低沉的颤颤悠悠的叫声曾被人们一度以为是预示着死亡，但后来发现卜鸟只是在大雨来临之时才叫。",
+                habitat: "英国、爱尔兰",
+                abilities: ["预报大雨", "悲伤叫声"]
+            },
+            {
+                name: "护树罗锅",
+                nameEn: "Bowtruckle",
+                emoji: "🌿",
+                aliases: "",
+                classification: "XX",
+                description: "一种守护树木的动物，身体很小，由树皮和小树枝构成，极难见到。它性情平和、害羞，但如果它所栖身的树木受到威胁，就会扑向伐木工，用锋利的手指挖出他们的眼睛。",
+                habitat: "森林中守护树木",
+                abilities: ["伪装", "锋利手指", "守护树木"]
+            },
+            {
+                name: "毛螃蟹",
+                nameEn: "Chizpurfle",
+                emoji: "🦀",
+                aliases: "",
+                classification: "XX",
+                description: "一种长仅二十分之一英寸的小寄生虫，外表类似螃蟹，生有长牙。它们受魔法的吸引，会糟蹋魔杖之类的魔法物件，或者在坩埚里饱食残留的魔法药剂。",
+                habitat: "魔法物品附近",
+                abilities: ["啃食魔法", "破坏魔杖"]
+            },
+            {
+                name: "树猴蛙",
+                nameEn: "Clabbert",
+                emoji: "🐸",
+                aliases: "",
+                classification: "XX",
+                description: "栖居在树上的生物，样子有点像猴子和青蛙杂交的后代。树猴蛙最显著的特征是它额头中间有个大脓包，察觉到危险时，大脓包就会变得猩红并闪闪发光。",
+                habitat: "树上",
+                abilities: ["危险警报", "发光脓包"]
+            },
+            {
+                name: "球遁鸟",
+                nameEn: "Diricawl",
+                emoji: "🕊️",
+                aliases: "渡渡鸟 (Dodo)",
+                classification: "XX",
+                description: "原产毛里求斯，身体肥胖、不会飞，但能随心所欲地消失和重现以逃避危险。麻瓜们曾以为这种鸟（他们称之为'渡渡鸟'）已经灭绝。",
+                habitat: "毛里求斯",
+                abilities: ["瞬间移动", "消失重现"]
+            },
+            {
+                name: "仙子",
+                nameEn: "Fairy",
+                emoji: "🧚",
+                aliases: "",
+                classification: "XX",
+                description: "一种用作装饰的小动物，智力不高，长着人的身体和昆虫般的大翅膀。它们天性好争吵，由于极度喜爱虚荣，经常在受到召唤时乖乖充当装饰品。",
+                habitat: "林地",
+                abilities: ["飞行", "装饰用"]
+            },
+            {
+                name: "食尸鬼",
+                nameEn: "Ghoul",
+                emoji: "👹",
+                aliases: "",
+                classification: "XX",
+                description: "长得丑陋，像长着獠牙的吃人巨妖，一般居住在巫师的阁楼或谷仓中。它头脑简单，只会不停地呻吟和乱扔东西，并不算特别危险。",
+                habitat: "巫师家庭阁楼",
+                abilities: ["呻吟", "乱扔东西"]
+            },
+            {
+                name: "地精",
+                nameEn: "Gnome",
+                emoji: "👺",
+                aliases: "",
+                classification: "XX",
+                description: "北欧和北美花园中最普遍的有害小动物，长着大脑袋和结实的脚板。巫师常将其抓住转晕后扔出花园墙外来驱逐它们。",
+                habitat: "花园",
+                abilities: ["挖掘", "破坏花园"]
+            },
+            {
+                name: "格林迪洛",
+                nameEn: "Grindylow",
+                emoji: "👹",
+                aliases: "",
+                classification: "XX",
+                description: "浑身淡绿色的水中魔鬼，生活在英国和爱尔兰的湖泊中。它长着犄角和非常长但极易折断的手指，人鱼已经把它们驯服了。",
+                habitat: "英国和爱尔兰湖泊",
+                abilities: ["水中攻击", "易折断手指"]
+            },
+            {
+                name: "小魔鬼",
+                nameEn: "Imp",
+                emoji: "👿",
+                aliases: "",
+                classification: "XX",
+                description: "常见于英国和爱尔兰，身高和外表类似小精灵，但没有翅膀不会飞。有一种表演闹剧的幽默感，喜欢把粗心大意的行人绊倒。",
+                habitat: "英国和爱尔兰",
+                abilities: ["恶作剧", "绊倒行人"]
+            },
+            {
+                name: "绝音鸟",
+                nameEn: "Jobberknoll",
+                emoji: "🐦",
+                aliases: "",
+                classification: "XX",
+                description: "一种蓝色小鸟，一生不鸣叫，直到死前一刻才会吐出它一生听过的各种声音，从最近听到的声音开始倒放。它的羽毛可用于制作吐真剂和回忆剂。",
+                habitat: "北欧",
+                abilities: ["回放声音", "记忆声音"]
+            },
+            {
+                name: "月痴兽",
+                nameEn: "Mooncalf",
+                emoji: "🌙",
+                aliases: "",
+                classification: "XX",
+                description: "非常腼腆的动物，身体淡灰色，头顶有两只圆眼。它仅在月圆之夜出洞在月光下跳舞，收集其银色粪便撒在花坛里能让植物长得飞快。",
+                habitat: "世界各地",
+                abilities: ["月光下跳舞", "魔法粪便"]
+            },
+            {
+                name: "蒲绒绒",
+                nameEn: "Puffskein",
+                emoji: "🔮",
+                aliases: "",
+                classification: "XX",
+                description: "呈圆球形、覆盖奶黄色软毛，性格极其温顺的食腐动物。受到抚摸会发出满意的低低哼哼声，是深受巫师儿童喜爱的宠物。",
+                habitat: "世界各地",
+                abilities: ["温顺", "食腐", "受欢迎"]
+            },
+            {
+                name: "拉莫拉鱼",
+                nameEn: "Ramora",
+                emoji: "🐟",
+                aliases: "",
+                classification: "XX",
+                description: "银色的鱼，产于印度洋。有很强的魔力，能够固定住海船，是水手的守卫，受到国际巫师联合会的严密保护。",
+                habitat: "印度洋",
+                abilities: ["固定海船", "守卫水手"]
+            },
+
+            // XXX - 有竞争能力
+            {
+                name: "火灰蛇",
+                nameEn: "Ashwinder",
+                emoji: "🔥",
+                aliases: "",
+                classification: "XXX",
+                description: "当一堆魔火不受遏制地燃烧太长的时间时，就会被创造出来的灰白色细蛇。它的寿命只有一小时，会在黑暗处产下极其耀眼炽热的卵，然后身体就会支离破碎，化作尘土。",
+                habitat: "魔法火焰中",
+                abilities: ["炽热卵", "短寿命", "化为尘土"]
+            },
+            {
+                name: "比利威格虫",
+                nameEn: "Billywig",
+                emoji: "🪰",
+                aliases: "",
+                classification: "XXX",
+                description: "澳大利亚土生土长的一种全身蓝色的昆虫，飞行时身体会旋转。凡被它蛰了的人都会觉得头晕目眩，随后便忽忽悠悠地飘起来。",
+                habitat: "澳大利亚",
+                abilities: ["旋转飞行", "致蛰", "让人飘浮"]
+            },
+            {
+                name: "斑地芒",
+                nameEn: "Bundimun",
+                emoji: "🦠",
+                aliases: "",
+                classification: "XXX",
+                description: "休息状态下的斑地芒与一片长着眼睛的微绿发绿的真菌相似。一旦在住宅中成群出现，它缓慢分泌出的物质就会腐蚀住宅的根基，并散发出恶臭。",
+                habitat: "住宅",
+                abilities: ["腐蚀根基", "散发恶臭"]
+            },
+            {
+                name: "狐媚子",
+                nameEn: "Doxie",
+                emoji: "🧚",
+                aliases: "咬人仙子 (Biting Fairy)",
+                classification: "XXX",
+                description: "时常被误认为仙子，但全身覆盖浓密黑毛，且多出两只胳膊和两条腿。它们有两排锋利有毒的牙齿，被咬后需要服用解毒药。",
+                habitat: "北欧",
+                abilities: ["有毒牙齿", "咬人", "额外肢体"]
+            },
+            {
+                name: "沼泽挖子",
+                nameEn: "Dugbog",
+                emoji: "🐊",
+                aliases: "",
+                classification: "XXX",
+                description: "生活在沼泽地区的动物，不动时像一块木头，但长有爪子和锋利的牙齿。最喜爱的食物是曼德拉草，也会对行人的脚脖子造成严重的伤害。",
+                habitat: "沼泽",
+                abilities: ["伪装木头", "吃曼德拉草", "攻击脚踝"]
+            },
+            {
+                name: "毒角兽",
+                nameEn: "Erumpent",
+                emoji: "🦏",
+                aliases: "",
+                classification: "XXX",
+                description: "非洲的大型猛兽，体形像犀牛。它的犄角能刺穿一切东西，其中含有一种致命的液体，会让任何被注入这种毒液的物体爆炸。",
+                habitat: "非洲",
+                abilities: ["刺穿一切", "致命毒液", "引发爆炸"]
+            },
+            {
+                name: "火螃蟹",
+                nameEn: "Fire Crab",
+                emoji: "🦀",
+                aliases: "",
+                classification: "XXX",
+                description: "原产于斐济，看上去像一只嵌满珠宝的大海龟。由于很多人想获得它的壳，当遇到攻击时，火螃蟹的尾部会喷出火焰来进行防御。",
+                habitat: "斐济",
+                abilities: ["喷火防御", "珠宝壳"]
+            },
+            {
+                name: "恶婆鸟",
+                nameEn: "Fwooper",
+                emoji: "🐦",
+                aliases: "",
+                classification: "XXX",
+                description: "产于非洲的艳丽鸟儿，羽毛颜色鲜艳，常用于制作羽毛笔。由于它的歌声最终会让听到的人丧失理智，出售时必须被施上沉默咒。",
+                habitat: "非洲",
+                abilities: ["艳丽羽毛", "致疯歌声", "羽毛笔材料"]
+            },
+            {
+                name: "伤心虫",
+                nameEn: "Glumbumble",
+                emoji: "🪲",
+                aliases: "",
+                classification: "XXX",
+                description: "北欧的一种灰色毛茸茸飞虫，能产生一种引人感伤的糖蜜。这种糖蜜可作为解毒药，治疗由吃阿里奥特植物叶子引发的歇斯底里症。",
+                habitat: "北欧",
+                abilities: ["感伤感蜜", "解毒药"]
+            },
+            {
+                name: "刺佬儿",
+                nameEn: "Knarl",
+                emoji: "🦔",
+                aliases: "",
+                classification: "XXX",
+                description: "外观极像刺猬，但极其多疑。如果人们在花园里摆放食物给它吃，它会以为这是陷阱，从而大肆破坏花园植物。",
+                habitat: "北欧和北美花园",
+                abilities: ["多疑", "破坏花园"]
+            },
+            {
+                name: "猫狸子",
+                nameEn: "Kneazle",
+                emoji: "🐱",
+                aliases: "",
+                classification: "XXX",
+                description: "长得像猫的小动物，很聪明且独立，具有探察出谁是品德败坏之人的不可思议的能力。它还可以带迷路的主人回家。",
+                habitat: "英国",
+                abilities: ["聪明独立", "识人能力", "带路回家"]
+            },
+            {
+                name: "小矮妖",
+                nameEn: "Leprechaun",
+                emoji: "🧑‍🦰",
+                aliases: "克劳瑞科恩 (Clauricorn)",
+                classification: "XXX",
+                description: "爱尔兰特有，比仙子聪明，全身绿色，会说人类语言。它会生产一种像金子一样的东西，但几小时后会消失得无影无踪，常制造恶作剧但未造成长期危害。",
+                habitat: "爱尔兰",
+                abilities: ["假金币", "恶作剧", "说人类语言"]
+            },
+            {
+                name: "伏地蝠",
+                nameEn: "Lethifold",
+                emoji: "👻",
+                aliases: "活尸布 (Living Shroud)",
+                classification: "XXX",
+                description: "罕见的热带生物，看上去像一件黑色的斗篷，夜晚贴着地面滑行。它会在人睡觉时将其闷死并吞吃，守护神咒是唯一能驱逐它的已知魔咒。",
+                habitat: "热带地区",
+                abilities: ["贴地滑行", "闷死猎物", "守护神咒可驱"]
+            },
+            {
+                name: "洛巴虫",
+                nameEn: "Lobalug",
+                emoji: "🦑",
+                aliases: "",
+                classification: "XXX",
+                description: "北海海底结构简单的动物，由一个有弹性的喷嘴和毒液囊组成。受威胁时会喷出毒液，常被人鱼当作武器使用。",
+                habitat: "北海海底",
+                abilities: ["喷毒液", "人鱼武器"]
+            },
+            {
+                name: "软爪陆虾",
+                nameEn: "Mackled Malaclaw",
+                emoji: "🦞",
+                aliases: "",
+                classification: "XXX",
+                description: "陆地动物，长相非常像龙虾，但其肉不可食用且会引起高烧。被它咬伤的人会在长达一周的时间内遭遇处处碰壁的罕见倒霉作用。",
+                habitat: "海滩",
+                abilities: ["不可食用", "致高烧", "带来霉运"]
+            },
+            {
+                name: "莫特拉鼠",
+                nameEn: "Murtlap",
+                emoji: "🐀",
+                aliases: "",
+                classification: "XXX",
+                description: "像大老鼠，背上有海葵状肿瘤的动物。吃掉其腌制后的肿瘤可增强对恶咒的抵御力，但过量食用会导致耳边生出紫发。",
+                habitat: "沿海地区",
+                abilities: ["抵御恶咒", "海葵肿瘤", "副作用紫发"]
+            },
+            {
+                name: "泥伏雷",
+                nameEn: "Niffler",
+                emoji: "🦔",
+                aliases: "",
+                classification: "XXX",
+                description: "长着黑毛和长吻的掘地动物，对一切闪闪发光的东西特别偏爱。常被妖精用来挖掘财宝，但由于破坏性大，绝不能作为家养宠物。",
+                habitat: "英国",
+                abilities: ["挖掘财宝", "偏爱闪亮物", "破坏力强"]
+            },
+            {
+                name: "矮猪怪",
+                nameEn: "Nogtail",
+                emoji: "🐷",
+                aliases: "",
+                classification: "XXX",
+                description: "像发育不良的长腿黑眼小猪，会偷偷跑进猪圈和普通小猪一起吃奶。它极难被抓住，在农场逗留越久造成的破坏越惨，只能被纯毛白狗赶走。",
+                habitat: "农场猪圈",
+                abilities: ["伪装猪", "破坏农场", "白狗可赶"]
+            },
+            {
+                name: "鸟蛇",
+                nameEn: "Occamy",
+                emoji: "🐍",
+                aliases: "",
+                classification: "XXX",
+                description: "长着羽毛、两条腿的蛇体动物，极具攻击性。其产下的卵壳是极其纯正、最软的纯银，它会攻击所有靠近的人以保护自己的卵。",
+                habitat: "远东、印度",
+                abilities: ["攻击性强", "银卵壳", "保护卵"]
+            },
+            {
+                name: "小精灵",
+                nameEn: "Pixie",
+                emoji: "🧚",
+                aliases: "",
+                classification: "XXX",
+                description: "多见于英格兰康沃尔郡，铁青色，没翅膀但能飞行。极其顽皮，喜欢搞五花八门的恶作剧，如把人揪住耳朵扔到屋顶。",
+                habitat: "康沃尔郡",
+                abilities: ["无翅膀飞行", "恶作剧", "揪人扔屋顶"]
+            },
+            {
+                name: "彩球鱼",
+                nameEn: "Plimpy",
+                emoji: "🐠",
+                aliases: "",
+                classification: "XXX",
+                description: "长有花纹的球形鱼，与普通鱼不同的是它有两条带蹼的长腿。常被水仙怪当成祸害，被它们打结双腿后要漂流很久才能解开。",
+                habitat: "深海",
+                abilities: ["球形", "带蹼长腿"]
+            },
+            {
+                name: "大头毛怪",
+                nameEn: "Pogrebin",
+                emoji: "👺",
+                aliases: "",
+                classification: "XXX",
+                description: "俄罗斯的恶魔，只有一英尺高，有个灰大脑袋，伏地时像块石头。喜欢跟踪人，会让人产生强烈的绝望感和无聊感，趁人跪地时跳上身试图将其吞噬。",
+                habitat: "俄罗斯",
+                abilities: ["伪装石头", "引发绝望", "跟踪吞噬"]
+            },
+            {
+                name: "庞洛克",
+                nameEn: "Porlock",
+                emoji: "🐴",
+                aliases: "",
+                classification: "XXX",
+                description: "守马的动物，长着粗毛和大鼻子，有两条带马蹄的腿。它极度不信任人类，有人走近时总是躲藏起来。",
+                habitat: "欧洲马厩",
+                abilities: ["守马", "不信任人类", "躲藏"]
+            },
+            {
+                name: "红帽子",
+                nameEn: "Red Cap",
+                emoji: "🎅",
+                aliases: "",
+                classification: "XXX",
+                description: "侏儒一样的动物，生活在古战场地洞或染过血的地方。它们会对落单的麻瓜在夜间痛下杀手，用大棒将人打死。",
+                habitat: "古战场",
+                abilities: ["袭击麻瓜", "用大棒打人"]
+            },
+            {
+                name: "火蜥蜴",
+                nameEn: "Salamander",
+                emoji: "🔥",
+                aliases: "",
+                classification: "XXX",
+                description: "生活在火焰中的小蜥蜴，以火苗为食。只要火焰不灭它就能存活，如果喂给辣椒也能存活几小时。其血液有奇效的治疗功能。",
+                habitat: "火焰中",
+                abilities: ["以火为食", "治疗血液"]
+            },
+            {
+                name: "海蛇",
+                nameEn: "Sea Serpent",
+                emoji: "🐍",
+                aliases: "",
+                classification: "XXX",
+                description: "存在于大洋中的巨型海怪，长有马头和极长的蛇身，看似凶恶但至今未有过杀害任何人的记录。",
+                habitat: "各大洋",
+                abilities: ["巨型身躯", "不伤人"]
+            },
+            {
+                name: "希拉克鱼",
+                nameEn: "Shrake",
+                emoji: "🐟",
+                aliases: "",
+                classification: "XXX",
+                description: "大西洋中全身覆盖尖刺的鱼。据说是古时巫师为了报复侮辱他们的麻瓜渔民而创造的，专门用来破坏麻瓜的渔网。",
+                habitat: "大西洋",
+                abilities: ["全身尖刺", "破坏渔网"]
+            },
+            {
+                name: "变色巨螺",
+                nameEn: "Streeler",
+                emoji: "🐌",
+                aliases: "",
+                classification: "XXX",
+                description: "非洲的巨型蜗牛，每隔一小时变一种颜色。它留下的毒液极其剧毒，会烧毁沿途遇到的一切植物，被有些人作为宠物饲养。",
+                habitat: "非洲",
+                abilities: ["变色", "剧毒粘液", "烧毁植物"]
+            },
+            {
+                name: "雪人",
+                nameEn: "Yeti",
+                emoji: "❄️",
+                aliases: "大脚板 (Bigfoot)",
+                classification: "XXX",
+                description: "西藏土生土长的大怪物，浑身白毛，可能与巨怪有亲缘关系。它会吞食任何遇到它的东西，但害怕火，高明的巫师可以将其驱走。",
+                habitat: "西藏",
+                abilities: ["吞食一切", "害怕火"]
+            },
+            {
+                name: "马头鱼尾海怪",
+                nameEn: "Hippocampus",
+                emoji: "🐴",
+                aliases: "",
+                classification: "XXX",
+                description: "原产希腊的大怪物，长着马的脑袋和前身，鱼形的尾巴和后身，地中海中常可见到。",
+                habitat: "地中海",
+                abilities: ["水中生活", "马头鱼尾"]
+            },
+            {
+                name: "鹰头马身有翼兽",
+                nameEn: "Hippogriff",
+                emoji: "🦅",
+                aliases: "",
+                classification: "XXX",
+                description: "长着巨鹰的脑袋和马的身体，能够被驯服，但必须由专家尝试。接近它时必须保持目光接触不眨眼，它鞠躬还礼后才能靠近。",
+                habitat: "欧洲",
+                abilities: ["飞行", "需要鞠躬礼", "骄傲"]
+            },
+            {
+                name: "燕尾狗",
+                nameEn: "Crup",
+                emoji: "🐕",
+                aliases: "",
+                classification: "XXX",
+                description: "原产于英格兰东南部，和杰克·拉塞尔猎狗极其相像，只是一条分叉的尾巴。它对巫师极其忠诚，可对麻瓜却凶残得很，是什么都吃的拾荒者。",
+                habitat: "英格兰东南部",
+                abilities: ["分叉尾巴", "忠诚巫师", "凶残麻瓜"]
+            },
+            {
+                name: "土扒貂",
+                nameEn: "Jarvey",
+                emoji: "🦦",
+                aliases: "",
+                classification: "XXX",
+                description: "类似长得过大的雪貂，不同之处在于它会说话。它往往只会连珠炮似地说几句简短生硬的话，无法进行真正的交谈。",
+                habitat: "英国、北美、爱尔兰",
+                abilities: ["说话", "简短生硬"]
+            },
+
+            // XXXX - 危险
+            {
+                name: "马人",
+                nameEn: "Centaur",
+                emoji: "🐴",
+                aliases: "",
+                classification: "XXXX",
+                description: "长着人的脑袋、躯干和四肢跟马的身体一样。马人很聪明，会说人类语言，精通魔法治疗、占卜、射箭和天文学，但由于它们自己的要求，被魔法部划归为'动物'之列。",
+                habitat: "禁林",
+                abilities: ["聪明", "说人类语言", "治疗占卜", "射箭天文学"]
+            },
+            {
+                name: "角驼兽",
+                nameEn: "Graphorn",
+                emoji: "🦬",
+                aliases: "",
+                classification: "XXXX",
+                description: "可见于欧洲各地山区，身体庞大，呈紫色，天性极好斗。头上长着两支锋利的长犄角，其粉末在多种药剂中极其昂贵有用。",
+                habitat: "欧洲山区",
+                abilities: ["好斗", "犄角", "药剂材料"]
+            },
+            {
+                name: "狮身鹰首兽",
+                nameEn: "Griffin",
+                emoji: "🦅",
+                aliases: "",
+                classification: "XXXX",
+                description: "长着巨鹰的前腿和脑袋、狮子的躯干和后腿。尽管性情凶猛，但常被巫师雇来守护财宝，有时也能和巫师交上朋友。",
+                habitat: "希腊",
+                abilities: ["凶猛", "守护财宝"]
+            },
+            {
+                name: "恶尔精",
+                nameEn: "Erkling",
+                emoji: "👺",
+                aliases: "",
+                classification: "XXXX",
+                description: "喜欢搞恶作剧的精灵，主要生活在德国的黑林山。它会长着尖脸，发出刺耳的咯咯叫声来引诱并吃掉小孩。",
+                habitat: "德国黑林山",
+                abilities: ["引诱小孩", "刺耳叫声", "吃小孩"]
+            },
+            {
+                name: "隐形兽",
+                nameEn: "Demiguise",
+                emoji: "🦧",
+                aliases: "",
+                classification: "XXXX",
+                description: "远东地区的食草动物，外表像有黑色大眼睛的猿人。它在受到威胁的时候，能够变得让人看不见，其如丝般银光闪闪的毛发价值很高，可用来编织隐形衣。",
+                habitat: "远东",
+                abilities: ["隐形", "预知未来", "银色毛发", "编织隐形衣"]
+            },
+            {
+                name: "卡巴",
+                nameEn: "Kappa",
+                emoji: "👹",
+                aliases: "",
+                classification: "XXXX",
+                description: "日本水怪，像长着鱼鳞的猴子，头顶有个空洞用来盛水。它吸食人血，但朝它扔刻着自己名字的黄瓜或诱骗它鞠躬让头顶的水流出，可使其失去魔力。",
+                habitat: "日本水域",
+                abilities: ["吸食人血", "头顶盛水", "鞠躬失力"]
+            },
+            {
+                name: "马形水怪",
+                nameEn: "Kelpie",
+                emoji: "🐴",
+                aliases: "",
+                classification: "XXXX",
+                description: "英国和爱尔兰的水怪，最常变幻成马的形状，引诱人骑上后潜入水底将人吃掉。使用放置咒把马笼头套到它脑袋上可使其温顺。",
+                habitat: "英国和爱尔兰水域",
+                abilities: ["变形为马", "引诱猎物", "水底吃人", "可被驯服"]
+            },
+            {
+                name: "人鱼",
+                nameEn: "Merpeople",
+                emoji: "🧜",
+                aliases: "塞壬(Siren)、塞尔基(Selky)、麦罗(Merrow)",
+                classification: "XXXX",
+                description: "栖息在世界各地水域，外表千姿百态，拥有自己的语言。拒绝被列入'人'的地位，和马人一样选择了'动物'身份，非常喜欢音乐。",
+                habitat: "世界各地水域",
+                abilities: ["自己语言", "喜欢音乐", "千姿百态"]
+            },
+            {
+                name: "变形蜥蜴",
+                nameEn: "Moke",
+                emoji: "🦎",
+                aliases: "",
+                classification: "XXX",
+                description: "银绿色蜥蜴，能随意收缩身体从而从未被麻瓜发现。其皮多用于制作钱包，因为当陌生人接近时钱包会像蜥蜴一样收缩，防盗效果极佳。",
+                habitat: "英国",
+                abilities: ["收缩身体", "防盗钱包"]
+            },
+            {
+                name: "凤凰",
+                nameEn: "Phoenix",
+                emoji: "🔥",
+                aliases: "",
+                classification: "XXXX",
+                description: "华贵的鲜红色鸟，具有重生的能力，衰老燃烧后会从灰烬中重新飞出幼鸟。它的歌声具有极强魔力，眼泪具有极强的治疗功效。",
+                habitat: "埃及、印度、中国",
+                abilities: ["浴火重生", "魔法歌声", "治愈之泪", "承载重物"]
+            },
+            {
+                name: "飞侠",
+                nameEn: "Snidget",
+                emoji: "🐦",
+                aliases: "",
+                classification: "XXXX",
+                description: "身体滚圆的金鸟，飞行速度极快且极具技巧。曾在早期的魁地奇比赛中被广泛用作比赛用球（后来被金探子取代），一度有被灭绝的危险。",
+                habitat: "欧洲",
+                abilities: ["极快飞行", "飞行技巧", "几近灭绝"]
+            },
+            {
+                name: "斯芬克司",
+                nameEn: "Sphinx",
+                emoji: "🦁",
+                aliases: "",
+                classification: "XXXX",
+                description: "埃及的一种人头狮身动物，一千多年来被巫师用来守护珍贵物品。极其聪明，喜欢出谜语让人猜，当谜底受到威胁时会变得危险。",
+                habitat: "埃及",
+                abilities: ["极度聪明", "出谜语", "守护宝物"]
+            },
+            {
+                name: "特波疣猪",
+                nameEn: "Tebo",
+                emoji: "🐗",
+                aliases: "",
+                classification: "XXXX",
+                description: "刚果的淡灰色疣猪，拥有隐形的本领，使人极难避开或抓住它，非常危险。皮被巫师珍视，用来制作护盾和衣服。",
+                habitat: "刚果",
+                abilities: ["隐形", "难以抓住", "皮制护盾"]
+            },
+            {
+                name: "巨怪",
+                nameEn: "Troll",
+                emoji: "👹",
+                aliases: "",
+                classification: "XXXX",
+                description: "身高达十二英尺的怪物，力大无穷但愚蠢透顶。分为山怪、林怪和水怪，吃生肉，有时会吃人，极度暴躁。",
+                habitat: "山、林、水",
+                abilities: ["巨大体型", "力大无穷", "愚蠢", "吃人"]
+            },
+            {
+                name: "独角兽",
+                nameEn: "Unicorn",
+                emoji: "🦄",
+                aliases: "",
+                classification: "XXXX",
+                description: "极其漂亮的带角马形动物，幼年为金色，成年为纯白色。它的角、血液和毛都有很强的魔法功效，奔跑极快，且更愿让女巫靠近。",
+                habitat: "禁林北欧",
+                abilities: ["魔法角", "魔法血液", "极快奔跑", "纯净象征"]
+            },
+            {
+                name: "飞马",
+                nameEn: "Winged Horse",
+                emoji: "🐴",
+                aliases: "神符马、伊瑟龙马、夜骐等",
+                classification: "XX - XXXX",
+                description: "包含神符马、伊瑟龙马和夜骐等很多品种的带翅膀的马。其主人被法律要求定期对它们施展幻灭咒以防麻瓜发现。",
+                habitat: "世界各地",
+                abilities: ["飞行", "多品种", "需要幻灭咒"]
+            },
+            {
+                name: "如尼纹蛇",
+                nameEn: "Runespoor",
+                emoji: "🐍",
+                aliases: "",
+                classification: "XXXX",
+                description: "非洲的三头大蛇，三个脑袋分工明确：左边是策划者，中间是梦游者，右边是批评家。脑袋间常互相残杀，且它的卵从嘴里产出，能制作刺激大脑的药剂。",
+                habitat: "非洲",
+                abilities: ["三头分工", "互相残杀", "口中产卵", "大脑药剂"]
+            },
+            {
+                name: "瑞埃姆牛",
+                nameEn: "Re'em",
+                emoji: "🐂",
+                aliases: "",
+                classification: "XXXX",
+                description: "皮毛金光闪闪的极稀有巨型牛，产于北美和远东。任何人只要喝了它的血，气力就会大增，但在公开市场极少有售。",
+                habitat: "北美、远东",
+                abilities: ["金毛", "增力气血", "极稀有"]
+            },
+
+            // XXXXX - 已知杀手
+            {
+                name: "八眼巨蛛",
+                nameEn: "Acromantula",
+                emoji: "🕷️",
+                aliases: "",
+                classification: "XXXXX",
+                description: "一种体形巨大、生性凶残的蜘蛛，它有八只眼睛，会说人类的语言。它产自加里曼丹岛，栖息在茂密的丛林里，会在地面上编织圆屋顶形蛛网，是食肉动物。",
+                habitat: "加里曼丹丛林",
+                abilities: ["巨大体形", "说人类语言", "食肉", "织网"]
+            },
+            {
+                name: "蛇怪",
+                nameEn: "Basilisk",
+                emoji: "🐍",
+                aliases: "蛇王 (King of Serpents)",
+                classification: "XXXXX",
+                description: "一种浑身绿得耀眼的巨大毒蛇，把一只小母鸡蛋放在一只癞蛤蟆身体下孵化即可培育出来。它最危险的攻击方式是用它那黄色的眼睛凝视攻击目标，任何人的目光只要和它相触，就会顷刻毙命。",
+                habitat: "由巫师培育",
+                abilities: ["致命凝视", "剧毒", "巨大体型"]
+            },
+            {
+                name: "客迈拉兽",
+                nameEn: "Chimaera",
+                emoji: "🦁",
+                aliases: "",
+                classification: "XXXXX",
+                description: "希腊珍稀巨兽，长着狮子的脑袋、绵羊的身体和火龙的尾巴。客迈拉兽本性邪恶，嗜血成性，是极其危险的动物。",
+                habitat: "希腊",
+                abilities: ["狮头羊身龙尾", "嗜血", "极度危险"]
+            },
+            {
+                name: "人头狮身蝎尾兽",
+                nameEn: "Manticore",
+                emoji: "🦁",
+                aliases: "",
+                classification: "XXXXX",
+                description: "产于希腊的极度危险的动物，长着人的脑袋、狮子的躯干和蝎子的尾巴。吞噬猎物时会发出轻唱，皮几乎排斥所有魔咒，被它蛰一下即当即毙命。",
+                habitat: "希腊",
+                abilities: ["人狮蝎混合", "轻唱吞噬", "排斥魔咒", "一击毙命"]
+            },
+            {
+                name: "五足怪",
+                nameEn: "Quintaped",
+                emoji: "👣",
+                aliases: "毛麦克布恩 (Hairy MacBoon)",
+                classification: "XXXXX",
+                description: "高度危险的食肉动物，体覆红棕色毛发，长有五条腿且每条腿末端呈畸形脚。传说是由巫师家族世仇决斗被变形而来，极度抵制被变回人形的尝试。",
+                habitat: "苏格兰德力岛",
+                abilities: ["五条腿", "食肉", "无法恢复人形"]
+            },
+            {
+                name: "囊毒豹",
+                nameEn: "Nundu",
+                emoji: "🐆",
+                aliases: "",
+                classification: "XXXXX",
+                description: "产于东非的庞大豹子，也许是世界上最危险的动物。行动无声，它呼出的气息会引起致命的疾病，足以毁灭整个村庄，制服它至少需要一百多名巫师联手。",
+                habitat: "东非",
+                abilities: ["无声行动", "致命气息", "毁灭村庄", "极难制服"]
+            },
+            {
+                name: "狼人",
+                nameEn: "Werewolf",
+                emoji: "🐺",
+                aliases: "",
+                classification: "XXXXX",
+                description: "平时是人，满月时会变形为凶猛无情的狼的生物。只有被狼人咬了才会变异，一旦变形便六亲不认，偏爱捕食人类。",
+                habitat: "世界各地",
+                abilities: ["满月变形", "六亲不认", "捕食人类", "咬人传染"]
+            }
+        ];
+
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        function renderCreatures(filter = 'all') {
+            const grid = document.getElementById('creaturesGrid');
+            grid.innerHTML = '';
+
+            const filteredCreatures = filter === 'all'
+                ? creatures
+                : creatures.filter(c => c.classification === filter);
+
+            filteredCreatures.forEach(creature => {
+                const card = document.createElement('div');
+                card.className = 'creature-card';
+
+                const dangerClass = 'danger-' + creature.classification.toLowerCase();
+
+                card.innerHTML = `
+                    <div class="creature-header">
+                        <div class="creature-emoji">${creature.emoji}</div>
+                        <div class="creature-name">${creature.name}</div>
+                        <div class="creature-name-en">${creature.nameEn}</div>
+                        ${creature.aliases ? `<div class="creature-aliases">${creature.aliases}</div>` : ''}
+                        <div class="creature-danger ${dangerClass}">${creature.classification}</div>
+                    </div>
+                    <div class="creature-info">
+                        <div class="info-section">
+                            <div class="info-label">详细介绍</div>
+                            <div class="info-text">${creature.description}</div>
+                        </div>
+                        ${creature.habitat ? `
+                        <div class="info-section">
+                            <div class="info-label">栖息地</div>
+                            <div class="info-text">${creature.habitat}</div>
+                        </div>
+                        ` : ''}
+                        ${creature.abilities && creature.abilities.length > 0 ? `
+                        <div class="info-section">
+                            <div class="info-label">特殊能力</div>
+                            <div class="creature-abilities">
+                                ${creature.abilities.map(ability => `<span class="ability-tag">${ability}</span>`).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCreatures(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderCreatures(filter);
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 从URL获取参数
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split('&');
+
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i].split('=');
+                if (pair[0]) {
+                    params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+                }
+            }
+            return params;
+        }
+
+        // 查找并高亮动物
+        function findAndHighlightCreature(searchTerm) {
+            if (!searchTerm) return;
+
+            const foundIndex = creatures.findIndex(creature => {
+                return creature.name.includes(searchTerm) ||
+                       creature.nameEn.toLowerCase().includes(searchTerm.toLowerCase());
+            });
+
+            if (foundIndex !== -1) {
+                // 先应用过滤器
+                const creature = creatures[foundIndex];
+                const filterBtn = document.querySelector(`.filter-btn[onclick*="'${creature.classification}'"]`);
+                if (filterBtn) {
+                    filterBtn.click();
+                }
+
+                // 等待渲染完成后滚动
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('.creature-card');
+                    if (cards[foundIndex]) {
+                        cards[foundIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        cards[foundIndex].style.animation = 'highlight 2s ease-in-out 3';
+                    }
+                }, 500);
+            }
+        }
+
+        // 添加高亮动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes highlight {
+                0%, 100% { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3); }
+                50% { transform: translateY(-15px) scale(1.05); box-shadow: 0 30px 80px rgba(212, 175, 55, 0.6), 0 0 40px rgba(212, 175, 55, 0.8); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            const params = getUrlParams();
+
+            if (params.filter) {
+                const filterBtn = document.querySelector(`.filter-btn[onclick*="'${params.filter}'"]`);
+                if (filterBtn) {
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    filterBtn.classList.add('active');
+                    renderCreatures(params.filter);
+                }
+            } else {
+                renderCreatures();
+            }
+
+            if (params.search) {
+                findAndHighlightCreature(params.search);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏区 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* 游戏区村庄样式 */
+        .village-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .village-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .village-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .village-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        /* 村庄布局 */
+        .village-layout {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        /* 房子图标 */
+        .house-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .house-item:hover {
+            transform: translateY(-15px) scale(1.1);
+        }
+
+        .house-item:hover .house-icon {
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8));
+        }
+
+        .house-icon {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
+        }
+
+        /* 大房子特殊样式 - 魔法学院 */
+        .house-item.main-house .house-icon {
+            font-size: 7rem;
+        }
+
+        .house-item.main-house {
+            order: -1; /* 放在最前面 */
+            margin: 20px 40px;
+        }
+
+        .house-item.main-house:hover {
+            transform: translateY(-20px) scale(1.15);
+        }
+
+        .house-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .house-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: #c9a830;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .house-description {
+            font-size: 0.8rem;
+            color: #a08050;
+            text-align: center;
+            max-width: 150px;
+            line-height: 1.4;
+        }
+
+        /* 主房子标签 */
+        .main-house-tag {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            animation: mainTagPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes mainTagPulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                box-shadow: 0 6px 25px rgba(231, 76, 60, 0.6);
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        /* 即将推出标签 */
+        .coming-soon-tag {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #666, #888);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* 星星装饰 */
+        .stars-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .star-decoration {
+            position: absolute;
+            color: rgba(212, 175, 55, 0.3);
+            animation: starTwinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        @media (max-width: 768px) {
+            .village-layout {
+                gap: 30px;
+            }
+
+            .house-icon {
+                font-size: 4rem;
+            }
+
+            .house-item.main-house .house-icon {
+                font-size: 5rem;
+            }
+
+            .village-title {
+                font-size: 2rem;
+            }
+
+            .house-item {
+                margin: 10px 15px;
+            }
+
+            .coin-display {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+            }
+
+            .coin-icon {
+                font-size: 1.3rem;
+            }
+
+            .coin-amount {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+    <div class="stars-decoration" id="starsDecoration"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+            <span class="label-en">Galleons</span>
+        </span>
+    </div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">巫师市集</span>
+                <span class="title-text-en">Wizard Market</span>
+            </h1>
+        </header>
+
+        <div class="village-container">
+            <!-- 村庄标题 -->
+            <div class="village-header">
+                <h2 class="village-title">
+                    <span class="title-text-zh">🏪 巫师市集 🏪</span>
+                    <span class="title-text-en">🏪 Wizard Market 🏪</span>
+                </h2>
+                <p class="village-subtitle">
+                    <span class="subtitle-text-zh">选择你的目的地</span>
+                    <span class="subtitle-text-en">Choose Your Destination</span>
+                </p>
+            </div>
+
+            <!-- 村庄布局 -->
+            <div class="village-layout">
+
+                <!-- 奥利凡德 -->
+                <div class="house-item" onclick="openOllivanders()">
+                    <span class="coming-soon-tag" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
+                    </span>
+                    <div class="house-icon">🪄</div>
+                    <div class="house-name-zh">奥利凡德</div>
+                    <div class="house-name-en">Ollivanders</div>
+                    <div class="house-description">
+                        <span class="desc-zh">魔杖商店</span>
+                        <span class="desc-en">Wand Shop</span>
+                    </div>
+                </div>
+
+                <!-- 对角巷 -->
+                <div class="house-item" onclick="openDiagonAlley()">
+                    <span class="coming-soon-tag" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
+                    </span>
+                    <div class="house-icon">🏪</div>
+                    <div class="house-name-zh">对角巷</div>
+                    <div class="house-name-en">Diagon Alley</div>
+                    <div class="house-description">
+                        <span class="desc-zh">购物天堂</span>
+                        <span class="desc-en">Shopping Paradise</span>
+                    </div>
+                </div>
+
+                <!-- 宠物商店 -->
+                <div class="house-item" onclick="openMagicalMenagerie()">
+                    <span class="coming-soon-tag" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
+                    </span>
+                    <div class="house-icon">🐾</div>
+                    <div class="house-name-zh">神奇动物商店</div>
+                    <div class="house-name-en">Magical Menagerie</div>
+                    <div class="house-description">
+                        <span class="desc-zh">宠物与神奇动物</span>
+                        <span class="desc-en">Pets & Creatures</span>
+                    </div>
+                </div>
+
+                <!-- 三把扫帚 -->
+                <div class="house-item" onclick="openThreeBroomsticks()">
+                    <span class="coming-soon-tag" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
+                    </span>
+                    <div class="house-icon">🧹</div>
+                    <div class="house-name-zh">三把扫帚</div>
+                    <div class="house-name-en">Three Broomsticks</div>
+                    <div class="house-description">
+                        <span class="desc-zh">酒吧与休息</span>
+                        <span class="desc-en">Pub & Rest</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 魔法提示 -->
+        <div class="magic-tip">
+            <p class="tip-zh">✨ 点击房屋开始你的冒险 ✨</p>
+            <p class="tip-en">✨ Click a house to begin your adventure ✨</p>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // ========== 移除了15分钟学习时间限制，待网站基本完成后再加入 ==========
+
+        // ========== 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh'; // 从 localStorage 读取语言
+
+        function updateLanguage() {
+            // 使用更通用的选择器来捕获所有语言元素
+            const zhElements = document.querySelectorAll('[class*="-zh"]');
+            const enElements = document.querySelectorAll('[class*="-en"]');
+
+            if (currentLang === 'zh') {
+                zhElements.forEach(el => {
+                    const hasEnClass = Array.from(el.classList).some(cls => cls.endsWith('-en'));
+                    if (!hasEnClass) {
+                        el.style.display = '';
+                    }
+                });
+                enElements.forEach(el => el.style.display = 'none');
+            } else {
+                zhElements.forEach(el => el.style.display = 'none');
+                enElements.forEach(el => {
+                    const hasZhClass = Array.from(el.classList).some(cls => cls.endsWith('-zh'));
+                    if (!hasZhClass) {
+                        el.style.display = '';
+                    }
+                });
+            }
+        }
+
+        // 初始化语言显示
+        updateLanguage();
+
+        // 初始化金币显示
+        function initCoinDisplay() {
+            const savedCoins = localStorage.getItem('hogwartsCoins');
+            const coins = savedCoins ? parseInt(savedCoins) : 0;
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        // 页面跳转
+        function openDiagonAlley() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'diagon-alley.html';
+            }, 800);
+        }
+
+        function openMagicalMenagerie() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'magical-menagerie.html';
+            }, 800);
+        }
+
+        function openOllivanders() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'ollivanders.html';
+            }, 800);
+        }
+
+        function openThreeBroomsticks() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'three-broomsticks.html';
+            }, 800);
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 创建装饰星星
+        function createDecorationStars() {
+            const container = document.getElementById('starsDecoration');
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.className = 'star-decoration';
+                star.innerHTML = '✦';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.fontSize = (Math.random() * 15 + 8) + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(star);
+            }
+        }
+        createDecorationStars();
+
+        // 初始化金币
+        initCoinDisplay();
+
+        // 初始化语言显示
+        updateLanguage();
+    </script>
+</body>
+</html>

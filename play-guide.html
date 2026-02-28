@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玩转魔法世界 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .guide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 80vh;
+        }
+
+        .guide-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .guide-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 15px;
+        }
+
+        .guide-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        /* 指南分类 */
+        .guide-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            color: #d4af37;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            font-size: 2rem;
+        }
+
+        .content-block {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .content-title {
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .content-text {
+            color: #c9a876;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .content-text ul {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+
+        .content-text li {
+            margin: 8px 0;
+            color: #b8945a;
+        }
+
+        .reward-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .reward-table th {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .reward-table td {
+            padding: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            color: #c9a876;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(201, 162, 39, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .highlight-title {
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .highlight-text {
+            color: #c9a876;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .tip-box {
+            background: rgba(155, 89, 182, 0.1);
+            border-left: 4px solid #9b59b6;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .tip-title {
+            color: #9b59b6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .tip-text {
+            color: #b894d4;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .guide-title {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
+            .guide-section {
+                padding: 20px;
+            }
+
+            .reward-table {
+                font-size: 0.9rem;
+            }
+
+            .reward-table th,
+            .reward-table td {
+                padding: 8px;
+            }
+        }
+
+        .title-en,
+        .subtitle-en,
+        .content-en {
+            display: none;
+        }
+
+        body.lang-en .title-en,
+        body.lang-en .subtitle-en,
+        body.lang-en .content-en {
+            display: block !important;
+        }
+
+        body.lang-en .title-zh,
+        body.lang-en .subtitle-zh,
+        body.lang-en .content-zh {
+            display: none !important;
+        }
+
+        body.lang-zh .title-zh,
+        body.lang-zh .subtitle-zh,
+        body.lang-zh .content-zh {
+            display: block !important;
+        }
+
+        body.lang-zh .title-en,
+        body.lang-zh .subtitle-en,
+        body.lang-zh .content-en {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">玩转魔法世界</span>
+                <span class="title-text-en">Play Magic World</span>
+            </h1>
+        </header>
+
+        <div class="guide-container">
+            <!-- 页面标题 -->
+            <div class="guide-header">
+                <h2 class="guide-title">
+                    <span class="title-zh">🎮 玩转魔法世界指南 🎮</span>
+                    <span class="title-en">🎮 Guide to Magic World 🎮</span>
+                </h2>
+                <p class="guide-subtitle">
+                    <span class="subtitle-zh">了解游戏规则、赚取金加隆、解锁成就</span>
+                    <span class="subtitle-en">Learn rules, earn galleons, unlock achievements</span>
+                </p>
+            </div>
+
+            <!-- 精力值系统 -->
+            <div class="guide-section">
+                <div class="section-title">
+                    <span class="section-icon">⚡</span>
+                    <span class="content-zh">精力值系统</span>
+                    <span class="content-en">Energy System</span>
+                </div>
+
+                <div class="content-block">
+                    <div class="content-title">
+                        <span class="content-zh">⚡ 什么是精力值？</span>
+                        <span class="content-en">⚡ What is Energy?</span>
+                    </div>
+                    <div class="content-text">
+                        <p class="content-zh">精力值是你在魔法世界的行动力。每次进行课程或活动都会消耗精力值，精力值耗尽后需要等待恢复才能继续。</p>
+                        <p class="content-en">Energy is your action power in the magical world. Each class or activity consumes energy. When energy runs out, you must wait for it to recover.</p>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <div class="content-title">
+                        <span class="content-zh">📊 精力值规则</span>
+                        <span class="content-en">📊 Energy Rules</span>
+                    </div>
+                    <div class="content-text">
+                        <ul class="content-zh">
+                            <li>⏰ <strong>初始精力：</strong>100点</li>
+                            <li>⏳ <strong>恢复速度：</strong>每5分钟恢复1点精力</li>
+                            <li>🌙 <strong>每日上限：</strong>精力值最多恢复到100点</li>
+                            <li>🎯 <strong>课程消耗：</strong>飞行课5点/次，魔药课8点/次</li>
+                        </ul>
+                        <ul class="content-en">
+                            <li>⏰ <strong>Initial Energy:</strong> 100 points</li>
+                            <li>⏳ <strong>Recovery Rate:</strong> 1 energy per 5 minutes</li>
+                            <li>🌙 <strong>Daily Cap:</strong> Maximum 100 energy</li>
+                            <li>🎯 <strong>Class Cost:</strong> Flying 5pt, Potions 8pt</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <div class="tip-title">
+                        <span class="content-zh">💡 省力小技巧</span>
+                        <span class="content-en">💡 Energy Tips</span>
+                    </div>
+                    <div class="tip-text">
+                        <p class="content-zh">合理安排游戏时间，精力值快用完时选择学习单词卡片，既不消耗精力又能积累学习时间！</p>
+                        <p class="content-en">Plan your gaming time wisely. When energy is low, study flashcards - it doesn't consume energy and accumulates study time!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 金加隆获取规则 -->
+            <div class="guide-section">
+                <div class="section-title">
+                    <span class="section-icon">🪙</span>
+                    <span class="content-zh">金加隆获取规则</span>
+                    <span class="content-en">Galleon Earning Rules</span>
+                </div>
+
+                <div class="content-block">
+                    <div class="content-title">
+                        <span class="content-zh">🌍 世界语言奖励</span>
+                        <span class="content-en">🌍 World Languages Rewards</span>
+                    </div>
+                    <table class="reward-table">
+                        <thead>
+                            <tr>
+                                <th class="content-zh">活动</th>
+                                <th class="content-zh">奖励</th>
+                                <th class="content-en">Activity</th>
+                                <th class="content-en">Reward</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="content-zh">⏱️ 学习单词卡片满15分钟</td>
+                                <td class="content-zh">+30 金加隆</td>
+                                <td class="content-en">⏱️ Study flashcards 15 minutes</td>
+                                <td class="content-en">+30 Galleons</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">📝 测验得分 60-70分</td>
+                                <td class="content-zh">+1 金加隆</td>
+                                <td class="content-en">📝 Quiz score 60-70</td>
+                                <td class="content-en">+1 Galleon</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">📝 测验得分 70-80分</td>
+                                <td class="content-zh">+3 金加隆</td>
+                                <td class="content-en">📝 Quiz score 70-80</td>
+                                <td class="content-en">+3 Galleons</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">📝 测验得分 80-90分</td>
+                                <td class="content-zh">+20 金加隆</td>
+                                <td class="content-en">📝 Quiz score 80-90</td>
+                                <td class="content-en">+20 Galleons</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">📝 测验得分 90-100分</td>
+                                <td class="content-zh">+50 金加隆</td>
+                                <td class="content-en">📝 Quiz score 90-100</td>
+                                <td class="content-en">+50 Galleons</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-block">
+                    <div class="content-title">
+                        <span class="content-zh">🏰 霍格沃茨课程奖励</span>
+                        <span class="content-en">🏰 Hogwarts Classes Rewards</span>
+                    </div>
+                    <table class="reward-table">
+                        <thead>
+                            <tr>
+                                <th class="content-zh">课程</th>
+                                <th class="content-zh">奖励规则</th>
+                                <th class="content-en">Class</th>
+                                <th class="content-en">Reward Rule</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="content-zh">🧹 飞行课</td>
+                                <td class="content-zh">每5根柱子 +3 金加隆</td>
+                                <td class="content-en">🧹 Flying Class</td>
+                                <td class="content-en">Every 5 pillars +3 Galleons</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">⚗️ 魔药课初级</td>
+                                <td class="content-zh">每10个 +20 金加隆</td>
+                                <td class="content-en">⚗️ Potions Beginner</td>
+                                <td class="content-en">Every 10 +20 Galleons</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">⚗️ 魔药课中级</td>
+                                <td class="content-zh">每10个 +30 金加隆</td>
+                                <td class="content-en">⚗️ Potions Intermediate</td>
+                                <td class="content-en">Every 10 +30 Galleons</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 好感度系统 -->
+            <div class="guide-section">
+                <div class="section-title">
+                    <span class="section-icon">❤️</span>
+                    <span class="content-zh">好感度系统</span>
+                    <span class="content-en">Affection System</span>
+                </div>
+
+                <div class="content-block">
+                    <div class="content-title">
+                        <span class="content-zh">💕 好感度获取规则</span>
+                        <span class="content-en">💕 Affection Rules</span>
+                    </div>
+                    <div class="content-text">
+                        <ul class="content-zh">
+                            <li>🧹 <strong>飞行课：</strong>每连续通过10根柱子 → 好感度 +1</li>
+                            <li>🧹 <strong>飞行课：</strong>每累计5次通过柱子少于3根 → 好感度 -1</li>
+                            <li>⚗️ <strong>魔药课：</strong>每连续成功5个 → 好感度 +1</li>
+                            <li>⚗️ <strong>魔药课：</strong>每累计失败10次 → 好感度 -1</li>
+                        </ul>
+                        <ul class="content-en">
+                            <li>🧹 <strong>Flying:</strong> Every 10 consecutive pillars → Affection +1</li>
+                            <li>🧹 <strong>Flying:</strong> Every 5 times with <3 pillars → Affection -1</li>
+                            <li>⚗️ <strong>Potions:</strong> Every 5 consecutive successes → Affection +1</li>
+                            <li>⚗️ <strong>Potions:</strong> Every 10 failures → Affection -1</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">
+                        <span class="content-zh">🌟 好感度有什么用？</span>
+                        <span class="content-en">🌟 What is Affection For?</span>
+                    </div>
+                    <div class="highlight-text">
+                        <p class="content-zh">好感度会影响角色在聊天中的回复态度。好感度越高，角色越友好！解锁特殊剧情需要达到一定好感度。</p>
+                        <p class="content-en">Affection affects character attitudes in chat. Higher affection means friendlier responses! Special storylines require certain affection levels.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 等级系统 -->
+            <div class="guide-section">
+                <div class="section-title">
+                    <span class="section-icon">⭐</span>
+                    <span class="content-zh">等级系统</span>
+                    <span class="content-en">Level System</span>
+                </div>
+
+                <div class="content-block">
+                    <table class="reward-table">
+                        <thead>
+                            <tr>
+                                <th class="content-zh">等级</th>
+                                <th class="content-zh">要求</th>
+                                <th class="content-en">Level</th>
+                                <th class="content-en">Requirement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="content-zh">🎖️ 新手 Novice</td>
+                                <td class="content-zh">累计收入 500 金加隆</td>
+                                <td class="content-en">🎖️ Novice</td>
+                                <td class="content-en">500 Galleons earned</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">🎖️ 学徒 Apprentice</td>
+                                <td class="content-zh">累计收入 1500 金加隆</td>
+                                <td class="content-en">🎖️ Apprentice</td>
+                                <td class="content-en">1500 Galleons earned</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">🎖️ 老手 Journeyman</td>
+                                <td class="content-zh">累计收入 3000 金加隆</td>
+                                <td class="content-en">🎖️ Journeyman</td>
+                                <td class="content-en">3000 Galleons earned</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">🎖️ 专家 Expert</td>
+                                <td class="content-zh">累计收入 5000 金加隆</td>
+                                <td class="content-en">🎖️ Expert</td>
+                                <td class="content-en">5000 Galleons earned</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">🎖️ 大师 Master</td>
+                                <td class="content-zh">累计收入 10000 金加隆</td>
+                                <td class="content-en">🎖️ Master</td>
+                                <td class="content-en">10000 Galleons earned</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="tip-box">
+                    <div class="tip-title">
+                        <span class="content-zh">💡 重要提示</span>
+                        <span class="content-en">💡 Important Note</span>
+                    </div>
+                    <div class="tip-text">
+                        <p class="content-zh">等级基于累计收入计算，花费金加隆不会降低你的等级！所以尽情购物吧！</p>
+                        <p class="content-en">Levels are based on cumulative earnings. Spending won't lower your level! Shop freely!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 邮箱系统 -->
+            <div class="guide-section">
+                <div class="section-title">
+                    <span class="section-icon">📬</span>
+                    <span class="content-zh">邮箱系统</span>
+                    <span class="content-en">Mailbox System</span>
+                </div>
+
+                <div class="content-block">
+                    <div class="content-title">
+                        <span class="content-zh">📮 关于霍格沃茨猫头鹰邮件</span>
+                        <span class="content-en">📮 About Hogwarts Owl Mail</span>
+                    </div>
+                    <div class="content-text">
+                        <p class="content-zh">猫头鹰会不定期给你送来各种邮件，包括：</p>
+                        <ul class="content-zh">
+                            <li>🎁 <strong>物品奖励</strong> - 房间装饰品、背包物品</li>
+                            <li>🔴 <strong>记忆球</strong> - 稀有特殊物品</li>
+                            <li>📢 <strong>重要通知</strong> - 学院公告</li>
+                            <li>✉️ <strong>魔法事件</strong> - 随机奇遇</li>
+                            <li>🏆 <strong>成就解锁</strong> - 达成里程碑通知</li>
+                        </ul>
+                        <p class="content-en">Owls will deliver various mails including:</p>
+                        <ul class="content-en">
+                            <li>🎁 <strong>Item Rewards</strong> - Room decorations, inventory items</li>
+                            <li>🔴 <strong>Remembrall</strong> - Rare special items</li>
+                            <li>📢 <strong>Announcements</strong> - School notices</li>
+                            <li>✉️ <strong>Magic Events</strong> - Random encounters</li>
+                            <li>🏆 <strong>Achievements</strong> - Milestone notifications</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <div class="content-title">
+                        <span class="content-zh">📅 邮件规则</span>
+                        <span class="content-en">📅 Mail Rules</span>
+                    </div>
+                    <div class="content-text">
+                        <ul class="content-zh">
+                            <li>📮 每天最多收到 3 封随机邮件</li>
+                            <li>🎁 有 10% 概率收到特殊物品邮件</li>
+                            <li>🔴 记忆球邮件有 10% 概率出现</li>
+                            <li>📬 未读邮件会在头像上显示数量</li>
+                        </ul>
+                        <ul class="content-en">
+                            <li>📮 Maximum 3 random mails per day</li>
+                            <li>🎁 10% chance for special item mails</li>
+                            <li>🔴 10% chance for Remembrall mails</li>
+                            <li>📬 Unread mail count shown on avatar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 成就系统 -->
+            <div class="guide-section">
+                <div class="section-title">
+                    <span class="section-icon">🏆</span>
+                    <span class="content-zh">成就系统</span>
+                    <span class="content-en">Achievement System</span>
+                </div>
+
+                <div class="content-block">
+                    <div class="content-title">
+                        <span class="content-zh">🎖️ 解锁成就，获得荣耀！</span>
+                        <span class="content-en">🎖️ Unlock Achievements, Earn Glory!</span>
+                    </div>
+                    <div class="content-text">
+                        <p class="content-zh">在魔法世界的各种活动中解锁成就，展示你的巫师之路！访问"巫师成就墙"查看所有成就。</p>
+                        <p class="content-en">Unlock achievements through various activities in the magical world! Visit "Achievement Wall" to see all achievements.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 游客 vs 登录 -->
+            <div class="guide-section">
+                <div class="section-title">
+                    <span class="section-icon">👤</span>
+                    <span class="content-zh">游客模式 vs 登录用户</span>
+                    <span class="content-en">Guest vs Logged In</span>
+                </div>
+
+                <div class="content-block">
+                    <table class="reward-table">
+                        <thead>
+                            <tr>
+                                <th class="content-zh">功能</th>
+                                <th class="content-zh">游客模式</th>
+                                <th class="content-zh">登录用户</th>
+                                <th class="content-en">Feature</th>
+                                <th class="content-en">Guest</th>
+                                <th class="content-en">Logged In</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="content-zh">数据存储</td>
+                                <td class="content-zh">浏览器本地</td>
+                                <td class="content-zh">✅ Supabase 云端</td>
+                                <td class="content-en">Data Storage</td>
+                                <td class="content-en">Browser Local</td>
+                                <td class="content-en">✅ Cloud Sync</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">跨设备同步</td>
+                                <td class="content-zh">❌ 不支持</td>
+                                <td class="content-zh">✅ 支持</td>
+                                <td class="content-en">Cross-Device</td>
+                                <td class="content-en">❌ No</td>
+                                <td class="content-en">✅ Yes</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">清除缓存后</td>
+                                <td class="content-zh">❌ 数据丢失</td>
+                                <td class="content-zh">✅ 可恢复</td>
+                                <td class="content-en">After Cache Clear</td>
+                                <td class="content-en">❌ Lost</td>
+                                <td class="content-en">✅ Recoverable</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">聊天功能</td>
+                                <td class="content-zh">⚠️ 可能受限</td>
+                                <td class="content-zh">✅ 完全可用</td>
+                                <td class="content-en">Chat Feature</td>
+                                <td class="content-en">⚠️ Limited</td>
+                                <td class="content-en">✅ Full Access</td>
+                            </tr>
+                            <tr>
+                                <td class="content-zh">留言板</td>
+                                <td class="content-zh">✅ 可用</td>
+                                <td class="content-zh">✅ 可用</td>
+                                <td class="content-en">Message Board</td>
+                                <td class="content-en">✅ Available</td>
+                                <td class="content-en">✅ Available</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 魔法提示 -->
+        <div class="magic-tip">
+            <p class="tip-text-zh">✨ 祝你在霍格沃茨的魔法之旅充满惊喜！ ✨</p>
+            <p class="tip-text-en">✨ May your magical journey at Hogwarts be full of surprises! ✨</p>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        function updateLanguage() {
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ? '← 返回' : '← Back';
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'wizard-camp.html';
+            }, 800);
+        }
+
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        updateLanguage();
+        createMagicParticles();
+    </script>
+</body>
+</html>
