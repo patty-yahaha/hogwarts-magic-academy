@@ -1484,6 +1484,11 @@
                     passedPillars = score;
                     document.getElementById('scoreDisplay').textContent = score;
 
+                    // 每10根柱子加速一次
+                    // 通过10根后1.1倍速，20根后1.2倍速，以此类推
+                    const speedMultiplier = 1 + Math.floor(score / 10) * 0.1;
+                    currentPillarSpeed = BASE_PILLAR_SPEED * speedMultiplier * (1 - currentBroomStats.speedBonus);
+
                     // 每10分增加好感度（考虑扫帚加成）
                     const affectionThreshold = 10 - currentBroomStats.affectionBonus;
                     if (affectionThreshold > 0 && score - lastAffectionUpdate >= affectionThreshold) {
