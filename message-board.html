@@ -641,7 +641,7 @@
             }
 
             // 发表留言
-            window.submitMessage = async function() {
+            const submitMessage = async function() {
                 const content = document.getElementById('messageContent').value.trim();
                 const submitBtn = document.getElementById('submitBtn');
 
@@ -690,17 +690,13 @@
                 const messagesList = document.getElementById('messagesList');
 
                 try {
-                    console.log('🔄 开始加载留言...');
                     const { data: messages, error } = await supabase
                         .from('messages')
                         .select('*')
                         .order('created_at', { ascending: false })
                         .limit(50);
 
-                    console.log('📊 查询结果:', { messages, error });
-
                     if (error) {
-                        console.error('❌ 查询错误:', error);
                         if (error.code === '42P01') {
                             // 表不存在
                             messagesList.innerHTML = `
@@ -720,12 +716,9 @@
                     }
 
                     if (!messages || messages.length === 0) {
-                        console.log('📭 没有留言，显示空状态');
                         showEmptyState();
                         return;
                     }
-
-                    console.log(`✅ 加载了 ${messages.length} 条留言`);
 
                     // 获取每条消息的点赞数
                     const messagesWithLikes = await Promise.all(
@@ -880,18 +873,6 @@
                 const isLiked = likedMessages.has(messageId);
 
                 try {
-                    // 先获取这条留言的信息（包括作者ID）
-                    const { data: message, error: msgError } = await supabase
-                        .from('messages')
-                        .select('*')
-                        .eq('id', messageId)
-                        .single();
-
-                    if (msgError || !message) {
-                        showError((currentLang === 'zh' ? '获取留言信息失败' : 'Failed to get message info'));
-                        return;
-                    }
-
                     if (isLiked) {
                         // 取消点赞
                         const { error } = await supabase
@@ -918,20 +899,6 @@
 
                         if (!error) {
                             likedMessages.add(messageId);
-
-                            // 如果点赞者不是留言作者，发送邮件通知
-                            if (message.user_id && message.user_id !== currentUser.id) {
-                                sendMailNotification(message.user_id, 'ANNOUNCEMENT', {
-                                    title: {
-                                        zh: '❤️ 你的留言收到了新的点赞！',
-                                        en: '❤️ Your message received a new like!'
-                                    },
-                                    body: {
-                                        zh: `亲爱的 ${message.user_nickname || '巫师'}，\n\n${currentUser.nickname} 赞了你的留言！\n\n"${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}"\n\n✨ 继续保持精彩发言吧！\n\n你的，霍格沃茨猫头鹰`,
-                                        en: `Dear ${message.user_nickname || 'Wizard'},\n\n${currentUser.nickname} liked your message!\n\n"${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}"\n\n✨ Keep the great posts coming!\n\nYours, Hogwarts Owl`
-                                    }
-                                });
-                            }
                         } else {
                             console.error('Like error:', error);
                             showError((currentLang === 'zh' ? '点赞失败：' : 'Like failed: ') + error.message);
@@ -943,7 +910,7 @@
                     loadMessages();
                 } catch (error) {
                     console.error('Like toggle error:', error);
-                    showError((currentLang === 'zh' ? '操作失败，请重试' : 'Action failed, please try again'));
+                    showError(currentLang === 'zh' ? '操作失败，请重试' : 'Action failed, please try again');
                 }
             };
 
@@ -1013,18 +980,6 @@
                 }
 
                 try {
-                    // 先获取这条留言的信息
-                    const { data: message, error: msgError } = await supabase
-                        .from('messages')
-                        .select('*')
-                        .eq('id', messageId)
-                        .single();
-
-                    if (msgError || !message) {
-                        showError((currentLang === 'zh' ? '获取留言信息失败' : 'Failed to get message info'));
-                        return;
-                    }
-
                     const { data, error } = await supabase
                         .from('message_replies')
                         .insert([{
@@ -1042,21 +997,6 @@
                         showError((currentLang === 'zh' ? '回复失败：' : 'Reply failed: ') + error.message);
                     } else {
                         showSuccess(currentLang === 'zh' ? '回复成功！' : 'Reply posted!');
-
-                        // 如果回复者不是留言作者，发送邮件通知
-                        if (message.user_id && message.user_id !== currentUser.id) {
-                            sendMailNotification(message.user_id, 'ANNOUNCEMENT', {
-                                title: {
-                                    zh: '💬 你的留言收到了新的回复！',
-                                    en: '💬 Your message received a new reply!'
-                                },
-                                body: {
-                                    zh: `亲爱的 ${message.user_nickname || '巫师'}，\n\n${currentUser.nickname} 回复了你的留言！\n\n"${replyContent.substring(0, 60)}${replyContent.length > 60 ? '...' : ''}"\n\n💬 快来看看他们的回复吧！\n\n你的，霍格沃茨猫头鹰`,
-                                    en: `Dear ${message.user_nickname || 'Wizard'},\n\n${currentUser.nickname} replied to your message!\n\n"${replyContent.substring(0, 60)}${replyContent.length > 60 ? '...' : ''}"\n\n💬 Come check out their reply!\n\nYours, Hogwarts Owl`
-                                }
-                            });
-                        }
-
                         cancelReply(messageId);
                         loadMessages(); // 重新加载以显示新回复
                     }
@@ -1187,129 +1127,102 @@
                 }
             }
 
-            // ========== 邮件通知系统 ==========
-            // 发送邮件通知
-            function sendMailNotification(targetUserId, type, content) {
-                try {
-                    const letters = JSON.parse(localStorage.getItem('hogwartsMailbox') || '[]');
-
-                    const newLetter = {
-                        id: 'letter_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                        type: type,
-                        date: new Date().toISOString(),
-                        read: false,
-                        title: content.title,
-                        body: content.body,
-                        reward: null
-                    };
-
-                    letters.unshift(newLetter);
-                    localStorage.setItem('hogwartsMailbox', JSON.stringify(letters));
-
-                    // 发送通知以更新主页的邮件角标
-                    window.postMessage({ type: 'newMail' });
-
-                } catch (error) {
-                    console.error('发送邮件通知失败:', error);
-                }
-            }
-
             // 初始化留言板未读追踪
             function initUnreadTracking() {
-                // 游客不需要追踪未读
-                if (currentUser.isGuest) {
-                    localStorage.setItem('messageBoardLastVisitTime', Date.now().toString());
-                    localStorage.setItem('messageBoardUnread', '0');
-                    return;
-                }
-
                 const lastVisitTime = localStorage.getItem('messageBoardLastVisitTime');
                 const currentTime = Date.now();
 
-                // 计算新的未读数量
-                let newUnread = 0;
-
-                if (lastVisitTime) {
-                    // 有上次访问时间，计算新内容
-                    const lastVisit = parseInt(lastVisitTime);
-
-                    // 获取所有留言
-                    supabase
-                        .from('messages')
-                        .select('id, created_at, user_id')
-                        .then(({ data: messages, error: msgError }) => {
-                            if (msgError || !messages) {
-                                console.error('Error loading messages for unread tracking:', msgError);
-                                return;
-                            }
-
-                            // 获取自己发的留言ID列表
-                            const myMessageIds = messages
-                                .filter(msg => msg.user_id === currentUser.id)
-                                .map(msg => msg.id);
-
-                            // 如果没有自己的留言，只需要计算新留言数量
-                            if (myMessageIds.length === 0) {
-                                messages.forEach(msg => {
-                                    if (msg.user_id !== currentUser.id) {
-                                        const msgTime = new Date(msg.created_at).getTime();
-                                        if (msgTime > lastVisit) newUnread++;
-                                    }
-                                });
-                                localStorage.setItem('messageBoardUnread', newUnread.toString());
-                                window.postMessage({ type: 'updateMessageBoardBadge', count: newUnread });
-                                return;
-                            }
-
-                            // 获取收到的点赞和回复，计算未读
-                            Promise.all([
-                                supabase.from('message_likes').select('message_id,created_at').in('message_id', myMessageIds).neq('user_id', currentUser.id),
-                                supabase.from('message_replies').select('message_id,created_at').in('message_id', myMessageIds).neq('user_id', currentUser.id)
-                            ]).then(([likesResult, repliesResult]) => {
-                                if (likesResult.data) {
-                                    likesResult.data.forEach(like => {
-                                        const likeTime = new Date(like.created_at).getTime();
-                                        if (likeTime > lastVisit) newUnread++;
-                                    });
-                                }
-                                if (repliesResult.data) {
-                                    repliesResult.data.forEach(reply => {
-                                        const replyTime = new Date(reply.created_at).getTime();
-                                        if (replyTime > lastVisit) newUnread++;
-                                    });
-                                }
-
-                                // 新留言（别人发的）
-                                messages.forEach(msg => {
-                                    if (msg.user_id !== currentUser.id) {
-                                        const msgTime = new Date(msg.created_at).getTime();
-                                        if (msgTime > lastVisit) newUnread++;
-                                    }
-                                });
-
-                                // 更新未读计数
-                                localStorage.setItem('messageBoardUnread', newUnread.toString());
-
-                                // 更新角标
-                                window.postMessage({ type: 'updateMessageBoardBadge', count: newUnread });
-                            }).catch(err => {
-                                console.error('Error loading likes/replies for unread tracking:', err);
-                            });
-                        }).catch(err => {
-                            console.error('Error in initUnreadTracking:', err);
-                        });
+                if (!lastVisitTime) {
+                    localStorage.setItem('messageBoardLastVisitTime', currentTime.toString());
+                    return;
                 }
 
-                // 更新访问时间
+                const lastVisit = parseInt(lastVisitTime);
                 localStorage.setItem('messageBoardLastVisitTime', currentTime.toString());
+            }
+
+            // 检查并更新未读计数
+            async function checkAndUpdateUnread() {
+                if (currentUser.isGuest) return;
+
+                try {
+                    // 获取最后访问时间
+                    const lastVisitTime = parseInt(localStorage.getItem('messageBoardLastVisitTime') || '0');
+
+                    // 获取所有留言
+                    const { data: messages, error } = await supabase
+                        .from('messages')
+                        .select('id, created_at, user_id')
+                        .order('created_at', { ascending: false });
+
+                    if (error || !messages) return;
+
+                    // 获取自己的留言ID
+                    const { data: userLikes } = await supabase
+                        .from('message_likes')
+                        .select('message_id')
+                        .eq('user_id', currentUser.id);
+
+                    // 获取收到的回复
+                    const { data: receivedReplies } = await supabase
+                        .from('message_replies')
+                        .select('message_id, user_id')
+                        .neq('user_id', currentUser.id);
+
+                    let unreadCount = 0;
+
+                    // 计算新留言（不是自己发的，且在上次访问之后）
+                    messages.forEach(msg => {
+                        if (msg.user_id !== currentUser.id) {
+                            const msgTime = new Date(msg.created_at).getTime();
+                            if (msgTime > lastVisitTime) {
+                                unreadCount++;
+                            }
+                        }
+                    });
+
+                    // 计算新点赞（别人赞了自己的留言）
+                    userLikes.forEach(like => {
+                        const likeTime = new Date(like.created_at).getTime();
+                        if (likeTime > lastVisitTime) {
+                            unreadCount++;
+                        }
+                    });
+
+                    // 计算新回复（别人回复了自己的留言）
+                    // 需要获取自己发的留言ID
+                    const myMessages = messages.filter(msg => msg.user_id === currentUser.id).map(msg => msg.id);
+                    receivedReplies.forEach(reply => {
+                        if (myMessages.includes(reply.message_id)) {
+                            const replyTime = new Date(reply.created_at).getTime();
+                            if (replyTime > lastVisitTime) {
+                                unreadCount++;
+                            }
+                        }
+                    });
+
+                    // 更新本地存储
+                    const currentUnread = parseInt(localStorage.getItem('messageBoardUnread') || '0');
+                    const newUnread = currentUnread + unreadCount;
+                    localStorage.setItem('messageBoardUnread', newUnread.toString());
+
+                    // 更新角标（如果在营地页面）
+                    window.postMessage({ type: 'updateMessageBoardBadge', count: newUnread });
+
+                } catch (error) {
+                    console.error('检查未读状态失败:', error);
+                }
             }
 
             // 初始化
             updateLanguage();
             createMagicParticles();
             initPermissions();
-            // initUnreadTracking();  // 暂时禁用消息提醒功能
+            initUnreadTracking();
             loadMessages();
+
+            // 页面加载完成后检查未读
+            setTimeout(checkAndUpdateUnread, 2000);
         })();
     </script>
 </body>
