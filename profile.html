@@ -1660,6 +1660,12 @@
         function loadRoomDecorations() {
             console.log('开始加载房间装饰品');
 
+            const roomArea = document.getElementById('roomArea');
+            if (!roomArea) {
+                console.log('找不到房间区域');
+                return;
+            }
+
             const savedPlayerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
             if (!savedPlayerData.roomDecorations) {
                 console.log('没有保存的装饰品');
@@ -1667,6 +1673,8 @@
             }
 
             console.log('找到装饰品数量:', savedPlayerData.roomDecorations.length);
+
+            const roomRect = roomArea.getBoundingClientRect();
 
             savedPlayerData.roomDecorations.forEach(decoration => {
                 // 检查是否已存在
@@ -1681,25 +1689,26 @@
                 decorEl.setAttribute('data-id', decoration.id);
                 decorEl.title = decoration.nameZh;
 
-                // 使用保存的位置，或随机位置
+                // 使用保存的位置，或随机位置（相对于房间区域）
                 let posX, posY;
                 if (savedPlayerData.decorationPositions && savedPlayerData.decorationPositions[decoration.id]) {
                     posX = savedPlayerData.decorationPositions[decoration.id].left;
                     posY = savedPlayerData.decorationPositions[decoration.id].top;
                 } else {
-                    const maxX = window.innerWidth - 80;
-                    const maxY = window.innerHeight - 100;
-                    posX = Math.max(100, Math.random() * maxX);
-                    posY = Math.max(120, Math.random() * maxY);
+                    // 限制在房间范围内随机位置
+                    const maxX = roomRect.width - 60;
+                    const maxY = roomRect.height - 60;
+                    posX = Math.max(20, Math.random() * maxX);
+                    posY = Math.max(20, Math.random() * maxY);
                 }
 
                 decorEl.style.cssText = `
-                    position: fixed !important;
+                    position: absolute !important;
                     left: ${posX}px !important;
                     top: ${posY}px !important;
                     font-size: 40px;
                     cursor: move;
-                    z-index: 10000 !important;
+                    z-index: 100 !important;
                     user-select: none;
                     filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
                     transition: transform 0.2s ease;
@@ -1708,15 +1717,16 @@
                     visibility: visible !important;
                 `;
 
-                document.body.appendChild(decorEl);
-                makeElementDraggable(decorEl, decoration.id);
+                // 添加到房间区域而不是 body
+                roomArea.appendChild(decorEl);
+                makeElementDraggable(decorEl, decoration.id, roomArea);
             });
 
             console.log('装饰品加载完成，DOM 中数量:', document.querySelectorAll('.room-decoration').length);
         }
 
         // 使元素可拖动
-        function makeElementDraggable(element, id) {
+        function makeElementDraggable(element, id, roomArea) {
             let isDragging = false;
             let startX, startY, initialX, initialY;
 
@@ -1732,6 +1742,74 @@
                     startX = e.touches[0].clientX;
                     startY = e.touches[0].clientY;
                 } else {
+                    startX = e.clientX;
+                    startY = e.clientY;
+                }
+
+                initialX = element.offsetLeft;
+                initialY = element.offsetTop;
+
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchmove', onDrag, { passive: false });
+                document.addEventListener('touchend', stopDrag);
+            }
+
+            function onDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+
+                let currentX, currentY;
+                if (e.type === 'touchmove') {
+                    currentX = e.touches[0].clientX;
+                    currentY = e.touches[0].clientY;
+                } else {
+                    currentX = e.clientX;
+                    currentY = e.clientY;
+                }
+
+                const deltaX = currentX - startX;
+                const deltaY = currentY - startY;
+                let newX = initialX + deltaX;
+                let newY = initialY + deltaY;
+
+                // 获取房间区域的边界
+                const roomRect = roomArea.getBoundingClientRect();
+                const maxX = roomRect.width - element.offsetWidth;
+                const maxY = roomRect.height - element.offsetHeight;
+
+                // 限制在房间范围内
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
+
+                element.style.left = newX + 'px';
+                element.style.top = newY + 'px';
+            }
+
+            function stopDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                element.style.transform = 'scale(1)';
+
+                // 保存位置
+                const position = {
+                    left: element.offsetLeft,
+                    top: element.offsetTop
+                };
+
+                const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                if (!playerData.decorationPositions) {
+                    playerData.decorationPositions = {};
+                }
+                playerData.decorationPositions[id] = position;
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchmove', onDrag);
+                document.removeEventListener('touchend', stopDrag);
+            }
+        }
                     startX = e.clientX;
                     startY = e.clientY;
                 }
