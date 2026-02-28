@@ -160,16 +160,6 @@
     <div class="stars-bg"></div>
     <div class="magic-particles"></div>
 
-    <!-- 金币显示 -->
-    <div class="coin-display">
-        <span class="coin-icon">🪙</span>
-        <span class="coin-amount" id="coinAmount">0</span>
-        <span class="coin-label">
-            <span class="label-zh">金加隆</span>
-            <span class="label-en">Galleons</span>
-        </span>
-    </div>
-
     <div class="container">
         <!-- 顶部导航栏 -->
         <header class="academy-header">
@@ -374,7 +364,7 @@
 
         // 页面加载时初始化
         updateLanguage();
-        updateCoinDisplay();
+        // updateCoinDisplay();  // 已禁用金币显示
         loadLeaderboardData('coins');
         loadLeaderboardData('affection');
 
