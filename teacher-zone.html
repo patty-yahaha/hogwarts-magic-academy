@@ -379,7 +379,7 @@
         const MENTOR_ACHIEVEMENTS_KEY = 'hogwarts_mentor_achievements';
         const MENTOR_LETTERS_KEY = 'hogwarts_mentor_letters';
 
-        // 老师列表
+        // 老师列表 - 只保留三位核心导师
         const TEACHERS = [
             {
                 id: 'mcgonagall',
@@ -387,23 +387,17 @@
                 nameEn: 'Professor McGonagall',
                 avatar: '👨‍🏫',
                 badge: '变形术',
-                description: '严厉但公正的变形术教授'
+                description: '严厉但公正的变形术教授',
+                course: 'web-learning'  // 网页学习区
             },
             {
-                id: 'flitwick',
-                nameZh: '弗立维教授',
-                nameEn: 'Professor Flitwick',
-                avatar: '🧙',
-                badge: '魔咒课',
-                description: '慈祥的魔咒课教授'
-            },
-            {
-                id: 'sprout',
-                nameZh: '斯普劳特教授',
-                nameEn: 'Professor Sprout',
-                avatar: '👩‍🌱',
-                badge: '草药学',
-                description: '温和的草药学教授'
+                id: 'hooch',
+                nameZh: '霍琦夫人',
+                nameEn: 'Madam Hooch',
+                avatar: '🧙‍♀️',
+                badge: '飞行课',
+                description: '经验丰富的飞行课导师',
+                course: 'flying-class'  // 飞行课
             },
             {
                 id: 'snape',
@@ -411,31 +405,8 @@
                 nameEn: 'Professor Snape',
                 avatar: '🧛',
                 badge: '魔药学',
-                description: '神秘的魔药学教授'
-            },
-            {
-                id: 'hagrid',
-                nameZh: '海格',
-                nameEn: 'Rubeus Hagrid',
-                avatar: '🧔',
-                badge: '保护神奇生物',
-                description: '温和的神奇生物保护课教授'
-            },
-            {
-                id: 'dumbledore',
-                nameZh: '邓布利多教授',
-                nameEn: 'Professor Dumbledore',
-                avatar: '🧙‍✨',
-                badge: '校长',
-                description: '伟大的霍格沃茨校长'
-            },
-            {
-                id: 'language_teacher',
-                nameZh: '语言导师',
-                nameEn: 'Language Mentor',
-                avatar: '📚',
-                badge: '世界语言',
-                description: '教授世界语言课程'
+                description: '神秘的魔药学教授',
+                course: 'potions-class'  // 魔药课
             }
         ];
 
@@ -531,7 +502,6 @@
         // 检查并解锁成就
         function checkAndUnlockAchievements() {
             const achievements = getAchievementsData();
-            const affectionData = getMentorAffectionData();
 
             const newlyUnlocked = [];
 
@@ -539,7 +509,7 @@
                 const isUnlocked = achievements.unlocked.includes(milestone.affection);
                 if (!isUnlocked) {
                     // 检查是否有任何老师达到这个好感度
-                    const hasTeacherAtLevel = Object.values(affectionData).some(a => a >= milestone.affection);
+                    const hasTeacherAtLevel = verifyMilestoneCondition(milestone.affection);
                     if (hasTeacherAtLevel) {
                         achievements.unlocked.push(milestone.affection);
                         newlyUnlocked.push(milestone);
@@ -643,7 +613,8 @@
             const grid = document.getElementById('achievementsGrid');
 
             grid.innerHTML = MILESTONES.map(milestone => {
-                const isUnlocked = achievements.unlocked.includes(milestone.affection);
+                // 实时验证是否真正达到条件
+                const isUnlocked = verifyMilestoneCondition(milestone.affection);
                 const isClaimed = achievements.claimed.includes(milestone.affection);
 
                 const rewardText = currentLang === 'zh' ?
@@ -677,11 +648,50 @@
             section.style.display = achievements.unlocked.length > 0 ? 'block' : 'none';
         }
 
+        // 验证里程碑是否真正达到条件
+        function verifyMilestoneCondition(affectionLevel) {
+            const affectionData = getMentorAffectionData();
+            // 检查是否有任何老师真正达到这个好感度
+            return Object.values(affectionData).some(a => a >= affectionLevel);
+        }
+
+        // 清理错误的解锁数据（修复已解锁但实际未达到条件的情况）
+        function cleanupIncorrectlyUnlockedMilestones() {
+            const achievements = getAchievementsData();
+            const needsCleanup = [];
+
+            achievements.unlocked.forEach(affectionLevel => {
+                if (!verifyMilestoneCondition(affectionLevel)) {
+                    needsCleanup.push(affectionLevel);
+                }
+            });
+
+            if (needsCleanup.length > 0) {
+                achievements.unlocked = achievements.unlocked.filter(level => !needsCleanup.includes(level));
+                achievements.claimed = achievements.claimed.filter(level => !needsCleanup.includes(level));
+                saveAchievementsData(achievements);
+                console.log('已清理错误的里程碑解锁数据:', needsCleanup);
+            }
+        }
+
         // 领取成就奖励
         function claimAchievement(milestone) {
             const achievements = getAchievementsData();
 
-            if (!achievements.unlocked.includes(milestone)) return;
+            // 检查是否真正达到条件
+            if (!verifyMilestoneCondition(milestone)) {
+                alert(currentLang === 'zh' ?
+                    `还需要提升老师的好感度才能领取此奖励！\n需要好感度: ${milestone}` :
+                    `Need to raise mentor's affection to claim this reward!\nRequired affection: ${milestone}`);
+                return;
+            }
+
+            // 添加到解锁列表（如果不在里面）
+            if (!achievements.unlocked.includes(milestone)) {
+                achievements.unlocked.push(milestone);
+                saveAchievementsData(achievements);
+            }
+
             if (achievements.claimed.includes(milestone)) return;
 
             // 随机生成奖励
@@ -805,6 +815,9 @@
 
         // 初始化
         function init() {
+            // 清理错误的里程碑解锁数据
+            cleanupIncorrectlyUnlockedMilestones();
+
             renderTeachers();
             renderAchievements();
             checkMentorLetters();
