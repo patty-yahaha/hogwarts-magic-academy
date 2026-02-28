@@ -482,9 +482,17 @@
                     <span class="stat-label-zh">飞天扫帚碎片</span>
                     <span class="stat-label-en">Broom Fragments</span>
                     <span style="color: #c9a227; font-size: 0.9rem; margin-left: 10px;">
-                        <span class="stat-label-zh">(50碎片=500金加隆券)</span>
-                        <span class="stat-label-en">(50=500 Galleon Voucher)</span>
+                        <span class="stat-label-zh">(10碎片=500金加隆券)</span>
+                        <span class="stat-label-en">(10=500 Galleon Voucher)</span>
                     </span>
+                </div>
+
+                <!-- 兑换券显示 -->
+                <div class="fragments-display">
+                    <span class="fragment-icon">🎫</span>
+                    <span class="fragment-count" id="voucherCount">0</span>
+                    <span class="stat-label-zh">500金加隆兑换券</span>
+                    <span class="stat-label-en">500 Galleon Voucher</span>
                 </div>
             </div>
 
@@ -722,6 +730,11 @@
             return parseInt(localStorage.getItem('broomFragments') || '0');
         }
 
+        // 获取兑换券
+        function getVouchers() {
+            return parseInt(localStorage.getItem('broomVouchers') || '0');
+        }
+
         // 获取已拥有的扫帚
         function getOwnedBrooms() {
             return JSON.parse(localStorage.getItem('ownedBrooms') || '[]');
@@ -737,6 +750,7 @@
         function initDisplay() {
             document.getElementById('coinAmount').textContent = getCoins();
             document.getElementById('fragmentCount').textContent = getFragments();
+            document.getElementById('voucherCount').textContent = getVouchers();
             updateEquippedBroom();
         }
 
@@ -847,18 +861,54 @@
             if (!broom) return;
 
             const coins = getCoins();
-            if (coins < broom.price) {
-                alert(currentLang === 'zh' ?
-                    `金币不足！\n\n需要: ${broom.price} 金加隆\n当前: ${coins} 金加隆` :
-                    `Not enough coins!\n\nNeeded: ${broom.price} Galleons\nCurrent: ${coins} Galleons`);
-                return;
+            const vouchers = getVouchers();
+
+            // 检查是否可以使用兑换券（价格在500以下且有兑换券）
+            const canUseVoucher = broom.price <= 500 && vouchers > 0;
+            let useVoucher = false;
+            let useVoucherConfirmed = false;
+
+            // 如果可以使用兑换券，先询问用户
+            if (canUseVoucher) {
+                useVoucherConfirmed = confirm(currentLang === 'zh' ?
+                    `检测到您有${vouchers}张500金加隆兑换券！\n\n${broom.name.zh} 价格: ${broom.price} 金加隆\n\n是否使用1张兑换券购买？（使用兑换券不会消耗您的金加隆）` :
+                    `You have ${vouchers} x 500 Galleon Vouchers!\n\n${broom.name.en} Price: ${broom.price} Galleons\n\nUse 1 voucher? (Vouchers won't consume your gold)`);
+                useVoucher = useVoucherConfirmed;
             }
 
-            if (confirm(currentLang === 'zh' ?
-                `确定购买 ${broom.name.zh} 吗？\n\n价格: ${broom.price} 金加隆\n\n${broom.description.zh}` :
-                `Buy ${broom.name.en}?\n\nPrice: ${broom.price} Galleons\n\n${broom.description.en}`)) {
-                // 扣除金币
-                localStorage.setItem('hogwartsCoins', (coins - broom.price).toString());
+            // 如果不使用兑换券，检查金币是否足够
+            if (!useVoucher) {
+                if (coins < broom.price) {
+                    alert(currentLang === 'zh' ?
+                        `金币不足！\n\n需要: ${broom.price} 金加隆\n当前: ${coins} 金加隆` :
+                        `Not enough coins!\n\nNeeded: ${broom.price} Galleons\nCurrent: ${coins} Galleons`);
+                    return;
+                }
+            }
+
+            // 确认购买
+            const confirmMsg = useVoucher ?
+                (currentLang === 'zh' ?
+                    `确定使用兑换券购买 ${broom.name.zh} 吗？\n\n价格: 1张500金加隆兑换券（价值${broom.price}金加隆）\n\n${broom.description.zh}` :
+                    `Use voucher to buy ${broom.name.en}?\n\nPrice: 1 x 500 Galleon Voucher (worth ${broom.price} Galleons)\n\n${broom.description.en}`) :
+                (currentLang === 'zh' ?
+                    `确定购买 ${broom.name.zh} 吗？\n\n价格: ${broom.price} 金加隆\n\n${broom.description.zh}` :
+                    `Buy ${broom.name.en}?\n\nPrice: ${broom.price} Galleons\n\n${broom.description.en}`);
+
+            if (confirm(confirmMsg)) {
+                // 根据支付方式扣除
+                if (useVoucher) {
+                    // 使用兑换券支付
+                    localStorage.setItem('broomVouchers', (vouchers - 1).toString());
+                } else {
+                    // 使用金币支付
+                    localStorage.setItem('hogwartsCoins', (coins - broom.price).toString());
+
+                    // 更新累计金币
+                    const playerData = getPlayerData();
+                    playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + broom.price;
+                    localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+                }
 
                 // 添加到已拥有列表
                 const ownedBrooms = getOwnedBrooms();
@@ -867,14 +917,15 @@
                     localStorage.setItem('ownedBrooms', JSON.stringify(ownedBrooms));
                 }
 
-                // 更新累计金币
-                const playerData = getPlayerData();
-                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + broom.price;
-                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+                // 更新其他页面上的兑换券显示
+                window.postMessage({
+                    type: 'updateVoucherCount',
+                    count: getVouchers()
+                }, '*');
 
                 alert(currentLang === 'zh' ?
-                    `🎉 购买成功！\n\n你获得了: ${broom.name.zh}` :
-                    `🎉 Purchase successful!\n\nYou received: ${broom.name.en}`);
+                    `🎉 购买成功！\n\n你获得了: ${broom.name.zh}\n${useVoucher ? '使用: 1张500金加隆兑换券' : `消耗: ${broom.price} 金加隆`}` :
+                    `🎉 Purchase successful!\n\nYou received: ${broom.name.en}\n${useVoucher ? 'Used: 1 x 500 Galleon Voucher' : `Cost: ${broom.price} Galleons`}`);
 
                 initDisplay();
                 renderBroomsticks();

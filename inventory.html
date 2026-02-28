@@ -235,7 +235,10 @@
 
         body.lang-en .inventory-subtitle-zh,
         body.lang-en .item-name-zh,
-        body.lang-en .exchange-title-zh {
+        body.lang-en .exchange-title-zh,
+        body.lang-en .empty-state-text-zh,
+        body.lang-en .tip-zh,
+        body.lang-en .desc-zh {
             display: none !important;
         }
 
@@ -247,7 +250,10 @@
 
         body.lang-zh .inventory-subtitle-en,
         body.lang-zh .item-name-en,
-        body.lang-zh .exchange-title-en {
+        body.lang-zh .exchange-title-en,
+        body.lang-zh .empty-state-text-en,
+        body.lang-zh .tip-en,
+        body.lang-zh .desc-en {
             display: none !important;
         }
 
@@ -311,6 +317,11 @@
                         <span class="exchange-title-en">Fragments:</span>
                         <span class="fragment-count" id="fragmentCount">0</span> / 10
                     </div>
+                    <div style="margin-top: 15px;">
+                        <span class="exchange-title-zh">已兑换券:</span>
+                        <span class="exchange-title-en">Vouchers:</span>
+                        <span class="fragment-count" id="voucherCount">0</span>
+                    </div>
                     <button class="exchange-btn" id="exchangeBtn" onclick="exchangeFragments()" disabled>
                         <span class="btn-text-zh">兑换为500金加隆券</span>
                         <span class="btn-text-en">Exchange for 500 Galleon Voucher</span>
@@ -328,6 +339,10 @@
                     <span class="tab-text-zh">🧪 药水</span>
                     <span class="tab-text-en">🧪 Potions</span>
                 </button>
+                <button class="inventory-tab" data-tab="vouchers" onclick="switchTab('vouchers')">
+                    <span class="tab-text-zh">🎫 兑换券</span>
+                    <span class="tab-text-en">🎫 Vouchers</span>
+                </button>
             </div>
 
             <!-- 头像框网格 -->
@@ -335,6 +350,9 @@
 
             <!-- 药水网格 -->
             <div class="inventory-grid" id="potionsGrid" style="display: none;"></div>
+
+            <!-- 兑换券网格 -->
+            <div class="inventory-grid" id="vouchersGrid" style="display: none;"></div>
         </div>
     </div>
 
@@ -473,12 +491,50 @@
             }).join('');
         }
 
+        // 渲染兑换券
+        function renderVouchers() {
+            const data = getInventoryData();
+            const container = document.getElementById('vouchersGrid');
+
+            if (data.vouchers === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🎫</div>
+                        <p class="empty-state-text-zh">还没有兑换券</p>
+                        <p class="empty-state-text-en">No vouchers yet</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: #a08050;">
+                            <span class="tip-zh">收集10个飞天扫帚碎片兑换一张500金加隆兑换券</span>
+                            <span class="tip-en">Collect 10 broomstick fragments to exchange for a 500 Galleon voucher</span>
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 显示兑换券
+            container.innerHTML = `
+                <div class="item-card">
+                    <div class="item-icon">🎫</div>
+                    <div class="item-name-zh">500金加隆兑换券</div>
+                    <div class="item-name-en">500 Galleon Voucher</div>
+                    <div class="item-count">×${data.vouchers}</div>
+                    <p style="font-size: 0.8rem; color: #a08050; margin-top: 10px;">
+                        <span class="desc-zh">可在扫帚商店购买500金加隆以下的扫帚时使用</span>
+                        <span class="desc-en">Use at broomsticks shop to buy brooms under 500 Galleons</span>
+                    </p>
+                </div>
+            `;
+        }
+
         // 渲染背包
         function renderInventory() {
             const data = getInventoryData();
 
             // 更新碎片显示
             document.getElementById('fragmentCount').textContent = data.fragments;
+
+            // 更新兑换券显示
+            document.getElementById('voucherCount').textContent = data.vouchers;
 
             // 更新兑换按钮状态
             const exchangeBtn = document.getElementById('exchangeBtn');
@@ -487,8 +543,10 @@
             // 渲染当前标签页
             if (currentTab === 'frames') {
                 renderFrames();
-            } else {
+            } else if (currentTab === 'potions') {
                 renderPotions();
+            } else if (currentTab === 'vouchers') {
+                renderVouchers();
             }
         }
 
@@ -507,6 +565,7 @@
             // 切换显示
             document.getElementById('framesGrid').style.display = tab === 'frames' ? 'grid' : 'none';
             document.getElementById('potionsGrid').style.display = tab === 'potions' ? 'grid' : 'none';
+            document.getElementById('vouchersGrid').style.display = tab === 'vouchers' ? 'grid' : 'none';
 
             renderInventory();
         }
@@ -564,6 +623,20 @@
             }
         }
         createMagicParticles();
+
+        // 监听兑换券更新事件
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'updateVoucherCount') {
+                const newCount = event.data.count;
+                localStorage.setItem('broomVouchers', newCount.toString());
+                // 更新兑换券显示区域
+                document.getElementById('voucherCount').textContent = newCount;
+                // 如果当前在兑换券标签页，重新渲染
+                if (currentTab === 'vouchers') {
+                    renderVouchers();
+                }
+            }
+        });
 
         // 初始化
         updateLanguage();

@@ -636,12 +636,91 @@
             color: #c9a830;
             margin-left: 5px;
         }
+
+        /* 精力值显示 */
+        .energy-display {
+            position: fixed;
+            top: 20px;
+            right: 240px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #27ae60;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .energy-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 5px rgba(39, 174, 96, 0.8));
+        }
+
+        .energy-amount {
+            font-size: 1.5rem;
+            color: #27ae60;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .energy-label {
+            font-size: 0.9rem;
+            color: #2ecc71;
+            margin-left: 5px;
+        }
+
+        .energy-display.low {
+            border-color: #e74c3c;
+        }
+
+        .energy-display.low .energy-icon {
+            animation: energyPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes energyPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .course-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .course-card.disabled::after {
+            content: attr(data-reason);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            z-index: 10;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
     <div class="stars-bg"></div>
     <div class="magic-particles"></div>
     <div class="stars-decoration" id="starsDecoration"></div>
+
+    <!-- 精力值显示 -->
+    <div class="energy-display" id="energyDisplay">
+        <span class="energy-icon">⚡</span>
+        <span class="energy-amount" id="energyAmount">100</span>
+        <span class="energy-label">
+            <span class="label-zh">精力</span>
+            <span class="label-en" style="display: none;">Energy</span>
+        </span>
+    </div>
 
     <!-- 金币显示 -->
     <div class="coin-display">
@@ -711,7 +790,7 @@
                 </div>
 
                 <!-- 魔药课 -->
-                <div class="course-card" onclick="openPotionsClass()">
+                <div class="course-card" id="potionsCard" onclick="openPotionsClass()" data-reason="你的精力不足，请去三把扫帚补充好精力再来。">
                     <span class="course-tag new">
                         <span class="tag-zh">热门</span>
                         <span class="tag-en" style="display: none;">Hot</span>
@@ -726,7 +805,7 @@
                 </div>
 
                 <!-- 飞行课 -->
-                <div class="course-card" onclick="openFlyingClass()">
+                <div class="course-card" id="flyingCard" onclick="openFlyingClass()" data-reason="你的精力不足，请去三把扫帚补充好精力再来。">
                     <span class="course-tag new">
                         <span class="tag-zh">热门</span>
                         <span class="tag-en" style="display: none;">Hot</span>
@@ -956,6 +1035,12 @@
 
         // 打开飞行课
         function openFlyingClass() {
+            if (!checkEnergy()) {
+                alert(currentLang === 'zh' ?
+                    '你的精力不足，请去三把扫帚补充好精力再来。' :
+                    'Your energy is too low. Please go to Three Broomsticks to restore your energy.');
+                return;
+            }
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.8s ease-in-out';
             setTimeout(() => {
@@ -1000,11 +1085,71 @@
             document.getElementById('coinAmount').textContent = coins;
         }
 
+        // 获取精力值
+        function getEnergy() {
+            const saved = localStorage.getItem('playerEnergy');
+            return saved !== null ? parseInt(saved) : 100;
+        }
+
+        // 初始化精力值显示
+        function initEnergyDisplay() {
+            const energy = getEnergy();
+            const energyDisplay = document.getElementById('energyDisplay');
+            const energyAmount = document.getElementById('energyAmount');
+            const energyLabels = energyDisplay.querySelectorAll('.label-zh, .label-en');
+            const potionsCard = document.getElementById('potionsCard');
+            const flyingCard = document.getElementById('flyingCard');
+
+            energyAmount.textContent = energy;
+
+            // 检查精力值是否低于10
+            if (energy < 10) {
+                energyDisplay.classList.add('low');
+                energyLabels.forEach(label => {
+                    if (currentLang === 'zh') {
+                        if (label.classList.contains('label-zh')) label.textContent = '精力不足';
+                        else label.style.display = 'none';
+                    } else {
+                        if (label.classList.contains('label-en')) label.textContent = 'Low Energy';
+                        else label.style.display = 'none';
+                    }
+                });
+
+                // 禁用课程卡片
+                if (potionsCard) potionsCard.classList.add('disabled');
+                if (flyingCard) flyingCard.classList.add('disabled');
+            } else {
+                energyDisplay.classList.remove('low');
+                energyLabels.forEach(label => {
+                    if (currentLang === 'zh') {
+                        if (label.classList.contains('label-zh')) label.textContent = '精力';
+                        else label.style.display = 'none';
+                    } else {
+                        if (label.classList.contains('label-en')) label.textContent = 'Energy';
+                        else label.style.display = 'none';
+                    }
+                });
+
+                // 启用课程卡片
+                if (potionsCard) potionsCard.classList.remove('disabled');
+                if (flyingCard) flyingCard.classList.remove('disabled');
+            }
+        }
+
+        // 检查精力值是否足够
+        function checkEnergy() {
+            const energy = getEnergy();
+            return energy >= 10;
+        }
+
         // 初始化语言显示
         updateLanguage();
 
         // 初始化金币
         initCoinDisplay();
+
+        // 初始化精力值
+        initEnergyDisplay();
 
         // ========== 魔药课游戏 ==========
         // 51种材料（已去重）
@@ -1044,6 +1189,12 @@
 
         // 打开魔药课游戏
         function openPotionsClass() {
+            if (!checkEnergy()) {
+                alert(currentLang === 'zh' ?
+                    '你的精力不足，请去三把扫帚补充好精力再来。' :
+                    'Your energy is too low. Please go to Three Broomsticks to restore your energy.');
+                return;
+            }
             // 隐藏金加隆显示框，避免遮挡按钮
             document.querySelector('.coin-display').style.display = 'none';
             document.getElementById('potionsModal').classList.add('active');
