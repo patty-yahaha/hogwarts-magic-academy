@@ -333,7 +333,7 @@
                     </div>
                 </div>
                 <button class="mail-btn" onclick="openMailbox()" id="mailBtn">
-                    <span class="mail-icon">📨</span>
+                    <span class="mail-icon">🦉</span>
                     <span class="mail-badge" id="mailBadge" style="display: none;">0</span>
                 </button>
             </div>
@@ -427,7 +427,7 @@
                     <div class="btn-glow"></div>
                 </button>
 
-                <button class="magic-btn-large hogwarts-games-btn" onclick="openPage('hogwarts-games')">
+                <button class="magic-btn-large hogwarts-games-btn" onclick="openPage('classes')">
                     <div class="large-btn-icon">🏰</div>
                     <div class="large-btn-content">
                         <span class="large-btn-text-zh">霍格沃茨课程</span>
@@ -1372,20 +1372,24 @@
                 rewardDiv.style.display = 'block';
                 if (letter.reward.type === 'decoration') {
                     const item = letter.reward.decoration;
-                    const rewardTypeText = currentLang === 'zh' ? '房间装饰' : 'Room Decoration';
-                    document.getElementById('letterRewardText').innerHTML = `
-                        <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
-                        <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
-                    `;
-                    claimBtn.style.display = 'inline-block';
+                    if (item) {
+                        const rewardTypeText = currentLang === 'zh' ? '房间装饰' : 'Room Decoration';
+                        document.getElementById('letterRewardText').innerHTML = `
+                            <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
+                            <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
+                        `;
+                        claimBtn.style.display = 'inline-block';
+                    }
                 } else if (letter.reward.type === 'inventory') {
                     const item = letter.reward.item;
-                    const rewardTypeText = currentLang === 'zh' ? '背包物品' : 'Inventory Item';
-                    document.getElementById('letterRewardText').innerHTML = `
-                        <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
-                        <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
-                    `;
-                    claimBtn.style.display = 'inline-block';
+                    if (item) {
+                        const rewardTypeText = currentLang === 'zh' ? '背包物品' : 'Inventory Item';
+                        document.getElementById('letterRewardText').innerHTML = `
+                            <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
+                            <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
+                        `;
+                        claimBtn.style.display = 'inline-block';
+                    }
                 }
             } else if (letter.reward && letter.reward.claimed) {
                 rewardDiv.style.display = 'block';

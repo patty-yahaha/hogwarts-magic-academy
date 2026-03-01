@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金币恢复工具 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <style>
+        .restore-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+        }
+
+        .restore-title {
+            text-align: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 30px;
+        }
+
+        .coin-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .info-label {
+            color: #c9a830;
+        }
+
+        .info-value {
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn:disabled {
+            background: #666;
+            border-color: #555;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .status.success {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+
+        .status.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .info-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+
+    <div class="container">
+        <div class="restore-container">
+            <h1 class="restore-title">🪙 金币恢复工具</h1>
+
+            <div class="coin-info">
+                <div class="info-row">
+                    <span class="info-label">本地当前金币:</span>
+                    <span class="info-value" id="localCurrentCoins">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">本地累计金币:</span>
+                    <span class="info-value" id="localCumulativeCoins">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">数据库当前金币:</span>
+                    <span class="info-value" id="dbCurrentCoins">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">数据库累计金币:</span>
+                    <span class="info-value" id="dbCumulativeCoins">-</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="restoreCoinsFromDatabase()" id="restoreBtn">
+                从数据库恢复金币
+            </button>
+
+            <div class="status" id="statusMessage" style="display: none;"></div>
+
+            <div class="info-text">
+                <p>💡 如果你的本地金币少于实际值，点击上方按钮从数据库恢复。</p>
+                <p>⚠️ 注意：这将把数据库中的值复制到本地存储，然后同步到云端。</p>
+                <p>🔗 恢复后请刷新 <a href="academy.html">大厅</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
+        function initSupabase() {
+            if (window.supabase) {
+                return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        }
+
+        function getCurrentUserId() {
+            return localStorage.getItem('userId');
+        }
+
+        function isGuestMode() {
+            return localStorage.getItem('isGuest') === 'true' || !localStorage.getItem('userId');
+        }
+
+        // 显示金币信息
+        function displayCoinInfo() {
+            document.getElementById('localCurrentCoins').textContent =
+                parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            document.getElementById('localCumulativeCoins').textContent =
+                parseInt(localStorage.getItem('cumulativeCoins') || '0');
+        }
+
+        // 从数据库恢复金币
+        async function restoreCoinsFromDatabase() {
+            const btn = document.getElementById('restoreBtn');
+            const status = document.getElementById('statusMessage');
+
+            btn.disabled = true;
+            status.style.display = 'block';
+            status.className = 'status';
+            status.textContent = '⏳ 正在从数据库读取...';
+
+            try {
+                const supabase = initSupabase();
+                const userId = getCurrentUserId();
+
+                if (!userId || isGuestMode()) {
+                    status.className = 'status error';
+                    status.textContent = '❌ 未登录，请先登录';
+                    btn.disabled = false;
+                    return;
+                }
+
+                // 从数据库读取金币
+                const { data: profiles, error } = await supabase
+                    .from('player_profiles')
+                    .select('coins, cumulative_coins')
+                    .eq('id', userId)
+                    .single();
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!profiles) {
+                    status.className = 'status error';
+                    status.textContent = '❌ 数据库中没有记录';
+                    btn.disabled = false;
+                    return;
+                }
+
+                // 显示数据库中的金币
+                document.getElementById('dbCurrentCoins').textContent = profiles.coins || 0;
+                document.getElementById('dbCumulativeCoins').textContent = profiles.cumulative_coins || 0;
+
+                // 更新本地存储
+                localStorage.setItem('hogwartsCoins', (profiles.coins || 0).toString());
+                localStorage.setItem('cumulativeCoins', (profiles.cumulative_coins || 0).toString());
+
+                status.className = 'status success';
+                status.textContent = '✅ 恢复成功！本地金币已更新为数据库中的值';
+
+                // 更新显示
+                displayCoinInfo();
+
+            } catch (error) {
+                console.error('恢复失败:', error);
+                status.className = 'status error';
+                status.textContent = '❌ 恢复失败: ' + error.message;
+                btn.disabled = false;
+            }
+        }
+
+        // 页面加载时显示金币信息
+        displayCoinInfo();
+    </script>
+</body>
+</html>
