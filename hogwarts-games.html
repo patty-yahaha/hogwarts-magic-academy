@@ -760,10 +760,10 @@
             <!-- 课程网格 -->
             <div class="courses-grid">
                 <!-- 咒语课 -->
-                <div class="course-card coming-soon">
-                    <span class="course-tag">
-                        <span class="tag-zh">即将推出</span>
-                        <span class="tag-en">Coming Soon</span>
+                <div class="course-card" onclick="openCharmsClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en" style="display: none;">Hot</span>
                     </span>
                     <div class="course-icon">✨</div>
                     <div class="course-name-zh">咒语课</div>
@@ -1033,6 +1033,15 @@
             }, 800);
         }
 
+        // 打开咒语课
+        function openCharmsClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'charms-class.html';
+            }, 800);
+        }
+
         // 打开飞行课
         function openFlyingClass() {
             if (!checkEnergy()) {
@@ -1088,7 +1097,7 @@
         // 获取精力值
         function getEnergy() {
             const saved = localStorage.getItem('playerEnergy');
-            return saved !== null ? parseInt(saved) : 100;
+            return saved !== null ? parseInt(saved) : 60;
         }
 
         // 初始化精力值显示
