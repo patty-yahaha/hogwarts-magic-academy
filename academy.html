@@ -1336,10 +1336,19 @@
             const typeInfo = LETTER_TYPES[letter.type];
 
             document.getElementById('letterTypeIconLarge').textContent = typeInfo.icon;
-            document.getElementById('letterTitleZh').textContent = letter.title.zh;
-            document.getElementById('letterTitleEn').textContent = letter.title.en;
-            document.getElementById('letterBodyZh').textContent = letter.body.zh;
-            document.getElementById('letterBodyEn').textContent = letter.body.en;
+            // 安全访问 title 和 body
+            if (letter && letter.title) {
+                document.getElementById('letterTitleZh').textContent = letter.title.zh;
+            }
+            if (letter && letter.body) {
+                document.getElementById('letterBodyZh').textContent = letter.body.zh;
+            }
+            if (letter && letter.title) {
+                document.getElementById('letterTitleEn').textContent = letter.title.en;
+            }
+            if (letter && letter.body) {
+                document.getElementById('letterBodyEn').textContent = letter.body.en;
+            }
 
             // 显示奖励
             const rewardDiv = document.getElementById('letterReward');
