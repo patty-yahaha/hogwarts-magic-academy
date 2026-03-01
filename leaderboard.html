@@ -302,7 +302,23 @@
                     return;
                 }
 
+                // 设置特定用户的固定金币数量
+                const fixedCoins = {
+                    '琥珀': 50,
+                    'KK': 200,
+                    'Cathy': 400
+                };
+
                 let sortedProfiles = [...profiles];
+                // 对特定用户应用固定金币数量
+                sortedProfiles = sortedProfiles.map(profile => {
+                    const displayName = profile.nickname || profile.username || '';
+                    if (fixedCoins[displayName] !== undefined) {
+                        return { ...profile, cumulative_coins: fixedCoins[displayName] };
+                    }
+                    return profile;
+                });
+
                 if (type === 'coins') {
                     sortedProfiles.sort((a, b) => (b.cumulative_coins || 0) - (a.cumulative_coins || 0));
                 } else if (type === 'affection') {
