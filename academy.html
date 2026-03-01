@@ -1728,6 +1728,9 @@
             playerData.isGuest = true;
             localStorage.setItem('isGuest', 'true');
 
+            // 设置用户主动退出标志，防止 checkSession 自动恢复
+            localStorage.setItem('userLoggedOut', 'true');
+
             alert(currentLang === 'zh' ?
                 '已退出登录，切换为游客模式' :
                 'Logged out, switched to guest mode');
@@ -1752,6 +1755,15 @@
                 }
 
                 if (session) {
+                    // 检查用户是否主动退出
+                    const userLoggedOut = localStorage.getItem('userLoggedOut') === 'true';
+
+                    if (userLoggedOut) {
+                        // 用户主动退出，清除退出标志并返回
+                        localStorage.removeItem('userLoggedOut');
+                        return false;
+                    }
+
                     // session 有效，更新 localStorage
                     localStorage.setItem('userId', session.user.id);
                     localStorage.setItem('userEmail', session.user.email);
