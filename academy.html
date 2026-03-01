@@ -771,10 +771,8 @@
             }
 
             // 更新头像图标显示
-            const statusAvatar = document.getElementById('statusAvatar');
-            if (statusAvatar) {
-                statusAvatar.textContent = playerData.avatar;
-            }
+            document.getElementById('avatarIcon').textContent = playerData.avatar;
+        }
 
         // 显示金加隆守则弹窗
         function showCoinRules() {
