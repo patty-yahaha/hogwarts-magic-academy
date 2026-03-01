@@ -1694,13 +1694,28 @@
         }
 
         // 退出登录功能
-        window.logout = function() {
+        window.logout = async function() {
             const confirmMsg = currentLang === 'zh' ?
                 '确定要退出登录吗？' :
                 'Are you sure you want to logout?';
 
             if (!confirm(confirmMsg)) {
                 return;
+            }
+
+            try {
+                // 调用 Supabase 退出登录
+                const { error } = await supabase.auth.signOut();
+
+                if (error) {
+                    console.error('退出登录失败:', error);
+                    alert(currentLang === 'zh' ?
+                        '退出登录失败，请稍后重试' :
+                        'Failed to logout, please try again later');
+                    return;
+                }
+            } catch (error) {
+                console.error('退出登录异常:', error);
             }
 
             // 清除登录状态
