@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分院帽测试</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+            min-height: 100vh;
+            font-family: 'Cinzel', serif;
+            color: #e8d5b7;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-nav {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-nav button {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-nav button:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        /* 欢迎页面 */
+        .welcome-screen {
+            background: linear-gradient(135deg, rgba(42, 26, 62, 0.9), rgba(26, 26, 62, 0.9));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dumbledore-message {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #e8d5b7;
+        }
+
+        .dumbledore-message .quote {
+            font-style: italic;
+            color: #ffd700;
+            font-family: 'MedievalSharp', cursive;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a3e;
+            padding: 15px 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(135deg, #c9a227, #b8911f);
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+        }
+
+        /* 测试页面 */
+        .quiz-screen {
+            display: none;
+            background: linear-gradient(135deg, rgba(42, 26, 62, 0.9), rgba(26, 26, 62, 0.9));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .quiz-progress {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+        }
+
+        .progress-dot.completed {
+            background: #4CAF50;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-number {
+            color: #ffd700;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #e8d5b7;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, rgba(42, 26, 62, 0.8), rgba(26, 26, 62, 0.8));
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            color: #e8d5b7;
+            padding: 18px 25px;
+            text-align: left;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(26, 26, 62, 0.8));
+            border-color: #d4af37;
+            transform: translateX(10px);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(26, 26, 62, 0.9));
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .option-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* 提醒部分 */
+        .reminder-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(212, 175, 55, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+        }
+
+        .reminder-title {
+            color: #ffd700;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reminder-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #e8d5b7;
+        }
+
+        .reminder-text .highlight {
+            color: #ffd700;
+            font-style: italic;
+        }
+
+        /* 结果页面 */
+        .result-screen {
+            display: none;
+            background: linear-gradient(135deg, rgba(42, 26, 62, 0.9), rgba(26, 26, 62, 0.9));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            animation: fadeIn 0.8s ease;
+        }
+
+        .house-result {
+            margin-bottom: 30px;
+        }
+
+        .house-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            padding: 20px;
+            border-radius: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .house-gryffindor {
+            color: #ffd700;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(187, 0, 0, 0.3));
+            border: 3px solid #ff0000;
+        }
+
+        .house-hufflepuff {
+            color: #ffd700;
+            background: linear-gradient(135deg, rgba(255, 193, 37, 0.3), rgba(255, 215, 0, 0.3));
+            border: 3px solid #ffc107;
+        }
+
+        .house-ravenclaw {
+            color: #ffd700;
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.3), rgba(0, 86, 179, 0.3));
+            border: 3px solid #007bff;
+        }
+
+        .house-slytherin {
+            color: #ffd700;
+            background: linear-gradient(135deg, rgba(0, 160, 70, 0.3), rgba(0, 128, 0, 0.3));
+            border: 3px solid #00a046;
+        }
+
+        .house-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #e8d5b7;
+            margin-bottom: 30px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retake-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a3e;
+        }
+
+        .retake-btn:hover {
+            background: linear-gradient(135deg, #c9a227, #b8911f);
+            transform: translateY(-2px);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+        }
+
+        /* 之前的结果显示 */
+        .previous-result {
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(56, 142, 60, 0.2));
+            border: 2px solid #4CAF50;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .previous-result p {
+            color: #e8d5b7;
+            font-size: 1rem;
+        }
+
+        .previous-result .house-name {
+            color: #4CAF50;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        /* 动画 */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .house-result.active {
+            animation: pulse 2s infinite;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .page-title h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-screen,
+            .quiz-screen,
+            .result-screen {
+                padding: 25px;
+            }
+
+            .question-text {
+                font-size: 1.1rem;
+            }
+
+            .option-btn {
+                padding: 15px 20px;
+                font-size: 0.95rem;
+            }
+
+            .house-name {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="back-nav">
+            <button onclick="goBack()">← 返回</button>
+        </div>
+
+        <div class="page-title">
+            <h1>🎩 分院帽测试</h1>
+        </div>
+
+        <!-- 欢迎页面 -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="dumbledore-message">
+                <p>欢迎来到霍格沃茨！</p>
+                <p style="margin-top: 20px;">请在脑海中戴上这顶<span class="quote">打着补丁、磨得很旧的魔法分院帽</span>，诚实地回答以下五道测试题，看看它会把你分到哪所学院！</p>
+            </div>
+            <button class="start-btn" onclick="startQuiz()">开始测试</button>
+        </div>
+
+        <!-- 之前的结果 -->
+        <div class="previous-result" id="previousResult">
+            <p>你之前的分院结果：</p>
+            <div class="house-name" id="previousHouseName"></div>
+            <p style="margin-top: 10px;">你可以重新测试或保留原有结果</p>
+        </div>
+
+        <!-- 测试页面 -->
+        <div class="quiz-screen" id="quizScreen">
+            <div class="quiz-progress" id="quizProgress">
+                <!-- 进度点由JS生成 -->
+            </div>
+
+            <div class="question-container" id="questionContainer">
+                <!-- 问题由JS生成 -->
+            </div>
+
+            <div class="reminder-section">
+                <div class="reminder-title">💡 邓布利多校长的特别提醒</div>
+                <div class="reminder-text">
+                    如果你对分院帽的结果感到疑虑，请记住邓布利多教授对哈利说过的话：<br>
+                    <span class="highlight">"表现我们真正的自我，是我们自己的选择，这比我们所具有的能力更重要。"</span><br><br>
+                    如果你在内心深处强烈地呼喊"不去斯莱特林"，分院帽是会尊重你的选择的！
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果页面 -->
+        <div class="result-screen" id="resultScreen">
+            <div class="house-result">
+                <div class="house-name" id="resultHouseName"></div>
+                <div class="house-description" id="resultDescription"></div>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn retake-btn" onclick="retakeQuiz()">重新测试</button>
+                <button class="action-btn save-btn" onclick="goBack()">返回大厅</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 问题数据
+        const questions = [
+            {
+                question: '邓布利多校长在开学晚宴上宣布："凡不愿遭遇意外、痛苦惨死的人，请不要进入四楼靠右边的走廊。" 听到这句话，你的第一反应是：',
+                options: [
+                    { label: 'A', text: '哈哈大笑，觉得这简直是个有趣的挑战，并计划着今晚披上隐形斗篷去一探究竟。', value: 'A' },
+                    { label: 'B', text: '认为这一定非常危险，决定做个循规蹈矩的好学生，坚决远离那个地方。', value: 'B' },
+                    { label: 'C', text: '好奇心被激起，立刻决定去图书馆查阅《霍格沃茨，一段校史》，看看那里到底藏着什么秘密。', value: 'C' },
+                    { label: 'D', text: '敏锐地察觉到那里肯定藏着无比珍贵或强大的东西，开始暗中谋划如何利用这件宝物走向辉煌。', value: 'D' }
+                ]
+            },
+            {
+                question: '万圣节前夕，奇洛教授冲进餐厅大喊地下教室里有一只巨怪。在慌乱中，你突然想起你最好的朋友还不知道这件事！ 此时你会：',
+                options: [
+                    { label: 'A', text: '不顾级长的阻拦，悄悄脱离队伍，冒着生命危险逆行去寻找并保护你的朋友。', value: 'A' },
+                    { label: 'B', text: '听从级长的指挥，保持镇静回到宿舍，并立刻把朋友失踪的情况报告给老师，以免添乱。', value: 'B' },
+                    { label: 'C', text: '飞快地在大脑中回忆你在《黑暗力量：自卫指南》中读到过的关于巨怪的弱点和应对魔咒。', value: 'C' },
+                    { label: 'D', text: '认为朋友应该为自己的粗心付出代价，首要任务是确保自己能安全撤离。', value: 'D' }
+                ]
+            },
+            {
+                question: '在斯内普教授的魔药课上，他为了刁难人，故意问了一个你还没学过的极其偏门的问题。面对他冷冰冰的嘲讽，你会：',
+                options: [
+                    { label: 'A', text: '毫不畏惧地直视他那对冷漠的眼睛，甚至在认为他不公平时当面顶撞他。', value: 'A' },
+                    { label: 'B', text: '默默忍受委屈和不公，不与他发生冲突，继续埋头努力完成配置药水的艰辛劳动。', value: 'B' },
+                    { label: 'C', text: '把手笔直地伸向地下教室的顶棚，急于用你从课外书上背下来的标准答案证明自己的博学。', value: 'C' },
+                    { label: 'D', text: '和你的朋友捂着嘴吃吃地笑，对别人的窘态幸灾乐祸，并在随后的操作中试图讨好他。', value: 'D' }
+                ]
+            },
+            {
+                question: '当面对极其繁重的期末复习时，你的学习状态最接近以下哪一种？',
+                options: [
+                    { label: 'A', text: '总是拖拉到深夜才被迫偷偷做作业，更愿意把时间花在魁地奇之类的冒险或运动上。', value: 'A' },
+                    { label: 'B', text: '尽管天资可能不如别人，但你非常有耐心，愿意一遍遍地练习或查阅资料，不畏惧艰辛。', value: 'B' },
+                    { label: 'C', text: '甚至在开学前就已经把所有的课本都背会了，主动选修所有科目，并且极其享受算术占卜和古代魔文带来的乐趣。', value: 'C' },
+                    { label: 'D', text: '并不在乎死记硬背，而是寻找最有效的捷径，甚至利用家庭背景或特权来确保自己立于不败之地。', value: 'D' }
+                ]
+            },
+            {
+                question: '正如分院帽所唱，它能看透你头脑里隐藏的任何念头。以下哪一组词语最能触动你的内心？',
+                options: [
+                    { label: 'A', text: '胆识、气魄和豪爽。', value: 'A' },
+                    { label: 'B', text: '正直、忠诚和坚忍。', value: 'B' },
+                    { label: 'C', text: '头脑精明、睿智和博学。', value: 'C' },
+                    { label: 'D', text: '走向辉煌、足智多谋和成就大器。', value: 'D' }
+                ]
+            }
+        ];
+
+        // 结果数据
+        const results = {
+            A: {
+                name: '格兰芬多！ (Gryffindor)',
+                description: '你属于格兰芬多，那里有埋藏在心底的勇敢。你和哈利、罗恩一样，有时可能会无视校规，但你们的胆识、气魄和豪爽使格兰芬多出类拔萃。面对危险时，你总是毫不犹豫地挺身而出。',
+                class: 'house-gryffindor'
+            },
+            B: {
+                name: '赫奇帕奇！ (Hufflepuff)',
+                description: '你属于赫奇帕奇，那里的人正直忠诚，赫奇帕奇的学子们坚忍诚实，不畏惧艰辛的劳动。就像汉娜·艾博和贾斯廷·芬列里一样，你是一个真诚、踏实且值得信赖的伙伴。',
+                class: 'house-hufflepuff'
+            },
+            C: {
+                name: '拉文克劳！ (Ravenclaw)',
+                description: '你属于智慧的老拉文克劳，如果你头脑精明，那些睿智博学的人，总会在那里遇见他们的同道。你就像赫敏一样（虽然她去了格兰芬多），热爱知识，热衷于在图书馆里寻找答案，认为逻辑推理和学识比莽撞的勇气更重要。',
+                class: 'house-ravenclaw'
+            },
+            D: {
+                name: '斯莱特林！ (Slytherin)',
+                description: '你属于斯莱特林，也许你在这里交上真诚的朋友，但那些狡诈阴险之辈却会不惜一切手段，去达到他们的目的。你充满野心，极度渴望证明自己，分院帽认为这里能帮助你走向辉煌，成就大器。你往往具备足智多谋、意志坚强的特质。',
+                class: 'house-slytherin'
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = {};
+        let currentUserId = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPreviousResult();
+        });
+
+        // 加载之前的结果
+        async function loadPreviousResult() {
+            try {
+                // 获取用户ID
+                const userId = localStorage.getItem('currentUserId');
+                if (!userId) {
+                    return;
+                }
+                currentUserId = userId;
+
+                // 检查是否有Supabase配置
+                if (typeof supabase === 'undefined') {
+                    console.log('Supabase not available');
+                    return;
+                }
+
+                const supabaseUrl = localStorage.getItem('supabaseUrl');
+                const supabaseKey = localStorage.getItem('supabaseKey');
+
+                if (!supabaseUrl || !supabaseKey) {
+                    return;
+                }
+
+                const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+                // 查询用户的分院结果
+                const { data, error } = await supabaseClient
+                    .from('sorting_hat_results')
+                    .select('house, test_date')
+                    .eq('user_id', userId)
+                    .order('test_date', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (error || !data) {
+                    return;
+                }
+
+                // 显示之前的结果
+                const previousResultDiv = document.getElementById('previousResult');
+                const previousHouseName = document.getElementById('previousHouseName');
+
+                previousHouseName.textContent = data.house;
+                previousResultDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('加载之前的结果失败:', error);
+            }
+        }
+
+        // 开始测试
+        function startQuiz() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+
+            // 重新加载之前的结果
+            loadPreviousResult();
+
+            // 初始化进度条
+            initProgress();
+            // 显示第一个问题
+            showQuestion(0);
+        }
+
+        // 初始化进度条
+        function initProgress() {
+            const progressContainer = document.getElementById('quizProgress');
+            progressContainer.innerHTML = '';
+
+            for (let i = 0; i < questions.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                dot.id = `progress-${i}`;
+                progressContainer.appendChild(dot);
+            }
+        }
+
+        // 更新进度
+        function updateProgress() {
+            for (let i = 0; i < questions.length; i++) {
+                const dot = document.getElementById(`progress-${i}`);
+                if (i < currentQuestion) {
+                    dot.className = 'progress-dot completed';
+                } else if (i === currentQuestion) {
+                    dot.className = 'progress-dot active';
+                } else {
+                    dot.className = 'progress-dot';
+                }
+            }
+        }
+
+        // 显示问题
+        function showQuestion(index) {
+            currentQuestion = index;
+            updateProgress();
+
+            const question = questions[index];
+            const container = document.getElementById('questionContainer');
+
+            let html = `
+                <div class="question-number">问题 ${index + 1} / ${questions.length}</div>
+                <div class="question-text">${question.question}</div>
+                <div class="options-container">
+            `;
+
+            question.options.forEach(option => {
+                html += `
+                    <button class="option-btn" onclick="selectOption('${option.value}', ${index})">
+                        <span class="option-label">${option.label}</span>
+                        ${option.text}
+                    </button>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // 选择选项
+        function selectOption(value, questionIndex) {
+            answers[questionIndex] = value;
+
+            // 标记选中的选项
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.textContent.includes(value)) {
+                    opt.classList.add('selected');
+                }
+            });
+
+            // 延迟后进入下一个问题或显示结果
+            setTimeout(() => {
+                if (questionIndex < questions.length - 1) {
+                    showQuestion(questionIndex + 1);
+                } else {
+                    showResult();
+                }
+            }, 500);
+        }
+
+        // 显示结果
+        async function showResult() {
+            // 计算答案统计
+            const counts = { A: 0, B: 0, C: 0, D: 0 };
+            Object.values(answers).forEach(answer => {
+                counts[answer]++;
+            });
+
+            // 找出选择最多的答案
+            let maxCount = 0;
+            let maxAnswer = 'A';
+            for (const [answer, count] of Object.entries(counts)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    maxAnswer = answer;
+                }
+            }
+
+            const result = results[maxAnswer];
+
+            // 显示结果页面
+            document.getElementById('quizScreen').style.display = 'none';
+            const resultScreen = document.getElementById('resultScreen');
+            resultScreen.style.display = 'block';
+
+            const resultHouseName = document.getElementById('resultHouseName');
+            const resultDescription = document.getElementById('resultDescription');
+
+            resultHouseName.textContent = result.name;
+            resultHouseName.className = `house-name ${result.class}`;
+            resultDescription.textContent = result.description;
+
+            // 添加动画
+            document.querySelector('.house-result').classList.add('active');
+
+            // 保存结果到数据库
+            await saveResult(result.name);
+        }
+
+        // 保存结果到数据库
+        async function saveResult(house) {
+            try {
+                // 获取用户ID
+                const userId = localStorage.getItem('currentUserId');
+                if (!userId) {
+                    console.log('没有用户ID，无法保存结果');
+                    return;
+                }
+
+                // 检查是否有Supabase配置
+                if (typeof supabase === 'undefined') {
+                    console.log('Supabase not available');
+                    return;
+                }
+
+                const supabaseUrl = localStorage.getItem('supabaseUrl');
+                const supabaseKey = localStorage.getItem('supabaseKey');
+
+                if (!supabaseUrl || !supabaseKey) {
+                    return;
+                }
+
+                const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+                // 插入或更新结果
+                const { error } = await supabaseClient
+                    .from('sorting_hat_results')
+                    .upsert({
+                        user_id: userId,
+                        house: house,
+                        test_date: new Date().toISOString()
+                    }, {
+                        onConflict: 'user_id'
+                    });
+
+                if (error) {
+                    console.error('保存结果失败:', error);
+                    return;
+                }
+
+                console.log('结果保存成功');
+
+            } catch (error) {
+                console.error('保存结果时出错:', error);
+            }
+        }
+
+        // 重新测试
+        function retakeQuiz() {
+            currentQuestion = 0;
+            answers = {};
+
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('welcomeScreen').style.display = 'block';
+
+            document.querySelector('.house-result').classList.remove('active');
+        }
+
+        // 返回
+        function goBack() {
+            window.location.href = 'academy.html';
+        }
+    </script>
+</body>
+</html>
