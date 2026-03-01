@@ -90,8 +90,16 @@
             z-index: 1000;
         }
 
-        .coin-icon {
-            font-size: 1.8rem;
+        .coin-icon svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
+        }
+        .header-title svg {
+            width: 2.5rem;
+            height: 2.5rem;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+            vertical-align: text-bottom;
         }
 
         .coin-amount {
@@ -195,10 +203,11 @@
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
         }
 
-        .hand-icon {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 5px;
+        .hand-icon svg {
+            width: 2.5rem;
+            height: 2.5rem;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+            vertical-align: middle;
         }
 
         .submit-btn {
@@ -283,10 +292,10 @@
             font-size: 1.2rem;
         }
 
-        .wand-icon {
-            font-size: 4rem;
-            text-align: center;
-            margin-bottom: 15px;
+        .wand-icon svg {
+            width: 4rem;
+            height: 4rem;
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.6));
         }
 
         .wand-name {
@@ -318,6 +327,13 @@
             font-weight: 600;
         }
 
+        .wand-price svg {
+            width: 1.2rem;
+            height: 1.2rem;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            vertical-align: middle;
+            margin-right: 5px;
+        }
         .wand-price {
             text-align: center;
             font-size: 1.5rem;
@@ -418,9 +434,10 @@
             border-color: #e74c3c;
         }
 
-        .message-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
+        .message-icon svg {
+            width: 4rem;
+            height: 4rem;
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.6));
         }
 
         .message-title {
@@ -478,7 +495,12 @@
 
     <!-- 金币显示 -->
     <div class="coin-display">
-        <span class="coin-icon">🪙</span>
+        <span class="coin-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 6V18M9 12h6"/>
+            </svg>
+        </span>
         <span class="coin-amount" id="coinAmount">0</span>
         <span class="coin-label">
             <span class="label-zh">金加隆</span>
@@ -493,7 +515,35 @@
                 ← <span class="back-text-zh">返回</span>
             </button>
             <h1 class="header-title">
-                <span class="title-text-zh">🪄 奥利凡德魔杖店 🪄</span>
+                <span class="title-text-zh">
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="wandTitleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#8b4513"/>
+                                <stop offset="100%" style="stop-color:#5c3317"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M28 8L36 8L36 56L28 56Z" fill="url(#wandTitleGrad)" stroke="#3d2314" stroke-width="1"/>
+                        <circle cx="32" cy="8" r="3" fill="#ffd700"/>
+                        <circle cx="32" cy="8" r="2" fill="#fff"/>
+                        <path d="M36 12Q44 8 48 12Q44 16 36 12" stroke="#ffd700" stroke-width="1" fill="#ffd700" opacity="0.8"/>
+                        <path d="M28 14Q20 10 16 14Q20 18 28 14" stroke="#ffd700" stroke-width="1" fill="#ffd700" opacity="0.6"/>
+                    </svg>
+                    奥利凡德魔杖店
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="wandTitleGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#8b4513"/>
+                                <stop offset="100%" style="stop-color:#5c3317"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M28 8L36 8L36 56L28 56Z" fill="url(#wandTitleGrad2)" stroke="#3d2314" stroke-width="1"/>
+                        <circle cx="32" cy="8" r="3" fill="#ffd700"/>
+                        <circle cx="32" cy="8" r="2" fill="#fff"/>
+                        <path d="M36 12Q44 8 48 12Q44 16 36 12" stroke="#ffd700" stroke-width="1" fill="#ffd700" opacity="0.8"/>
+                        <path d="M28 14Q20 10 16 14Q20 18 28 14" stroke="#ffd700" stroke-width="1" fill="#ffd700" opacity="0.6"/>
+                    </svg>
+                </span>
             </h1>
         </div>
 
@@ -536,12 +586,28 @@
                     </label>
                     <div class="hand-selection">
                         <div class="hand-option" data-hand="left" onclick="selectHand('left')">
-                            <span class="hand-icon">🤚</span>
+                            <span class="hand-icon">
+                                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d4af37" stroke-width="2">
+                                    <path d="M16 20L16 12Q16 8 20 8Q24 8 28 10L32 12"/>
+                                    <circle cx="16" cy="24" r="4" fill="none"/>
+                                    <circle cx="20" cy="28" r="3" fill="none"/>
+                                    <circle cx="24" cy="24" r="4" fill="none"/>
+                                    <path d="M32 12L38 16"/>
+                                </svg>
+                            </span>
                             <span class="hand-label-zh">左手</span>
                             <span class="hand-label-en">Left</span>
                         </div>
                         <div class="hand-option" data-hand="right" onclick="selectHand('right')">
-                            <span class="hand-icon">✋</span>
+                            <span class="hand-icon">
+                                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d4af37" stroke-width="2">
+                                    <path d="M32 20L32 12Q32 8 28 8Q20 8 16 10L16 12"/>
+                                    <circle cx="32" cy="24" r="4" fill="none"/>
+                                    <circle cx="28" cy="28" r="3" fill="none"/>
+                                    <circle cx="24" cy="24" r="4" fill="none"/>
+                                    <path d="M16 12L10 16"/>
+                                </svg>
+                            </span>
                             <span class="hand-label-zh">右手</span>
                             <span class="hand-label-en">Right</span>
                         </div>
@@ -621,7 +687,31 @@
             { name: '桦木', nameEn: 'Birch', rarity: 1 }
         ];
 
-        const wandIcons = ['🪄', '🪄', '🪄', '🪄', '🪄'];
+        const wandIcons = [
+            // Holly (冬青木) - warm wood with golden core, distinct hilt and tapering shaft
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="hollyGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#c9a66b"/><stop offset="50%" style="stop-color:#b8954a"/><stop offset="100%" style="stop-color:#8b6914"/></linearGradient></defs><!-- Hilt (handle) --><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#hollyGrad)" stroke="#6b4423" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#a08050" opacity="0.6"/><!-- Shaft with tapering --><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#hollyGrad)" stroke="#6b4423" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#6b4423" stroke-width="1"/><!-- Core glow --><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><!-- Magical sparkles --><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Yew (紫杉木) - dark brown with golden core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="yewGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#4a3728"/><stop offset="50%" style="stop-color:#3a2718"/><stop offset="100%" style="stop-color:#2d1f0f"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#yewGrad)" stroke="#1a1208" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#3a2515" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#yewGrad)" stroke="#1a1208" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#1a1208" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Willow (柳木) - light greenish-brown with golden core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="willowGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#a08060"/><stop offset="50%" style="stop-color:#8a7050"/><stop offset="100%" style="stop-color:#7a5a3a"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#willowGrad)" stroke="#4a3018" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#806040" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#willowGrad)" stroke="#4a3018" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#4a3018" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Oak (橡木) - lighter brown with golden core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="oakGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#d4a574"/><stop offset="50%" style="stop-color:#c49564"/><stop offset="100%" style="stop-color:#a67c52"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#oakGrad)" stroke="#7a5a3a" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#b48554" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#oakGrad)" stroke="#7a5a3a" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#7a5a3a" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Sandalwood (檀木) - dark black/deep brown with silvery core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sandalGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#2a1f15"/><stop offset="50%" style="stop-color:#1a0f05"/><stop offset="100%" style="stop-color:#0f0500"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#sandalGrad)" stroke="#0a0500" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#1a0a00" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#sandalGrad)" stroke="#0a0500" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#0a0500" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#c0c0c0" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#c0c0c0" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#c0c0c0" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#c0c0c0" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#c0c0c0" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Cherry (樱桃木) - reddish-brown with golden core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cherryGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#b8483a"/><stop offset="50%" style="stop-color:#a8382a"/><stop offset="100%" style="stop-color:#8b2a22"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#cherryGrad)" stroke="#5a1a14" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#98281a" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#cherryGrad)" stroke="#5a1a14" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#5a1a14" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Locust (槐木) - medium brown with golden core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="locustGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#9a7a5a"/><stop offset="50%" style="stop-color:#8a6a4a"/><stop offset="100%" style="stop-color:#6a4a2a"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#locustGrad)" stroke="#4a2a12" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#7a5a3a" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#locustGrad)" stroke="#4a2a12" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#4a2a12" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Maple (枫木) - warm brown with golden core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mapleGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#d4956a"/><stop offset="50%" style="stop-color:#c4855a"/><stop offset="100%" style="stop-color:#a65a3a"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#mapleGrad)" stroke="#6a3a20" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#b4754a" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#mapleGrad)" stroke="#6a3a20" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#6a3a20" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Pine (松木) - yellowish-brown with golden core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pineGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#deb887"/><stop offset="50%" style="stop-color:#cda877"/><stop offset="100%" style="stop-color:#c4a470"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#pineGrad)" stroke="#8a6a46" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#bd9867" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#pineGrad)" stroke="#8a6a46" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#8a6a46" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>',
+            // Birch (桦木) - light brown with golden core
+            '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="birchGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#e0c0a0"/><stop offset="50%" style="stop-color:#d0b090"/><stop offset="100%" style="stop-color:#c4a080"/></linearGradient></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#birchGrad)" stroke="#a08060" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#d0a080" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#birchGrad)" stroke="#a08060" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#a08060" stroke-width="1"/><circle cx="40" cy="24" r="2.5" fill="#ffd700" opacity="0.95"/><circle cx="40" cy="24" r="1.5" fill="#ffffff" opacity="0.9"/><circle cx="90" cy="16" r="1" fill="#ffd700" opacity="0.8"/><circle cx="100" cy="34" r="0.8" fill="#ffd700" opacity="0.6"/><circle cx="110" cy="20" r="0.6" fill="#ffd700" opacity="0.7"/><path d="M5 22L2 24M135 22L138 24" stroke="#ffd700" stroke-width="1.5" opacity="0.7"/></svg>'
+        ];
+
+        // Thestral Tail Hair wand with special silvery-white glowing core/aura
+        const thestralWandIcon = '<svg viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="thestralGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#3a2a1a"/><stop offset="50%" style="stop-color:#2a1a0a"/><stop offset="100%" style="stop-color:#1a0a00"/></linearGradient><filter id="coreGlow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="8" y="18" width="18" height="16" rx="3" fill="url(#thestralGrad)" stroke="#0a0500" stroke-width="1.5"/><rect x="10" y="20" width="14" height="12" rx="2" fill="#2a1a0a" opacity="0.6"/><path d="M26 20L28 20L126 20L130 24L126 28L28 28L26 28Z" fill="url(#thestralGrad)" stroke="#0a0500" stroke-width="1"/><path d="M126 22L134 24L126 26" fill="none" stroke="#0a0500" stroke-width="1"/><!-- Glowing white core --><circle cx="40" cy="24" r="3" fill="#ffffff" opacity="1" filter="url(#coreGlow)"/><circle cx="40" cy="24" r="2" fill="#f0f0f0" opacity="0.95"/><circle cx="40" cy="24" r="1" fill="#ffffff" opacity="1"/><!-- Silvery aura effect --><circle cx="40" cy="24" r="6" fill="#ffffff" opacity="0.2"/><circle cx="40" cy="24" r="9" fill="#ffffff" opacity="0.1"/><circle cx="40" cy="24" r="12" fill="#ffffff" opacity="0.05"/><!-- Silvery sparkles --><circle cx="90" cy="16" r="1" fill="#e8e8e8" opacity="0.9"/><circle cx="100" cy="34" r="0.8" fill="#d8d8d8" opacity="0.7"/><circle cx="110" cy="20" r="0.6" fill="#e0e0e0" opacity="0.8"/><path d="M5 22L2 24M135 22L138 24" stroke="#e0e0e0" stroke-width="1.5" opacity="0.8"/></svg>';
 
         // ========== 状态 ==========
         let currentLang = localStorage.getItem('siteLanguage') || 'zh';
@@ -733,6 +823,14 @@
             const randomBonus = Math.floor(Math.random() * 200);
             const price = Math.min(1000, Math.max(50, basePrice + rarityBonus + randomBonus));
 
+            // Use special icon for Thestral Tail Hair core
+            let wandIcon;
+            if (core.nameEn === 'Thestral Tail Hair') {
+                wandIcon = thestralWandIcon;
+            } else {
+                wandIcon = wandIcons[Math.floor(Math.random() * wandIcons.length)];
+            }
+
             return {
                 id: Date.now() + Math.random(),
                 core: core,
@@ -740,7 +838,7 @@
                 length: roundedLength,
                 hand: hand,
                 price: price,
-                icon: wandIcons[Math.floor(Math.random() * wandIcons.length)]
+                icon: wandIcon
             };
         }
 
@@ -822,7 +920,13 @@
                         <span class="wand-spec-value">${handText}</span>
                     </div>
                 </div>
-                <div class="wand-price">🪙 ${wand.price}</div>
+                <div class="wand-price">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 6V18M9 12h6"/>
+                    </svg>
+                    ${wand.price}
+                </div>
                 ${isOwned ?
                     `<div class="owned-badge">
                         <span class="owned-zh">已拥有</span>
@@ -849,7 +953,8 @@
             // 检查精力值（精力值小于10不准购买）
             const playerEnergy = parseInt(localStorage.getItem('playerEnergy') || '100');
             if (playerEnergy < 10) {
-                showMessage('error', '😫',
+                showMessage('error',
+                    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e74c3c" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 3l-3-3"/></svg>',
                     currentLang === 'zh' ? '精力值不足！' : 'Not Enough Energy!',
                     currentLang === 'zh' ? '你的精力值太低了，去三把扫帚休息一下吧！' : 'Your energy is too low! Rest at the Three Broomsticks!'
                 );
@@ -863,7 +968,8 @@
             if (!wand) return;
 
             if (currentCoins < wand.price) {
-                showMessage('error', '💸',
+                showMessage('error',
+                    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e74c3c" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v2M8 12h3M12 17v2M12 12l3 3m-3 0l-3 3"/></svg>',
                     currentLang === 'zh' ? '金加隆不足！' : 'Not Enough Coins!',
                     currentLang === 'zh' ? `你需要 ${wand.price - currentCoins} 更多金加隆来购买这根魔杖！` : `You need ${wand.price - currentCoins} more Galleons!`
                 );
@@ -883,7 +989,8 @@
             localStorage.setItem('ollivanderWands', JSON.stringify(ownedWands));
 
             // 显示成功消息
-            showMessage('success', '🎉',
+            showMessage('success',
+                '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#27ae60" stroke-width="2"><path d="M12 2l3.5 7h7l-2.5 4.5l4.5 7.5l-2.5 4.5l-7.5-7.5-2 5.5h7l2-5.5"/></svg>',
                 currentLang === 'zh' ? '购买成功！' : 'Purchase Successful!',
                 currentLang === 'zh' ? `你购买了 ${currentLang === 'zh' ? wand.core.name : wand.core.nameEn} ${currentLang === 'zh' ? wand.wood.name : wand.wood.nameEn} 魔杖！` : `You purchased the ${wand.core.nameEn} ${wand.wood.nameEn} wand!`
             );
@@ -961,7 +1068,11 @@
 
     <!-- 购买消息模态框 -->
     <div class="purchase-message" id="purchaseMessage">
-        <div class="message-icon" id="messageIcon">🎉</div>
+        <div class="message-icon" id="messageIcon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#27ae60" stroke-width="2">
+                <path d="M12 2l3.5 7h7l-2.5 4.5l4.5 7.5l-2.5 4.5l-7.5-7.5-2 5.5h7l2-5.5"/>
+            </svg>
+        </div>
         <div class="message-title" id="messageTitle">购买成功</div>
         <div class="message-text" id="messageText">购买成功！</div>
         <button class="close-purchase-btn" onclick="closePurchaseMessage()">
