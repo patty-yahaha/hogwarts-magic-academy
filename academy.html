@@ -8,30 +8,6 @@
     <link rel="stylesheet" href="academy.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        /* Lucide icon styling */
-        .lucide-icon {
-            width: 24px;
-            height: 24px;
-            color: inherit;
-            display: inline-block;
-        }
-        .btn-icon .lucide-icon,
-        .large-btn-icon .lucide-icon,
-        .search-icon .lucide-icon,
-        .resource-icon .lucide-icon,
-        .mail-icon .lucide-icon,
-        .rule-icon .lucide-icon,
-        .owl-icon .lucide-icon {
-            width: 1.5em;
-            height: 1.5em;
-        }
-        .large-btn-icon .lucide-icon {
-            width: 2em;
-            height: 2em;
-        }
-    </style>
     <style>
         /* 按钮通知徽章样式 - 更醒目版本 */
         .notification-badge {
@@ -309,7 +285,7 @@
         <!-- 用户登录状态栏 -->
         <div class="user-status-bar" id="userStatusBar">
             <div class="user-info">
-                <div class="user-status-avatar" id="statusAvatar"><i data-lucide="wand-2"></i></div>
+                <div class="user-status-avatar" id="statusAvatar">🧙</div>
                 <div class="user-details">
                     <div class="user-nickname" id="statusNickname">加载中...</div>
                     <div class="user-status-badge" id="statusBadge">
@@ -320,13 +296,13 @@
             </div>
             <div class="user-actions-compact">
                 <button class="user-action-btn" onclick="openProfile()">
-                    <i data-lucide="user"></i> <span class="lang-zh">个人资料</span><span class="lang-en">Profile</span>
+                    👤 <span class="lang-zh">个人资料</span><span class="lang-en">Profile</span>
                 </button>
                 <button class="user-action-btn logout-btn" onclick="logout()" id="logoutBtn" style="display: none;">
-                    <i data-lucide="door-open"></i> <span class="lang-zh">退出登录</span><span class="lang-en">Logout</span>
+                    🚪 <span class="lang-zh">退出登录</span><span class="lang-en">Logout</span>
                 </button>
                 <a href="./login.html?force=true" class="user-action-btn" id="loginBtn" style="display: none; text-decoration: none;" onclick="window.location.href='login.html?force=true'; return false;">
-                    <i data-lucide="key"></i> <span class="lang-zh">登录</span><span class="lang-en">Login</span>
+                    🔑 <span class="lang-zh">登录</span><span class="lang-en">Login</span>
                 </a>
             </div>
         </div>
@@ -336,14 +312,14 @@
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-input" placeholder="搜索人物、动物、龙...">
                 <button class="search-btn" onclick="performSearch()">
-                    <span class="search-icon"><i data-lucide="search"></i></span>
+                    <span class="search-icon">🔍</span>
                 </button>
             </div>
             <!-- 金加隆和精力值显示 -->
             <div class="user-actions">
                 <div class="resource-display">
                     <div class="resource-item">
-                        <span class="resource-icon"><i data-lucide="coins"></i></span>
+                        <span class="resource-icon">🪙</span>
                         <span class="resource-value" id="coinsDisplay">0</span>
                         <span class="resource-label">金加隆</span>
                     </div>
@@ -354,7 +330,7 @@
                     </div>
                 </div>
                 <button class="mail-btn" onclick="openMailbox()" id="mailBtn">
-                    <span class="mail-icon"><i data-lucide="inbox"></i></span>
+                    <span class="mail-icon">📨</span>
                     <span class="mail-badge" id="mailBadge" style="display: none;">0</span>
                 </button>
             </div>
@@ -366,7 +342,7 @@
             <!-- 上方四个主按钮 -->
             <div class="top-buttons">
                 <button class="magic-btn wand-btn" onclick="openPage('wands')">
-                    <div class="btn-icon"><i data-lucide="wand-2"></i></div>
+                    <div class="btn-icon">🧙</div>
                     <div class="btn-content">
                         <span class="btn-text-zh">魔杖介绍</span>
                         <span class="btn-text-en">Wands</span>
@@ -375,7 +351,7 @@
                 </button>
 
                 <button class="magic-btn characters-btn" onclick="openPage('characters')">
-                    <div class="btn-icon"><i data-lucide="user"></i></div>
+                    <div class="btn-icon">👤</div>
                     <div class="btn-content">
                         <span class="btn-text-zh">人物介绍</span>
                         <span class="btn-text-en">Characters</span>
@@ -384,7 +360,7 @@
                 </button>
 
                 <button class="magic-btn creatures-btn" onclick="openPage('creatures')">
-                    <div class="btn-icon"><i data-lucide="bird"></i></div>
+                    <div class="btn-icon">🦉</div>
                     <div class="btn-content">
                         <span class="btn-text-zh">动物介绍</span>
                         <span class="btn-text-en">Creatures</span>
@@ -393,7 +369,7 @@
                 </button>
 
                 <button class="magic-btn dragons-btn" onclick="openPage('dragons')">
-                    <div class="btn-icon"><i data-lucide="circle-dot"></i></div>
+                    <div class="btn-icon">📌</div>
                     <div class="btn-content">
                         <span class="btn-text-zh">龙的介绍</span>
                         <span class="btn-text-en">Dragons</span>
@@ -427,7 +403,7 @@
                 </button>
 
                 <button class="magic-btn-large chat-btn" onclick="openPage('chat')">
-                    <div class="large-btn-icon"><i data-lucide="message-square"></i></div>
+                    <div class="large-btn-icon">💬</div>
                     <div class="large-btn-content">
                         <span class="large-btn-text-zh">角色聊天</span>
                         <span class="large-btn-text-en">Chat with Characters</span>
@@ -460,7 +436,7 @@
                 </button>
 
                 <button class="magic-btn-large games-zone-btn" onclick="openPage('games-zone')">
-                    <div class="large-btn-icon"><i data-lucide="store"></i></div>
+                    <div class="large-btn-icon">🏪</div>
                     <div class="large-btn-content">
                         <span class="large-btn-text-zh">巫师市集</span>
                         <span class="large-btn-text-en">Wizard Market</span>
@@ -507,7 +483,7 @@
                 </button>
 
                 <button class="magic-btn-large prophet-btn" onclick="openPage('prophet-daily')">
-                    <div class="large-btn-icon"><i data-lucide="newspaper"></i></div>
+                    <div class="large-btn-icon">📰</div>
                     <div class="large-btn-content">
                         <span class="large-btn-text-zh">预言家日报</span>
                         <span class="large-btn-text-en">Daily Prophet</span>
@@ -540,7 +516,7 @@
                     <h3 class="rule-title-zh">🌍 世界语言奖励</h3>
                     <h3 class="rule-title-en">🌍 World Languages Rewards</h3>
                     <div class="rule-item">
-                        <span class="rule-icon"><i data-lucide="timer"></i></span>
+                        <span class="rule-icon">⏱️</span>
                         <span class="rule-text-zh">学习单词卡片满15分钟：+30 金加隆</span>
                         <span class="rule-text-en">Study flashcards for 15 minutes: +30 Galleons</span>
                     </div>
@@ -570,50 +546,50 @@
                     <h3 class="rule-title-zh">🏰 霍格沃茨课程奖励</h3>
                     <h3 class="rule-title-en">🏰 Hogwarts Classes Rewards</h3>
                     <div class="rule-item">
-                        <span class="rule-icon"><i data-lucide="brush"></i></span>
+                        <span class="rule-icon">🎨</span>
                         <span class="rule-text-zh">飞行课：每5根柱子 +3 金加隆</span>
                         <span class="rule-text-en">Flying Class: Every 5 pillars +3 Galleons</span>
                     </div>
                     <div class="rule-item">
-                        <span class="rule-icon"><i data-lucide="flask-conical"></i></span>
+                        <span class="rule-icon">⚗️</span>
                         <span class="rule-text-zh">魔药课初级：每10个 +20 金加隆</span>
                         <span class="rule-text-en">Potions Beginner: Every 10 +20 Galleons</span>
                     </div>
                     <div class="rule-item">
-                        <span class="rule-icon"><i data-lucide="flask-conical"></i></span>
+                        <span class="rule-icon">⚗️</span>
                         <span class="rule-text-zh">魔药课中级：每10个 +30 金加隆</span>
                         <span class="rule-text-en">Potions Intermediate: Every 10 +30 Galleons</span>
                     </div>
                 </div>
 
                 <div class="rule-section">
-                    <h3 class="rule-title-zh"><i data-lucide="heart"></i> 好感度获得规则</h3>
-                    <h3 class="rule-title-en"><i data-lucide="heart"></i> Affection Level Rules</h3>
+                    <h3 class="rule-title-zh">❤️ 好感度获得规则</h3>
+                    <h3 class="rule-title-en">❤️ Affection Level Rules</h3>
                     <div class="rule-item" style="font-size: 0.9rem;">
-                        <span class="rule-icon"><i data-lucide="brush"></i></span>
+                        <span class="rule-icon">🎨</span>
                         <span class="rule-text-zh">飞行课：每连续通过10根柱子 → 好感度 +1</span>
                         <span class="rule-text-en">Flying: Every 10 consecutive pillars passed → Affection +1</span>
                     </div>
                     <div class="rule-item" style="font-size: 0.9rem;">
-                        <span class="rule-icon"><i data-lucide="brush"></i></span>
+                        <span class="rule-icon">🎨</span>
                         <span class="rule-text-zh">飞行课：每累计5次通过柱子少于3根 → 好感度 -1</span>
                         <span class="rule-text-en">Flying: Every 5 times with <3 pillars → Affection -1</span>
                     </div>
                     <div class="rule-item" style="font-size: 0.9rem;">
-                        <span class="rule-icon"><i data-lucide="flask-conical"></i></span>
+                        <span class="rule-icon">⚗️</span>
                         <span class="rule-text-zh">魔药课：每连续成功5个 → 好感度 +1</span>
                         <span class="rule-text-en">Potions: Every 5 consecutive successes → Affection +1</span>
                     </div>
                     <div class="rule-item" style="font-size: 0.9rem;">
-                        <span class="rule-icon"><i data-lucide="flask-conical"></i></span>
+                        <span class="rule-icon">⚗️</span>
                         <span class="rule-text-zh">魔药课：每累计失败10次 → 好感度 -1</span>
                         <span class="rule-text-en">Potions: Every 10 failures → Affection -1</span>
                     </div>
                 </div>
 
                 <div class="rule-section">
-                    <h3 class="rule-title-zh"><i data-lucide="star"></i> 等级系统</h3>
-                    <h3 class="rule-title-en"><i data-lucide="star"></i> Level System</h3>
+                    <h3 class="rule-title-zh">⭐ 等级系统</h3>
+                    <h3 class="rule-title-en">⭐ Level System</h3>
                     <div class="rule-item">
                         <span class="rule-icon">🎖️</span>
                         <span class="rule-text-zh">500 金加隆：新手 Novice</span>
