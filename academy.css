@@ -1,5 +1,20 @@
 /* 魔法学院大厅样式 */
 
+/* 确保 emoji 图标正常显示 */
+.btn-icon,
+.large-btn-icon,
+.resource-icon,
+.mail-icon,
+.search-icon,
+.user-status-avatar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji, sans-serif;
+}
+
 .academy-header {
     display: flex;
     justify-content: space-between;
