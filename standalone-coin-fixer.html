@@ -155,6 +155,35 @@
             margin-bottom: 10px;
         }
 
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 1px solid #ffd700;
+            color: #1a1a2e;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-small:hover {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+        }
+
+        .btn-small:disabled {
+            background: #666;
+            border-color: #555;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
         .user-name {
             font-weight: bold;
             font-size: 1.1rem;
@@ -438,20 +467,32 @@
                 if (cumulative < current) {
                     try {
                         const supabase = window.supabase.createClient(url, key);
-                        const { error } = await supabase
+
+                        console.log(`开始修复用户:`, {
+                            id: user.id,
+                            nickname: user.nickname,
+                            currentCoins: current,
+                            currentCumulative: cumulative,
+                            targetCumulative: current
+                        });
+
+                        const { error, data } = await supabase
                             .from('player_profiles')
                             .update({
                                 cumulative_coins: current,
                                 updated_at: new Date().toISOString()
                             })
-                            .eq('id', user.id);
+                            .eq('id', user.id)
+                            .select();
+
+                        console.log(`修复结果:`, { error, data });
 
                         if (error) {
                             console.error(`修复用户 ${user.nickname} 失败:`, error);
                             failedUsers.push({ nickname: user.nickname, error: error.message });
                         } else {
                             fixedCount++;
-                            console.log(`已修复用户 ${user.nickname}: 累计金币 ${cumulative} → ${current}`);
+                            console.log(`✅ 已修复用户 ${user.nickname}: 累计金币 ${cumulative} → ${current}`);
                         }
                     } catch (error) {
                         console.error(`修复用户 ${user.nickname} 失败:`, error);
