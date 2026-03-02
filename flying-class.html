@@ -1779,8 +1779,8 @@
                 localStorage.setItem('dailyFlyingConsecutive', passedPillars.toString());
             }
 
-            // 检查是否通过柱子少于3根
-            if (passedPillars < 3) {
+            // 检查是否通过柱子少于1根（即0根）
+            if (passedPillars < 1) {
                 poorPerformanceCount++;
                 localStorage.setItem('flyingClassPoorPerformance', poorPerformanceCount.toString());
 

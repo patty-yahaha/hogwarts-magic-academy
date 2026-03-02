@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>独立金币修复工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .card {
+            background: rgba(30, 40, 60, 0.9);
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            color: #c9a830;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #d4af37;
+            border-radius: 5px;
+            padding: 10px 15px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a2e;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn:disabled {
+            background: #666;
+            border-color: #555;
+            cursor: not-allowed;
+            opacity: 0.5;
+            transform: none;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .status.success {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .status.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .status.info {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid #3498db;
+        }
+
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .user-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .user-item.needs-fix {
+            border-left-color: #e74c3c;
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .coin-display {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+        }
+
+        .coin-label {
+            color: #c9a830;
+        }
+
+        .coin-value {
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .coin-value.broken {
+            color: #e74c3c;
+        }
+
+        .info-box {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top: 3px solid #d4af37;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #c9a830;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🔧 独立金币修复工具</h1>
+
+        <div class="info-box">
+            <p>💡 此工具可以独立运行，不需要部署到网站服务器。</p>
+            <p>🔗 可以从任何网址访问（包括 Cloudflare Pages）。</p>
+            <p>⚠️ 修复规则：如果累计金币 < 当前金币，则设置为当前金币。</p>
+        </div>
+
+        <div class="card">
+            <div class="section">
+                <div class="section-title">第一步：配置数据库</div>
+                <div class="input-group">
+                    <label>Supabase URL:</label>
+                    <input type="text" id="supabaseUrl" value="https://xxalvnwmqhfcohcvebnp.supabase.co">
+
+                    <label>Supabase Anon Key:</label>
+                    <input type="text" id="supabaseKey" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg">
+                </div>
+
+                <button class="btn" onclick="fetchUsers()" id="fetchBtn">
+                    第二步：获取所有用户数据
+                </button>
+
+                <button class="btn" onclick="fixAllUsers()" id="fixBtn" style="display: none; margin-top: 10px;">
+                    第三步：修复所有用户金币
+                </button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>正在处理...</p>
+                </div>
+
+                <div class="status" id="statusMessage"></div>
+            </div>
+
+            <div class="card" id="statsCard" style="display: none;">
+                <div class="section-title">统计信息</div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalUsers">0</div>
+                        <div class="stat-label">总用户数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="needsFix">0</div>
+                        <div class="stat-label">需要修复</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="fixedCount">0</div>
+                        <div class="stat-label">已修复</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="userListCard" style="display: none;">
+                <div class="section-title">用户列表</div>
+                <div class="user-list" id="userList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        let allUsers = [];
+        const STATUS = {
+            LOADING: 'loading',
+            SUCCESS: 'success',
+            ERROR: 'error',
+            INFO: 'info'
+        };
+
+        function showStatus(message, type = STATUS.INFO) {
+            const status = document.getElementById('statusMessage');
+            status.textContent = message;
+            status.className = 'status ' + type;
+        }
+
+        function setLoading(isLoading) {
+            const loading = document.getElementById('loading');
+            loading.classList.toggle('active', isLoading);
+        }
+
+        // 获取所有用户数据
+        async function fetchUsers() {
+            const url = document.getElementById('supabaseUrl').value.trim();
+            const key = document.getElementById('supabaseKey').value.trim();
+            const btn = document.getElementById('fetchBtn');
+
+            if (!url || !key) {
+                showStatus('❌ 请填写 Supabase URL 和 Key', STATUS.ERROR);
+                return;
+            }
+
+            btn.disabled = true;
+            setLoading(true);
+            showStatus('⏳ 正在获取用户数据...', STATUS.INFO);
+
+            try {
+                const supabase = window.supabase.createClient(url, key);
+                const { data: users, error } = await supabase
+                    .from('player_profiles')
+                    .select('id, nickname, avatar, coins, cumulative_coins')
+                    .order('cumulative_coins', { ascending: false });
+
+                if (error) {
+                    throw error;
+                }
+
+                allUsers = users || [];
+                displayUsers();
+                updateStats();
+
+                const needsFix = allUsers.filter(u => (u.cumulative_coins || 0) < (u.coins || 0));
+
+                document.getElementById('fixBtn').style.display = needsFix.length > 0 ? 'block' : 'none';
+                document.getElementById('statsCard').style.display = 'block';
+                document.getElementById('userListCard').style.display = 'block';
+
+                if (needsFix.length > 0) {
+                    showStatus(`✅ 找到 ${allUsers.length} 个用户，其中 ${needsFix.length} 个需要修复`, STATUS.SUCCESS);
+                } else {
+                    showStatus(`✅ 找到 ${allUsers.length} 个用户，所有数据正常`, STATUS.SUCCESS);
+                }
+
+            } catch (error) {
+                console.error('获取用户失败:', error);
+                showStatus('❌ 获取用户失败: ' + error.message, STATUS.ERROR);
+            } finally {
+                setLoading(false);
+                btn.disabled = false;
+            }
+        }
+
+        // 显示用户列表
+        function displayUsers() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+
+            allUsers.forEach(user => {
+                const current = user.coins || 0;
+                const cumulative = user.cumulative_coins || 0;
+                const needsFix = cumulative < current;
+
+                const div = document.createElement('div');
+                div.className = 'user-item' + (needsFix ? ' needs-fix' : '');
+                div.innerHTML = `
+                    <div class="user-header">
+                        <div class="user-name">
+                            ${user.avatar || '🧙'} ${user.nickname || '未知用户'}
+                        </div>
+                        <div class="coin-display">
+                            <span class="coin-label">当前:</span>
+                            <span class="coin-value ${needsFix ? 'broken' : ''}">${current}</span>
+                            <span class="coin-label">累计:</span>
+                            <span class="coin-value ${needsFix ? 'broken' : ''}">${cumulative}</span>
+                            ${needsFix ? '<span style="color: #e74c3c; margin-left: 10px;">⚠️ 需要修复</span>' : '<span style="color: #27ae60; margin-left: 10px;">✅ 正常</span>'}
+                        </div>
+                    </div>
+                `;
+                userList.appendChild(div);
+            });
+        }
+
+        // 更新统计
+        function updateStats() {
+            const needsFix = allUsers.filter(u => (u.cumulative_coins || 0) < (u.coins || 0));
+            document.getElementById('totalUsers').textContent = allUsers.length;
+            document.getElementById('needsFix').textContent = needsFix.length;
+            document.getElementById('fixedCount').textContent = '0';
+        }
+
+        // 修复所有用户
+        async function fixAllUsers() {
+            const url = document.getElementById('supabaseUrl').value.trim();
+            const key = document.getElementById('supabaseKey').value.trim();
+            const btn = document.getElementById('fixBtn');
+
+            if (!url || !key) {
+                showStatus('❌ 请填写 Supabase URL 和 Key', STATUS.ERROR);
+                return;
+            }
+
+            btn.disabled = true;
+            setLoading(true);
+            showStatus('⏳ 正在修复用户金币...', STATUS.INFO);
+
+            let fixedCount = 0;
+            let failedUsers = [];
+
+            for (const user of allUsers) {
+                const current = user.coins || 0;
+                const cumulative = user.cumulative_coins || 0;
+
+                // 只修复需要修复的用户
+                if (cumulative < current) {
+                    try {
+                        const supabase = window.supabase.createClient(url, key);
+                        const { error } = await supabase
+                            .from('player_profiles')
+                            .update({
+                                cumulative_coins: current,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', user.id);
+
+                        if (error) {
+                            console.error(`修复用户 ${user.nickname} 失败:`, error);
+                            failedUsers.push({ nickname: user.nickname, error: error.message });
+                        } else {
+                            fixedCount++;
+                            console.log(`已修复用户 ${user.nickname}: 累计金币 ${cumulative} → ${current}`);
+                        }
+                    } catch (error) {
+                        console.error(`修复用户 ${user.nickname} 失败:`, error);
+                        failedUsers.push({ nickname: user.nickname, error: error.message });
+                    }
+                }
+            }
+
+            // 更新统计
+            document.getElementById('fixedCount').textContent = fixedCount;
+
+            // 显示结果
+            let message = '';
+            if (failedUsers.length === 0) {
+                message = `✅ 已完成！修复了 ${fixedCount} 个用户的金币`;
+                showStatus(message, STATUS.SUCCESS);
+            } else {
+                message = `⚠️ 完成！修复了 ${fixedCount} 个用户，${failedUsers.length} 个失败`;
+                showStatus(message + '\n失败用户: ' + failedUsers.map(f => `${f.nickname}`).join(', '), STATUS.INFO);
+            }
+
+            // 重新获取数据
+            await fetchUsers();
+        }
+    </script>
+</body>
+</html>

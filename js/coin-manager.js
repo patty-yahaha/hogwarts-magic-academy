@@ -103,12 +103,7 @@
             // 使用 update 操作更新记录
             const { error, data } = await supabase
                 .from('player_profiles')
-                .update({
-                    coins: currentCoins,
-                    cumulative_coins: cumulativeCoins,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', userId)
+                .update(updateData)
                 .select();
 
             console.log('CoinManager: 数据库更新结果 (update)', { error, data });

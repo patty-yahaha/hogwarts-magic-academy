@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>霍格沃茨课程 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .hogwarts-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hogwarts-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hogwarts-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .hogwarts-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .course-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.4);
+            border-color: #f0d060;
+        }
+
+        .course-card.coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #666;
+        }
+
+        .course-card.coming-soon:hover {
+            transform: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: #666;
+        }
+
+        .course-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+        }
+
+        .course-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .course-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #c9a830;
+            text-align: center;
+        }
+
+        .course-description {
+            text-align: center;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        .desc-zh {
+            color: #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        .desc-en {
+            color: #a0a0a0;
+            font-size: 0.85rem;
+        }
+
+        .course-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .course-tag.new {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hogwarts-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">霍格沃茨课程</span>
+                <span class="title-text-en">Hogwarts Classes</span>
+            </h1>
+        </header>
+
+        <div class="hogwarts-container">
+            <!-- 标题 -->
+            <div class="hogwarts-header">
+                <h2 class="hogwarts-title">🏰 霍格沃茨课程</h2>
+                <p class="hogwarts-subtitle">选择你的魔法课程</p>
+            </div>
+
+            <!-- 课程网格 -->
+            <div class="courses-grid">
+                <!-- 咒语课 -->
+                <div class="course-card" onclick="openCharmsClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                    </span>
+                    <div class="course-icon">✨</div>
+                    <div class="course-name-zh">咒语课</div>
+                    <div class="course-name-en">Charms Class</div>
+                    <div class="course-description">
+                        <span class="desc-zh">学习各种魔法咒语和技巧</span>
+                        <span class="desc-en">Learn magical spells and techniques</span>
+                    </div>
+                </div>
+
+                <!-- 魔药课 -->
+                <div class="course-card" onclick="openPotionsClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                    </span>
+                    <div class="course-icon">⚗️</div>
+                    <div class="course-name-zh">魔药课</div>
+                    <div class="course-name-en">Potions Class</div>
+                    <div class="course-description">
+                        <span class="desc-zh">学习制作各种魔法药水</span>
+                        <span class="desc-en">Learn to brew magical potions</span>
+                    </div>
+                </div>
+
+                <!-- 飞行课 -->
+                <div class="course-card" onclick="openFlyingClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                    </span>
+                    <div class="course-icon">🧹</div>
+                    <div class="course-name-zh">飞行课</div>
+                    <div class="course-name-en">Flying Class</div>
+                    <div class="course-description">
+                        <span class="desc-zh">学习骑飞天扫帚和飞天</span>
+                        <span class="desc-en">Learn to fly on broomsticks</span>
+                    </div>
+                </div>
+
+                <!-- 黑魔法防御术 -->
+                <div class="course-card coming-soon">
+                    <span class="course-tag">
+                        <span class="tag-zh">即将推出</span>
+                    </span>
+                    <div class="course-icon">🛡️</div>
+                    <div class="course-name-zh">黑魔法防御术</div>
+                    <div class="course-name-en">Defense Against Dark Arts</div>
+                    <div class="course-description">
+                        <span class="desc-zh">学习防御黑魔法生物和咒语</span>
+                        <span class="desc-en">Learn defense against dark creatures</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 魔法提示 -->
+        <div class="magic-tip">
+            <p class="tip-zh">✨ 点击课程开始学习 ✨</p>
+            <p class="tip-en">✨ Click a course to start learning ✨</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="draggable-coin.js"></script>
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        function updateLanguage() {
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ?
+                '← 返回' : '← Back';
+        }
+
+        // 返回大厅
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'academy.html';
+            }, 800);
+        }
+
+        // 打开咒语课
+        function openCharmsClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'charms-class.html';
+            }, 800);
+        }
+
+        // 打开魔药课
+        function openPotionsClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'hogwarts-games.html';
+            }, 800);
+        }
+
+        // 打开飞行课
+        function openFlyingClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'flying-class.html';
+            }, 800);
+        }
+
+        // 初始化语言显示
+        updateLanguage();
+    </script>
+</body>
+</html>

@@ -130,6 +130,10 @@
                 从数据库恢复金币
             </button>
 
+            <button class="btn" onclick="fixCumulativeCoins()" id="fixBtn" style="margin-top: 10px;">
+                修复累计金币（如果累计金币 < 当前金币）
+            </button>
+
             <div class="status" id="statusMessage" style="display: none;"></div>
 
             <div class="info-text">
@@ -224,6 +228,74 @@
                 console.error('恢复失败:', error);
                 status.className = 'status error';
                 status.textContent = '❌ 恢复失败: ' + error.message;
+                btn.disabled = false;
+            }
+        }
+
+        // 修复累计金币
+        async function fixCumulativeCoins() {
+            const btn = document.getElementById('fixBtn');
+            const status = document.getElementById('statusMessage');
+
+            btn.disabled = true;
+            status.style.display = 'block';
+            status.className = 'status';
+            status.textContent = '⏳ 正在修复累计金币...';
+
+            try {
+                const supabase = initSupabase();
+                const userId = getCurrentUserId();
+
+                if (!userId || isGuestMode()) {
+                    status.className = 'status error';
+                    status.textContent = '❌ 未登录，请先登录';
+                    btn.disabled = false;
+                    return;
+                }
+
+                const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || 0);
+                let cumulativeCoins = parseInt(localStorage.getItem('cumulativeCoins') || 0;
+
+                // 确保累计金币不小于当前金币
+                let needsFix = false;
+                if (cumulativeCoins < currentCoins) {
+                    cumulativeCoins = currentCoins;
+                    needsFix = true;
+                }
+
+                if (!needsFix) {
+                    status.className = 'status success';
+                    status.textContent = '✅ 累计金币正常，无需修复';
+                    btn.disabled = false;
+                    return;
+                }
+
+                // 更新本地存储
+                localStorage.setItem('cumulativeCoins', cumulativeCoins.toString());
+
+                // 同步到数据库
+                const { error } = await supabase
+                    .from('player_profiles')
+                    .update({
+                        cumulative_coins: cumulativeCoins,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', userId);
+
+                if (error) {
+                    throw error;
+                }
+
+                status.className = 'status success';
+                status.textContent = '✅ 累计金币已修复为 ' + cumulativeCoins + '！请刷新排行榜查看';
+
+                // 更新显示
+                displayCoinInfo();
+
+            } catch (error) {
+                console.error('修复失败:', error);
+                status.className = 'status error';
+                status.textContent = '❌ 修复失败: ' + error.message;
                 btn.disabled = false;
             }
         }
