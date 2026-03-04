@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神奇动物商店 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .shop-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .shop-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .shop-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .pet-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        .pet-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.4);
+            border-color: #f0d060;
+        }
+
+        .pet-icon svg {
+            width: 5rem;
+            height: 5rem;
+            text-align: center;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+        }
+
+        .title-icon svg {
+            width: 2rem;
+            height: 2rem;
+            vertical-align: text-bottom;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+        }
+
+        .message-icon svg {
+            width: 3.5rem;
+            height: 3.5rem;
+            filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.6));
+        }
+
+        .pet-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .pet-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #c9a830;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .pet-description {
+            font-size: 0.85rem;
+            color: #a08050;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            min-height: 60px;
+        }
+
+        .pet-price {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .pet-price .price-amount {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .buy-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, #3a3a5a, #2a2a3e);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .danger-level {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            margin-top: 10px;
+        }
+
+        .danger-xx {
+            background: linear-gradient(135deg, #2a1a3e, #1a472a);
+            color: #90ee90;
+        }
+
+        .danger-xxx {
+            background: linear-gradient(135deg, #2a1a3e, #d4af37);
+            color: #fff;
+        }
+
+        .danger-xxxx {
+            background: linear-gradient(135deg, #ff6b35, #d4af37);
+            color: #fff;
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .coin-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+
+        /* 拥有宠物显示 */
+        .owned-pets {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .owned-pets-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .owned-pets-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .owned-pet-item {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .owned-pet-icon svg {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .owned-pet-name {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* 购买消息 */
+        .purchase-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.98), rgba(20, 10, 5, 0.99));
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px 40px;
+            z-index: 2000;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .purchase-message.active {
+            display: block;
+        }
+
+        .purchase-message.success {
+            border-color: #27ae60;
+        }
+
+        .purchase-message.error {
+            border-color: #e74c3c;
+        }
+
+        .message-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .message-title {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .message-text {
+            color: #c9a830;
+            margin-bottom: 20px;
+        }
+
+        .close-purchase-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-purchase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon"><span class="title-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 6v18M6 12h12"/></svg></span></span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+            <span class="label-en">Galleons</span>
+        </span>
+    </div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">神奇动物商店</span>
+                <span class="title-text-en">Magical Menagerie</span>
+            </h1>
+        </header>
+
+        <div class="shop-container">
+            <!-- 商店标题 -->
+            <div class="shop-header">
+                <h2 class="shop-title">
+                    <span class="title-text-zh"><span class="title-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d4af37" stroke-width="1.5"><ellipse cx="12" cy="10" rx="4" ry="3"/><circle cx="6" cy="6" r="2"/><circle cx="12" cy="4" r="2.5"/><circle cx="18" cy="6" r="2"/></svg></span> 神奇动物商店 <span class="title-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d4af37" stroke-width="1.5"><ellipse cx="12" cy="10" rx="4" ry="3"/><circle cx="6" cy="6" r="2"/><circle cx="12" cy="4" r="2.5"/><circle cx="18" cy="6" r="2"/></svg></span></span>
+                    <span class="title-text-en"><span class="title-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d4af37" stroke-width="1.5"><ellipse cx="12" cy="10" rx="4" ry="3"/><circle cx="6" cy="6" r="2"/><circle cx="12" cy="4" r="2.5"/><circle cx="18" cy="6" r="2"/></svg></span> Magical Menagerie <span class="title-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d4af37" stroke-width="1.5"><ellipse cx="12" cy="10" rx="4" ry="3"/><circle cx="6" cy="6" r="2"/><circle cx="12" cy="4" r="2.5"/><circle cx="18" cy="6" r="2"/></svg></span></span>
+                </h2>
+                <p class="shop-subtitle">
+                    <span class="subtitle-text-zh">挑选你的神奇伙伴</span>
+                    <span class="subtitle-text-en">Choose Your Magical Companion</span>
+                </p>
+            </div>
+

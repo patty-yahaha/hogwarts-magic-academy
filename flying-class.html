@@ -1140,11 +1140,59 @@
         const QUICK_TAP_VELOCITY = -1.5; // 轻点时的小冲量
         const HOLD_UPWARD_VELOCITY = -3.0; // 按住时的持续向上速度
 
+        // ==================== 音效系统 ====================
+        const AUDIO_CONTEXT = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AUDIO_CONTEXT();
+            }
+        }
+
+        function playSound(type) {
+            initAudio();
+
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            switch(type) {
+                case 'pass': // 穿过柱子 - 第一种音效
+                    oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                    oscillator.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.1); // G5
+                    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.15);
+                    break;
+                case 'crash': // 撞到柱子 - 第二种音效
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.15);
+                    gainNode.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.2);
+                    break;
+                case 'fail': // 游戏失败（掉出屏幕） - 第三种音效
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(400, audioCtx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5);
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.5);
+                    break;
+            }
+        }
+
         // 初始化金币和最高分
         function initGameData() {
-            // 读取金币
-            const savedCoins = localStorage.getItem('hogwartsCoins');
-            coins = savedCoins ? parseInt(savedCoins) : 0;
+            // 读取金币（使用 CoinManager）
+            coins = window.CoinManager ? CoinManager.getCurrentCoins() : 0;
             updateCoinDisplay();
 
             // 读取好感度 - 优先从导师专区读取，回退到单独存储的值
@@ -1229,11 +1277,6 @@
         // 更新本局金币显示
         function updateGameCoinsDisplay() {
             document.getElementById('gameCoinsDisplay').textContent = sessionCoins;
-        }
-
-        // 保存金币
-        function saveCoins() {
-            localStorage.setItem('hogwartsCoins', coins.toString());
         }
 
         // 保存最高分
@@ -1553,6 +1596,7 @@
                     score++;
                     passedPillars = score; // 更新已穿过柱子数
                     document.getElementById('scoreDisplay').textContent = score;
+                    playSound('pass'); // 播放穿柱子成功音效
                 }
             });
 
@@ -1562,9 +1606,9 @@
 
         // 碰撞检测
         function checkCollision() {
-            // 检查边界
+            // 检查边界（掉出屏幕）
             if (wizard.y < 0 || wizard.y + wizard.height > CANVAS_HEIGHT) {
-                return true;
+                return 'fail'; // 掉出屏幕，返回失败状态
             }
 
             // 检查柱子碰撞
@@ -1573,12 +1617,12 @@
                     wizard.x < pillar.x + PILLAR_WIDTH) {
                     if (wizard.y < pillar.topHeight ||
                         wizard.y + wizard.height > pillar.bottomY) {
-                        return true;
+                        return 'crash'; // 撞到柱子，返回碰撞状态
                     }
                 }
             }
 
-            return false;
+            return null; // 无碰撞
         }
 
         // 游戏循环
@@ -1685,9 +1729,17 @@
             }
 
             // 检查碰撞（悬停延迟后才检测）
-            if (canMove && checkCollision()) {
-                gameOver();
-                return;
+            if (canMove) {
+                const collisionResult = checkCollision();
+                if (collisionResult) {
+                    if (collisionResult === 'crash') {
+                        playSound('crash'); // 撞到柱子音效
+                    } else if (collisionResult === 'fail') {
+                        playSound('fail'); // 掉出屏幕失败音效
+                    }
+                    gameOver();
+                    return;
+                }
             }
 
             requestAnimationFrame(gameLoop);
@@ -1817,27 +1869,7 @@
             if (window.CoinManager) {
                 CoinManager.addCoins(amount);
             } else {
-                // 回退：直接更新 localStorage
-                const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
-                const newCoins = currentCoins + amount;
-                localStorage.setItem('hogwartsCoins', newCoins.toString());
-
-                // 更新累计金币
-                let playerData = localStorage.getItem('hogwartsPlayer');
-                if (!playerData) {
-                    playerData = {
-                        nickname: '魔法学徒',
-                        avatar: '🧙',
-                        cumulativeCoins: amount,
-                        inventory: [],
-                        level: 0
-                    };
-                } else {
-                    playerData = JSON.parse(playerData);
-                    playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
-                }
-
-                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+                console.warn('CoinManager 未加载，无法更新金币');
             }
         }
 

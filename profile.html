@@ -960,6 +960,7 @@
         </div>
     </div>
 
+    <script src="js/coin-manager.js"></script>
     <script>
         // 等级配置
         const LEVELS = [
@@ -1054,18 +1055,32 @@
             document.getElementById('nicknameText').textContent = playerData.nickname;
             document.getElementById('avatarDisplay').textContent = playerData.avatar;
 
+            // 从 CoinManager 读取金币数据
+            let currentCoins = 0;
+            let cumulativeCoins = 0;
+            if (window.CoinManager) {
+                currentCoins = CoinManager.getCurrentCoins();
+                cumulativeCoins = CoinManager.getCumulativeCoins();
+
+                // 同步到 playerData（向后兼容）
+                playerData.cumulativeCoins = cumulativeCoins;
+            } else {
+                // 回退到原来的方式
+                currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+                cumulativeCoins = playerData.cumulativeCoins || 0;
+            }
+
             // 计算等级
-            const levelInfo = calculateLevel(playerData.cumulativeCoins);
+            const levelInfo = calculateLevel(cumulativeCoins);
             playerData.level = levelInfo.level;
 
             document.getElementById('levelBadge').textContent = `Lv.${levelInfo.level}`;
             document.getElementById('levelName').textContent = levelInfo.nameZh;
 
             // 金币统计
-            const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
             document.getElementById('coinBalance').textContent = currentCoins;
-            document.getElementById('cumulativeCoins').textContent = playerData.cumulativeCoins;
-            document.getElementById('currentCoins').textContent = playerData.cumulativeCoins;
+            document.getElementById('cumulativeCoins').textContent = cumulativeCoins;
+            document.getElementById('currentCoins').textContent = cumulativeCoins;
 
             // 进度条
             const nextLevel = LEVELS[levelInfo.level + 1];

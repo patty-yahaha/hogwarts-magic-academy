@@ -373,6 +373,66 @@
                 font-size: 0.75rem;
             }
         }
+
+        /* 金币动画 */
+        .coin-float {
+            position: fixed;
+            font-size: 2.5rem;
+            color: #ffd700;
+            pointer-events: none;
+            z-index: 1000;
+            animation: coinFloat 1.5s ease-out forwards;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700;
+        }
+
+        .coin-float .coin-icon {
+            display: inline-block;
+            animation: coinSpin 0.5s ease-in-out;
+        }
+
+        @keyframes coinFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.2);
+            }
+            30% {
+                transform: translateY(-30px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.3);
+            }
+        }
+
+        @keyframes coinSpin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        /* 金币闪光效果 */
+        .coin-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 999;
+            animation: coinFlash 0.3s ease-out forwards;
+        }
+
+        @keyframes coinFlash {
+            0% {
+                background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+            }
+            100% {
+                background: transparent;
+            }
+        }
     </style>
 </head>
 <body>
@@ -528,21 +588,58 @@
 
         // 更新累计金币（用于等级计算）
         function updateCumulativeCoins(amount) {
-            let playerData = localStorage.getItem('hogwartsPlayer');
-            if (!playerData) {
-                playerData = {
-                    nickname: '魔法学徒',
-                    avatar: '🧙',
-                    cumulativeCoins: amount,
-                    inventory: [],
-                    level: 0
-                };
+            // 使用 CoinManager 更新金币（同时更新当前金币和累计金币，并同步到云端）
+            if (window.CoinManager) {
+                CoinManager.addCoins(amount);
             } else {
-                playerData = JSON.parse(playerData);
-                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
-            }
+                // 回退：直接更新 localStorage
+                // 更新当前金币
+                const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+                const newCoins = currentCoins + amount;
+                localStorage.setItem('hogwartsCoins', newCoins.toString());
 
-            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+                // 更新累计金币
+                let playerData = localStorage.getItem('hogwartsPlayer');
+                if (!playerData) {
+                    playerData = {
+                        nickname: '魔法学徒',
+                        avatar: '🧙',
+                        cumulativeCoins: amount,
+                        inventory: [],
+                        level: 0
+                    };
+                } else {
+                    playerData = JSON.parse(playerData);
+                    playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
+                }
+
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            }
+        }
+
+        // 显示金币动画
+        function showCoinAnimation(amount) {
+            // 创建闪光效果
+            const flash = document.createElement('div');
+            flash.className = 'coin-flash';
+            document.body.appendChild(flash);
+
+            setTimeout(() => {
+                flash.remove();
+            }, 300);
+
+            // 创建金币动画
+            const coin = document.createElement('div');
+            coin.className = 'coin-float';
+            coin.innerHTML = `<span class="coin-icon">🪙</span> +${amount}`;
+            coin.style.left = '50%';
+            coin.style.top = '50%';
+            coin.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(coin);
+
+            setTimeout(() => {
+                coin.remove();
+            }, 1500);
         }
 
         // 打乱数组
@@ -651,13 +748,10 @@
             }, 1500);
         }
 
-        // 计算金币奖励
+        // 计算金币奖励（每答对1题得1金币）
         function calculateCoins(finalScore) {
-            if (finalScore < 60) return 0;
-            if (finalScore < 70) return 1;
-            if (finalScore < 80) return 3;
-            if (finalScore < 90) return 20;
-            return 50;
+            const correctAnswers = finalScore / 5;
+            return Math.max(0, correctAnswers);
         }
 
         // 显示结果
@@ -678,6 +772,11 @@
             // 更新累计金币（用于等级计算）
             updateCumulativeCoins(earnedCoins);
 
+            // 显示金币动画
+            if (earnedCoins > 0) {
+                showCoinAnimation(earnedCoins);
+            }
+
             document.getElementById('finalScore').textContent = finalScore;
             document.getElementById('scoreDetail').textContent = `正确: ${correctAnswers} / ${totalQuestions}`;
             document.getElementById('coinsAmount').textContent = `${earnedCoins} 🪙`;
@@ -689,19 +788,19 @@
                 document.getElementById('resultMessage').textContent = '💪 继续努力！再试一次吧！';
                 document.getElementById('resultMessage').className = 'message';
             } else if (finalScore < 70) {
-                breakdown = '60-70分段 - 每次测验获得1金币';
+                breakdown = '及格 - 每答对1题得1金币';
                 document.getElementById('resultMessage').textContent = '👏 恭喜及格！继续加油！';
                 document.getElementById('resultMessage').className = 'message success';
             } else if (finalScore < 80) {
-                breakdown = '70-80分段 - 每次测验获得3金币';
+                breakdown = '良好 - 每答对1题得1金币';
                 document.getElementById('resultMessage').textContent = '🌟 做得不错！继续保持！';
                 document.getElementById('resultMessage').className = 'message success';
             } else if (finalScore < 90) {
-                breakdown = '80-90分段 - 每次测验获得20金币';
+                breakdown = '优秀 - 每答对1题得1金币';
                 document.getElementById('resultMessage').textContent = '🏆 非常棒！你是个优秀的巫师！';
                 document.getElementById('resultMessage').className = 'message success';
             } else {
-                breakdown = '90-100分段 - 每次测验获得50金币';
+                breakdown = '完美 - 每答对1题得1金币';
                 document.getElementById('resultMessage').textContent = '⭐ 完美！你是霍格沃茨的学霸！';
                 document.getElementById('resultMessage').className = 'message success';
             }
@@ -767,6 +866,17 @@
         // 页面加载时初始化金币显示
         initCoins();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 创建全局 Supabase 客户端（用于认证）
+        window.sb = supabase.createClient('https://xxalvnwmqhfcohcvebnp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg', {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true
+            }
+        });
+    </script>
+    <script src="js/coin-manager.js"></script>
     <script src="draggable-coin.js"></script>
 </body>
 </html>

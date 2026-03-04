@@ -904,12 +904,13 @@
                     // 使用兑换券支付
                     localStorage.setItem('broomVouchers', (vouchers - 1).toString());
                 } else {
-                    // 使用金币支付
-                    localStorage.setItem('hogwartsCoins', (coins - broom.price).toString());
+                    // 使用金币支付 - 只减少当前金币，不改变累计金币
+                    const newCoins = coins - broom.price;
+                    localStorage.setItem('hogwartsCoins', newCoins.toString());
 
-                    // 更新累计金币
+                    // 更新 playerData 中的当前金币（不改变累计金币）
                     const playerData = getPlayerData();
-                    playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + broom.price;
+                    playerData.coins = newCoins;
                     localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
                 }
 

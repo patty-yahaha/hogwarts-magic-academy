@@ -290,13 +290,33 @@
                     <input type="text" id="supabaseKey" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg">
                 </div>
 
-                <button class="btn" onclick="fetchUsers()" id="fetchBtn">
+                <button class="btn" onclick="testConnection()" id="testBtn" style="margin-top: 10px;">
+                    🔧 测试数据库连接
+                </button>
+
+                <button class="btn" onclick="fetchUsers()" id="fetchBtn" style="margin-top: 10px;">
                     第二步：获取所有用户数据
                 </button>
 
                 <button class="btn" onclick="fixAllUsers()" id="fixBtn" style="display: none; margin-top: 10px;">
                     第三步：修复所有用户金币
                 </button>
+
+                <div class="section" style="margin-top: 20px;">
+                    <div class="section-title">⚙️ 高级选项</div>
+                    <div class="input-group">
+                        <label>Supabase Service Role Key (可选，用于绕过RLS限制):</label>
+                        <input type="password" id="serviceRoleKey" placeholder="service_role key 仅在本地使用">
+                        <button class="btn-small" onclick="toggleServiceRole()" id="toggleSrBtn">
+                            使用 Service Role Key
+                        </button>
+                    </div>
+                    <div class="info-box" style="margin-top: 10px; font-size: 0.8rem;">
+                        <p>💡 如果修复失败，可能是因为 RLS 策略限制了 anon key 的写权限。</p>
+                        <p>🔑 使用 service_role key 可以绕过所有限制，但请勿泄露。</p>
+                        <p>🌐 获取方式：Supabase Dashboard → Settings → API → service_role (secret)</p>
+                    </div>
+                </div>
 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
@@ -352,6 +372,43 @@
             loading.classList.toggle('active', isLoading);
         }
 
+        // 测试数据库连接
+        async function testConnection() {
+            const url = document.getElementById('supabaseUrl').value.trim();
+            const key = document.getElementById('supabaseKey').value.trim();
+            const btn = document.getElementById('testBtn');
+
+            if (!url || !key) {
+                showStatus('❌ 请填写 Supabase URL 和 Key', STATUS.ERROR);
+                return;
+            }
+
+            btn.disabled = true;
+            setLoading(true);
+            showStatus('⏳ 正在测试数据库连接...', STATUS.INFO);
+
+            try {
+                const supabase = window.supabase.createClient(url, key);
+                const { data, error } = await supabase
+                    .from('player_profiles')
+                    .select('count')
+                    .limit(1);
+
+                if (error) {
+                    throw error;
+                }
+
+                showStatus('✅ 数据库连接成功！可以继续获取用户数据', STATUS.SUCCESS);
+                console.log('数据库连接测试通过:', data);
+            } catch (error) {
+                console.error('数据库连接失败:', error);
+                showStatus('❌ 数据库连接失败: ' + error.message, STATUS.ERROR);
+            } finally {
+                setLoading(false);
+                btn.disabled = false;
+            }
+        }
+
         // 获取所有用户数据
         async function fetchUsers() {
             const url = document.getElementById('supabaseUrl').value.trim();
@@ -368,7 +425,37 @@
             showStatus('⏳ 正在获取用户数据...', STATUS.INFO);
 
             try {
-                const supabase = window.supabase.createClient(url, key);
+                // 获取当前会话（如果已登录）
+                let session = null;
+                try {
+                    if (window.sb) {
+                        const { data: sessionData } = await window.sb.auth.getSession();
+                        if (sessionData.session) {
+                            session = sessionData.session;
+                            console.log('✅ 使用已登录用户的会话读取数据');
+                        }
+                    }
+                } catch (e) {
+                    console.log('⚠️ 无法获取当前会话，将使用 anon key');
+                }
+
+                // 使用已登录会话或创建新客户端
+                let supabase;
+                if (session) {
+                    supabase = window.supabase.createClient(url, key, {
+                        auth: {
+                            persistSession: false,
+                            autoRefreshToken: false
+                        }
+                    });
+                    supabase.auth.setSession({
+                        access_token: session.access_token,
+                        refresh_token: session.refresh_token
+                    });
+                } else {
+                    supabase = window.supabase.createClient(url, key);
+                }
+
                 const { data: users, error } = await supabase
                     .from('player_profiles')
                     .select('id, nickname, avatar, coins, cumulative_coins')
@@ -456,8 +543,23 @@
             setLoading(true);
             showStatus('⏳ 正在修复用户金币...', STATUS.INFO);
 
+            // 获取当前会话（如果已登录）
+            let session = null;
+            try {
+                if (window.sb) {
+                    const { data: sessionData, error: sessionError } = await window.sb.auth.getSession();
+                    if (!sessionError && sessionData.session) {
+                        session = sessionData.session;
+                        console.log('✅ 使用已登录用户的会话进行修复');
+                    }
+                }
+            } catch (e) {
+                console.log('⚠️ 无法获取当前会话，将使用 anon key:', e.message);
+            }
+
             let fixedCount = 0;
             let failedUsers = [];
+            let skippedUsers = [];
 
             for (const user of allUsers) {
                 const current = user.coins || 0;
@@ -466,14 +568,30 @@
                 // 只修复需要修复的用户
                 if (cumulative < current) {
                     try {
-                        const supabase = window.supabase.createClient(url, key);
+                        // 使用已登录会话或创建新客户端
+                        let supabase;
+                        if (session) {
+                            supabase = window.supabase.createClient(url, key, {
+                                auth: {
+                                    persistSession: false,
+                                    autoRefreshToken: false
+                                }
+                            });
+                            supabase.auth.setSession({
+                                access_token: session.access_token,
+                                refresh_token: session.refresh_token
+                            });
+                        } else {
+                            supabase = window.supabase.createClient(url, key);
+                        }
 
                         console.log(`开始修复用户:`, {
                             id: user.id,
                             nickname: user.nickname,
                             currentCoins: current,
                             currentCumulative: cumulative,
-                            targetCumulative: current
+                            targetCumulative: current,
+                            usingSession: !!session
                         });
 
                         const { error, data } = await supabase
@@ -485,14 +603,18 @@
                             .eq('id', user.id)
                             .select();
 
-                        console.log(`修复结果:`, { error, data });
+                        console.log(`修复结果:`, { error, data, rowCount: data ? data.length : 0 });
 
                         if (error) {
                             console.error(`修复用户 ${user.nickname} 失败:`, error);
                             failedUsers.push({ nickname: user.nickname, error: error.message });
+                        } else if (!data || data.length === 0) {
+                            console.warn(`修复用户 ${user.nickname} 返回空结果，可能是RLS策略限制`);
+                            failedUsers.push({ nickname: user.nickname, error: '更新返回空结果，可能是权限问题' });
                         } else {
+                            const updatedUser = data[0];
                             fixedCount++;
-                            console.log(`✅ 已修复用户 ${user.nickname}: 累计金币 ${cumulative} → ${current}`);
+                            console.log(`✅ 已修复用户 ${user.nickname}: 累计金币 ${cumulative} → ${updatedUser.cumulative_coins}`);
                         }
                     } catch (error) {
                         console.error(`修复用户 ${user.nickname} 失败:`, error);

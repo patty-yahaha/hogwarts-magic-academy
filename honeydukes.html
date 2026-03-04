@@ -738,6 +738,12 @@
 
         // 更新累计金币（用于等级计算）
         function updateCumulativeCoins(amount) {
+            // 更新当前金币
+            const currentCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            const newCoins = currentCoins + amount;
+            localStorage.setItem('hogwartsCoins', newCoins.toString());
+
+            // 更新累计金币
             let playerData = localStorage.getItem('hogwartsPlayer');
             if (!playerData) {
                 playerData = {

@@ -275,7 +275,7 @@
         const MENTOR_AFFECTION_KEY = 'hogwarts_mentor_affection';
         const MENTOR_LETTERS_KEY = 'hogwarts_mentor_letters';
 
-        // 老师列表 - 只保留三位核心导师
+        // 老师列表
         const TEACHERS = [
             {
                 id: 'mcgonagall',
@@ -303,6 +303,15 @@
                 badge: '魔药学',
                 description: '神秘的魔药学教授',
                 course: 'potions-class'  // 魔药课
+            },
+            {
+                id: 'flitwick',
+                nameZh: '弗立维教授',
+                nameEn: 'Professor Flitwick',
+                avatar: '🧙‍♂️',
+                badge: '咒语课',
+                description: '矮小而博学的咒语课教授',
+                course: 'charms-class'  // 咒语课
             }
         ];
 
@@ -338,26 +347,74 @@
             localStorage.setItem(MENTOR_LETTERS_KEY, JSON.stringify(data));
         }
 
+        // 随机小零食列表
+        const RANDOM_SNACKS = [
+            { name: '巧克力蛙', icon: '🐸' },
+            { name: '比比多味豆', icon: '🫘' },
+            { name: '南瓜馅饼', icon: '🥧' },
+            { name: '糖浆馅饼', icon: '🥧' },
+            { name: '薄荷蟾蜍', icon: '🐸' },
+            { name: '酸棒糖', icon: '🍭' },
+            { name: '锅形蛋糕', icon: '🍰' },
+            { name: '奶油冰淇淋', icon: '🍦' },
+            { name: '太妃糖', icon: '🍬' },
+            { name: '椒糖蝙蝠', icon: '🦇' }
+        ];
+
+        // 获取随机小零食
+        function getRandomSnack() {
+            return RANDOM_SNACKS[Math.floor(Math.random() * RANDOM_SNACKS.length)];
+        }
+
+        // 老师个性化邮件内容
+        const MENTOR_MESSAGES = {
+            'mcgonagall': {
+                zh: `亲爱的学生，我必须说，你在语言学习方面的进步令人印象深刻。你展现出的专注和毅力正是格兰芬多所珍视的品质。虽然我一向以严厉著称，但你确实配得上这份称赞。继续努力，你会成为霍格沃茨的骄傲！这是给你的小奖励。`,
+                en: `Dear student, I must say, your progress in language learning is impressive. The focus and perseverance you've shown are exactly the qualities Gryffindor values. While I am known for my strictness, you truly deserve this praise. Keep working hard, and you will become Hogwarts' pride! Here's a small reward for you.`
+            },
+            'hooch': {
+                zh: `嘿，小巫师！你在飞行课上表现得越来越出色了。记住，掌握飞天扫帚需要的是耐心和自信，而你已经证明你拥有这两者。你的操控技巧进步显著，连我都感到惊讶！继续在天空中翱翔吧！这有个小零食给你补充能量。`,
+                en: `Hey, young wizard! You're getting better and better in Flying Class. Remember, mastering a broomstick requires patience and confidence, and you've proven you have both. Your control skills have improved significantly, even I'm surprised! Keep soaring in the sky! Here's a snack to boost your energy.`
+            },
+            'snape': {
+                zh: `哼...虽然我从不轻易表扬学生，但我不得不承认，你的魔药制作水平确实有进步。你在配方理解上的准确性和对细节的关注...勉强可以接受。别得意忘形，继续练习。如果你能保持这样的水准，或许有一天你真的会成为优秀的魔药师。拿去吧。`,
+                en: `Hmm... while I rarely praise students, I have to admit your potion-making skills have indeed improved. Your accuracy in understanding recipes and attention to detail... are barely acceptable. Don't get cocky, keep practicing. If you can maintain this level, perhaps one day you'll truly become an excellent potions master. Take it.`
+            },
+            'flitwick': {
+                zh: `噢，真是太令人惊喜了！亲爱的学生，你在咒语课上的表现简直令我感动。你的咒语发音精准，手势也愈发熟练。对于一个学习咒语的人来说，这样的进步是非凡的！我为你感到骄傲！这是给你的小奖励，继续加油！`,
+                en: `Oh, this is truly surprising! Dear student, your performance in Charms Class has simply moved me. Your spell pronunciation is precise, and your wand movements are becoming more skilled. For someone learning charms, such progress is extraordinary! I'm so proud of you! Here's a small reward, keep it up!`
+            }
+        };
+
         // 添加老师信件
-        function addMentorLetter(mentorId, mentorName) {
+        function addMentorLetter(mentorId) {
             const letters = getMentorLettersData();
             const existingLetter = letters.find(l => l.mentorId === mentorId && !l.claimed);
 
             if (existingLetter) return false;
 
+            // 获取老师信息
+            const teacher = TEACHERS.find(t => t.id === mentorId);
+            if (!teacher) return false;
+
+            // 获取个性化邮件内容和随机零食
+            const messages = MENTOR_MESSAGES[mentorId];
+            const snack = getRandomSnack();
+
             const letter = {
                 id: Date.now(),
                 mentorId: mentorId,
-                mentorName: mentorName,
-                messageZh: `亲爱的学生，我非常欣赏你的努力和进步！继续保持这样的学习态度，你将成为霍格沃茨的优秀学生。这是给你的小礼物，请查收！`,
-                messageEn: `Dear student, I truly appreciate your hard work and progress! Keep up such a learning attitude, and you will become an excellent student at Hogwarts. Here's a small gift for you, please check!`,
-                reward: { type: 'snack', name: '巧克力蛙', icon: '🐸' },
+                mentorName: currentLang === 'zh' ? teacher.nameZh : teacher.nameEn,
+                messageZh: messages.zh,
+                messageEn: messages.en,
+                reward: { type: 'snack', name: snack.name, icon: snack.icon },
                 claimed: false,
                 createdAt: Date.now()
             };
 
             letters.push(letter);
             saveMentorLettersData(letters);
+            console.log(`[导师专区] 已为 ${teacher.nameZh} 添加奖励邮件`);
             return true;
         }
 
@@ -456,7 +513,7 @@
                     if (!existingLetter) {
                         const teacher = TEACHERS.find(t => t.id === mentorId);
                         if (teacher) {
-                            addMentorLetter(mentorId, currentLang === 'zh' ? teacher.nameZh : teacher.nameEn);
+                            addMentorLetter(mentorId);
                             newLettersAdded = true;
                         }
                     }

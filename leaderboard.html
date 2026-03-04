@@ -259,6 +259,11 @@
 
             console.log(`加载${type === 'coins' ? '金币' : '等级'}排行榜...`);
 
+            // 强制刷新数据，确保从数据库获取最新的累计金币
+            if (typeof CoinManager !== 'undefined' && CoinManager.syncCoinsFromDatabase) {
+                await CoinManager.syncCoinsFromDatabase();
+            }
+
             try {
                 const isGuest = localStorage.getItem('isGuest') === 'true';
 
@@ -357,10 +362,13 @@
             }
         }
 
-        // 更新金币显示
+        // 更新金币显示（使用 CoinManager）
         function updateCoinDisplay() {
-            const coins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
-            document.getElementById('coinAmount').textContent = coins;
+            const coins = window.CoinManager ? CoinManager.getCurrentCoins() : 0;
+            const coinDisplay = document.getElementById('coinAmount');
+            if (coinDisplay) {
+                coinDisplay.textContent = coins;
+            }
         }
 
         // 页面加载时初始化

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>同步金加隆数据</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 { color: #333; margin-top: 0; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f9f9f9;
+        }
+        .success { background: #e8f5e9; color: #2e7d32; border: 1px solid #66bb6a; }
+        .error { background: #ffebee; color: #c62828; border: 1px solid #ef5350; }
+        .info { background: #e3f2fd; color: #1565c0; border: 1px solid #42a5f5; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f0f0f0; }
+        .user-row { cursor: pointer; }
+        .user-row:hover { background: #f9f9f9; }
+        .user-row.selected { background: #e3f2fd; }
+    </style>
+</head>
+<body>
+    <h1>🪙 金加隆数据同步工具</h1>
+    <p>此工具可以读取 localStorage 中的金加隆数据，并同步到数据库。</p>
+
+    <div class="section">
+        <h2>📱 读取 localStorage 数据</h2>
+        <button onclick="readLocalStorage()">读取本地金加隆</button>
+        <div id="localStorageResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>🗄️ 数据库中的用户数据</h2>
+        <button onclick="loadDatabaseUsers()">加载所有用户</button>
+        <div id="databaseUsersResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>🔄 同步数据</h2>
+        <p>输入要同步的用户 ID 和新的金加隆数量：</p>
+        <input type="text" id="userIdInput" placeholder="用户 ID" style="padding: 10px; width: 300px; margin: 5px;"><br>
+        <input type="number" id="coinsInput" placeholder="金加隆数量" style="padding: 10px; width: 150px; margin: 5px;"><br>
+        <button onclick="syncCoins()">同步到数据库</button>
+        <div id="syncResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>🔍 对比数据</h2>
+        <button onclick="compareData()">对比 localStorage 和数据库</button>
+        <div id="compareResult" class="result"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
+        function getSupabaseClient() {
+            return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        function readLocalStorage() {
+            const resultDiv = document.getElementById('localStorageResult');
+            const coins = localStorage.getItem('hogwartsCoins');
+            const userId = localStorage.getItem('userId');
+            const username = localStorage.getItem('username');
+            const nickname = localStorage.getItem('nickname');
+
+            resultDiv.innerHTML = `
+                <div class="info">
+                    <h3>📱 LocalStorage 数据：</h3>
+                    <p><strong>用户 ID:</strong> ${userId || '未设置'}</p>
+                    <p><strong>用户名:</strong> ${username || '未设置'}</p>
+                    <p><strong>昵称:</strong> ${nickname || '未设置'}</p>
+                    <p><strong>金加隆:</strong> ${coins || '0'}</p>
+                </div>
+                <p style="margin-top: 10px; color: #666;">
+                    注意：这是当前浏览器的 localStorage 数据。每个浏览器/设备的 localStorage 是独立的。
+                </p>
+            `;
+        }
+
+        async function loadDatabaseUsers() {
+            const resultDiv = document.getElementById('databaseUsersResult');
+            resultDiv.innerHTML = '<p>⏳ 加载中...</p>';
+
+            try {
+                const client = getSupabaseClient();
+                const { data: profiles, error } = await client
+                    .from('player_profiles')
+                    .select('*')
+                    .order('updated_at', { ascending: false });
+
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error">❌ 加载失败: ${error.message}</div>`;
+                    return;
+                }
+
+                if (!profiles || profiles.length === 0) {
+                    resultDiv.innerHTML = `<div class="error">❌ 没有找到用户数据</div>`;
+                    return;
+                }
+
+                let html = `
+                    <div class="success">✅ 找到 ${profiles.length} 个用户</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>昵称</th>
+                                <th>用户 ID</th>
+                                <th>金加隆 (coins)</th>
+                                <th>累计金加隆 (cumulative_coins)</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                profiles.forEach(profile => {
+                    html += `
+                        <tr class="user-row" onclick="selectUser('${profile.id}', ${profile.coins})">
+                            <td>${profile.avatar || '🧙'} ${profile.nickname || '匿名'}</td>
+                            <td><small>${profile.id}</small></td>
+                            <td><strong>${profile.coins || 0}</strong></td>
+                            <td>${profile.cumulative_coins || 0}</td>
+                            <td><button onclick="event.stopPropagation(); fillForm('${profile.id}', ${profile.coins})" style="padding: 5px 10px; font-size: 12px;">编辑</button></td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 10px; color: #666; font-size: 12px;">
+                        点击任意一行可以自动填充到同步表单中
+                    </p>
+                `;
+
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ 错误: ${e.message}</div>`;
+            }
+        }
+
+        function selectUser(userId, coins) {
+            document.getElementById('userIdInput').value = userId;
+            document.getElementById('coinsInput').value = coins;
+        }
+
+        function fillForm(userId, coins) {
+            document.getElementById('userIdInput').value = userId;
+            document.getElementById('coinsInput').value = coins;
+        }
+
+        async function syncCoins() {
+            const userId = document.getElementById('userIdInput').value.trim();
+            const coins = parseInt(document.getElementById('coinsInput').value);
+            const resultDiv = document.getElementById('syncResult');
+
+            if (!userId) {
+                resultDiv.innerHTML = '<div class="error">❌ 请输入用户 ID</div>';
+                return;
+            }
+
+            if (isNaN(coins)) {
+                resultDiv.innerHTML = '<div class="error">❌ 请输入有效的金加隆数量</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<p>⏳ 同步中...</p>';
+
+            try {
+                const client = getSupabaseClient();
+                const { error } = await client
+                    .from('player_profiles')
+                    .update({ coins: coins })
+                    .eq('id', userId);
+
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error">❌ 同步失败: ${error.message}</div>`;
+                    return;
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ 同步成功！<br>
+                        用户 ID: ${userId}<br>
+                        新的金加隆数量: ${coins}
+                    </div>
+                `;
+
+                // 重新加载数据
+                loadDatabaseUsers();
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ 错误: ${e.message}</div>`;
+            }
+        }
+
+        async function compareData() {
+            const resultDiv = document.getElementById('compareResult');
+            resultDiv.innerHTML = '<p>⏳ 对比中...</p>';
+
+            try {
+                const localCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+                const localUserId = localStorage.getItem('userId');
+
+                if (!localUserId) {
+                    resultDiv.innerHTML = `
+                        <div class="error">❌ localStorage 中没有用户 ID，请先登录</div>
+                    `;
+                    return;
+                }
+
+                const client = getSupabaseClient();
+                const { data: profile, error } = await client
+                    .from('player_profiles')
+                    .select('*')
+                    .eq('id', localUserId)
+                    .single();
+
+                if (error || !profile) {
+                    resultDiv.innerHTML = `
+                        <div class="error">❌ 无法从数据库获取用户数据: ${error?.message || '未知错误'}</div>
+                    `;
+                    return;
+                }
+
+                const dbCoins = profile.coins || 0;
+                const diff = localCoins - dbCoins;
+
+                let html = `
+                    <h3>📊 数据对比结果：</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>数据源</th>
+                                <th>用户昵称</th>
+                                <th>金加隆</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>📱 LocalStorage</td>
+                                <td>${localStorage.getItem('nickname') || '未设置'}</td>
+                                <td><strong>${localCoins}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>🗄️ 数据库</td>
+                                <td>${profile.nickname || '未设置'}</td>
+                                <td><strong>${dbCoins}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+
+                if (diff > 0) {
+                    html += `
+                        <div class="info" style="margin-top: 15px;">
+                            ⚠️ LocalStorage 中的金加隆比数据库多 ${diff} 个<br>
+                            <button onclick="syncFromLocalStorage()" style="margin-top: 10px;">同步 LocalStorage 到数据库</button>
+                        </div>
+                    `;
+                } else if (diff < 0) {
+                    html += `
+                        <div class="info" style="margin-top: 15px;">
+                            ⚠️ 数据库中的金加隆比 LocalStorage 多 ${Math.abs(diff)} 个<br>
+                            <button onclick="syncFromDatabase()" style="margin-top: 10px;">同步数据库到 LocalStorage</button>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="success" style="margin-top: 15px;">
+                            ✅ 数据一致！
+                        </div>
+                    `;
+                }
+
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ 错误: ${e.message}</div>`;
+            }
+        }
+
+        async function syncFromLocalStorage() {
+            const localCoins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            const localUserId = localStorage.getItem('userId');
+
+            try {
+                const client = getSupabaseClient();
+                const { error } = await client
+                    .from('player_profiles')
+                    .update({ coins: localCoins })
+                    .eq('id', localUserId);
+
+                if (error) {
+                    alert('同步失败: ' + error.message);
+                } else {
+                    alert('✅ 同步成功！');
+                    loadDatabaseUsers();
+                    compareData();
+                }
+            } catch (e) {
+                alert('错误: ' + e.message);
+            }
+        }
+
+        async function syncFromDatabase() {
+            const localUserId = localStorage.getItem('userId');
+
+            try {
+                const client = getSupabaseClient();
+                const { data: profile, error } = await client
+                    .from('player_profiles')
+                    .select('coins')
+                    .eq('id', localUserId)
+                    .single();
+
+                if (error || !profile) {
+                    alert('获取数据失败: ' + error?.message || '未知错误');
+                } else {
+                    localStorage.setItem('hogwartsCoins', profile.coins.toString());
+                    alert('✅ 同步成功！');
+                    loadDatabaseUsers();
+                    compareData();
+                }
+            } catch (e) {
+                alert('错误: ' + e.message);
+            }
+        }
+
+        // 页面加载时自动读取 localStorage
+        readLocalStorage();
+    </script>
+</body>
+</html>

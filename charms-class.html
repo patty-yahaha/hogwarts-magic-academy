@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>咒语课 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* 咒语课样式 */
+        .charms-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .charms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 游戏主区域 */
+        .charms-game-area {
+            display: flex;
+            gap: 30px;
+            min-height: 500px;
+            position: relative;
+        }
+
+        .charms-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* 老师区域 */
+        .teacher-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        .teacher-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(145deg, #d4af37, #f4e4ba);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+        }
+
+        .teacher-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            animation: avatarGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.6); }
+        }
+
+        .teacher-dialogue {
+            flex: 1;
+        }
+
+        .dialogue-bubble {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(201, 162, 39, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .dialogue-bubble::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 30px;
+            border: 10px solid transparent;
+            border-right-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .dialogue-text {
+            color: #d4af37;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        /* 答题区域 */
+        .quiz-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .spell-hint {
+            color: #c9a227;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.3rem;
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .spell-input-area {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .spell-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 18px 25px;
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .spell-input:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .spell-input::placeholder {
+            color: #8b6914;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a3e;
+            padding: 18px 35px;
+            border-radius: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border: 2px solid #3498db;
+            color: white;
+            padding: 18px 40px;
+            border-radius: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.5);
+        }
+
+        /* 状态面板 */
+        .status-panel {
+            width: 280px;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .status-label {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+        }
+
+        .status-value {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .favorability-item .status-value {
+            color: #e74c3c;
+        }
+
+        /* 咒语书图标 */
+        .spellbook-toggle {
+            position: fixed;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(145deg, #8b4513, #654321);
+            border: 4px solid #d4af37;
+            border-radius: 5px 15px 15px 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .spellbook-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 5px 5px 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .spellbook-toggle::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 10px;
+            bottom: 10px;
+            width: 3px;
+            background: #d4af37;
+        }
+
+        /* 咒语书面板 */
+        .spellbook-panel {
+            position: fixed;
+            left: -400px;
+            top: 0;
+            width: 400px;
+            height: 100%;
+            background: linear-gradient(145deg, #f5f0e1, #e8dcc8);
+            border-right: 4px solid #8b4513;
+            box-shadow: 5px 0 40px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            transition: left 0.4s ease;
+            z-index: 150;
+            overflow-y: auto;
+        }
+
+        .spellbook-panel.active {
+            left: 0;
+        }
+
+        .spellbook-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #8b4513;
+        }
+
+        .spellbook-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #8b4513;
+        }
+
+        .spellbook-close {
+            background: #8b4513;
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .spellbook-close:hover {
+            background: #654321;
+            transform: rotate(90deg);
+        }
+
+        .spellbook-timer {
+            text-align: center;
+            color: #e74c3c;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .spell-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .spell-item {
+            background: rgba(139, 69, 19, 0.1);
+            border: 2px solid rgba(139, 69, 19, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .spell-item:hover {
+            border-color: #8b4513;
+            background: rgba(139, 69, 19, 0.15);
+        }
+
+        .spell-effect {
+            color: #654321;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .spell-name {
+            color: #8b4513;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* 反馈动画 */
+        .feedback-correct {
+            animation: correctPulse 0.5s ease-out;
+        }
+
+        @keyframes correctPulse {
+            0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+            100% { box-shadow: 0 0 0 20px rgba(39, 174, 96, 0); }
+        }
+
+        .feedback-wrong {
+            animation: wrongShake 0.5s ease-out;
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* 金币动画 */
+        .coin-float {
+            position: fixed;
+            font-size: 2.5rem;
+            color: #ffd700;
+            pointer-events: none;
+            z-index: 1000;
+            animation: coinFloat 1.5s ease-out forwards;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700;
+        }
+
+        .coin-float .coin-icon {
+            display: inline-block;
+            animation: coinSpin 0.5s ease-in-out;
+        }
+
+        @keyframes coinFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.2);
+            }
+            30% {
+                transform: translateY(-30px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.3);
+            }
+        }
+
+        @keyframes coinSpin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        /* 金币闪光效果 */
+        .coin-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 999;
+            animation: coinFlash 0.3s ease-out forwards;
+        }
+
+        @keyframes coinFlash {
+            0% {
+                background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+            }
+            100% {
+                background: transparent;
+            }
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 隐藏初始状态 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 调试信息区 */
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 15px;
+            color: #d4af37;
+            font-family: monospace;
+            font-size: 0.85rem;
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .debug-info h4 {
+            margin: 0 0 10px 0;
+            color: #ffd700;
+        }
+
+        .debug-item {
+            margin: 5px 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .charms-game-area {
+                flex-direction: column;
+            }
+
+            .status-panel {
+                width: 100%;
+            }
+
+            .spellbook-panel {
+                width: 100%;
+                left: -100%;
+            }
+
+            .spellbook-toggle {
+                left: 10px;
+                width: 50px;
+                height: 70px;
+                font-size: 1.5rem;
+            }
+
+            .spell-input-area {
+                flex-direction: column;
+            }
+
+            .teacher-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .teacher-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 3rem;
+            }
+
+            .dialogue-bubble::before {
+                left: 50%;
+                top: -15px;
+                border: 10px solid transparent;
+                border-bottom-color: rgba(212, 175, 55, 0.4);
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <!-- 咒语书图标 -->
+    <div class="spellbook-toggle" onclick="toggleSpellbook()" title="咒语书">
+        📖
+    </div>
+
+    <!-- 咒语书面板 -->
+    <div class="spellbook-panel" id="spellbookPanel">
+        <div class="spellbook-header">
+            <h2 class="spellbook-title">✨ 咒语书（初级）✨</h2>
+            <button class="spellbook-close" onclick="toggleSpellbook()">✕</button>
+        </div>
+        <div class="spellbook-timer" id="spellbookTimer">30</div>
+        <div class="spell-list" id="spellList"></div>
+    </div>
+
+    <div class="container">
+        <div class="charms-container">
+            <!-- 顶部 -->
+            <div class="charms-header">
+                <button class="back-btn" onclick="goBack()">← 返回大厅</button>
+                <h1 class="page-title">✨ 咒语课 ✨</h1>
+            </div>
+
+            <!-- 游戏区域 -->
+            <div class="charms-game-area">
+                <!-- 主区域 -->
+                <div class="charms-main">
+                    <!-- 老师区域 -->
+                    <div class="teacher-section">
+                        <div class="teacher-avatar">🧙</div>
+                        <div class="teacher-dialogue">
+                            <div class="dialogue-bubble">
+                                <p class="dialogue-text" id="teacherDialogue">
+                                    欢迎来到咒语课！我是弗立维教授。今天我们将学习一些基础咒语。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 答题区域 -->
+                    <div class="quiz-section" id="quizSection">
+                        <!-- 初始状态 -->
+                        <div id="initialState" style="text-align: center;">
+                            <p style="color: #c9a227; font-size: 1.2rem; margin-bottom: 20px;">
+                                准备好开始你的咒语挑战了吗？
+                            </p>
+                            <button class="start-btn" onclick="startChallenge()">开始挑战</button>
+                        </div>
+
+                        <!-- 答题状态 -->
+                        <div id="quizState" class="hidden">
+                            <div class="spell-hint" id="spellHint"></div>
+                            <div class="spell-input-area">
+                                <input type="text" class="spell-input" id="spellInput"
+                                       placeholder="请输入英文咒语..." onkeypress="handleKeyPress(event)">
+                                <button class="submit-btn" onclick="submitSpell()">施咒</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 状态面板 -->
+                <div class="status-panel">
+                    <div class="status-item favorability-item">
+                        <span class="status-label">❤️ 好感度</span>
+                        <span class="status-value" id="favorabilityDisplay">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">🪙 本节金币</span>
+                        <span class="status-value" id="coinsDisplay">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">🔥 连答</span>
+                        <span class="status-value" id="streakDisplay">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 调试信息区 -->
+    <div class="debug-info" id="debugInfo">
+        <h4>🔍 金币调试信息</h4>
+        <div class="debug-item">当前金币: <span id="debugCurrentCoins">-</span></div>
+        <div class="debug-item">累计金币: <span id="debugCumulativeCoins">-</span></div>
+        <button onclick="forceSync()" style="margin-top: 10px; width: 100%; padding: 8px; background: #d4af37; border: none; border-radius: 5px; cursor: pointer; color: #1a1a2e; font-weight: bold;">🔄 强制同步到云端</button>
+        <div id="syncStatus" class="debug-item" style="margin-top: 5px; color: #ffd700;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 创建全局 Supabase 客户端（用于认证）
+        window.sb = supabase.createClient('https://xxalvnwmqhfcohcvebnp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg', {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true
+            }
+        });
+    </script>
+    <script src="js/coin-manager.js"></script>
+    <script>
+        // 咒语数据（初级 - 18个）
+        const SPELLS_DATA = [
+            { effect: '荧光闪烁 - 轻轻向上一点', spell: 'lumos' },
+            { effect: '熄灯咒 - 轻轻向下一点', spell: 'nox' },
+            { effect: '开门咒 - 顺时针小圈一点', spell: 'alohomora' },
+            { effect: '悬浮咒 - 向上扫+轻抖', spell: 'wingardium leviosa' },
+            { effect: '除你武器 - 向前快速刺出', spell: 'expelliarmus' },
+            { effect: '守护神咒 - 大幅度画圈后向前推出', spell: 'expecto patronum' },
+            { effect: '昏昏倒地 - 向前横斩', spell: 'stupefy' },
+            { effect: '障碍重重 - 向前推出', spell: 'impedimenta' },
+            { effect: '粉身碎骨 - 用力向下劈', spell: 'reducto' },
+            { effect: '愈合如初 - 轻轻抚摸伤口', spell: 'episkey' },
+            { effect: '声音洪亮 - 向喉咙方向点', spell: 'sonorus' },
+            { effect: '悄声细语 - 轻按喉咙', spell: 'quietus' },
+            { effect: '原形立现 - 从上向下扫', spell: 'revelio' },
+            { effect: '幻身咒 - 全身轻拂一遍', spell: 'disillusionment charm' },
+            { effect: '缩小咒 - 双手向内捏', spell: 'reducio' },
+            { effect: '放大咒 - 双手向外扩', spell: 'engorgio' },
+            { effect: '铁甲咒 - 横在身前画盾', spell: 'protego' },
+            { effect: '闪回前咒 - 魔杖对魔杖拉出', spell: 'prior incantato' }
+        ];
+
+        // 游戏状态
+        let gameState = {
+            sessionCoins: 0,  // 本节课获得的金币
+            favorability: 0,
+            streak: 0,
+            totalFailures: 0,  // 累计失败次数
+            currentSpell: null,
+            isGameActive: false,
+            spellbookOpen: false,
+            spellbookTimer: 30,
+            spellbookInterval: null
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化金币系统
+            if (window.CoinManager) {
+                CoinManager.initialize();
+            }
+            loadGameState();
+            updateDisplays();
+            generateSpellbook();
+            createMagicParticles();
+        });
+
+        // 加载游戏状态
+        function loadGameState() {
+            // 读取统一的好感度数据
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            let mentorAffection = null;
+            try {
+                const savedMentorData = localStorage.getItem(mentorAffectionKey);
+                if (savedMentorData) {
+                    mentorAffection = JSON.parse(savedMentorData);
+                    gameState.favorability = mentorAffection['flitwick'] || 0;
+                }
+            } catch (e) {
+                console.error('Error reading mentor affection data:', e);
+            }
+
+            // 回退到旧的存储方式
+            if (gameState.favorability === 0) {
+                const saved = localStorage.getItem('charmsGameState');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    gameState.favorability = parsed.favorability || 0;
+                    gameState.streak = parsed.streak || 0;
+                }
+            }
+
+            // 读取累计失败次数
+            const savedFailures = localStorage.getItem('charmsTotalFailures');
+            gameState.totalFailures = savedFailures ? parseInt(savedFailures) : 0;
+
+            // 本节课金币从 0 开始
+            gameState.sessionCoins = 0;
+        }
+
+        // 保存游戏状态（金币由 CoinManager 管理）
+        function saveGameState() {
+            // 保存统一的好感度数据到导师专区
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            let data = {};
+            try {
+                const savedData = localStorage.getItem(mentorAffectionKey);
+                if (savedData) {
+                    data = JSON.parse(savedData);
+                }
+            } catch (e) {
+                console.error('Error parsing mentor affection data:', e);
+            }
+            data['flitwick'] = gameState.favorability;
+            localStorage.setItem(mentorAffectionKey, JSON.stringify(data));
+
+            // 保存累计失败次数
+            localStorage.setItem('charmsTotalFailures', gameState.totalFailures.toString());
+        }
+
+        // 更新显示
+        function updateDisplays() {
+            document.getElementById('favorabilityDisplay').textContent = gameState.favorability;
+            document.getElementById('streakDisplay').textContent = gameState.streak;
+
+            // 显示本节课获得的金币
+            document.getElementById('coinsDisplay').textContent = gameState.sessionCoins;
+
+            // 更新调试信息
+            updateDebugInfo();
+        }
+
+        // 更新调试信息
+        function updateDebugInfo() {
+            const current = window.CoinManager ? CoinManager.getCurrentCoins() : 0;
+            const cumulative = window.CoinManager ? CoinManager.getCumulativeCoins() : 0;
+            document.getElementById('debugCurrentCoins').textContent = current;
+            document.getElementById('debugCumulativeCoins').textContent = cumulative;
+        }
+
+        // 强制同步到云端
+        async function forceSync() {
+            const statusEl = document.getElementById('syncStatus');
+            if (!window.CoinManager) {
+                statusEl.textContent = '❌ CoinManager 未加载';
+                return;
+            }
+
+            statusEl.textContent = '⏳ 正在同步...';
+
+            try {
+                await CoinManager.forceSyncToCloud();
+                statusEl.textContent = '✅ 同步成功！请刷新排行榜查看';
+            } catch (error) {
+                statusEl.textContent = '❌ 同步失败: ' + error.message;
+            }
+        }
+
+        // 生成咒语书内容
+        function generateSpellbook() {
+            const list = document.getElementById('spellList');
+            list.innerHTML = '';
+            SPELLS_DATA.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'spell-item';
+                div.innerHTML = `
+                    <div class="spell-effect">${item.effect}</div>
+                    <div class="spell-name">${item.spell}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // 开始挑战
+        function startChallenge() {
+            document.getElementById('initialState').classList.add('hidden');
+            document.getElementById('quizState').classList.remove('hidden');
+            gameState.isGameActive = true;
+            pickNewSpell();
+        }
+
+        // 选择新咒语
+        function pickNewSpell() {
+            const randomIndex = Math.floor(Math.random() * SPELLS_DATA.length);
+            gameState.currentSpell = SPELLS_DATA[randomIndex];
+            document.getElementById('spellHint').textContent = `🎯 ${gameState.currentSpell.effect}`;
+            document.getElementById('spellInput').value = '';
+            document.getElementById('spellInput').focus();
+        }
+
+        // 提交咒语
+        function submitSpell() {
+            if (!gameState.isGameActive) return;
+
+            const input = document.getElementById('spellInput').value.trim().toLowerCase();
+            const correct = input === gameState.currentSpell.spell.toLowerCase();
+
+            if (correct) {
+                handleCorrectAnswer();
+            } else {
+                handleWrongAnswer();
+            }
+        }
+
+        // 处理正确答案
+        function handleCorrectAnswer() {
+            const quizSection = document.getElementById('quizSection');
+            quizSection.classList.add('feedback-correct');
+            setTimeout(() => {
+                quizSection.classList.remove('feedback-correct');
+            }, 500);
+
+            // 奖励金币 - 同时更新本节课金币和全局金币系统
+            gameState.sessionCoins += 2;
+            gameState.streak++;
+
+            // 使用 CoinManager 更新全局金币（当前金币 + 累计金币）
+            if (window.CoinManager) {
+                CoinManager.addCoins(2);
+            }
+
+            // 显示金币动画
+            showCoinAnimation();
+
+            // 更新对话
+            const dialogues = [
+                '非常好！加2个金币！',
+                '太棒了！你的发音很标准！',
+                '正是如此！你是个有天赋的巫师！',
+                '出色！继续保持！'
+            ];
+            document.getElementById('teacherDialogue').textContent =
+                dialogues[Math.floor(Math.random() * dialogues.length)];
+
+            // 检查是否提升好感度
+            if (gameState.streak % 5 === 0) {
+                gameState.favorability++;
+                setTimeout(() => {
+                    alert('你真是个有天赋的学生！好感度+1！');
+                }, 100);
+            }
+
+            saveGameState();
+            updateDisplays();
+
+            // 下一题
+            setTimeout(() => {
+                pickNewSpell();
+            }, 500);
+        }
+
+        // 处理错误答案
+        function handleWrongAnswer() {
+            const quizSection = document.getElementById('quizSection');
+            quizSection.classList.add('feedback-wrong');
+            setTimeout(() => {
+                quizSection.classList.remove('feedback-wrong');
+            }, 500);
+
+            // 重置连答
+            gameState.streak = 0;
+
+            // 增加累计失败次数
+            gameState.totalFailures++;
+
+            // 检查是否减少好感度（每累计10次失败）
+            if (gameState.totalFailures % 10 === 0) {
+                gameState.favorability = Math.max(0, gameState.favorability - 1);
+                setTimeout(() => {
+                    alert('要更加专注练习哦！好感度-1');
+                }, 100);
+            }
+
+            // 更新对话
+            document.getElementById('teacherDialogue').textContent =
+                '再试试，巫师的发音要精准哦。';
+
+            saveGameState();
+            updateDisplays();
+
+            // 清空输入框
+            document.getElementById('spellInput').value = '';
+        }
+
+        // 金币动画
+        function showCoinAnimation() {
+            // 创建闪光效果
+            const flash = document.createElement('div');
+            flash.className = 'coin-flash';
+            document.body.appendChild(flash);
+
+            setTimeout(() => {
+                flash.remove();
+            }, 300);
+
+            // 创建金币动画
+            const coin = document.createElement('div');
+            coin.className = 'coin-float';
+            coin.innerHTML = '<span class="coin-icon">🪙</span> +2';
+            coin.style.left = '50%';
+            coin.style.top = '50%';
+            coin.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(coin);
+
+            setTimeout(() => {
+                coin.remove();
+            }, 1500);
+        }
+
+        // 切换咒语书
+        function toggleSpellbook() {
+            gameState.spellbookOpen = !gameState.spellbookOpen;
+            const panel = document.getElementById('spellbookPanel');
+
+            if (gameState.spellbookOpen) {
+                panel.classList.add('active');
+                startSpellbookTimer();
+            } else {
+                panel.classList.remove('active');
+                stopSpellbookTimer();
+            }
+        }
+
+        // 开始咒语书计时器
+        function startSpellbookTimer() {
+            gameState.spellbookTimer = 30;
+            updateSpellbookTimer();
+
+            gameState.spellbookInterval = setInterval(() => {
+                gameState.spellbookTimer--;
+                updateSpellbookTimer();
+
+                if (gameState.spellbookTimer <= 0) {
+                    stopSpellbookTimer();
+                    toggleSpellbook();
+                }
+            }, 1000);
+        }
+
+        // 停止咒语书计时器
+        function stopSpellbookTimer() {
+            if (gameState.spellbookInterval) {
+                clearInterval(gameState.spellbookInterval);
+                gameState.spellbookInterval = null;
+            }
+        }
+
+        // 更新咒语书计时显示
+        function updateSpellbookTimer() {
+            const timerEl = document.getElementById('spellbookTimer');
+            timerEl.textContent = gameState.spellbookTimer;
+
+            if (gameState.spellbookTimer <= 10) {
+                timerEl.style.color = '#c0392b';
+                timerEl.style.animation = 'pulse 0.5s ease-in-out infinite';
+            } else {
+                timerEl.style.color = '#e74c3c';
+                timerEl.style.animation = '';
+            }
+        }
+
+        // 回车键提交
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                submitSpell();
+            }
+        }
+
+        // 返回
+        function goBack() {
+            saveGameState();
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'hogwarts-games.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            if (container.children.length > 0) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 页面关闭前保存状态
+        window.addEventListener('beforeunload', () => {
+            saveGameState();
+        });
+    </script>
+</body>
+</html>

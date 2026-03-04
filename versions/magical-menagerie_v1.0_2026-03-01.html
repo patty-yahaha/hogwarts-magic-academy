@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神奇动物商店 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        .shop-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .shop-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .shop-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .pet-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        .pet-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3),
+                        inset 0 1px 0 rgba(212, 175, 55, 0.4);
+            border-color: #f0d060;
+        }
+
+        .pet-icon svg {
+            width: 5rem;
+            height: 5rem;
+            text-align: center;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+        }
+
+        .title-icon svg {
+            width: 2.5rem;
+            height: 2.5rem;
+            vertical-align: text-bottom;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+        }
+
+        .pet-name-zh {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .pet-name-en {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #c9a830;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .pet-description {
+            font-size: 0.85rem;
+            color: #a08050;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            min-height: 60px;
+        }
+
+        .pet-price {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .pet-price .price-amount {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .buy-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, #3a3a5a, #2a2a3e);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .danger-level {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            margin-top: 10px;
+        }
+
+        .danger-xx {
+            background: linear-gradient(135deg, #2a1a3e, #1a472a);
+            color: #90ee90;
+        }
+
+        .danger-xxx {
+            background: linear-gradient(135deg, #2a1a3e, #d4af37);
+            color: #fff;
+        }
+
+        .danger-xxxx {
+            background: linear-gradient(135deg, #ff6b35, #d4af37);
+            color: #fff;
+        }
+
+        /* 金币显示 */
+        .coin-display {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .coin-icon svg {
+            width: 1.8rem;
+            height: 1.8rem;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
+        }
+
+        .price-icon svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            vertical-align: middle;
+            margin-right: 5px;
+            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+        }
+
+        .coin-amount {
+            font-size: 1.5rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .coin-label {
+            font-size: 0.9rem;
+            color: #c9a830;
+            margin-left: 5px;
+        }
+
+        /* 拥有宠物显示 */
+        .owned-pets {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .owned-pets-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .owned-pets-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .owned-pet-item {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .owned-pet-emoji svg {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .owned-pet-name {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* 购买消息 */
+        .purchase-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.98), rgba(20, 10, 5, 0.99));
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px 40px;
+            z-index: 2000;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .purchase-message.active {
+            display: block;
+        }
+
+        .purchase-message.success {
+            border-color: #27ae60;
+        }
+
+        .purchase-message.error {
+            border-color: #e74c3c;
+        }
+
+        .message-icon svg {
+            width: 4rem;
+            height: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .message-title {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .message-text {
+            color: #c9a830;
+            margin-bottom: 20px;
+        }
+
+        .close-purchase-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            border: none;
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-purchase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <!-- 金币显示 -->
+    <div class="coin-display">
+        <span class="coin-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 6V18M9 12h6"/>
+            </svg>
+        </span>
+        <span class="coin-amount" id="coinAmount">0</span>
+        <span class="coin-label">
+            <span class="label-zh">金加隆</span>
+            <span class="label-en">Galleons</span>
+        </span>
+    </div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">神奇动物商店</span>
+                <span class="title-text-en">Magical Menagerie</span>
+            </h1>
+        </header>
+
+        <div class="shop-container">
+            <!-- 商店标题 -->
+            <div class="shop-header">
+                <h2 class="shop-title">
+                    <span class="title-text-zh">
+                        <span class="title-icon">
+                            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <defs><radialGradient id="titlePawGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffd700"/><stop offset="100%" style="stop-color:#d4af37"/></radialGradient></defs>
+                                <ellipse cx="24" cy="28" rx="8" ry="6" fill="url(#titlePawGrad)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="16" cy="22" r="4" fill="url(#titlePawGrad)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="32" cy="22" r="4" fill="url(#titlePawGrad)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="24" cy="36" r="3" fill="url(#titlePawGrad)" stroke="#b8860b" stroke-width="1.5"/>
+                            </svg>
+                        </span>
+                        神奇动物商店
+                        <span class="title-icon">
+                            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <defs><radialGradient id="titlePawGrad2" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffd700"/><stop offset="100%" style="stop-color:#d4af37"/></radialGradient></defs>
+                                <ellipse cx="24" cy="28" rx="8" ry="6" fill="url(#titlePawGrad2)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="16" cy="22" r="4" fill="url(#titlePawGrad2)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="32" cy="22" r="4" fill="url(#titlePawGrad2)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="24" cy="36" r="3" fill="url(#titlePawGrad2)" stroke="#b8860b" stroke-width="1.5"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <span class="title-text-en">
+                        <span class="title-icon">
+                            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <defs><radialGradient id="titlePawGrad3" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffd700"/><stop offset="100%" style="stop-color:#d4af37"/></radialGradient></defs>
+                                <ellipse cx="24" cy="28" rx="8" ry="6" fill="url(#titlePawGrad3)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="16" cy="22" r="4" fill="url(#titlePawGrad3)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="32" cy="22" r="4" fill="url(#titlePawGrad3)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="24" cy="36" r="3" fill="url(#titlePawGrad3)" stroke="#b8860b" stroke-width="1.5"/>
+                            </svg>
+                        </span>
+                        Magical Menagerie
+                        <span class="title-icon">
+                            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <defs><radialGradient id="titlePawGrad4" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffd700"/><stop offset="100%" style="stop-color:#d4af37"/></radialGradient></defs>
+                                <ellipse cx="24" cy="28" rx="8" ry="6" fill="url(#titlePawGrad4)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="16" cy="22" r="4" fill="url(#titlePawGrad4)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="32" cy="22" r="4" fill="url(#titlePawGrad4)" stroke="#b8860b" stroke-width="1.5"/>
+                                <circle cx="24" cy="36" r="3" fill="url(#titlePawGrad4)" stroke="#b8860b" stroke-width="1.5"/>
+                            </svg>
+                        </span>
+                    </span>
+                </h2>
+                <p class="shop-subtitle">
+                    <span class="subtitle-text-zh">挑选你的神奇伙伴</span>
+                    <span class="subtitle-text-en">Choose Your Magical Companion</span>
+                </p>
+            </div>
+
+            <!-- 已拥有的宠物 -->
+            <div class="owned-pets" id="ownedPets">
+                <div class="owned-pets-title">
+                    <span class="title-zh">已拥有的宠物</span>
+                    <span class="title-en">Owned Pets</span>
+                </div>
+                <div class="owned-pets-list" id="ownedPetsList">
+                    <p style="color: #888; font-style: italic;">
+                        <span class="text-zh">暂无宠物</span>
+                        <span class="text-en">No pets yet</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 宠物网格 -->
+            <div class="pets-grid">
+                <!-- 蒲绒绒 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="puffGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffeec8"/><stop offset="100%" style="stop-color:#f5d0a0"/></radialGradient></defs>
+                            <ellipse cx="32" cy="32" rx="22" ry="20" fill="url(#puffGrad)" stroke="#d4b880" stroke-width="1.5"/>
+                            <circle cx="26" cy="28" r="4" fill="#2c2c2c"/>
+                            <circle cx="26" cy="28" r="1.5" fill="#fff"/>
+                            <circle cx="38" cy="28" r="4" fill="#2c2c2c"/>
+                            <circle cx="38" cy="28" r="1.5" fill="#fff"/>
+                            <ellipse cx="32" cy="38" rx="3" ry="2" fill="#e8c890"/>
+                            <path d="M20 30Q14 28 16 24M44 30Q50 28 48 24" stroke="#e8c890" stroke-width="1" fill="none" opacity="0.7"/>
+                            <circle cx="16" cy="32" r="2" fill="#ffeec8" opacity="0.5"/>
+                            <circle cx="48" cy="30" r="1.5" fill="#ffeec8" opacity="0.5"/>
+                            <circle cx="24" cy="42" r="1" fill="#ffeec8" opacity="0.4"/>
+                            <circle cx="40" cy="40" r="1.2" fill="#ffeec8" opacity="0.4"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">蒲绒绒</div>
+                    <div class="pet-name-en">Puffskein</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">圆球形、覆盖奶黄色软毛，极其温顺。深受巫师儿童喜爱的宠物！</span>
+                        <span class="desc-en">Round furry creature, very gentle. Beloved by wizard children!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">350</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('蒲绒绒', 350, 'puffskein')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 月痴兽 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="mooncalfGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8d8e8"/><stop offset="100%" style="stop-color:#a0b8c8"/></radialGradient><filter id="silverGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+                            <ellipse cx="32" cy="30" rx="18" ry="16" fill="url(#mooncalfGrad)" stroke="#7890a0" stroke-width="1.5"/>
+                            <circle cx="25" cy="26" r="4" fill="#1a1a2e"/>
+                            <circle cx="25" cy="26" r="1.5" fill="#fff"/>
+                            <circle cx="39" cy="26" r="4" fill="#1a1a2e"/>
+                            <circle cx="39" cy="26" r="1.5" fill="#fff"/>
+                            <ellipse cx="32" cy="36" rx="4" ry="2.5" fill="#90a8b8"/>
+                            <path d="M26 44Q32 48 38 44" stroke="#7890a0" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="32" cy="45" rx="8" ry="3" fill="#90a8b8"/>
+                            <path d="M18 28L14 26M46 28L50 26" stroke="#90a8b8" stroke-width="1" fill="none"/>
+                            <circle cx="14" cy="32" r="3" fill="#e8f0f8" opacity="0.6" filter="url(#silverGlow)"/>
+                            <circle cx="50" cy="30" r="2" fill="#e8f0f8" opacity="0.5" filter="url(#silverGlow)"/>
+                            <circle cx="32" cy="18" r="1.5" fill="#e8f0f8" opacity="0.7" filter="url(#silverGlow)"/>
+                            <circle cx="20" cy="40" r="1" fill="#e8f0f8" opacity="0.4"/>
+                            <circle cx="44" cy="38" r="1.2" fill="#e8f0f8" opacity="0.4"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">月痴兽</div>
+                    <div class="pet-name-en">Mooncalf</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">腼腆的淡灰色动物，在满月时跳舞。其银色粪便能让植物快速生长！</span>
+                        <span class="desc-en">Shy grey creature, dances under full moon. Its silver dung helps plants grow!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">420</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('月痴兽', 420, 'mooncalf')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 护树罗锅 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="bowtruckleGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8e8c8"/><stop offset="100%" style="stop-color:#90c890"/></radialGradient></defs>
+                            <ellipse cx="32" cy="28" rx="8" ry="10" fill="url(#bowtruckleGrad)" stroke="#68a868" stroke-width="1"/>
+                            <circle cx="29" cy="26" r="2.5" fill="#1a3a1a"/>
+                            <circle cx="29" cy="26" r="1" fill="#fff"/>
+                            <circle cx="35" cy="26" r="2.5" fill="#1a3a1a"/>
+                            <circle cx="35" cy="26" r="1" fill="#fff"/>
+                            <ellipse cx="32" cy="32" rx="2" ry="1.5" fill="#78b878"/>
+                            <path d="M28 38Q32 42 36 38" stroke="#68a868" stroke-width="1.5" fill="none"/>
+                            <path d="M24 30Q20 28 18 30M40 30Q44 28 46 30" stroke="#90c890" stroke-width="1" fill="none"/>
+                            <path d="M28 20Q26 14 32 12Q38 14 36 20" stroke="#90c890" stroke-width="1.5" fill="none"/>
+                            <circle cx="32" cy="12" r="3" fill="#a8d8a8"/>
+                            <ellipse cx="32" cy="42" rx="4" ry="3" fill="#78b878"/>
+                            <path d="M20 24Q18 18 22 14M44 24Q46 18 42 14" stroke="#90c890" stroke-width="0.8" fill="none"/>
+                            <circle cx="22" cy="36" r="1" fill="#c8e8c8" opacity="0.6"/>
+                            <circle cx="42" cy="34" r="1" fill="#c8e8c8" opacity="0.6"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">护树罗锅</div>
+                    <div class="pet-name-en">Bowtruckle</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">守护树木的小生物，极难见到。性情平和害羞，是树木的忠实守护者。</span>
+                        <span class="desc-en">Small tree guardian, shy and peaceful. Loyal protector of trees!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">450</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('护树罗锅', 450, 'bowtruckle')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 燕尾狗 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="crupGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#d8a868"/><stop offset="100%" style="stop-color:#a87040"/></radialGradient></defs>
+                            <ellipse cx="28" cy="32" rx="16" ry="12" fill="url(#crupGrad)" stroke="#785030" stroke-width="1.5"/>
+                            <circle cx="23" cy="29" r="3" fill="#2c2c2c"/>
+                            <circle cx="23" cy="29" r="1.2" fill="#fff"/>
+                            <circle cx="33" cy="29" r="3" fill="#2c2c2c"/>
+                            <circle cx="33" cy="29" r="1.2" fill="#fff"/>
+                            <ellipse cx="28" cy="36" rx="4" ry="2.5" fill="#785030"/>
+                            <path d="M22 40Q24 44 26 40M30 40Q32 44 34 40" stroke="#785030" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="24" cy="42" rx="2" ry="3" fill="#d8a868"/>
+                            <ellipse cx="32" cy="42" rx="2" ry="3" fill="#d8a868"/>
+                            <path d="M44 32Q48 30 52 32Q50 36 46 34M46 34Q48 32 50 34Q52 36 50 32" stroke="#d8a868" stroke-width="1" fill="none"/>
+                            <ellipse cx="18" cy="30" rx="4" ry="6" fill="#d8a868"/>
+                            <circle cx="18" cy="26" r="1.5" fill="#90a8b8"/>
+                            <ellipse cx="28" cy="18" rx="6" ry="4" fill="#d8a868"/>
+                            <path d="M22 16Q24 12 28 14Q32 12 34 16" stroke="#785030" stroke-width="1" fill="none"/>
+                            <circle cx="50" cy="28" r="1" fill="#ffd700" opacity="0.6"/>
+                            <circle cx="52" cy="36" r="0.8" fill="#ffd700" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">燕尾狗</div>
+                    <div class="pet-name-en">Crup</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">对巫师极其忠诚，有分叉的尾巴。对麻瓜凶残，是优秀的看门宠物！</span>
+                        <span class="desc-en">Loyal to wizards, forked tail. Fierce to muggles, excellent guard!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">480</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('燕尾狗', 480, 'crup')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 球遁鸟 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="diricawlGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#e8d8a8"/><stop offset="100%" style="stop-color:#c8b088"/></radialGradient><filter id="vanishGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+                            <ellipse cx="32" cy="30" rx="20" ry="16" fill="url(#diricawlGrad)" stroke="#a88060" stroke-width="1.5" opacity="0.95"/>
+                            <ellipse cx="32" cy="30" rx="18" ry="14" fill="url(#diricawlGrad)" stroke="#a88060" stroke-width="1"/>
+                            <circle cx="26" cy="27" r="4" fill="#2c2c2c"/>
+                            <circle cx="26" cy="27" r="1.5" fill="#fff"/>
+                            <circle cx="38" cy="27" r="4" fill="#2c2c2c"/>
+                            <circle cx="38" cy="27" r="1.5" fill="#fff"/>
+                            <ellipse cx="32" cy="36" rx="5" ry="3" fill="#b89878"/>
+                            <path d="M26 42Q32 46 38 42" stroke="#a88060" stroke-width="1.5" fill="none"/>
+                            <path d="M18 28Q14 24 16 28M46 28Q50 24 48 28" stroke="#c8b088" stroke-width="1" fill="none"/>
+                            <circle cx="14" cy="32" r="2.5" fill="#fff8e8" opacity="0.5" filter="url(#vanishGlow)"/>
+                            <circle cx="50" cy="30" r="2" fill="#fff8e8" opacity="0.4" filter="url(#vanishGlow)"/>
+                            <circle cx="32" cy="18" r="1.5" fill="#fff8e8" opacity="0.6" filter="url(#vanishGlow)"/>
+                            <circle cx="22" cy="40" r="1" fill="#fff8e8" opacity="0.3"/>
+                            <circle cx="42" cy="38" r="1.2" fill="#fff8e8" opacity="0.3"/>
+                            <path d="M28 20L26 16M36 20L38 16" stroke="#c8b088" stroke-width="1" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">球遁鸟</div>
+                    <div class="pet-name-en">Diricawl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">肥胖不会飞的鸟，能随心所欲地消失和重现来逃避危险。麻瓜以为已灭绝！</span>
+                        <span class="desc-en">Flightless bird, can vanish and reappear. Muggles think it's extinct!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">520</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('球遁鸟', 520, 'diricawl')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 猫狸子 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="kneazleGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#d8b8a0"/><stop offset="100%" style="stop-color:#a88870"/></radialGradient></defs>
+                            <ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#kneazleGrad)" stroke="#786058" stroke-width="1.5"/>
+                            <circle cx="26" cy="29" r="3.5" fill="#2c2c2c"/>
+                            <circle cx="26" cy="29" r="1.3" fill="#fff"/>
+                            <circle cx="38" cy="29" r="3.5" fill="#2c2c2c"/>
+                            <circle cx="38" cy="29" r="1.3" fill="#fff"/>
+                            <ellipse cx="32" cy="38" rx="4" ry="2.5" fill="#786058"/>
+                            <path d="M24 42Q28 46 32 42Q36 46 40 42" stroke="#786058" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="44" rx="2" ry="3" fill="#d8b8a0"/>
+                            <ellipse cx="38" cy="44" rx="2" ry="3" fill="#d8b8a0"/>
+                            <path d="M18 26Q14 22 16 18M46 26Q50 22 48 18" stroke="#c8a890" stroke-width="1" fill="none"/>
+                            <ellipse cx="18" cy="26" rx="3" ry="5" fill="#d8b8a0"/>
+                            <circle cx="18" cy="22" r="1.2" fill="#2c2c2c"/>
+                            <ellipse cx="46" cy="26" rx="3" ry="5" fill="#d8b8a0"/>
+                            <circle cx="46" cy="22" r="1.2" fill="#2c2c2c"/>
+                            <path d="M24 18Q26 14 32 12Q38 14 40 18" stroke="#786058" stroke-width="1.5" fill="none"/>
+                            <circle cx="14" cy="34" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="50" cy="32" r="1" fill="#ffd700" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">猫狸子</div>
+                    <div class="pet-name-en">Kneazle</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">聪明独立，能识别人品好坏。可带迷路的主人回家，是理想的魔法宠物！</span>
+                        <span class="desc-en">Smart and independent, detects character. Can guide lost owners home!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">550</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('猫狸子', 550, 'kneazle')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 绝音鸟 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="jobberknollGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#4da6ff"/><stop offset="50%" style="stop-color:#2a8aff"/><stop offset="100%" style="stop-color:#1a6cc8"/></radialGradient></defs>
+                            <!-- Body -->
+                            <ellipse cx="32" cy="30" rx="12" ry="10" fill="url(#jobberknollGrad)" stroke="#1a4a7a" stroke-width="1.5"/>
+                            <!-- Head -->
+                            <ellipse cx="32" cy="22" rx="6" ry="5" fill="url(#jobberknollGrad)" stroke="#1a4a7a" stroke-width="1"/>
+                            <!-- Beak -->
+                            <path d="M26 18L32 15L38 18" stroke="#1a4a7a" stroke-width="1.5" fill="none"/>
+                            <path d="M29 18L32 15.5L35 18" fill="#f0a060" stroke="#1a4a7a" stroke-width="0.8"/>
+                            <!-- Large Eyes -->
+                            <circle cx="28" cy="21" r="2.5" fill="#1a1a2e"/>
+                            <circle cx="28" cy="21" r="1" fill="#fff"/>
+                            <circle cx="36" cy="21" r="2.5" fill="#1a1a2e"/>
+                            <circle cx="36" cy="21" r="1" fill="#fff"/>
+                            <!-- Wings -->
+                            <path d="M20 26Q16 22 14 28Q16 34 22 32" fill="url(#jobberknollGrad)" stroke="#1a4a7a" stroke-width="1"/>
+                            <path d="M44 26Q48 22 50 28Q48 34 42 32" fill="url(#jobberknollGrad)" stroke="#1a4a7a" stroke-width="1"/>
+                            <!-- Tail -->
+                            <path d="M26 38Q32 44 38 38" stroke="#1a4a7a" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="32" cy="42" rx="3" ry="2" fill="#2a8aff"/>
+                            <!-- Small feathers -->
+                            <path d="M18 28L14 26M46 28L50 26M20 34L16 36M44 34L48 36" stroke="#4da6ff" stroke-width="0.8" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">绝音鸟</div>
+                    <div class="pet-name-en">Jobberknoll</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">蓝色小鸟，一生不鸣叫，死前会吐出它一生听过的所有声音。羽毛用于制作药剂！</span>
+                        <span class="desc-en">Blue bird, silent until death. Reproduces all sounds it heard!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">650</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('绝音鸟', 650, 'jobberknoll')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 飞马 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="wingedHorseGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#e8d8c0"/><stop offset="100%" style="stop-color:#c8a880"/></radialGradient></defs>
+                            <ellipse cx="32" cy="32" rx="20" ry="14" fill="url(#wingedHorseGrad)" stroke="#907050" stroke-width="1.5"/>
+                            <circle cx="20" cy="28" r="3" fill="#1a1a2e"/>
+                            <circle cx="20" cy="28" r="1.2" fill="#fff"/>
+                            <ellipse cx="14" cy="34" rx="5" ry="3" fill="#907050"/>
+                            <path d="M20 40Q24 44 28 40Q32 44 36 40Q40 44 44 40" stroke="#907050" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="24" cy="42" rx="2" ry="2.5" fill="#c8a880"/>
+                            <ellipse cx="32" cy="42" rx="2" ry="2.5" fill="#c8a880"/>
+                            <ellipse cx="40" cy="42" rx="2" ry="2.5" fill="#c8a880"/>
+                            <ellipse cx="10" cy="28" rx="4" ry="5" fill="#e8d8c0"/>
+                            <ellipse cx="54" cy="28" rx="4" ry="5" fill="#e8d8c0"/>
+                            <path d="M16 22Q12 16 18 14M48 22Q52 16 46 14" stroke="#c8a880" stroke-width="1" fill="none"/>
+                            <ellipse cx="18" cy="20" rx="3" ry="4" fill="#e8d8c0"/>
+                            <ellipse cx="46" cy="20" rx="3" ry="4" fill="#e8d8c0"/>
+                            <path d="M24 20L26 12M40 20L38 12" stroke="#907050" stroke-width="1.5" fill="none"/>
+                            <circle cx="26" cy="10" r="2" fill="#907050"/>
+                            <circle cx="38" cy="10" r="2" fill="#907050"/>
+                            <path d="M26 10Q30 6 34 10" stroke="#907050" stroke-width="1.5" fill="none"/>
+                            <circle cx="30" cy="8" r="3" fill="#e8d8c0"/>
+                            <circle cx="8" cy="24" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="56" cy="24" r="1" fill="#ffd700" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">飞马</div>
+                    <div class="pet-name-en">Winged Horse</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">带翅膀的骏马，能在空中翱翔。需要定期施展幻灭咒以防麻瓜发现。飞行利器！</span>
+                        <span class="desc-en">Magnificent winged horse. Needs Disillusionment Charm from muggles!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">780</span>
+                    </div>
+                    <div class="danger-level danger-xxxx">XXXX</div>
+                    <button class="buy-btn" onclick="buyPet('飞马', 780, 'wingedHorse')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 鹰头马身有翼兽 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="hippogriffGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#d8b898"/><stop offset="100%" style="stop-color:#a87858"/></radialGradient><radialGradient id="eagleGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8a870"/><stop offset="100%" style="stop-color:#805030"/></radialGradient></defs>
+                            <ellipse cx="32" cy="32" rx="18" ry="12" fill="url(#hippogriffGrad)" stroke="#684830" stroke-width="1.5"/>
+                            <ellipse cx="46" cy="24" rx="10" ry="8" fill="url(#eagleGrad)" stroke="#503820" stroke-width="1.5"/>
+                            <circle cx="50" cy="22" r="3" fill="#1a1a2e"/>
+                            <circle cx="50" cy="22" r="1.2" fill="#fff"/>
+                            <path d="M56 22Q60 20 62 24" stroke="#503820" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="18" cy="32" rx="4" ry="3" fill="#684830"/>
+                            <path d="M20 38Q24 42 28 38Q32 42 36 38Q40 42 44 38" stroke="#684830" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="24" cy="40" rx="2" ry="2.5" fill="#d8b898"/>
+                            <ellipse cx="32" cy="40" rx="2" ry="2.5" fill="#d8b898"/>
+                            <ellipse cx="40" cy="40" rx="2" ry="2.5" fill="#d8b898"/>
+                            <path d="M16 24Q12 18 18 16M48 24Q52 18 46 16" stroke="#c89878" stroke-width="1" fill="none"/>
+                            <ellipse cx="18" cy="22" rx="3" ry="4" fill="#c8a870"/>
+                            <ellipse cx="46" cy="22" rx="3" ry="4" fill="#c8a870"/>
+                            <path d="M22 20L24 14M42 20L40 14" stroke="#684830" stroke-width="1.5" fill="none"/>
+                            <circle cx="24" cy="12" r="2" fill="#684830"/>
+                            <circle cx="40" cy="12" r="2" fill="#684830"/>
+                            <path d="M24 12Q32 6 40 12" stroke="#684830" stroke-width="1.5" fill="none"/>
+                            <circle cx="32" cy="8" r="2.5" fill="#c8a870"/>
+                            <circle cx="10" cy="28" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="58" cy="30" r="1" fill="#ffd700" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">鹰头马身有翼兽</div>
+                    <div class="pet-name-en">Hippogriff</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">长着鹰头和马身的神奇生物。必须由专家驯服，接近时需要鞠躬致意！</span>
+                        <span class="desc-en">Proud creature with eagle head and horse body. Must bow to approach!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">850</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('鹰头马身有翼兽', 850, 'hippogriff')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 独角兽 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="unicornGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffffff"/><stop offset="100%" style="stop-color:#e8e8f8"/></radialGradient><linearGradient id="hornGrad" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" style="stop-color:#ffd700"/><stop offset="100%" style="stop-color:#fff8e0"/></linearGradient><filter id="unicornGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+                            <ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#unicornGrad)" stroke="#c8c8d8" stroke-width="1.5"/>
+                            <circle cx="24" cy="28" r="3" fill="#2c2c2c"/>
+                            <circle cx="24" cy="28" r="1.2" fill="#fff"/>
+                            <ellipse cx="18" cy="32" rx="4" ry="3" fill="#d8d8e8"/>
+                            <path d="M18 38Q22 42 26 38Q30 42 34 38Q38 42 42 38Q46 42 50 38" stroke="#c8c8d8" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="22" cy="40" rx="2" ry="2.5" fill="#fff"/>
+                            <ellipse cx="30" cy="40" rx="2" ry="2.5" fill="#fff"/>
+                            <ellipse cx="38" cy="40" rx="2" ry="2.5" fill="#fff"/>
+                            <ellipse cx="46" cy="40" rx="2" ry="2.5" fill="#fff"/>
+                            <ellipse cx="52" cy="36" rx="2" ry="2.5" fill="#fff"/>
+                            <ellipse cx="14" cy="26" rx="3" ry="4" fill="#e8e8f8"/>
+                            <ellipse cx="54" cy="26" rx="3" ry="4" fill="#e8e8f8"/>
+                            <path d="M18 20Q22 14 28 12Q34 14 38 20" stroke="#c8c8d8" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="28" cy="18" rx="2" ry="3" fill="#e8e8f8"/>
+                            <ellipse cx="38" cy="18" rx="2" ry="3" fill="#e8e8f8"/>
+                            <path d="M32 12L32 2" stroke="url(#hornGrad)" stroke-width="2.5" fill="none"/>
+                            <path d="M32 2L32 8L29 6M32 8L35 6" stroke="url(#hornGrad)" stroke-width="0.8" fill="none"/>
+                            <circle cx="32" cy="2" r="1.5" fill="#ffd700" filter="url(#unicornGlow)"/>
+                            <circle cx="8" cy="30" r="1" fill="#fff" opacity="0.6" filter="url(#unicornGlow)"/>
+                            <circle cx="56" cy="28" r="1" fill="#fff" opacity="0.5" filter="url(#unicornGlow)"/>
+                            <circle cx="32" cy="44" r="1" fill="#fff" opacity="0.4" filter="url(#unicornGlow)"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">独角兽</div>
+                    <div class="pet-name-en">Unicorn</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">极其漂亮的带角马形动物，象征着纯净。其角、血液和毛都有很强的魔法功效！</span>
+                        <span class="desc-en">Beautiful horned horse, symbol of purity. Magical horn, blood, and hair!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">950</span>
+                    </div>
+                    <div class="danger-level danger-xxxx">XXXX</div>
+                    <button class="buy-btn" onclick="buyPet('独角兽', 950, 'unicorn')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 凤凰 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="phoenixGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ff6b35"/><stop offset="50%" style="stop-color:#e84020"/><stop offset="100%" style="stop-color:#c02010"/></radialGradient><filter id="fireGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+                            <ellipse cx="32" cy="30" rx="16" ry="12" fill="url(#phoenixGrad)" stroke="#801008" stroke-width="1.5"/>
+                            <circle cx="26" cy="27" r="3" fill="#ffd700"/>
+                            <circle cx="26" cy="27" r="1.5" fill="#fff"/>
+                            <circle cx="38" cy="27" r="3" fill="#ffd700"/>
+                            <circle cx="38" cy="27" r="1.5" fill="#fff"/>
+                            <ellipse cx="32" cy="36" rx="4" ry="2.5" fill="#a01008"/>
+                            <path d="M24 42Q32 48 40 42" stroke="#801008" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="28" cy="44" rx="2" ry="3" fill="#e84020"/>
+                            <ellipse cx="36" cy="44" rx="2" ry="3" fill="#e84020"/>
+                            <path d="M18 24Q14 16 20 14M46 24Q50 16 44 14" stroke="#ff6b35" stroke-width="1" fill="none"/>
+                            <ellipse cx="18" cy="22" rx="4" ry="6" fill="url(#phoenixGrad)"/>
+                            <ellipse cx="46" cy="22" rx="4" ry="6" fill="url(#phoenixGrad)"/>
+                            <path d="M22 18Q26 10 32 8Q38 10 42 18" stroke="#ff6b35" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="32" cy="14" rx="4" ry="5" fill="#ff6b35"/>
+                            <path d="M30 8L28 4M34 8L36 4" stroke="#ffd700" stroke-width="1" fill="none"/>
+                            <circle cx="32" cy="4" r="2" fill="#ffd700" filter="url(#fireGlow)"/>
+                            <circle cx="32" cy="4" r="1" fill="#fff"/>
+                            <circle cx="12" cy="30" r="2" fill="#ff6b35" opacity="0.7" filter="url(#fireGlow)"/>
+                            <circle cx="52" cy="28" r="2" fill="#ff6b35" opacity="0.6" filter="url(#fireGlow)"/>
+                            <circle cx="20" cy="14" r="1.5" fill="#ffd700" opacity="0.6" filter="url(#fireGlow)"/>
+                            <circle cx="44" cy="14" r="1.5" fill="#ffd700" opacity="0.6" filter="url(#fireGlow)"/>
+                            <circle cx="32" cy="50" r="1.5" fill="#ff6b35" opacity="0.5" filter="url(#fireGlow)"/>
+                            <circle cx="24" cy="52" r="1" fill="#ff6b35" opacity="0.4"/>
+                            <circle cx="40" cy="52" r="1" fill="#ff6b35" opacity="0.4"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">凤凰</div>
+                    <div class="pet-name-en">Phoenix</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">华贵的鲜红色鸟，能浴火重生。歌声具有魔力，眼泪有极强治疗功效。极其稀有！</span>
+                        <span class="desc-en">Magnificent firebird, reborn from flames. Magical song, healing tears. Rare!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">1000</span>
+                    </div>
+                    <div class="danger-level danger-xxxx">XXXX</div>
+                    <button class="buy-btn" onclick="buyPet('凤凰', 1000, 'phoenix')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 雪鸮 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="snowyOwlGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffffff"/><stop offset="100%" style="stop-color:#d8e8f0"/></radialGradient></defs>
+                            <ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#snowyOwlGrad)" stroke="#a0b8c8" stroke-width="1.5"/>
+                            <circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/>
+                            <circle cx="26" cy="27" r="1.3" fill="#ffd700"/>
+                            <circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/>
+                            <circle cx="38" cy="27" r="1.3" fill="#ffd700"/>
+                            <ellipse cx="32" cy="36" rx="4" ry="2.5" fill="#c8d8e8"/>
+                            <path d="M26 42Q32 46 38 42" stroke="#a0b8c8" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="28" cy="44" rx="2" ry="3" fill="#fff"/>
+                            <ellipse cx="36" cy="44" rx="2" ry="3" fill="#fff"/>
+                            <path d="M18 24Q14 18 18 14M46 24Q50 18 46 14" stroke="#e8f0f8" stroke-width="1" fill="none"/>
+                            <ellipse cx="18" cy="22" rx="3" ry="5" fill="url(#snowyOwlGrad)"/>
+                            <ellipse cx="46" cy="22" rx="3" ry="5" fill="url(#snowyOwlGrad)"/>
+                            <circle cx="14" cy="28" r="1" fill="#ffd700" opacity="0.6"/>
+                            <circle cx="50" cy="26" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="24" cy="16" r="1" fill="#fff" opacity="0.5"/>
+                            <circle cx="40" cy="16" r="1" fill="#fff" opacity="0.5"/>
+                            <circle cx="32" cy="48" r="1" fill="#fff" opacity="0.4"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">雪鸮</div>
+                    <div class="pet-name-en">Snowy Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">优雅的白色猫头鹰，是巫师寄送信件的最佳伙伴。聪明忠诚，飞行速度快！</span>
+                        <span class="desc-en">Elegant white owl, best for letter delivery. Smart, loyal and fast!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">400</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('雪鸮', 400, 'snowyOwl')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 褐林鸮 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="brownOwlGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#9a7860"/><stop offset="100%" style="stop-color:#6a4830"/></radialGradient></defs>
+                            <ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#brownOwlGrad)" stroke="#402818" stroke-width="1.5"/>
+                            <circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/>
+                            <circle cx="26" cy="27" r="1.3" fill="#ffd700"/>
+                            <circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/>
+                            <circle cx="38" cy="27" r="1.3" fill="#ffd700"/>
+                            <ellipse cx="32" cy="36" rx="4" ry="2.5" fill="#503820"/>
+                            <path d="M26 42Q32 46 38 42" stroke="#402818" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="28" cy="44" rx="2" ry="3" fill="#9a7860"/>
+                            <ellipse cx="36" cy="44" rx="2" ry="3" fill="#9a7860"/>
+                            <path d="M18 24Q14 18 18 14M46 24Q50 18 46 14" stroke="#805840" stroke-width="1" fill="none"/>
+                            <ellipse cx="18" cy="22" rx="3" ry="5" fill="url(#brownOwlGrad)"/>
+                            <ellipse cx="46" cy="22" rx="3" ry="5" fill="url(#brownOwlGrad)"/>
+                            <circle cx="14" cy="28" r="1" fill="#ffd700" opacity="0.6"/>
+                            <circle cx="50" cy="26" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="24" cy="16" r="1" fill="#a88870" opacity="0.4"/>
+                            <circle cx="40" cy="16" r="1" fill="#a88870" opacity="0.4"/>
+                            <circle cx="32" cy="48" r="1" fill="#a88870" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">褐林鸮</div>
+                    <div class="pet-name-en">Brown Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">深棕色羽毛的猫头鹰，夜视能力极佳。是霍格沃茨学生最常用的信使之一！</span>
+                        <span class="desc-en">Dark brown feathers, excellent night vision. Popular student messenger!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">320</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('褐林鸮', 320, 'brownOwl')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 鸣角鸮 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="screechOwlGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#b8a090"/><stop offset="100%" style="stop-color:#806850"/></radialGradient></defs>
+                            <ellipse cx="32" cy="30" rx="14" ry="12" fill="url(#screechOwlGrad)" stroke="#504030" stroke-width="1.5"/>
+                            <circle cx="27" cy="27" r="3" fill="#1a1a2e"/>
+                            <circle cx="27" cy="27" r="1.1" fill="#ffd700"/>
+                            <circle cx="37" cy="27" r="3" fill="#1a1a2e"/>
+                            <circle cx="37" cy="27" r="1.1" fill="#ffd700"/>
+                            <ellipse cx="32" cy="36" rx="3.5" ry="2" fill="#605040"/>
+                            <path d="M26 42Q32 46 38 42" stroke="#504030" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="28" cy="44" rx="1.8" ry="2.5" fill="#b8a090"/>
+                            <ellipse cx="36" cy="44" rx="1.8" ry="2.5" fill="#b8a090"/>
+                            <path d="M20 24Q16 18 20 14M44 24Q48 18 44 14" stroke="#907860" stroke-width="1" fill="none"/>
+                            <ellipse cx="20" cy="22" rx="2.5" ry="4" fill="url(#screechOwlGrad)"/>
+                            <ellipse cx="44" cy="22" rx="2.5" ry="4" fill="url(#screechOwlGrad)"/>
+                            <circle cx="16" cy="28" r="0.9" fill="#ffd700" opacity="0.6"/>
+                            <circle cx="48" cy="26" r="0.9" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="24" cy="16" r="0.8" fill="#a08070" opacity="0.4"/>
+                            <circle cx="40" cy="16" r="0.8" fill="#a08070" opacity="0.4"/>
+                            <circle cx="32" cy="48" r="0.8" fill="#a08070" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">鸣角鸮</div>
+                    <div class="pet-name-en">Screech Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">体型小巧的猫头鹰，发出独特的鸣叫声。虽然不大但非常勤劳可靠的信使！</span>
+                        <span class="desc-en">Small owl with unique call. Small but hardworking and reliable messenger!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">280</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('鸣角鸮', 280, 'screechOwl')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 灰林鸮 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="tawnyOwlGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8b8a8"/><stop offset="100%" style="stop-color:#907860"/></radialGradient></defs>
+                            <ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#tawnyOwlGrad)" stroke="#604830" stroke-width="1.5"/>
+                            <circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/>
+                            <circle cx="26" cy="27" r="1.3" fill="#ffd700"/>
+                            <circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/>
+                            <circle cx="38" cy="27" r="1.3" fill="#ffd700"/>
+                            <ellipse cx="32" cy="36" rx="4" ry="2.5" fill="#706050"/>
+                            <path d="M26 42Q32 46 38 42" stroke="#604830" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="28" cy="44" rx="2" ry="3" fill="#c8b8a8"/>
+                            <ellipse cx="36" cy="44" rx="2" ry="3" fill="#c8b8a8"/>
+                            <path d="M18 24Q14 18 18 14M46 24Q50 18 46 14" stroke="#a88870" stroke-width="1" fill="none"/>
+                            <ellipse cx="18" cy="22" rx="3" ry="5" fill="url(#tawnyOwlGrad)"/>
+                            <ellipse cx="46" cy="22" rx="3" ry="5" fill="url(#tawnyOwlGrad)"/>
+                            <circle cx="14" cy="28" r="1" fill="#ffd700" opacity="0.6"/>
+                            <circle cx="50" cy="26" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="24" cy="16" r="1" fill="#b8a080" opacity="0.4"/>
+                            <circle cx="40" cy="16" r="1" fill="#b8a080" opacity="0.4"/>
+                            <circle cx="32" cy="48" r="1" fill="#b8a080" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">灰林鸮</div>
+                    <div class="pet-name-en">Tawny Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">温顺的灰棕色猫头鹰，性格友善。非常适合初次养宠物的年轻巫师！</span>
+                        <span class="desc-en">Gentle grey-brown owl, friendly nature. Perfect for first-time pet owners!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">300</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('灰林鸮', 300, 'tawnyOwl')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 谷仓猫头鹰 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="barnOwlGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#e8d8c8"/><stop offset="100%" style="stop-color:#b89878"/></radialGradient></defs>
+                            <ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#barnOwlGrad)" stroke="#806040" stroke-width="1.5"/>
+                            <circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/>
+                            <circle cx="26" cy="27" r="1.3" fill="#ffd700"/>
+                            <circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/>
+                            <circle cx="38" cy="27" r="1.3" fill="#ffd700"/>
+                            <ellipse cx="32" cy="36" rx="4" ry="2.5" fill="#907050"/>
+                            <path d="M26 42Q32 46 38 42" stroke="#806040" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="28" cy="44" rx="2" ry="3" fill="#e8d8c8"/>
+                            <ellipse cx="36" cy="44" rx="2" ry="3" fill="#e8d8c8"/>
+                            <path d="M16 26Q12 20 16 14M48 26Q52 20 48 14" stroke="#c8a880" stroke-width="1" fill="none"/>
+                            <ellipse cx="16" cy="24" rx="3" ry="5" fill="url(#barnOwlGrad)"/>
+                            <ellipse cx="48" cy="24" rx="3" ry="5" fill="url(#barnOwlGrad)"/>
+                            <circle cx="12" cy="30" r="1" fill="#ffd700" opacity="0.6"/>
+                            <circle cx="52" cy="28" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="24" cy="16" r="1" fill="#d8c8a8" opacity="0.4"/>
+                            <circle cx="40" cy="16" r="1" fill="#d8c8a8" opacity="0.4"/>
+                            <circle cx="32" cy="48" r="1" fill="#d8c8a8" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">谷仓猫头鹰</div>
+                    <div class="pet-name-en">Barn Owl</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">心形面容的独特猫头鹰，飞行时悄无声息。是优秀的夜间信使和守护者！</span>
+                        <span class="desc-en">Heart-shaped face, silent flight. Excellent night messenger and guardian!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">360</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('谷仓猫头鹰', 360, 'barnOwl')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 克鲁克香克 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="crookshanksGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#f0b8a0"/><stop offset="100%" style="stop-color:#c88860"/></radialGradient></defs>
+                            <ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#crookshanksGrad)" stroke="#805030" stroke-width="1.5"/>
+                            <circle cx="25" cy="29" r="3.5" fill="#2c2c2c"/>
+                            <circle cx="25" cy="29" r="1.3" fill="#ffd700"/>
+                            <circle cx="39" cy="29" r="3.5" fill="#2c2c2c"/>
+                            <circle cx="39" cy="29" r="1.3" fill="#ffd700"/>
+                            <ellipse cx="32" cy="38" rx="4" ry="2.5" fill="#805030"/>
+                            <path d="M24 42Q28 46 32 42Q36 46 40 42" stroke="#805030" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="44" rx="2" ry="3" fill="#f0b8a0"/>
+                            <ellipse cx="38" cy="44" rx="2" ry="3" fill="#f0b8a0"/>
+                            <path d="M16 24Q12 18 16 14M48 24Q52 18 48 14" stroke="#d89868" stroke-width="1" fill="none"/>
+                            <ellipse cx="16" cy="22" rx="3" ry="5" fill="url(#crookshanksGrad)"/>
+                            <ellipse cx="48" cy="22" rx="3" ry="5" fill="url(#crookshanksGrad)"/>
+                            <circle cx="16" cy="18" r="1.2" fill="#2c2c2c"/>
+                            <circle cx="48" cy="18" r="1.2" fill="#2c2c2c"/>
+                            <path d="M22 18Q26 14 32 12Q38 14 42 18" stroke="#805030" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="16" rx="2" ry="3" fill="#f0b8a0"/>
+                            <ellipse cx="38" cy="16" rx="2" ry="3" fill="#f0b8a0"/>
+                            <circle cx="14" cy="34" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="50" cy="32" r="1" fill="#ffd700" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">克鲁克香克</div>
+                    <div class="pet-name-en">Crookshanks</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">混血猫猫狸子，聪明绝顶，能识破伪装。是最聪明和最忠诚的伙伴！</span>
+                        <span class="desc-en">Half-Kneazle, incredibly smart. Sees through disguises, loyal companion!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">600</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('克鲁克香克', 600, 'crookshanks')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 黑猫 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="blackCatGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#2c2c3a"/><stop offset="100%" style="stop-color:#1a1a28"/></radialGradient><filter id="blackGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+                            <ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#blackCatGrad)" stroke="#0a0a14" stroke-width="1.5"/>
+                            <circle cx="26" cy="29" r="3.5" fill="#ffd700"/>
+                            <circle cx="26" cy="29" r="1.3" fill="#fff"/>
+                            <circle cx="38" cy="29" r="3.5" fill="#ffd700"/>
+                            <circle cx="38" cy="29" r="1.3" fill="#fff"/>
+                            <ellipse cx="32" cy="38" rx="4" ry="2.5" fill="#1a1a28"/>
+                            <path d="M24 42Q28 46 32 42Q36 46 40 42" stroke="#0a0a14" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="44" rx="2" ry="3" fill="#2c2c3a"/>
+                            <ellipse cx="38" cy="44" rx="2" ry="3" fill="#2c2c3a"/>
+                            <path d="M16 24Q12 18 16 14M48 24Q52 18 48 14" stroke="#3a3a4a" stroke-width="1" fill="none"/>
+                            <ellipse cx="16" cy="22" rx="3" ry="5" fill="url(#blackCatGrad)"/>
+                            <ellipse cx="48" cy="22" rx="3" ry="5" fill="url(#blackCatGrad)"/>
+                            <circle cx="16" cy="18" r="1.2" fill="#ffd700" filter="url(#blackGlow)"/>
+                            <circle cx="48" cy="18" r="1.2" fill="#ffd700" filter="url(#blackGlow)"/>
+                            <path d="M22 18Q26 14 32 12Q38 14 42 18" stroke="#0a0a14" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="16" rx="2" ry="3" fill="#2c2c3a"/>
+                            <ellipse cx="38" cy="16" rx="2" ry="3" fill="#2c2c3a"/>
+                            <circle cx="14" cy="34" r="1" fill="#fff" opacity="0.3" filter="url(#blackGlow)"/>
+                            <circle cx="50" cy="32" r="1" fill="#fff" opacity="0.2" filter="url(#blackGlow)"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">黑猫</div>
+                    <div class="pet-name-en">Black Cat</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">优雅的黑色猫咪，神秘而迷人。许多巫师的最爱，象征着魔法与直觉！</span>
+                        <span class="desc-en">Elegant black cat, mysterious and charming. Favorite of many wizards!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">250</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('黑猫', 250, 'blackCat')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 斑猫 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="tabbyCatGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#e8c8a8"/><stop offset="100%" style="stop-color:#a88060"/></radialGradient></defs>
+                            <ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#tabbyCatGrad)" stroke="#684830" stroke-width="1.5"/>
+                            <path d="M18 28L22 26M46 28L42 26M24 38L28 40M40 38L36 40" stroke="#785040" stroke-width="0.8" fill="none"/>
+                            <circle cx="26" cy="29" r="3.5" fill="#2c2c2c"/>
+                            <circle cx="26" cy="29" r="1.3" fill="#ffd700"/>
+                            <circle cx="38" cy="29" r="3.5" fill="#2c2c2c"/>
+                            <circle cx="38" cy="29" r="1.3" fill="#ffd700"/>
+                            <ellipse cx="32" cy="38" rx="4" ry="2.5" fill="#785040"/>
+                            <path d="M24 42Q28 46 32 42Q36 46 40 42" stroke="#684830" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="44" rx="2" ry="3" fill="#c8a080"/>
+                            <ellipse cx="38" cy="44" rx="2" ry="3" fill="#c8a080"/>
+                            <path d="M16 24Q12 18 16 14M48 24Q52 18 48 14" stroke="#c89878" stroke-width="1" fill="none"/>
+                            <ellipse cx="16" cy="22" rx="3" ry="5" fill="url(#tabbyCatGrad)"/>
+                            <ellipse cx="48" cy="22" rx="3" ry="5" fill="url(#tabbyCatGrad)"/>
+                            <circle cx="16" cy="18" r="1.2" fill="#2c2c2c"/>
+                            <circle cx="48" cy="18" r="1.2" fill="#2c2c2c"/>
+                            <path d="M22 18Q26 14 32 12Q38 14 42 18" stroke="#684830" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="16" rx="2" ry="3" fill="#e8c8a8"/>
+                            <ellipse cx="38" cy="16" rx="2" ry="3" fill="#e8c8a8"/>
+                            <circle cx="14" cy="34" r="1" fill="#ffd700" opacity="0.5"/>
+                            <circle cx="50" cy="32" r="1" fill="#ffd700" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">斑猫</div>
+                    <div class="pet-name-en">Tabby Cat</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">带有美丽条纹的猫咪，性格温顺亲人。是经典的巫师宠物，备受青睐！</span>
+                        <span class="desc-en">Beautiful striped cat, gentle and affectionate. Classic wizard pet!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">220</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('斑猫', 220, 'tabbyCat')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 普通蟾蜍 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="commonToadGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#78a868"/><stop offset="100%" style="stop-color:#507850"/></radialGradient></defs>
+                            <ellipse cx="32" cy="34" rx="18" ry="12" fill="url(#commonToadGrad)" stroke="#305028" stroke-width="1.5"/>
+                            <circle cx="24" cy="30" r="4" fill="#1a2a1a"/>
+                            <circle cx="24" cy="30" r="1.5" fill="#ffd700"/>
+                            <circle cx="40" cy="30" r="4" fill="#1a2a1a"/>
+                            <circle cx="40" cy="30" r="1.5" fill="#ffd700"/>
+                            <ellipse cx="32" cy="40" rx="5" ry="3" fill="#406030"/>
+                            <path d="M22 44Q32 50 42 44" stroke="#305028" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="46" rx="3" ry="4" fill="url(#commonToadGrad)"/>
+                            <ellipse cx="38" cy="46" rx="3" ry="4" fill="url(#commonToadGrad)"/>
+                            <ellipse cx="14" cy="28" rx="5" ry="4" fill="url(#commonToadGrad)"/>
+                            <circle cx="14" cy="28" r="1.5" fill="#305028"/>
+                            <ellipse cx="50" cy="28" rx="5" ry="4" fill="url(#commonToadGrad)"/>
+                            <circle cx="50" cy="28" r="1.5" fill="#305028"/>
+                            <ellipse cx="32" cy="22" rx="6" ry="3" fill="#507850"/>
+                            <circle cx="12" cy="34" r="1" fill="#a8d898" opacity="0.5"/>
+                            <circle cx="52" cy="32" r="1" fill="#a8d898" opacity="0.4"/>
+                            <circle cx="32" cy="52" r="1" fill="#a8d898" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">普通蟾蜍</div>
+                    <div class="pet-name-en">Common Toad</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">传统的巫师宠物，虽然不如猫头鹰受欢迎，但依然有它的魅力。容易饲养！</span>
+                        <span class="desc-en">Traditional wizard pet, less popular than owls but charming. Easy to care!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">150</span>
+                    </div>
+                    <div class="danger-level danger-xx">XX</div>
+                    <button class="buy-btn" onclick="buyPet('普通蟾蜍', 150, 'commonToad')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+
+                <!-- 毛蟾蜍 -->
+                <div class="pet-card">
+                    <div class="pet-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs><radialGradient id="hairyToadGrad" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8b0a0"/><stop offset="100%" style="stop-color:#907860"/></radialGradient></defs>
+                            <ellipse cx="32" cy="34" rx="18" ry="12" fill="url(#hairyToadGrad)" stroke="#584830" stroke-width="1.5"/>
+                            <path d="M18 30L22 28M46 30L42 28M24 42L28 44M40 42L36 44M28 24L26 20M36 24L38 20" stroke="#a08870" stroke-width="0.6" fill="none"/>
+                            <circle cx="24" cy="30" r="4" fill="#1a2a1a"/>
+                            <circle cx="24" cy="30" r="1.5" fill="#ffd700"/>
+                            <circle cx="40" cy="30" r="4" fill="#1a2a1a"/>
+                            <circle cx="40" cy="30" r="1.5" fill="#ffd700"/>
+                            <ellipse cx="32" cy="40" rx="5" ry="3" fill="#584830"/>
+                            <path d="M22 44Q32 50 42 44" stroke="#584830" stroke-width="1.5" fill="none"/>
+                            <ellipse cx="26" cy="46" rx="3" ry="4" fill="url(#hairyToadGrad)"/>
+                            <ellipse cx="38" cy="46" rx="3" ry="4" fill="url(#hairyToadGrad)"/>
+                            <ellipse cx="14" cy="28" rx="5" ry="4" fill="url(#hairyToadGrad)"/>
+                            <circle cx="14" cy="28" r="1.5" fill="#584830"/>
+                            <ellipse cx="50" cy="28" rx="5" ry="4" fill="url(#hairyToadGrad)"/>
+                            <circle cx="50" cy="28" r="1.5" fill="#584830"/>
+                            <ellipse cx="32" cy="22" rx="6" ry="3" fill="#907860"/>
+                            <circle cx="12" cy="34" r="1" fill="#e8c8b8" opacity="0.5"/>
+                            <circle cx="52" cy="32" r="1" fill="#e8c8b8" opacity="0.4"/>
+                            <circle cx="32" cy="52" r="1" fill="#e8c8b8" opacity="0.3"/>
+                            <circle cx="24" cy="18" r="0.8" fill="#b8a090" opacity="0.4"/>
+                            <circle cx="40" cy="18" r="0.8" fill="#b8a090" opacity="0.4"/>
+                        </svg>
+                    </div>
+                    <div class="pet-name-zh">毛蟾蜍</div>
+                    <div class="pet-name-en">Hairy Toad</div>
+                    <div class="pet-description">
+                        <span class="desc-zh">长着柔软毛发的神奇蟾蜍，非常罕见。其毛发可用于制作某些魔药成分！</span>
+                        <span class="desc-en">Rare toad with soft fur. Its hair is used in certain potion ingredients!</span>
+                    </div>
+                    <div class="pet-price">
+                        <span class="price-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffd700" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 6V18M9 12h6"/>
+                            </svg>
+                        </span>
+                        <span class="price-amount">380</span>
+                    </div>
+                    <div class="danger-level danger-xxx">XXX</div>
+                    <button class="buy-btn" onclick="buyPet('毛蟾蜍', 380, 'hairyToad')">
+                        <span class="btn-zh">购买</span><span class="btn-en">Buy</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 购买消息 -->
+        <div class="purchase-message" id="purchaseMessage">
+            <div class="message-icon" id="messageIcon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#27ae60" stroke-width="2">
+                    <path d="M12 2l3.5 7h7l-2.5 4.5l4.5 7.5l-2.5 4.5l-7.5-7.5-2 5.5h7l2-5.5"/>
+                </svg>
+            </div>
+            <div class="message-title" id="messageTitle"></div>
+            <div class="message-text" id="messageText"></div>
+            <button class="close-purchase-btn" onclick="closePurchaseMessage()">
+                <span class="btn-zh">确定</span><span class="btn-en">OK</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="draggable-coin.js"></script>
+    <script>
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        function updateLanguage() {
+            // 使用更通用的选择器来捕获所有语言元素
+            const zhElements = document.querySelectorAll('[class*="-zh"]');
+            const enElements = document.querySelectorAll('[class*="-en"]');
+
+            if (currentLang === 'zh') {
+                zhElements.forEach(el => {
+                    const hasEnClass = Array.from(el.classList).some(cls => cls.endsWith('-en'));
+                    if (!hasEnClass) {
+                        el.style.display = '';
+                    }
+                });
+                enElements.forEach(el => el.style.display = 'none');
+            } else {
+                zhElements.forEach(el => el.style.display = 'none');
+                enElements.forEach(el => {
+                    const hasZhClass = Array.from(el.classList).some(cls => cls.endsWith('-zh'));
+                    if (!hasZhClass) {
+                        el.style.display = '';
+                    }
+                });
+            }
+        }
+
+        // 初始化金币显示
+        function initCoinDisplay() {
+            const savedCoins = localStorage.getItem('hogwartsCoins');
+            const coins = savedCoins ? parseInt(savedCoins) : 0;
+            document.getElementById('coinAmount').textContent = coins;
+        }
+
+        // 更新金币显示
+        function updateCoinDisplay(newAmount) {
+            localStorage.setItem('hogwartsCoins', newAmount.toString());
+            document.getElementById('coinAmount').textContent = newAmount;
+        }
+
+        // 获取已拥有的宠物
+        function getOwnedPets() {
+            const saved = localStorage.getItem('ownedPets');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        // 宠物 SVG 图标映射
+        const petIcons = {
+            'puffskein': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="puff" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffeec8"/><stop offset="100%" style="stop-color:#f5d0a0"/></radialGradient></defs><ellipse cx="32" cy="32" rx="22" ry="20" fill="url(#puff)" stroke="#d4b880" stroke-width="1.5"/><circle cx="26" cy="28" r="4" fill="#2c2c2c"/><circle cx="26" cy="28" r="1.5" fill="#fff"/><circle cx="38" cy="28" r="4" fill="#2c2c2c"/><circle cx="38" cy="28" r="1.5" fill="#fff"/><ellipse cx="32" cy="38" rx="3" ry="2" fill="#e8c890"/></svg>',
+            'mooncalf': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="moon" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8d8e8"/><stop offset="100%" style="stop-color:#a0b8c8"/></radialGradient></defs><ellipse cx="32" cy="30" rx="18" ry="16" fill="url(#moon)" stroke="#7890a0" stroke-width="1.5"/><circle cx="25" cy="26" r="4" fill="#1a1a2e"/><circle cx="25" cy="26" r="1.5" fill="#fff"/><circle cx="39" cy="26" r="4" fill="#1a1a2e"/><circle cx="39" cy="26" r="1.5" fill="#fff"/></svg>',
+            'bowtruckle': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="bow" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8e8c8"/><stop offset="100%" style="stop-color:#90c890"/></radialGradient></defs><ellipse cx="32" cy="28" rx="8" ry="10" fill="url(#bow)" stroke="#68a868" stroke-width="1"/><circle cx="29" cy="26" r="2.5" fill="#1a3a1a"/><circle cx="29" cy="26" r="1" fill="#fff"/><circle cx="35" cy="26" r="2.5" fill="#1a3a1a"/><circle cx="35" cy="26" r="1" fill="#fff"/></svg>',
+            'crup': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="cr" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#d8a868"/><stop offset="100%" style="stop-color:#a87040"/></radialGradient></defs><ellipse cx="28" cy="32" rx="16" ry="12" fill="url(#cr)" stroke="#785030" stroke-width="1.5"/><circle cx="23" cy="29" r="3" fill="#2c2c2c"/><circle cx="23" cy="29" r="1.2" fill="#fff"/><circle cx="33" cy="29" r="3" fill="#2c2c2c"/><circle cx="33" cy="29" r="1.2" fill="#fff"/></svg>',
+            'diricawl': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="dir" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#e8d8a8"/><stop offset="100%" style="stop-color:#c8b088"/></radialGradient></defs><ellipse cx="32" cy="30" rx="18" ry="14" fill="url(#dir)" stroke="#a88060" stroke-width="1"/><circle cx="26" cy="27" r="4" fill="#2c2c2c"/><circle cx="26" cy="27" r="1.5" fill="#fff"/><circle cx="38" cy="27" r="4" fill="#2c2c2c"/><circle cx="38" cy="27" r="1.5" fill="#fff"/></svg>',
+            'kneazle': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="kne" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#d8b8a0"/><stop offset="100%" style="stop-color:#a88870"/></radialGradient></defs><ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#kne)" stroke="#786058" stroke-width="1.5"/><circle cx="26" cy="29" r="3.5" fill="#2c2c2c"/><circle cx="26" cy="29" r="1.3" fill="#fff"/><circle cx="38" cy="29" r="3.5" fill="#2c2c2c"/><circle cx="38" cy="29" r="1.3" fill="#fff"/></svg>',
+            'jobberknoll': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="jobb" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#90b8f0"/><stop offset="100%" style="stop-color:#5088c8"/></radialGradient></defs><ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#jobb)" stroke="#306898" stroke-width="1.5"/><circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="26" cy="27" r="1.3" fill="#fff"/><circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="38" cy="27" r="1.3" fill="#fff"/></svg>',
+            'wingedHorse': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="wing" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#e8d8c0"/><stop offset="100%" style="stop-color:#c8a880"/></radialGradient></defs><ellipse cx="32" cy="32" rx="20" ry="14" fill="url(#wing)" stroke="#907050" stroke-width="1.5"/><circle cx="20" cy="28" r="3" fill="#1a1a2e"/><circle cx="20" cy="28" r="1.2" fill="#fff"/></svg>',
+            'hippogriff': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="hip" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#d8b898"/><stop offset="100%" style="stop-color:#a87858"/></radialGradient><radialGradient id="ea" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8a870"/><stop offset="100%" style="stop-color:#805030"/></radialGradient></defs><ellipse cx="32" cy="32" rx="18" ry="12" fill="url(#hip)" stroke="#684830" stroke-width="1.5"/><ellipse cx="46" cy="24" rx="10" ry="8" fill="url(#ea)" stroke="#503820" stroke-width="1.5"/><circle cx="50" cy="22" r="3" fill="#1a1a2e"/><circle cx="50" cy="22" r="1.2" fill="#fff"/></svg>',
+            'unicorn': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="uni" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffffff"/><stop offset="100%" style="stop-color:#e8e8f8"/></radialGradient><linearGradient id="horn" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" style="stop-color:#ffd700"/><stop offset="100%" style="stop-color:#fff8e0"/></linearGradient></defs><ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#uni)" stroke="#c8c8d8" stroke-width="1.5"/><circle cx="24" cy="28" r="3" fill="#2c2c2c"/><circle cx="24" cy="28" r="1.2" fill="#fff"/><path d="M32 12L32 2" stroke="url(#horn)" stroke-width="2.5" fill="none"/><circle cx="32" cy="2" r="1.5" fill="#ffd700"/></svg>',
+            'phoenix': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="pho" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ff6b35"/><stop offset="50%" style="stop-color:#e84020"/><stop offset="100%" style="stop-color:#c02010"/></radialGradient></defs><ellipse cx="32" cy="30" rx="16" ry="12" fill="url(#pho)" stroke="#801008" stroke-width="1.5"/><circle cx="26" cy="27" r="3" fill="#ffd700"/><circle cx="26" cy="27" r="1.5" fill="#fff"/><circle cx="38" cy="27" r="3" fill="#ffd700"/><circle cx="38" cy="27" r="1.5" fill="#fff"/></svg>',
+            'snowyOwl': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="snow" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#ffffff"/><stop offset="100%" style="stop-color:#d8e8f0"/></radialGradient></defs><ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#snow)" stroke="#a0b8c8" stroke-width="1.5"/><circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="26" cy="27" r="1.3" fill="#ffd700"/><circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="38" cy="27" r="1.3" fill="#ffd700"/></svg>',
+            'brownOwl': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="brown" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#9a7860"/><stop offset="100%" style="stop-color:#6a4830"/></radialGradient></defs><ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#brown)" stroke="#402818" stroke-width="1.5"/><circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="26" cy="27" r="1.3" fill="#ffd700"/><circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="38" cy="27" r="1.3" fill="#ffd700"/></svg>',
+            'screechOwl': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="screech" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#b8a090"/><stop offset="100%" style="stop-color:#806850"/></radialGradient></defs><ellipse cx="32" cy="30" rx="14" ry="12" fill="url(#screech)" stroke="#504030" stroke-width="1.5"/><circle cx="27" cy="27" r="3" fill="#1a1a2e"/><circle cx="27" cy="27" r="1.1" fill="#ffd700"/><circle cx="37" cy="27" r="3" fill="#1a1a2e"/><circle cx="37" cy="27" r="1.1" fill="#ffd700"/></svg>',
+            'tawnyOwl': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="tawny" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8b8a8"/><stop offset="100%" style="stop-color:#907860"/></radialGradient></defs><ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#tawny)" stroke="#604830" stroke-width="1.5"/><circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="26" cy="27" r="1.3" fill="#ffd700"/><circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="38" cy="27" r="1.3" fill="#ffd700"/></svg>',
+            'barnOwl': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="barn" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#e8d8c8"/><stop offset="100%" style="stop-color:#b89878"/></radialGradient></defs><ellipse cx="32" cy="30" rx="16" ry="14" fill="url(#barn)" stroke="#806040" stroke-width="1.5"/><circle cx="26" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="26" cy="27" r="1.3" fill="#ffd700"/><circle cx="38" cy="27" r="3.5" fill="#1a1a2e"/><circle cx="38" cy="27" r="1.3" fill="#ffd700"/></svg>',
+            'crookshanks': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="crook" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#f0b8a0"/><stop offset="100%" style="stop-color:#c88860"/></radialGradient></defs><ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#crook)" stroke="#805030" stroke-width="1.5"/><circle cx="25" cy="29" r="3.5" fill="#2c2c2c"/><circle cx="25" cy="29" r="1.3" fill="#ffd700"/><circle cx="39" cy="29" r="3.5" fill="#2c2c2c"/><circle cx="39" cy="29" r="1.3" fill="#ffd700"/></svg>',
+            'blackCat': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="black" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#2c2c3a"/><stop offset="100%" style="stop-color:#1a1a28"/></radialGradient></defs><ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#black)" stroke="#0a0a14" stroke-width="1.5"/><circle cx="26" cy="29" r="3.5" fill="#ffd700"/><circle cx="26" cy="29" r="1.3" fill="#fff"/><circle cx="38" cy="29" r="3.5" fill="#ffd700"/><circle cx="38" cy="29" r="1.3" fill="#fff"/></svg>',
+            'tabbyCat': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="tabby" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#e8c8a8"/><stop offset="100%" style="stop-color:#a88060"/></radialGradient></defs><ellipse cx="32" cy="32" rx="18" ry="14" fill="url(#tabby)" stroke="#684830" stroke-width="1.5"/><circle cx="26" cy="29" r="3.5" fill="#2c2c2c"/><circle cx="26" cy="29" r="1.3" fill="#ffd700"/><circle cx="38" cy="29" r="3.5" fill="#2c2c2c"/><circle cx="38" cy="29" r="1.3" fill="#ffd700"/></svg>',
+            'commonToad': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="comm" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#78a868"/><stop offset="100%" style="stop-color:#507850"/></radialGradient></defs><ellipse cx="32" cy="34" rx="18" ry="12" fill="url(#comm)" stroke="#305028" stroke-width="1.5"/><circle cx="24" cy="30" r="4" fill="#1a2a1a"/><circle cx="24" cy="30" r="1.5" fill="#ffd700"/><circle cx="40" cy="30" r="4" fill="#1a2a1a"/><circle cx="40" cy="30" r="1.5" fill="#ffd700"/></svg>',
+            'hairyToad': '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="hairy" cx="40%" cy="40%"><stop offset="0%" style="stop-color:#c8b0a0"/><stop offset="100%" style="stop-color:#907860"/></radialGradient></defs><ellipse cx="32" cy="34" rx="18" ry="12" fill="url(#hairy)" stroke="#584830" stroke-width="1.5"/><circle cx="24" cy="30" r="4" fill="#1a2a1a"/><circle cx="24" cy="30" r="1.5" fill="#ffd700"/><circle cx="40" cy="30" r="4" fill="#1a2a1a"/><circle cx="40" cy="30" r="1.5" fill="#ffd700"/></svg>'
+        };
+
+        // 更新已拥有宠物显示
+        function updateOwnedPetsDisplay() {
+            const ownedPets = getOwnedPets();
+            const container = document.getElementById('ownedPetsList');
+
+            if (ownedPets.length === 0) {
+                container.innerHTML = `
+                    <p style="color: #888; font-style: italic;">
+                        <span class="text-zh">暂无宠物</span>
+                        <span class="text-en">No pets yet</span>
+                    </p>`;
+                return;
+            }
+
+            container.innerHTML = ownedPets.map(pet => `
+                <div class="owned-pet-item">
+                    <span class="owned-pet-emoji">${petIcons[pet.petType] || ''}</span>
+                    <span class="owned-pet-name">${pet.name}</span>
+                </div>
+            `).join('');
+        }
+
+        // 购买宠物
+        function buyPet(petName, price, petType) {
+            // 检查精力值（精力值小于10不准购买）
+            const playerEnergy = parseInt(localStorage.getItem('playerEnergy') || '100');
+            if (playerEnergy < 10) {
+                showMessage('error',
+                    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e74c3c" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 3l-3-3"/></svg>',
+                    currentLang === 'zh' ? '精力值不足！' : 'Not Enough Energy!',
+                    currentLang === 'zh' ? '你的精力值太低了，去三把扫帚休息一下吧！' : 'Your energy is too low! Rest at the Three Broomsticks!'
+                );
+                return;
+            }
+
+            const coins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+
+            if (coins < price) {
+                showMessage('error',
+                    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e74c3c" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v2M8 12h3M12 17v2M12 12l3 3m-3 0l-3 3"/></svg>',
+                    currentLang === 'zh' ? '金币不足！' : 'Not Enough Coins!',
+                    currentLang === 'zh' ? `你需要 ${price - coins} 更多金加隆来购买这只宠物！` : `You need ${price - coins} more Galleons!`
+                );
+                return;
+            }
+
+            // 检查是否已拥有
+            const ownedPets = getOwnedPets();
+            if (ownedPets.some(p => p.name === petName)) {
+                showMessage('error',
+                    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e74c3c" stroke-width="2"><path d="M12 2l3.5 7h7l-2.5 4.5l4.5 7.5l-2.5 4.5l-7.5-7.5-2 5.5h7l2-5.5"/></svg>',
+                    currentLang === 'zh' ? '已拥有此宠物！' : 'Already Owned!',
+                    currentLang === 'zh' ? '你已经拥有这只宠物了！' : 'You already own this pet!'
+                );
+                return;
+            }
+
+            // 购买成功
+            const newCoins = coins - price;
+            updateCoinDisplay(newCoins);
+
+            ownedPets.push({ name: petName, petType: petType });
+            localStorage.setItem('ownedPets', JSON.stringify(ownedPets));
+            updateOwnedPetsDisplay();
+
+            showMessage('success',
+                '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#27ae60" stroke-width="2"><path d="M12 2l3.5 7h7l-2.5 4.5l4.5 7.5l-2.5 4.5l-7.5-7.5-2 5.5h7l2-5.5"/></svg>',
+                currentLang === 'zh' ? '购买成功！' : 'Purchase Successful!',
+                currentLang === 'zh' ? `恭喜！你现在拥有了${petName}！` : `Congratulations! You now have a ${petName}!`
+            );
+        }
+
+        // 显示消息
+        function showMessage(type, iconSvg, title, text) {
+            const msg = document.getElementById('purchaseMessage');
+            msg.className = 'purchase-message active ' + type;
+            document.getElementById('messageIcon').innerHTML = iconSvg;
+            document.getElementById('messageTitle').textContent = title;
+            document.getElementById('messageText').textContent = text;
+        }
+
+        // 关闭消息
+        function closePurchaseMessage() {
+            document.getElementById('purchaseMessage').classList.remove('active');
+        }
+
+        // 返回
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'games-zone.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createMagicParticles();
+
+        // 初始化
+        initCoinDisplay();
+        updateOwnedPetsDisplay();
+        updateLanguage();
+    </script>
+    <script src="draggable-coin.js"></script>
+</body>
+</html>

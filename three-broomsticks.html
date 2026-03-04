@@ -779,11 +779,11 @@
                 return;
             }
 
-            // 扣除金币 - 同时更新 hogwartsCoins 和 hogwartsPlayer
+            // 扣除金币 - 只减少当前金币，不改变累计金币
             coins = currentCoins - item.price;
-            localStorage.setItem('hogwartsCoins', coins.toString()); // 与其他页面保持一致
+            localStorage.setItem('hogwartsCoins', coins.toString());
             playerData.coins = coins;
-            playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + item.price; // 累计增加，不是覆盖
+            // 注意：消费时不改变 cumulativeCoins，累计金币只在获得金币时增加
             localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
             document.getElementById('coinAmount').textContent = coins;
 

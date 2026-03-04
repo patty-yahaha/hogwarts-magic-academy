@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金加隆历史记录检查</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 { color: #333; margin-top: 0; }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button:hover { background: #1976d2; }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f9f9f9;
+        }
+        .success { background: #e8f5e9; color: #2e7d32; }
+        .error { background: #ffebee; color: #c62828; }
+        .info { background: #e3f2fd; color: #1565c0; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 金加隆历史记录检查</h1>
+    <p>检查所有表中可能存储金加隆数据的记录</p>
+
+    <div class="section">
+        <h2>📊 检查所有表</h2>
+        <button onclick="checkAllTables()">检查所有表</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
+        function getSupabaseClient() {
+            return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        async function checkAllTables() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h2>⏳ 检查中...</h2>';
+
+            const client = getSupabaseClient();
+
+            // 检查所有可能的表
+            const tables = [
+                { name: 'player_profiles', desc: '玩家资料' },
+                { name: 'flying_records', desc: '飞行记录' },
+                { name: 'unlocked_achievements', desc: '成就解锁' },
+                { name: 'daily_quest_progress', desc: '日常任务进度' },
+                { name: 'weekly_quest_progress', desc: '周常任务进度' },
+                { name: 'mailbox_letters', desc: '邮箱信件' }
+            ];
+
+            let html = '<h2>📊 检查结果：</h2>';
+
+            for (const table of tables) {
+                try {
+                    const { data, error } = await client
+                        .from(table.name)
+                        .select('*')
+                        .limit(10);
+
+                    if (error) {
+                        html += `
+                            <div class="error" style="margin: 10px 0;">
+                                <strong>${table.desc} (${table.name}):</strong> 错误 - ${error.message}
+                            </div>
+                        `;
+                    } else if (!data || data.length === 0) {
+                        html += `
+                            <div class="info" style="margin: 10px 0;">
+                                <strong>${table.desc} (${table.name}):</strong> 无数据
+                            </div>
+                        `;
+                    } else {
+                        // 检查是否有 coins 相关字段
+                        const hasCoinsField = Object.keys(data[0]).some(key =>
+                            key.toLowerCase().includes('coin') ||
+                            key.toLowerCase().includes('gold') ||
+                            key.toLowerCase().includes('galleon')
+                        );
+
+                        let dataPreview = '';
+                        if (hasCoinsField) {
+                            dataPreview = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                        } else {
+                            dataPreview = `<p style="color: #666;">无金加隆相关字段</p>`;
+                        }
+
+                        html += `
+                            <div class="success" style="margin: 10px 0;">
+                                <strong>${table.desc} (${table.name}):</strong> ${data.length} 条记录
+                                ${hasCoinsField ? ' (包含金加隆字段)' : ''}
+                            </div>
+                            ${dataPreview}
+                        `;
+                    }
+                } catch (e) {
+                    html += `
+                        <div class="error" style="margin: 10px 0;">
+                            <strong>${table.desc} (${table.name}):</strong> 异常 - ${e.message}
+                        </div>
+                    `;
+                }
+            }
+
+            // 检查 leaderboard_coins 视图
+            try {
+                const { data, error } = await client
+                    .from('leaderboard_coins')
+                    .select('*')
+                    .limit(10);
+
+                if (error) {
+                    html += `
+                        <div class="error" style="margin: 10px 0;">
+                            <strong>排行榜视图 (leaderboard_coins):</strong> 错误 - ${error.message}
+                        </div>
+                    `;
+                } else if (!data || data.length === 0) {
+                    html += `
+                        <div class="info" style="margin: 10px 0;">
+                            <strong>排行榜视图 (leaderboard_coins):</strong> 无数据
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="success" style="margin: 10px 0;">
+                            <strong>排行榜视图 (leaderboard_coins):</strong> ${data.length} 条记录
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (e) {
+                html += `
+                    <div class="error" style="margin: 10px 0;">
+                        <strong>排行榜视图 (leaderboard_coins):</strong> 异常 - ${e.message}
+                    </div>
+                `;
+            }
+
+            resultDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

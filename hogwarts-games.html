@@ -705,6 +705,66 @@
             z-index: 10;
             white-space: nowrap;
         }
+
+        /* 金币动画 */
+        .coin-float {
+            position: fixed;
+            font-size: 2.5rem;
+            color: #ffd700;
+            pointer-events: none;
+            z-index: 1000;
+            animation: coinFloat 1.5s ease-out forwards;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700;
+        }
+
+        .coin-float .coin-icon {
+            display: inline-block;
+            animation: coinSpin 0.5s ease-in-out;
+        }
+
+        @keyframes coinFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.2);
+            }
+            30% {
+                transform: translateY(-30px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.3);
+            }
+        }
+
+        @keyframes coinSpin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        /* 金币闪光效果 */
+        .coin-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 999;
+            animation: coinFlash 0.3s ease-out forwards;
+        }
+
+        @keyframes coinFlash {
+            0% {
+                background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+            }
+            100% {
+                background: transparent;
+            }
+        }
     </style>
 </head>
 <body>
@@ -996,6 +1056,17 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 创建全局 Supabase 客户端（用于认证）
+        window.sb = supabase.createClient('https://xxalvnwmqhfcohcvebnp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg', {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true
+            }
+        });
+    </script>
+    <script src="js/coin-manager.js"></script>
     <script src="draggable-coin.js"></script>
     <script>
         // 语言切换
@@ -1029,7 +1100,7 @@
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.8s ease-in-out';
             setTimeout(() => {
-                window.location.href = 'academy.html';
+                window.location.href = 'classes.html';
             }, 800);
         }
 
@@ -1151,6 +1222,90 @@
             return energy >= 10;
         }
 
+        // 设置精力值
+        function setEnergy(energy) {
+            const clampedEnergy = Math.max(0, Math.min(100, energy));
+            localStorage.setItem('playerEnergy', clampedEnergy.toString());
+            return clampedEnergy;
+        }
+
+        // 更新最后操作时间
+        function updateLastActiveTime() {
+            localStorage.setItem('playerLastActiveTime', Date.now().toString());
+        }
+
+        // 检查每日重置
+        function checkDailyReset() {
+            const today = new Date().toDateString();
+            const lastResetDate = localStorage.getItem('playerEnergyResetDate');
+
+            if (lastResetDate !== today) {
+                // 今天还没有重置过，重置精力值到60
+                setEnergy(60);
+                localStorage.setItem('playerEnergyResetDate', today);
+                console.log('🌙 每日精力值已重置到 60');
+            }
+        }
+
+        // 检查并减少精力值
+        function checkAndDecayEnergy() {
+            const currentEnergy = getEnergy();
+            if (currentEnergy <= 0) return;
+
+            const lastActiveTime = parseInt(localStorage.getItem('playerLastActiveTime') || Date.now());
+            const now = Date.now();
+            const inactiveMinutes = (now - lastActiveTime) / (1000 * 60);
+
+            // 如果玩家超过15分钟没有操作，则不减少精力值
+            if (inactiveMinutes > 15) {
+                console.log(`⏸️ 玩家已离线 ${Math.floor(inactiveMinutes)} 分钟，精力值暂停衰减`);
+                return;
+            }
+
+            // 每分钟减少1点精力值
+            const newEnergy = setEnergy(currentEnergy - 1);
+            console.log(`⚡ 精力值衰减: ${currentEnergy} → ${newEnergy}`);
+
+            // 更新显示
+            const energyAmount = document.getElementById('energyAmount');
+            if (energyAmount) {
+                energyAmount.textContent = newEnergy;
+                initEnergyDisplay();
+            }
+        }
+
+        // 初始化精力值衰减系统
+        function initEnergyDecay() {
+            // 检查每日重置
+            checkDailyReset();
+
+            // 初始化最后操作时间
+            if (!localStorage.getItem('playerLastActiveTime')) {
+                updateLastActiveTime();
+            }
+
+            // 立即执行一次衰减检查
+            checkAndDecayEnergy();
+
+            // 设置定时器，每分钟减少1点精力值
+            window.energyDecayTimer = setInterval(() => {
+                checkAndDecayEnergy();
+            }, 60000); // 60秒 = 1分钟
+
+            // 监听用户操作事件，更新最后操作时间
+            const userEvents = [
+                'click', 'mousemove', 'keydown', 'scroll', 'touchstart', 'touchmove'
+            ];
+
+            userEvents.forEach(eventType => {
+                document.addEventListener(eventType, () => {
+                    updateLastActiveTime();
+                }, { passive: true });
+            });
+
+            console.log('⚡ 精力值衰减系统已启动 - 每分钟减少1点，离线15分钟后停止衰减');
+        }
+
         // 初始化语言显示
         updateLanguage();
 
@@ -1159,6 +1314,9 @@
 
         // 初始化精力值
         initEnergyDisplay();
+
+        // 初始化精力值衰减系统
+        initEnergyDecay();
 
         // ========== 魔药课游戏 ==========
         // 51种材料（已去重）
@@ -1476,7 +1634,20 @@
                     updateFavorabilityDisplay();
                 }
 
-                // 检查奖励
+                // 每次成功制作药水给1金币
+                const rewardCoins = 1;
+                potionsGameState.sessionCoins += rewardCoins;
+                updateGameCoinsDisplay();
+
+                // 使用 CoinManager 更新金币（同步到云端）
+                if (window.CoinManager) {
+                    CoinManager.addCoins(rewardCoins);
+                }
+
+                // 显示金币动画
+                showCoinAnimation(rewardCoins);
+
+                // 检查是否给予额外奖励（每10个药水）
                 checkReward();
                 savePotionsState();
                 updatePotionsStatus();
@@ -1559,39 +1730,57 @@
 
         // 更新累计金币（用于等级计算）
         function updateCumulativeCoins(amount) {
-            let playerData = localStorage.getItem('hogwartsPlayer');
-            if (!playerData) {
-                playerData = {
-                    nickname: '魔法学徒',
-                    avatar: '🧙',
-                    cumulativeCoins: amount,
-                    inventory: [],
-                    level: 0
-                };
+            // 使用 CoinManager 更新金币（同时更新当前金币和累计金币，并同步到云端）
+            if (window.CoinManager) {
+                CoinManager.addCoins(amount);
             } else {
-                playerData = JSON.parse(playerData);
-                playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
-            }
+                // 回退：直接更新 localStorage
+                let playerData = localStorage.getItem('hogwartsPlayer');
+                if (!playerData) {
+                    playerData = {
+                        nickname: '魔法学徒',
+                        avatar: '🧙',
+                        cumulativeCoins: amount,
+                        inventory: [],
+                        level: 0
+                    };
+                } else {
+                    playerData = JSON.parse(playerData);
+                    playerData.cumulativeCoins = (playerData.cumulativeCoins || 0) + amount;
+                }
 
-            localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            }
+        }
+
+        // 显示金币动画
+        function showCoinAnimation(amount) {
+            // 创建闪光效果
+            const flash = document.createElement('div');
+            flash.className = 'coin-flash';
+            document.body.appendChild(flash);
+
+            setTimeout(() => {
+                flash.remove();
+            }, 300);
+
+            // 创建金币动画
+            const coin = document.createElement('div');
+            coin.className = 'coin-float';
+            coin.innerHTML = `<span class="coin-icon">🪙</span> +${amount}`;
+            coin.style.left = '50%';
+            coin.style.top = '50%';
+            coin.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(coin);
+
+            setTimeout(() => {
+                coin.remove();
+            }, 1500);
         }
 
         // 检查奖励
         function checkReward() {
             if (potionsGameState.level === 'beginner') {
-                if (potionsGameState.completedBeginner % 10 === 0) {
-                    // 每10个初级魔药给20金加隆
-                    const coins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
-                    const rewardCoins = 20;
-                    localStorage.setItem('hogwartsCoins', coins + rewardCoins);
-                    document.getElementById('coinAmount').textContent = coins + rewardCoins;
-                    potionsGameState.sessionCoins += rewardCoins;
-                    updateGameCoinsDisplay();
-
-                    // 更新累计金币
-                    updateCumulativeCoins(rewardCoins);
-                }
-
                 // 检查是否可以解锁中级
                 if (potionsGameState.completedBeginner >= 50 && potionsGameState.level === 'beginner') {
                     showMessage('success', '🔓',
@@ -1599,19 +1788,6 @@
                         currentLang === 'zh' ? '已完成50个初级魔药，中级已解锁！' : 'Completed 50 beginner potions, intermediate unlocked!'
                     );
                     potionsGameState.level = 'intermediate';
-                }
-            } else {
-                if (potionsGameState.completedIntermediate % 10 === 0) {
-                    // 每10个中级魔药给30金加隆
-                    const coins = parseInt(localStorage.getItem('hogwartsCoins') || '0');
-                    const rewardCoins = 30;
-                    localStorage.setItem('hogwartsCoins', coins + rewardCoins);
-                    document.getElementById('coinAmount').textContent = coins + rewardCoins;
-                    potionsGameState.sessionCoins += rewardCoins;
-                    updateGameCoinsDisplay();
-
-                    // 更新累计金币
-                    updateCumulativeCoins(rewardCoins);
                 }
             }
         }
@@ -1628,10 +1804,9 @@
             document.getElementById('potionsLevel').textContent = levelText;
             document.getElementById('potionsCompleted').textContent = completed;
 
-            const reward = potionsGameState.level === 'beginner' ?
-                Math.floor(potionsGameState.completedBeginner / 10) * 20 :
-                Math.floor(potionsGameState.completedIntermediate / 10) * 30;
-            document.getElementById('potionsReward').textContent = reward + ' ' + (currentLang === 'zh' ? '金加隆' : 'Galleons');
+            // 每次成功制作药水得1金币，所以总奖励等于完成的药水数量
+            const totalReward = potionsGameState.completedBeginner + potionsGameState.completedIntermediate;
+            document.getElementById('potionsReward').textContent = totalReward + ' ' + (currentLang === 'zh' ? '金加隆' : 'Galleons');
         }
 
         // 保存游戏状态

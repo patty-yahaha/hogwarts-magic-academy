@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据访问测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 { color: #333; margin-top: 0; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f9f9f9;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #66bb6a;
+        }
+        .warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffa726;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 数据访问诊断工具</h1>
+    <p>此工具帮助诊断为什么留言板和排行榜看不到数据。</p>
+
+    <div class="section">
+        <h2>1️⃣ 检查登录状态</h2>
+        <button onclick="checkAuth()">检查认证状态</button>
+        <div id="authResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>2️⃣ 测试留言板数据访问</h2>
+        <button onclick="testMessages()">测试读取留言</button>
+        <div id="messagesResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>3️⃣ 测试排行榜数据访问</h2>
+        <button onclick="testLeaderboard()">测试读取排行榜</button>
+        <div id="leaderboardResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>4️⃣ 显示实际数据内容</h2>
+        <button onclick="showAllData()">显示所有数据</button>
+        <div id="dataResult" class="result"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
+        function getSupabaseClient() {
+            return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        async function checkAuth() {
+            const resultDiv = document.getElementById('authResult');
+            resultDiv.innerHTML = '<p>⏳ 检查中...</p>';
+
+            try {
+                const client = getSupabaseClient();
+                const { data: { user }, error } = await client.auth.getUser();
+
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error">❌ 认证错误: ${error.message}</div>`;
+                    return;
+                }
+
+                if (!user) {
+                    resultDiv.innerHTML = `<div class="warning">⚠️ 未登录（游客模式）</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="success">✅ 已登录<br>用户ID: ${user.id}<br>邮箱: ${user.email || '未知'}</div>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ 错误: ${e.message}</div>`;
+            }
+        }
+
+        async function testMessages() {
+            const resultDiv = document.getElementById('messagesResult');
+            resultDiv.innerHTML = '<p>⏳ 测试中...</p>';
+
+            try {
+                const client = getSupabaseClient();
+
+                // 测试1: 尝试读取所有留言
+                const { data: messages, error } = await client
+                    .from('messages')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error">❌ 读取留言失败: ${error.message}<br>代码: ${error.code}<br>详情: ${error.hint || '无'}</div>`;
+                } else if (!messages || messages.length === 0) {
+                    resultDiv.innerHTML = `<div class="warning">⚠️ 留言表存在但为空</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="success">✅ 成功读取 ${messages.length} 条留言</div><pre>${JSON.stringify(messages, null, 2)}</pre>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ 错误: ${e.message}</div>`;
+            }
+        }
+
+        async function testLeaderboard() {
+            const resultDiv = document.getElementById('leaderboardResult');
+            resultDiv.innerHTML = '<p>⏳ 测试中...</p>';
+
+            try {
+                const client = getSupabaseClient();
+
+                // 测试1: 尝试读取玩家资料
+                const { data: profiles, error } = await client
+                    .from('player_profiles')
+                    .select('*');
+
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error">❌ 读取玩家资料失败: ${error.message}<br>代码: ${error.code}</div>`;
+                } else if (!profiles || profiles.length === 0) {
+                    resultDiv.innerHTML = `<div class="warning">⚠️ 玩家资料表存在但为空</div>`;
+                } else {
+                    // 检查是否有 coins 字段
+                    const hasCoins = profiles.some(p => p.coins !== undefined);
+                    const hasLevel = profiles.some(p => p.level !== undefined);
+
+                    let info = `<div class="success">✅ 成功读取 ${profiles.length} 个玩家</div>`;
+                    if (!hasCoins) info += `<div class="warning">⚠️ 缺少 coins 字段</div>`;
+                    if (!hasLevel) info += `<div class="warning">⚠️ 缺少 level 字段</div>`;
+                    info += `<pre>${JSON.stringify(profiles, null, 2)}</pre>`;
+
+                    resultDiv.innerHTML = info;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ 错误: ${e.message}</div>`;
+            }
+        }
+
+        async function showAllData() {
+            const resultDiv = document.getElementById('dataResult');
+            resultDiv.innerHTML = '<p>⏳ 加载中...</p>';
+
+            try {
+                const client = getSupabaseClient();
+
+                const [profiles, messages, likes, replies] = await Promise.all([
+                    client.from('player_profiles').select('*'),
+                    client.from('messages').select('*'),
+                    client.from('message_likes').select('*'),
+                    client.from('message_replies').select('*')
+                ]);
+
+                let html = `<div class="success">✅ 数据加载完成</div>`;
+
+                html += `<h3>👤 玩家资料 (${profiles.data?.length || 0})</h3>`;
+                if (profiles.data?.length) {
+                    html += `<pre>${JSON.stringify(profiles.data, null, 2)}</pre>`;
+                }
+
+                html += `<h3>💬 留言 (${messages.data?.length || 0})</h3>`;
+                if (messages.data?.length) {
+                    html += `<pre>${JSON.stringify(messages.data, null, 2)}</pre>`;
+                }
+
+                html += `<h3>❤️ 点赞 (${likes.data?.length || 0})</h3>`;
+                if (likes.data?.length) {
+                    html += `<pre>${JSON.stringify(likes.data, null, 2)}</pre>`;
+                }
+
+                html += `<h3>↩️ 回复 (${replies.data?.length || 0})</h3>`;
+                if (replies.data?.length) {
+                    html += `<pre>${JSON.stringify(replies.data, null, 2)}</pre>`;
+                }
+
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ 错误: ${e.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

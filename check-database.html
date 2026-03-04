@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库状态检查</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .result {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { border-left: 4px solid #4caf50; }
+        .error { border-left: 4px solid #f44336; }
+        .warning { border-left: 4px solid #ff9800; }
+        h2 { color: #333; }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button:hover { background: #1976d2; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 数据库状态检查工具</h1>
+    <p>此工具会检查数据库中各个表的状态，不会执行任何删除或修改操作。</p>
+    <button onclick="checkDatabase()">🔎 开始检查</button>
+    <div id="results"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://xxalvnwmqhfcohcvebnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg';
+
+        function getSupabaseClient() {
+            return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        const tables = [
+            'player_profiles',
+            'messages',
+            'message_likes',
+            'message_replies',
+            'owned_broomsticks',
+            'inventory_items',
+            'flying_records',
+            'mailbox_letters',
+            'chat_messages',
+            'unlocked_achievements',
+            'daily_quest_progress'
+        ];
+
+        async function checkDatabase() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>⏳ 正在检查数据库...</h2>';
+
+            const results = [];
+
+            for (const tableName of tables) {
+                try {
+                    const client = getSupabaseClient();
+                const { count, error } = await client
+                        .from(tableName)
+                        .select('*', { count: 'exact', head: true });
+
+                    const result = {
+                        table: tableName,
+                        exists: !error,
+                        count: count,
+                        error: error?.message
+                    };
+
+                    results.push(result);
+                } catch (e) {
+                    results.push({
+                        table: tableName,
+                        exists: false,
+                        count: null,
+                        error: e.message
+                    });
+                }
+            }
+
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+
+            let html = '<h2>📊 检查结果：</h2>';
+
+            results.forEach(r => {
+                let statusClass, statusText;
+
+                if (!r.exists) {
+                    statusClass = 'error';
+                    statusText = `✗ 表不存在或无访问权限: ${r.error}`;
+                } else if (r.count !== null && r.count > 0) {
+                    statusClass = 'success';
+                    statusText = `✓ 存在 (${r.count} 条记录)`;
+                } else if (r.count === 0) {
+                    statusClass = 'warning';
+                    statusText = `⚠ 存在但无数据`;
+                } else {
+                    statusClass = 'warning';
+                    statusText = `⚠ 存在 (记录数未知)`;
+                }
+
+                html += `<div class="result ${statusClass}">
+                    <strong>${r.table}</strong>: ${statusText}
+                </div>`;
+            });
+
+            html += '<p style="margin-top: 20px; color: #666; font-size: 14px;">请截图此结果发送给开发者，以便诊断问题。</p>';
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
