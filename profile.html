@@ -803,6 +803,300 @@
                 bottom: 10px;
             }
         }
+
+        /* 衣柜系统 */
+        .wardrobe-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .wardrobe-layout {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .character-display-area {
+            flex: 0 0 350px;
+            text-align: center;
+        }
+
+        .character-container {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #2a1a3a 0%, #1a2a4a 100%);
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .character-base {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .character-base svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+        }
+
+
+        .character-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            z-index: 2;
+            cursor: pointer;
+            font-size: 5rem;
+            transition: all 0.3s ease;
+        }
+
+        .character-layer:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 5px 15px rgba(255, 0, 0, 0.5));
+        }
+
+        .character-layer:empty {
+            cursor: default;
+        }
+
+        .character-layer:empty:hover {
+            transform: none;
+            filter: none;
+        }
+
+        .uniform-layer {
+            z-index: 2;
+        }
+
+        .outerwear-layer {
+            z-index: 3;
+        }
+
+        /* Magical Glow Effect */
+        .character-container.drag-over {
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.8),
+                        0 0 60px rgba(138, 43, 226, 0.5);
+            border-color: #ffd700;
+            transform: scale(1.02);
+        }
+
+        /* Sparkle Animation */
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.5) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffd700, #ff8c00);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkle 0.6s ease-out forwards;
+        }
+
+        .wardrobe-tip {
+            margin-top: 20px;
+            color: #8b6914;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .wardrobe-inventory {
+            flex: 1;
+        }
+
+        .wardrobe-subtitle {
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+        }
+
+        .wardrobe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .wardrobe-item {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.8), rgba(20, 10, 5, 0.9));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+        }
+
+        .wardrobe-item:hover {
+            transform: translateY(-5px);
+            border-color: #d4af37;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .wardrobe-item:active {
+            cursor: grabbing;
+        }
+
+        .wardrobe-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .wardrobe-item.equipped {
+            border-color: #27ae60;
+            box-shadow: 0 0 15px rgba(39, 174, 96, 0.5);
+        }
+
+        .wardrobe-item-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .wardrobe-item-name {
+            font-size: 0.85rem;
+            color: #d4af37;
+            word-break: break-word;
+        }
+
+        .wardrobe-empty {
+            text-align: center;
+            color: #8b6914;
+            padding: 40px;
+        }
+
+        /* 宠物系统 */
+        .pets-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .pet-card {
+            background: linear-gradient(145deg, rgba(30, 40, 60, 0.9), rgba(20, 30, 50, 0.95));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .pet-card:hover {
+            transform: translateY(-5px);
+            border-color: #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .pet-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .pet-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .pet-description {
+            color: #a8b2d1;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .pet-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .pet-info-label {
+            color: #c9a227;
+            font-size: 0.9rem;
+        }
+
+        .pet-info-value {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .pets-empty {
+            text-align: center;
+            color: #8b6914;
+            padding: 40px;
+        }
+
+        .pets-empty .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .wardrobe-layout {
+                flex-direction: column;
+            }
+
+            .character-display-area {
+                flex: 0 0 auto;
+                width: 100%;
+            }
+
+            .character-container {
+                width: 250px;
+                height: 300px;
+            }
+
+            .character-base {
+                font-size: 4rem;
+            }
+
+            .wardrobe-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .pets-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -874,6 +1168,14 @@
                 <span class="tab-icon">🎒</span>
                 <span class="tab-text">道具背包</span>
             </button>
+            <button class="tab-btn" onclick="switchTab('wardrobe')" id="tabWardrobe">
+                <span class="tab-icon">👔</span>
+                <span class="tab-text">衣柜</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('pets')" id="tabPets">
+                <span class="tab-icon">🐾</span>
+                <span class="tab-text">宠物</span>
+            </button>
         </div>
 
         <!-- 背包区域 -->
@@ -929,6 +1231,46 @@
                     " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                         打开道具背包 →
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 衣柜区域 -->
+        <div class="tab-content" id="contentWardrobe" style="display: none;">
+            <div class="wardrobe-section">
+                <h2 class="section-title">👔 我的衣柜 👔</h2>
+
+                <div class="wardrobe-layout">
+                    <!-- Character Display Area -->
+                    <div class="character-display-area">
+                        <div class="character-container" id="characterDisplay">
+                            <!-- Character Body Emoji -->
+                            <div class="character-base" style="font-size: 5rem;">🧙</div>
+                            <!-- Uniform Layer -->
+                            <div class="character-layer uniform-layer" id="uniformLayer" onclick="unequipCurrentItem('uniform')"></div>
+                            <!-- Outerwear Layer -->
+                            <div class="character-layer outerwear-layer" id="outerwearLayer" onclick="unequipCurrentItem('outerwear')"></div>
+                        </div>
+                        <p class="wardrobe-tip">💡 拖拽衣物到角色身上进行换装</p>
+                    </div>
+
+                    <!-- Wardrobe Inventory -->
+                    <div class="wardrobe-inventory">
+                        <h3 class="wardrobe-subtitle">可穿戴物品</h3>
+                        <div class="wardrobe-grid" id="wardrobeGrid">
+                            <!-- Items will be rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 宠物区域 -->
+        <div class="tab-content" id="contentPets" style="display: none;">
+            <div class="pets-section">
+                <h2 class="section-title">🐾 我的宠物 🐾</h2>
+                <div class="pets-grid" id="petsGrid">
+                    <!-- 宠物将通过JavaScript动态生成 -->
                 </div>
             </div>
         </div>
@@ -1002,6 +1344,9 @@
             createMagicParticles();
             loadAvatarOptions();
             setupRoomDropZone();
+            setupWardrobeDropZone();
+            initWardrobeData();
+            loadCurrentOutfit();
 
             // 初始化房间数据结构
             if (!playerData.room) {
@@ -1222,6 +1567,253 @@
             }
         }
 
+        // ========== 衣柜功能 ==========
+        // Wardrobe item categories and their layer mapping
+        const WARDROBE_CATEGORIES = {
+            'uniform': 'uniformLayer',
+            'robe': 'uniformLayer',
+            'outerwear': 'outerwearLayer',
+            'cloak': 'outerwearLayer',
+            'coat': 'outerwearLayer'
+        };
+
+        // Initialize currentOutfit if not exists
+        function initWardrobeData() {
+            if (!playerData.currentOutfit) {
+                playerData.currentOutfit = {
+                    uniform: null,
+                    outerwear: null
+                };
+                savePlayerData();
+            }
+        }
+
+        // Load wardrobe inventory
+        function loadWardrobeInventory() {
+            const grid = document.getElementById('wardrobeGrid');
+
+            // Get items from both playerData.inventory and hogwartsInventory
+            const playerInventory = playerData.inventory || [];
+            const shopInventory = JSON.parse(localStorage.getItem('hogwartsInventory') || '[]');
+
+            // Combine both inventories
+            const allItems = [...playerInventory, ...shopInventory];
+
+            const wardrobeItems = allItems.filter(item =>
+                ['uniform', 'robe', 'outerwear', 'cloak', 'coat'].includes(item.type)
+            );
+
+            if (wardrobeItems.length === 0) {
+                grid.innerHTML = `
+                    <div class="wardrobe-empty" style="grid-column: 1/-1;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">👔</div>
+                        <div>衣柜空空如也</div>
+                        <div style="font-size: 0.85rem; margin-top: 10px;">去摩金夫人长袍店购买衣物吧！</div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = wardrobeItems.map((item, index) => {
+                const isEquipped = playerData.currentOutfit[item.type] === item.id;
+                return `
+                    <div class="wardrobe-item ${isEquipped ? 'equipped' : ''}"
+                         draggable="true"
+                         data-item-id="${item.id}"
+                         data-item-type="${item.type}"
+                         data-item-index="${index}"
+                         onclick="toggleEquipItem('${item.id}', '${item.type}')">
+                        <div class="wardrobe-item-icon">${item.icon}</div>
+                        <div class="wardrobe-item-name">${item.name}</div>
+                        ${isEquipped ? '<div style="font-size: 0.7rem; color: #27ae60; margin-top: 5px;">✓ 已装备</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+
+            // Add drag event listeners
+            grid.querySelectorAll('.wardrobe-item').forEach(item => {
+                item.addEventListener('dragstart', handleWardrobeDragStart);
+                item.addEventListener('dragend', handleWardrobeDragEnd);
+            });
+        }
+
+        // Handle drag start for wardrobe items
+        function handleWardrobeDragStart(e) {
+            const item = e.target.closest('.wardrobe-item');
+            if (item) {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    itemId: item.dataset.itemId,
+                    itemType: item.dataset.itemType
+                }));
+                item.classList.add('dragging');
+            }
+        }
+
+        // Handle drag end for wardrobe items
+        function handleWardrobeDragEnd(e) {
+            const item = e.target.closest('.wardrobe-item');
+            if (item) {
+                item.classList.remove('dragging');
+            }
+        }
+
+        // Setup wardrobe drop zone
+        function setupWardrobeDropZone() {
+            const characterDisplay = document.getElementById('characterDisplay');
+
+            characterDisplay.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                characterDisplay.classList.add('drag-over');
+            });
+
+            characterDisplay.addEventListener('dragleave', (e) => {
+                characterDisplay.classList.remove('drag-over');
+            });
+
+            characterDisplay.addEventListener('drop', (e) => {
+                e.preventDefault();
+                characterDisplay.classList.remove('drag-over');
+
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                equipItem(data.itemId, data.itemType);
+            });
+        }
+
+        // Toggle equip/unequip an item
+        function toggleEquipItem(itemId, itemType) {
+            // Check if item is already equipped
+            const isEquipped = playerData.currentOutfit[itemType] === itemId;
+
+            if (isEquipped) {
+                // Unequip the item
+                unequipItem(itemType);
+            } else {
+                // Equip the item
+                equipItem(itemId, itemType);
+            }
+        }
+
+        // Unequip current item from a specific layer
+        function unequipCurrentItem(layerType) {
+            // Find the current equipped item in this layer type
+            let currentItemType = null;
+            if (layerType === 'uniform') {
+                // Check if any uniform type is equipped
+                currentItemType = Object.keys(playerData.currentOutfit).find(type =>
+                    ['uniform', 'robe'].includes(type) && playerData.currentOutfit[type]
+                );
+            } else if (layerType === 'outerwear') {
+                // Check if any outerwear type is equipped
+                currentItemType = Object.keys(playerData.currentOutfit).find(type =>
+                    ['outerwear', 'cloak', 'coat'].includes(type) && playerData.currentOutfit[type]
+                );
+            }
+
+            if (currentItemType) {
+                unequipItem(currentItemType);
+            }
+        }
+
+        // Unequip an item from the character
+        function unequipItem(itemType) {
+            // Determine which layer to clear
+            const layerId = WARDROBE_CATEGORIES[itemType] || 'uniformLayer';
+
+            // Update the outfit data
+            playerData.currentOutfit[itemType] = null;
+
+            // Update visual display
+            const layerEl = document.getElementById(layerId);
+            if (layerEl) {
+                layerEl.innerHTML = '';
+            }
+
+            // Save to localStorage
+            savePlayerData();
+
+            // Refresh wardrobe display
+            loadWardrobeInventory();
+        }
+
+        // Equip an item to the character
+        function equipItem(itemId, itemType) {
+            // Get items from both sources
+            const playerInventory = playerData.inventory || [];
+            const shopInventory = JSON.parse(localStorage.getItem('hogwartsInventory') || '[]');
+            const allItems = [...playerInventory, ...shopInventory];
+
+            const item = allItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            // Determine which layer to update
+            const layerId = WARDROBE_CATEGORIES[itemType] || 'uniformLayer';
+
+            // Update the outfit data
+            playerData.currentOutfit[itemType] = itemId;
+
+            // Update visual display
+            const layerEl = document.getElementById(layerId);
+            if (layerEl) {
+                layerEl.innerHTML = item.icon;
+                layerEl.style.opacity = '0';
+                setTimeout(() => {
+                    layerEl.style.opacity = '1';
+                }, 50);
+            }
+
+            // Play sparkle animation
+            createSparkleEffect();
+
+            // Save to localStorage
+            savePlayerData();
+
+            // Refresh wardrobe display
+            loadWardrobeInventory();
+        }
+
+        // Create sparkle animation effect
+        function createSparkleEffect() {
+            const characterDisplay = document.getElementById('characterDisplay');
+
+            // Create multiple sparkles
+            for (let i = 0; i < 8; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = (Math.random() * 280 + 10) + 'px';
+                sparkle.style.top = (Math.random() * 380 + 10) + 'px';
+                sparkle.style.animationDelay = (Math.random() * 0.3) + 's';
+                characterDisplay.appendChild(sparkle);
+
+                // Remove after animation
+                setTimeout(() => sparkle.remove(), 600);
+            }
+        }
+
+        // Load current outfit on page load
+        function loadCurrentOutfit() {
+            if (!playerData.currentOutfit) return;
+
+            // Get items from both sources
+            const playerInventory = playerData.inventory || [];
+            const shopInventory = JSON.parse(localStorage.getItem('hogwartsInventory') || '[]');
+            const allItems = [...playerInventory, ...shopInventory];
+
+            Object.entries(playerData.currentOutfit).forEach(([type, itemId]) => {
+                if (!itemId) return;
+
+                const item = allItems.find(i => i.id === itemId);
+                if (!item) return;
+
+                const layerId = WARDROBE_CATEGORIES[type];
+                const layerEl = document.getElementById(layerId);
+
+                if (layerEl && item.icon) {
+                    layerEl.innerHTML = item.icon;
+                }
+            });
+        }
+
         // ========== 房间功能 ==========
         let currentTab = 'inventory';
         let draggedItem = null;
@@ -1234,25 +1826,72 @@
 
             // 更新标签按钮状态
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeTab = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+            if (activeTab) activeTab.classList.add('active');
+
+            // Hide all content
+            document.getElementById('contentInventory').style.display = 'none';
+            document.getElementById('contentRoom').style.display = 'none';
+            document.getElementById('contentItems').style.display = 'none';
+            document.getElementById('contentWardrobe').style.display = 'none';
+            document.getElementById('contentPets').style.display = 'none';
+
+            // Show selected content
             if (tab === 'inventory') {
-                document.getElementById('tabInventory').classList.add('active');
                 document.getElementById('contentInventory').style.display = 'block';
-                document.getElementById('contentRoom').style.display = 'none';
-                document.getElementById('contentItems').style.display = 'none';
             } else if (tab === 'room') {
-                document.getElementById('tabRoom').classList.add('active');
-                document.getElementById('contentInventory').style.display = 'none';
                 document.getElementById('contentRoom').style.display = 'block';
-                document.getElementById('contentItems').style.display = 'none';
                 loadRoomInventory();
                 loadRoomItems();
                 loadRoomDecorations(); // 在切换到房间标签时加载装饰品
             } else if (tab === 'items') {
-                document.getElementById('tabItems').classList.add('active');
-                document.getElementById('contentInventory').style.display = 'none';
-                document.getElementById('contentRoom').style.display = 'none';
                 document.getElementById('contentItems').style.display = 'block';
+            } else if (tab === 'wardrobe') {
+                document.getElementById('contentWardrobe').style.display = 'block';
+                loadWardrobeInventory();
+                loadCurrentOutfit();
+            } else if (tab === 'pets') {
+                document.getElementById('contentPets').style.display = 'block';
+                loadPetsInventory();
             }
+        }
+
+        // ========== 宠物功能 ==========
+        // 加载宠物列表
+        function loadPetsInventory() {
+            const grid = document.getElementById('petsGrid');
+            const ownedPets = getOwnedPets();
+
+            if (ownedPets.length === 0) {
+                grid.innerHTML = `
+                    <div class="pets-empty" style="grid-column: 1/-1;">
+                        <div class="empty-icon">🐾</div>
+                        <div style="font-size: 1.5rem; color: #8b6914; margin-bottom: 10px;">还没有宠物</div>
+                        <div style="color: #a08050; font-size: 0.95rem;">去神奇动物商店挑选你的神奇伙伴吧！</div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = ownedPets.map(pet => `
+                <div class="pet-card">
+                    <div class="pet-icon">${pet.emoji}</div>
+                    <div class="pet-name">${pet.name}</div>
+                    <div class="pet-description">
+                        这是你的神奇伙伴！它会在你的魔法旅程中陪伴你。
+                    </div>
+                    <div class="pet-info">
+                        <span class="pet-info-label">状态</span>
+                        <span class="pet-info-value">✨ 健康</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 获取已拥有的宠物
+        function getOwnedPets() {
+            const saved = localStorage.getItem('ownedPets');
+            return saved ? JSON.parse(saved) : [];
         }
 
         // 打开道具背包页面

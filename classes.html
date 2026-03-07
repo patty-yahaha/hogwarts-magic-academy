@@ -132,6 +132,14 @@
             background: linear-gradient(135deg, #27ae60, #2ecc71);
         }
 
+        .tag-zh {
+            display: block;
+        }
+
+        .tag-en {
+            display: none;
+        }
+
         /* 响应式 */
         @media (max-width: 768px) {
             .courses-grid {
@@ -140,638 +148,6 @@
 
             .hogwarts-title {
                 font-size: 2rem;
-            }
-        }
-
-        /* ==================== 黑魔法防御术游戏样式 ==================== */
-        .dada-game-container {
-            max-width: 900px;
-            width: 90%;
-            height: 90vh;
-            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            border: 4px solid #d4af37;
-            border-radius: 20px;
-            padding: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.3);
-        }
-
-        .game-header {
-            flex-shrink: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 15px;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(139, 115, 85, 0.2));
-            border-bottom: 2px solid #d4af37;
-        }
-
-        .game-title {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 1.1rem;
-            color: #d4af37;
-            margin: 0;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-        }
-
-        .game-close-btn {
-            background: transparent;
-            border: 2px solid #d4af37;
-            color: #d4af37;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .game-close-btn:hover {
-            background: #d4af37;
-            color: #1a1a2e;
-        }
-
-        /* 卢平教授 */
-        .teacher-lupin {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 15px;
-            background: rgba(139, 115, 85, 0.2);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-        }
-
-        .teacher-avatar {
-            font-size: 1.5rem;
-            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
-        }
-
-        .teacher-name {
-            font-family: 'Cinzel', serif;
-            color: #d4af37;
-            font-size: 0.9rem;
-        }
-
-        .teacher-message {
-            color: #e0e0e0;
-            font-style: italic;
-            font-size: 0.78rem;
-        }
-
-        /* 游戏状态栏 */
-        .game-status-bar {
-            flex-shrink: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 15px;
-            background: rgba(0, 0, 0, 0.3);
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .player-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .player-avatar {
-            font-size: 1.3rem;
-            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
-        }
-
-        .hp-bar-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
-
-        .hp-bar-label {
-            font-size: 0.6rem;
-            color: #a0a0a0;
-        }
-
-        .hp-bar {
-            width: 130px;
-            height: 14px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #666;
-            border-radius: 7px;
-            overflow: hidden;
-        }
-
-        .hp-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #e74c3c, #c0392b);
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
-        }
-
-        .hp-text {
-            font-size: 0.7rem;
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        .round-info {
-            text-align: center;
-        }
-
-        #roundLabel {
-            font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-            color: #d4af37;
-            display: block;
-        }
-
-        .round-difficulty {
-            font-size: 0.75rem;
-            color: #8b7355;
-            font-style: italic;
-        }
-
-        .coin-reward {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            font-size: 0.9rem;
-            color: #d4af37;
-            font-weight: bold;
-        }
-
-        /* 攻击显示区域 */
-        .attack-area {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 180px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-start-overlay {
-            text-align: center;
-            animation: fadeIn 0.5s ease;
-            padding: 5px;
-        }
-
-        .game-start-overlay h3 {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 1.4rem;
-            color: #d4af37;
-            margin-bottom: 5px;
-        }
-
-        .game-start-overlay p {
-            color: #e0e0e0;
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-        }
-
-        .game-rules {
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 8px;
-            padding: 8px 10px;
-            margin-bottom: 8px;
-            text-align: left;
-            max-width: 340px;
-        }
-
-        .game-rules ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .game-rules li {
-            color: #c9c9c9;
-            font-size: 0.78rem;
-            padding: 3px 0;
-            padding-left: 16px;
-            position: relative;
-            line-height: 1.3;
-        }
-
-        .game-rules li:before {
-            content: '✦';
-            position: absolute;
-            left: 0;
-            color: #d4af37;
-            font-size: 0.9em;
-        }
-
-        .game-rules li .highlight {
-            color: #d4af37;
-            font-weight: bold;
-        }
-
-        .game-start-btn {
-            padding: 8px 25px;
-            font-size: 0.9rem;
-            background: linear-gradient(135deg, #d4af37, #8b7355);
-            border: 2px solid #d4af37;
-            color: #1a1a2e;
-            border-radius: 18px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
-        }
-
-        .game-start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
-        }
-
-        /* 当前攻击显示 */
-        .current-attack {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            animation: attackAppear 0.5s ease;
-        }
-
-        .current-attack.active {
-            display: flex;
-        }
-
-        .attack-emoji {
-            font-size: 4rem;
-            margin-bottom: 4px;
-            animation: float 2s ease-in-out infinite;
-        }
-
-        .attack-name {
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            color: #e74c3c;
-            margin-bottom: 4px;
-            text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
-        }
-
-        .attack-timer {
-            font-size: 1.8rem;
-            color: #d4af37;
-            font-weight: bold;
-            font-family: 'MedievalSharp', cursive;
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
-        }
-
-        .attack-timer.warning {
-            color: #e74c3c;
-            animation: pulse 0.5s ease infinite;
-        }
-
-        /* 按键提示 */
-        .key-hints {
-            flex-shrink: 0;
-            padding: 10px 15px;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.3);
-            border-top: 1px solid rgba(212, 175, 55, 0.2);
-            transition: opacity 0.5s ease;
-        }
-
-        .key-sequence {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            margin-bottom: 5px;
-            flex-wrap: wrap;
-        }
-
-        .key-item {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 35px;
-            height: 35px;
-            padding: 0 6px;
-            background: linear-gradient(145deg, #2a2a4a, #1a1a3a);
-            border: 2px solid #d4af37;
-            border-radius: 5px;
-            color: #d4af37;
-            font-family: 'Cinzel', serif;
-            font-size: 0.85rem;
-            font-weight: bold;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .key-item.pressed {
-            background: linear-gradient(145deg, #d4af37, #8b7355);
-            color: #1a1a2e;
-            transform: scale(0.95);
-        }
-
-        .key-item.error {
-            background: linear-gradient(145deg, #e74c3c, #c0392b);
-            border-color: #e74c3c;
-            color: white;
-            animation: shake 0.5s ease;
-        }
-
-        .key-hint-text {
-            color: #a0a0a0;
-            font-size: 0.75rem;
-        }
-
-        /* 咒语显示 */
-        .spell-display {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            animation: spellCast 1.5s ease forwards;
-            z-index: 10;
-        }
-
-        .spell-display.active {
-            display: block;
-        }
-
-        .spell-text {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 2rem;
-            color: #d4af37;
-            text-shadow: 0 0 30px rgba(212, 175, 55, 0.8),
-                         0 0 60px rgba(212, 175, 55, 0.5),
-                         0 0 90px rgba(212, 175, 55, 0.3);
-            white-space: nowrap;
-        }
-
-        /* 游戏结束界面 */
-        .game-end-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .game-end-overlay h3 {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 2rem;
-            margin-bottom: 12px;
-        }
-
-        .game-end-overlay.success h3 {
-            color: #d4af37;
-        }
-
-        .game-end-overlay.fail h3 {
-            color: #e74c3c;
-        }
-
-        .game-end-message {
-            color: #e0e0e0;
-            font-size: 1rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .game-stats {
-            background: rgba(212, 175, 55, 0.1);
-            padding: 15px 25px;
-            border-radius: 12px;
-            border: 2px solid #d4af37;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .earned-coins {
-            color: #d4af37;
-            font-size: 1.6rem;
-            font-weight: bold;
-            display: block;
-            margin-top: 8px;
-        }
-
-        .game-next-btn {
-            padding: 10px 30px;
-            font-size: 1rem;
-            background: linear-gradient(135deg, #d4af37, #8b7355);
-            border: 2px solid #d4af37;
-            color: #1a1a2e;
-            border-radius: 20px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
-        }
-
-        .game-next-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
-        }
-
-        .game-restart-btn {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            border-color: #e74c3c;
-            color: white;
-        }
-
-        /* 动画 */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes attackAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        @keyframes spellCast {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.5);
-            }
-            20% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1.2);
-            }
-            40% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            80% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(1.5);
-            }
-        }
-
-        /* Modal 样式 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            position: relative;
-            max-width: 90%;
-        }
-
-        /* 响应式 */
-        @media (max-width: 768px) {
-            .dada-game-container {
-                width: 98%;
-                height: 95vh;
-            }
-
-            .game-header {
-                padding: 4px 10px;
-            }
-
-            .teacher-lupin {
-                padding: 4px 10px;
-            }
-
-            .teacher-avatar {
-                font-size: 1.3rem;
-            }
-
-            .teacher-message {
-                font-size: 0.7rem;
-            }
-
-            .player-avatar {
-                font-size: 1.1rem;
-            }
-
-            .game-status-bar {
-                padding: 4px 10px;
-            }
-
-            .game-title {
-                font-size: 0.9rem;
-            }
-
-            .hp-bar {
-                width: 110px;
-            }
-
-            .attack-emoji {
-                font-size: 2.8rem;
-            }
-
-            .attack-timer {
-                font-size: 1.5rem;
-            }
-
-            .key-item {
-                min-width: 30px;
-                height: 30px;
-                font-size: 0.75rem;
-                padding: 0 5px;
-            }
-
-            .key-hints {
-                padding: 6px 10px;
-            }
-
-            .key-hint-text {
-                font-size: 0.7rem;
-            }
-
-            .spell-text {
-                font-size: 1.6rem;
-            }
-
-            .game-rules {
-                padding: 6px 8px;
-                max-width: 100%;
-            }
-
-            .game-rules li {
-                font-size: 0.72rem;
-                line-height: 1.25;
-                padding: 3px 0;
-                padding-left: 14px;
-            }
-
-            .game-start-overlay {
-                padding: 5px;
-            }
-
-            .game-start-overlay h3 {
-                font-size: 1.1rem;
-                margin-bottom: 4px;
-            }
-
-            .game-start-overlay p {
-                font-size: 0.75rem;
-                margin-bottom: 4px;
-            }
-
-            .game-start-btn {
-                padding: 6px 20px;
-                font-size: 0.8rem;
-            }
-
-            .game-status-bar {
-                padding: 4px 10px;
-            }
-
-            #roundLabel {
-                font-size: 0.8rem;
-            }
-
-            .coin-reward {
-                font-size: 0.8rem;
-            }
-
-            .game-end-overlay h3 {
-                font-size: 1.5rem;
-                margin-bottom: 8px;
             }
         }
     </style>
@@ -801,38 +177,11 @@
 
             <!-- 课程网格 -->
             <div class="courses-grid">
-                <!-- 咒语课 -->
-                <div class="course-card" onclick="openCharmsClass()">
-                    <span class="course-tag new">
-                        <span class="tag-zh">热门</span>
-                    </span>
-                    <div class="course-icon">✨</div>
-                    <div class="course-name-zh">咒语课</div>
-                    <div class="course-name-en">Charms Class</div>
-                    <div class="course-description">
-                        <span class="desc-zh">学习各种魔法咒语和技巧</span>
-                        <span class="desc-en">Learn magical spells and techniques</span>
-                    </div>
-                </div>
-
-                <!-- 魔药课 -->
-                <div class="course-card" onclick="openPotionsClass()">
-                    <span class="course-tag new">
-                        <span class="tag-zh">热门</span>
-                    </span>
-                    <div class="course-icon">⚗️</div>
-                    <div class="course-name-zh">魔药课</div>
-                    <div class="course-name-en">Potions Class</div>
-                    <div class="course-description">
-                        <span class="desc-zh">学习制作各种魔法药水</span>
-                        <span class="desc-en">Learn to brew magical potions</span>
-                    </div>
-                </div>
-
                 <!-- 飞行课 -->
                 <div class="course-card" onclick="openFlyingClass()">
                     <span class="course-tag new">
                         <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
                     </span>
                     <div class="course-icon">🧹</div>
                     <div class="course-name-zh">飞行课</div>
@@ -843,10 +192,41 @@
                     </div>
                 </div>
 
+                <!-- 咒语课 -->
+                <div class="course-card" onclick="openCharmsClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
+                    </span>
+                    <div class="course-icon">✨</div>
+                    <div class="course-name-zh">咒语课</div>
+                    <div class="course-name-en">Charms Class</div>
+                    <div class="course-description">
+                        <span class="desc-zh">学习各种魔法咒语</span>
+                        <span class="desc-en">Learn various magic spells</span>
+                    </div>
+                </div>
+
+                <!-- 魔药课 -->
+                <div class="course-card" onclick="openPotionsClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
+                    </span>
+                    <div class="course-icon">⚗️</div>
+                    <div class="course-name-zh">魔药课</div>
+                    <div class="course-name-en">Potions Class</div>
+                    <div class="course-description">
+                        <span class="desc-zh">学习制作各种魔法药水</span>
+                        <span class="desc-en">Learn to brew magical potions</span>
+                    </div>
+                </div>
+
                 <!-- 黑魔法防御术 -->
                 <div class="course-card" onclick="openDADAClass()">
                     <span class="course-tag new">
                         <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
                     </span>
                     <div class="course-icon">🛡️</div>
                     <div class="course-name-zh">黑魔法防御术</div>
@@ -868,6 +248,20 @@
                     <div class="course-description">
                         <span class="desc-zh">学习改变物体的形态</span>
                         <span class="desc-en">Learn to transform objects</span>
+                    </div>
+                </div>
+
+                <!-- 占卜课 -->
+                <div class="course-card coming-soon">
+                    <span class="course-tag">
+                        <span class="tag-zh">即将推出</span>
+                    </span>
+                    <div class="course-icon">🔮</div>
+                    <div class="course-name-zh">占卜课</div>
+                    <div class="course-name-en">Divination</div>
+                    <div class="course-description">
+                        <span class="desc-zh">学习预测未来的方法</span>
+                        <span class="desc-en">Learn ways to predict the future</span>
                     </div>
                 </div>
 
@@ -898,20 +292,6 @@
                         <span class="desc-en">Learn about magical plants</span>
                     </div>
                 </div>
-
-                <!-- 占卜课 -->
-                <div class="course-card coming-soon">
-                    <span class="course-tag">
-                        <span class="tag-zh">即将推出</span>
-                    </span>
-                    <div class="course-icon">🔮</div>
-                    <div class="course-name-zh">占卜课</div>
-                    <div class="course-name-en">Divination</div>
-                    <div class="course-description">
-                        <span class="desc-zh">学习预测未来的方法</span>
-                        <span class="desc-en">Learn ways to predict the future</span>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -922,93 +302,8 @@
         </div>
     </div>
 
-    <!-- 黑魔法防御术游戏弹窗 -->
-    <div class="modal" id="dadaGameModal">
-        <div class="modal-content dada-game-container">
-            <div class="game-header">
-                <button class="game-close-btn" onclick="closeDADAGame()">✕</button>
-                <h2 class="game-title">🛡️ 黑魔法防御术训练</h2>
-            </div>
-
-            <!-- 卢平教授 -->
-            <div class="teacher-lupin">
-                <div class="teacher-avatar">🧑‍🏫</div>
-                <div class="teacher-name">卢平教授</div>
-                <div class="teacher-message" id="teacherMessage">准备好迎接黑魔法挑战了吗？</div>
-            </div>
-
-            <!-- 游戏状态栏 -->
-            <div class="game-status-bar">
-                <div class="player-info">
-                    <div class="player-avatar" id="playerAvatar">🧙</div>
-                    <div class="hp-bar-container">
-                        <div class="hp-bar-label">生命值</div>
-                        <div class="hp-bar">
-                            <div class="hp-fill" id="hpFill"></div>
-                        </div>
-                        <div class="hp-text" id="hpText">10/10</div>
-                    </div>
-                </div>
-                <div class="round-info">
-                    <span id="roundLabel">Round 1</span>
-                    <span class="round-difficulty" id="roundDifficulty">基础</span>
-                </div>
-                <div class="coin-reward">
-                    <span>🪙</span>
-                    <span id="coinReward">+0</span>
-                </div>
-            </div>
-
-            <!-- 攻击显示区域 -->
-            <div class="attack-area" id="attackArea">
-                <div class="game-start-overlay" id="gameStartOverlay">
-                    <h3>🪄 咒语快打</h3>
-                    <p>按提示按键，防御黑魔法攻击！</p>
-                    <div class="game-rules">
-                        <ul>
-                            <li>屏幕显示<span class="highlight">黑魔法攻击</span>，按提示<span class="highlight">依次按键</span></li>
-                            <li>每个攻击有<span class="highlight">3次机会</span>，按对即可防御</li>
-                            <li>按键提示显示<span class="highlight">3秒后消失</span></li>
-                            <li>超时或3次错误扣<span class="highlight">1格血</span></li>
-                            <li>完成3轮可获得<span class="highlight">30金币</span></li>
-                        </ul>
-                    </div>
-                    <button class="game-start-btn" onclick="startDADAGame()">开始训练</button>
-                </div>
-            </div>
-
-            <!-- 当前攻击显示 -->
-            <div class="current-attack" id="currentAttack">
-                <div class="attack-emoji" id="attackEmoji">👻</div>
-                <div class="attack-name" id="attackName">摄魂怪来袭！</div>
-                <div class="attack-timer" id="attackTimer">10.0s</div>
-            </div>
-
-            <!-- 按键提示 -->
-            <div class="key-hints" id="keyHints" style="display: none;">
-                <div class="key-sequence" id="keySequence"></div>
-                <div class="key-hint-text" id="keyHintText"></div>
-            </div>
-
-            <!-- 咒语显示 -->
-            <div class="spell-display" id="spellDisplay">
-                <div class="spell-text" id="spellText">呼神护卫！</div>
-            </div>
-
-            <!-- 游戏结束界面 -->
-            <div class="game-end-overlay" id="gameEndOverlay" style="display: none;">
-                <h3 id="gameEndTitle">🎉 恭喜！</h3>
-                <p id="gameEndMessage">你完成了第一轮训练！</p>
-                <div class="game-stats">
-                    <div>获得金币：<span id="earnedCoins" class="earned-coins">+5</span></div>
-                </div>
-                <button class="game-next-btn" id="gameNextBtn" onclick="nextRound()">下一轮</button>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="draggable-coin.js"></script>
+    <script src="js/coin-manager.js"></script>
     <script>
         // 语言切换
         let currentLang = localStorage.getItem('siteLanguage') || 'zh';
@@ -1017,8 +312,11 @@
             document.body.classList.remove('lang-zh', 'lang-en');
             document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
 
-            document.querySelector('.back-btn').innerHTML = currentLang === 'zh' ?
-                '← 返回' : '← Back';
+            const backBtn = document.querySelector('.back-btn');
+            if (backBtn) {
+                backBtn.innerHTML = currentLang === 'zh' ?
+                    '← 返回' : '← Back';
+            }
         }
 
         // 返回大厅
@@ -1027,24 +325,6 @@
             document.body.style.transition = 'opacity 0.8s ease-in-out';
             setTimeout(() => {
                 window.location.href = 'academy.html';
-            }, 800);
-        }
-
-        // 打开咒语课
-        function openCharmsClass() {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.8s ease-in-out';
-            setTimeout(() => {
-                window.location.href = 'charms-class.html';
-            }, 800);
-        }
-
-        // 打开魔药课
-        function openPotionsClass() {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.8s ease-in-out';
-            setTimeout(() => {
-                window.location.href = 'hogwarts-games.html';
             }, 800);
         }
 
@@ -1057,675 +337,50 @@
             }, 800);
         }
 
-        // ==================== 黑魔法防御术游戏逻辑 ====================
+        // 打开咒语课
+        function openCharmsClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'charms-class.html';
+            }, 800);
+        }
 
-        // 攻击数据
-        const ATTACK_TYPES = [
-            {
-                id: 'dementor',
-                name: '摄魂怪来袭！',
-                emoji: '👻',
-                keys: ['W', ' ', 'D'],
-                spell: '呼神护卫！',
-                keyDisplay: 'W + 空格 + D'
-            },
-            {
-                id: 'bogart',
-                name: '博格特现身！',
-                emoji: '😱',
-                keys: ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter'],
-                spell: '滑稽滑稽！',
-                keyDisplay: '↓ + ↑ + ← + → + 回车'
-            },
-            {
-                id: 'evil_spell',
-                name: '恶咒飞来！',
-                emoji: '💀',
-                keys: ['ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight'],
-                spell: '障碍重重！',
-                keyDisplay: '← → ← →'
-            },
-            {
-                id: 'avada',
-                name: '阿瓦达索命！',
-                emoji: '⚡',
-                keys: ['A', 'S', 'J', 'K'],
-                spell: '破心护！',
-                keyDisplay: 'A + S + J + K'
-            },
-            {
-                id: 'crucio',
-                name: '钻心咒袭来！',
-                emoji: '🔥',
-                keys: ['ArrowUp', 'ArrowDown', 'W', 'S'],
-                spell: '咒立停！',
-                keyDisplay: '↑ + ↓ + W + S'
-            },
-            {
-                id: 'red_cap',
-                name: '红帽子攻击！',
-                emoji: '🧟',
-                keys: ['S', ' ', 'A'],
-                spell: '速速禁锢！',
-                keyDisplay: 'S + 空格 + A'
-            },
-            {
-                id: 'kappa',
-                name: '卡巴出没！',
-                emoji: '🐊',
-                keys: ['D', ' ', 'K'],
-                spell: '火焰熊熊！',
-                keyDisplay: 'D + 空格 + K'
-            },
-            {
-                id: 'grindylow',
-                name: '格林迪洛！',
-                emoji: '🐙',
-                keys: ['ArrowLeft', ' ', 'ArrowRight'],
-                spell: '清水如泉！',
-                keyDisplay: '← + 空格 + →'
-            },
-            {
-                id: 'hinkypunk',
-                name: '欣克庞克！',
-                emoji: '✨',
-                keys: ['W', 'E', ' '],
-                spell: '荧光闪烁！',
-                keyDisplay: 'W + E + 空格'
-            },
-            {
-                id: 'fire_storm',
-                name: '火焰风暴来袭！',
-                emoji: '🔥',
-                keys: ['W', 'A', 'S', 'D', ' '],
-                spell: '火焰护盾！',
-                keyDisplay: 'W + A + S + D + 空格'
-            },
-            {
-                id: 'thunder_strike',
-                name: '雷霆万钧！',
-                emoji: '⚡',
-                keys: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'Enter'],
-                spell: '闪电护盾！',
-                keyDisplay: '↑ + ← + ↓ + → + 回车'
-            },
-            {
-                id: 'dark_curse',
-                name: '黑暗诅咒！',
-                emoji: '🌑',
-                keys: ['A', 'D', ' ', 'A', 'D'],
-                spell: '光明照耀！',
-                keyDisplay: 'A + D + 空格 + A + D'
-            },
-            {
-                id: 'shield_breaker',
-                name: '破盾攻击！',
-                emoji: '💢',
-                keys: ['W', ' ', 'S', ' ', 'D'],
-                spell: '坚不可摧！',
-                keyDisplay: 'W + 空格 + S + 空格 + D'
-            },
-            {
-                id: 'phantom_strike',
-                name: '幻影突袭！',
-                emoji: '👤',
-                keys: ['ArrowUp', 'ArrowDown', 'ArrowUp', 'ArrowDown', 'Enter'],
-                spell: '真知晶球！',
-                keyDisplay: '↑ + ↓ + ↑ + ↓ + 回车'
-            }
-        ];
+        // 打开魔药课（暂时链接到游戏大厅）
+        function openPotionsClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'hogwarts-games.html#potions';
+            }, 800);
+        }
 
-        // Round配置
-        const ROUNDS = [
-            { id: 1, difficulty: '基础', attacks: 10, timeLimit: 10, coins: 5 },
-            { id: 2, difficulty: '进阶', attacks: 5, timeLimit: 5, coins: 10 },
-            { id: 3, difficulty: '大师', attacks: 5, timeLimit: 2, coins: 15 }
-        ];
-
-        // 游戏状态
-        let gameState = {
-            currentRound: 0,
-            currentAttack: 0,
-            hp: 10,
-            maxHp: 10,
-            currentKeys: [],
-            keyIndex: 0,
-            timer: null,
-            timeLeft: 0,
-            attempts: 0,
-            maxAttempts: 3,
-            isActive: false,
-            roundAttacks: [],
-            totalEarnedCoins: 0,
-            keyHintTimer: null
-        };
-
-        // 打开黑魔法防御术游戏
+        // 打开黑魔法防御术
         function openDADAClass() {
-            const modal = document.getElementById('dadaGameModal');
-            modal.style.display = 'flex';
-            resetGame();
-        }
-
-        // 关闭游戏
-        function closeDADAGame() {
-            stopGame();
-            document.getElementById('dadaGameModal').style.display = 'none';
-        }
-
-        // 重置游戏
-        function resetGame() {
-            // 清除按键提示定时器
-            if (gameState.keyHintTimer) {
-                clearTimeout(gameState.keyHintTimer);
-                gameState.keyHintTimer = null;
-            }
-
-            gameState = {
-                currentRound: 0,
-                currentAttack: 0,
-                hp: 10,
-                maxHp: 10,
-                currentKeys: [],
-                keyIndex: 0,
-                timer: null,
-                timeLeft: 0,
-                attempts: 0,
-                maxAttempts: 3,
-                isActive: false,
-                roundAttacks: [],
-                totalEarnedCoins: 0,
-                keyHintTimer: null
-            };
-
-            // 加载玩家头像
-            loadPlayerAvatar();
-
-            // 重置UI
-            document.getElementById('hpFill').style.width = '100%';
-            document.getElementById('hpText').textContent = '10/10';
-            document.getElementById('gameStartOverlay').style.display = 'block';
-            document.getElementById('gameEndOverlay').style.display = 'none';
-            document.getElementById('currentAttack').classList.remove('active');
-            document.getElementById('teacherMessage').textContent = '准备好迎接黑魔法挑战了吗？';
-        }
-
-        // 加载玩家头像
-        function loadPlayerAvatar() {
-            const playerData = JSON.parse(localStorage.getItem('playerData') || '{}');
-            const avatar = playerData.avatar || '🧙';
-            document.getElementById('playerAvatar').textContent = avatar;
-        }
-
-        // 开始游戏
-        function startDADAGame() {
-            document.getElementById('gameStartOverlay').style.display = 'none';
-            gameState.currentRound = 0;
-            gameState.totalEarnedCoins = 0;
-            startRound(0);
-        }
-
-        // 开始Round
-        function startRound(roundIndex) {
-            if (roundIndex >= ROUNDS.length) {
-                // 游戏完成
-                showGameComplete();
-                return;
-            }
-
-            gameState.currentRound = roundIndex;
-            const round = ROUNDS[roundIndex];
-
-            // 更新UI
-            document.getElementById('roundLabel').textContent = `Round ${round.id}`;
-            document.getElementById('roundDifficulty').textContent = round.difficulty;
-            document.getElementById('teacherMessage').textContent = `第 ${round.id} 轮训练开始！${round.difficulty}模式！`;
-
-            // 生成攻击序列
-            gameState.roundAttacks = generateRoundAttacks(round);
-            gameState.currentAttack = 0;
-            gameState.isActive = true;
-
-            // 开始第一个攻击
-            setTimeout(() => spawnAttack(), 500);
-        }
-
-        // 生成Round攻击序列
-        function generateRoundAttacks(round) {
-            const attacks = [];
-            let availableAttacks;
-
-            // 根据轮数选择不同的攻击类型
-            if (round.id === 1) {
-                // 第一轮：3个按键的攻击
-                availableAttacks = ATTACK_TYPES.filter(a => a.keys.length === 3 && a.id !== 'bogart');
-            } else if (round.id === 2) {
-                // 第二轮：5个按键的攻击
-                availableAttacks = ATTACK_TYPES.filter(a => a.keys.length === 5 && a.id !== 'bogart');
-            } else {
-                // 第三轮：4个按键的攻击
-                availableAttacks = ATTACK_TYPES.filter(a => a.keys.length === 4 && a.id !== 'bogart');
-            }
-
-            for (let i = 0; i < round.attacks; i++) {
-                if (i === round.attacks - 1) {
-                    // 最后一个攻击固定是博格特
-                    attacks.push(ATTACK_TYPES.find(a => a.id === 'bogart'));
-                } else {
-                    // 随机选择其他攻击
-                    const randomAttack = availableAttacks[Math.floor(Math.random() * availableAttacks.length)];
-                    attacks.push(randomAttack);
-                }
-            }
-
-            return attacks;
-        }
-
-        // 生成攻击
-        function spawnAttack() {
-            if (!gameState.isActive || gameState.currentAttack >= gameState.roundAttacks.length) {
-                // Round完成
-                completeRound();
-                return;
-            }
-
-            const attack = gameState.roundAttacks[gameState.currentAttack];
-
-            // 更新UI
-            document.getElementById('attackEmoji').textContent = attack.emoji;
-            document.getElementById('attackName').textContent = attack.name;
-            document.getElementById('currentAttack').classList.add('active');
-
-            // 重新显示按键提示
-            document.getElementById('keyHints').style.display = 'block';
-            document.getElementById('keyHints').style.opacity = '1';
-            displayKeyHints(attack);
-
-            // 初始化按键状态
-            gameState.currentKeys = attack.keys;
-            gameState.keyIndex = 0;
-            gameState.attempts = 0;
-            gameState.timeLeft = ROUNDS[gameState.currentRound].timeLimit;
-
-            // 开始计时
-            updateTimerDisplay();
-            gameState.timer = setInterval(() => {
-                gameState.timeLeft -= 0.1;
-                updateTimerDisplay();
-
-                if (gameState.timeLeft <= 0) {
-                    handleAttackFail();
-                }
-            }, 100);
-
-            // 添加按键监听
-            document.addEventListener('keydown', handleKeyPress);
-
-            // 2秒后隐藏按键提示
-            gameState.keyHintTimer = setTimeout(() => {
-                document.getElementById('keyHints').style.opacity = '0';
-            }, 2000);
-        }
-
-        // 显示按键提示
-        function displayKeyHints(attack) {
-            const keySequence = document.getElementById('keySequence');
-            const keyHintText = document.getElementById('keyHintText');
-
-            keySequence.innerHTML = attack.keys.map((key, index) => {
-                let displayKey = key;
-                if (key === ' ') displayKey = '空格';
-                else if (key === 'ArrowUp') displayKey = '↑';
-                else if (key === 'ArrowDown') displayKey = '↓';
-                else if (key === 'ArrowLeft') displayKey = '←';
-                else if (key === 'ArrowRight') displayKey = '→';
-                else if (key === 'Enter') displayKey = '回车';
-
-                return `<span class="key-item" id="key-${index}">${displayKey}</span>`;
-            }).join('');
-
-            keyHintText.textContent = attack.keyDisplay;
-        }
-
-        // 更新计时器显示
-        function updateTimerDisplay() {
-            const timerDisplay = document.getElementById('attackTimer');
-            timerDisplay.textContent = gameState.timeLeft.toFixed(1) + 's';
-
-            if (gameState.timeLeft <= 2) {
-                timerDisplay.classList.add('warning');
-            } else {
-                timerDisplay.classList.remove('warning');
-            }
-        }
-
-        // 处理按键
-        function handleKeyPress(e) {
-            if (!gameState.isActive) return;
-
-            e.preventDefault();
-
-            const expectedKey = gameState.currentKeys[gameState.keyIndex];
-
-            // 检查按键是否正确（支持大小写和多种格式）
-            const isCorrectKey = (
-                e.key === expectedKey ||
-                e.key.toLowerCase() === expectedKey.toLowerCase() ||
-                e.code === expectedKey ||
-                e.code === `Key${expectedKey.toUpperCase()}` ||
-                e.code === `Digit${expectedKey}`
-            );
-
-            if (isCorrectKey) {
-                // 正确按键
-                const keyElement = document.getElementById(`key-${gameState.keyIndex}`);
-                if (keyElement) {
-                    keyElement.classList.add('pressed');
-                }
-
-                gameState.keyIndex++;
-
-                // 检查是否完成所有按键
-                if (gameState.keyIndex >= gameState.currentKeys.length) {
-                    handleAttackSuccess();
-                }
-            } else {
-                // 错误按键
-                handleWrongKeyPress();
-            }
-        }
-
-        // 处理错误按键
-        function handleWrongKeyPress() {
-            gameState.attempts++;
-
-            // 显示错误反馈
-            const keyElement = document.getElementById(`key-${gameState.keyIndex}`);
-            if (keyElement) {
-                keyElement.classList.add('error');
-                setTimeout(() => keyElement.classList.remove('error'), 500);
-            }
-
-            // 播放错误音效
-            playSound('error');
-
-            if (gameState.attempts >= gameState.maxAttempts) {
-                handleAttackFail();
-            }
-        }
-
-        // 处理攻击成功
-        function handleAttackSuccess() {
-            stopTimer();
-            document.removeEventListener('keydown', handleKeyPress);
-
-            // 清除按键提示定时器
-            if (gameState.keyHintTimer) {
-                clearTimeout(gameState.keyHintTimer);
-                gameState.keyHintTimer = null;
-            }
-
-            const attack = gameState.roundAttacks[gameState.currentAttack];
-
-            // 显示咒语
-            showSpell(attack.spell);
-
-            // 播放成功音效
-            playSound('success');
-
-            // 更新卢平教授消息
-            const messages = [
-                '好样的！',
-                '继续保持！',
-                '出色的防御！',
-                '非常棒的咒语！',
-                '你的反应真快！'
-            ];
-            document.getElementById('teacherMessage').textContent = messages[Math.floor(Math.random() * messages.length)];
-
-            // 等待咒语显示完成后下一个攻击
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
             setTimeout(() => {
-                document.getElementById('currentAttack').classList.remove('active');
-                gameState.currentAttack++;
-                setTimeout(() => spawnAttack(), 300);
-            }, 1500);
+                window.location.href = 'defense.html';
+            }, 800);
         }
 
-        // 处理攻击失败
-        function handleAttackFail() {
-            stopTimer();
-            document.removeEventListener('keydown', handleKeyPress);
-
-            // 清除按键提示定时器
-            if (gameState.keyHintTimer) {
-                clearTimeout(gameState.keyHintTimer);
-                gameState.keyHintTimer = null;
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            if (!container) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
             }
-
-            // 扣血
-            gameState.hp--;
-            updateHPDisplay();
-
-            // 播放受伤音效
-            playSound('damage');
-
-            // 检查游戏是否结束
-            if (gameState.hp <= 0) {
-                gameOver();
-            } else {
-                // 更新卢平教授消息
-                document.getElementById('teacherMessage').textContent = '小心！继续防守！';
-
-                // 显示失败动画
-                document.getElementById('currentAttack').classList.add('shake');
-                setTimeout(() => {
-                    document.getElementById('currentAttack').classList.remove('shake');
-                    document.getElementById('currentAttack').classList.remove('active');
-                    gameState.currentAttack++;
-                    setTimeout(() => spawnAttack(), 300);
-                }, 1000);
-            }
-        }
-
-        // 显示咒语
-        function showSpell(spell) {
-            const spellDisplay = document.getElementById('spellDisplay');
-            document.getElementById('spellText').textContent = spell;
-            spellDisplay.classList.add('active');
-
-            setTimeout(() => {
-                spellDisplay.classList.remove('active');
-            }, 1500);
-        }
-
-        // 更新血条显示
-        function updateHPDisplay() {
-            const hpPercent = (gameState.hp / gameState.maxHp) * 100;
-            document.getElementById('hpFill').style.width = hpPercent + '%';
-            document.getElementById('hpText').textContent = `${gameState.hp}/${gameState.maxHp}`;
-        }
-
-        // 停止计时器
-        function stopTimer() {
-            if (gameState.timer) {
-                clearInterval(gameState.timer);
-                gameState.timer = null;
-            }
-        }
-
-        // 停止游戏
-        function stopGame() {
-            gameState.isActive = false;
-            stopTimer();
-
-            // 清除按键提示定时器
-            if (gameState.keyHintTimer) {
-                clearTimeout(gameState.keyHintTimer);
-                gameState.keyHintTimer = null;
-            }
-
-            document.removeEventListener('keydown', handleKeyPress);
-        }
-
-        // Round完成
-        function completeRound() {
-            gameState.isActive = false;
-            stopTimer();
-            document.removeEventListener('keydown', handleKeyPress);
-
-            const round = ROUNDS[gameState.currentRound];
-            gameState.totalEarnedCoins += round.coins;
-
-            // 更新金币
-            addCoins(round.coins);
-
-            // 显示Round完成界面
-            const overlay = document.getElementById('gameEndOverlay');
-            overlay.classList.add('success');
-            overlay.classList.remove('fail');
-            document.getElementById('gameEndTitle').textContent = '🎉 恭喜！';
-            document.getElementById('gameEndMessage').textContent = `你完成了第 ${round.id} 轮训练！`;
-            document.getElementById('earnedCoins').textContent = `+${round.coins}`;
-
-            const nextBtn = document.getElementById('gameNextBtn');
-            if (gameState.currentRound < ROUNDS.length - 1) {
-                nextBtn.textContent = '下一轮';
-                nextBtn.onclick = () => {
-                    overlay.style.display = 'none';
-                    startRound(gameState.currentRound + 1);
-                };
-            } else {
-                nextBtn.textContent = '完成训练';
-                nextBtn.onclick = () => {
-                    showGameComplete();
-                };
-            }
-
-            overlay.style.display = 'flex';
-            document.getElementById('teacherMessage').textContent = `太棒了！你获得了 ${round.coins} 金币！`;
-        }
-
-        // 游戏完成
-        function showGameComplete() {
-            const overlay = document.getElementById('gameEndOverlay');
-            overlay.classList.add('success');
-            document.getElementById('gameEndTitle').textContent = '🏆 训练完成！';
-            document.getElementById('gameEndMessage').textContent = '恭喜你完成了所有黑魔法防御术训练！';
-            document.getElementById('earnedCoins').textContent = `+${gameState.totalEarnedCoins}`;
-
-            const nextBtn = document.getElementById('gameNextBtn');
-            nextBtn.textContent = '重新开始';
-            nextBtn.onclick = () => {
-                overlay.style.display = 'none';
-                resetGame();
-            };
-
-            overlay.style.display = 'flex';
-            document.getElementById('teacherMessage').textContent = '你是真正的黑魔法防御大师！';
-        }
-
-        // 游戏失败
-        function gameOver() {
-            gameState.isActive = false;
-            stopTimer();
-            document.removeEventListener('keydown', handleKeyPress);
-
-            const overlay = document.getElementById('gameEndOverlay');
-            overlay.classList.add('fail');
-            overlay.classList.remove('success');
-            document.getElementById('gameEndTitle').textContent = '💀 游戏结束';
-            document.getElementById('gameEndMessage').textContent = '你被黑魔法打败了...';
-            document.getElementById('earnedCoins').textContent = `+${gameState.totalEarnedCoins}`;
-
-            const nextBtn = document.getElementById('gameNextBtn');
-            nextBtn.textContent = '重新开始';
-            nextBtn.classList.add('game-restart-btn');
-            nextBtn.onclick = () => {
-                overlay.style.display = 'none';
-                nextBtn.classList.remove('game-restart-btn');
-                resetGame();
-            };
-
-            overlay.style.display = 'flex';
-            document.getElementById('teacherMessage').textContent = '不要气馁，再试一次！';
-        }
-
-        // 添加金币
-        function addCoins(amount) {
-            const playerData = JSON.parse(localStorage.getItem('playerData') || '{"coins": 0, "avatar": "🧙"}');
-            playerData.coins = (playerData.coins || 0) + amount;
-
-            // 保存金币历史
-            const coinHistory = JSON.parse(localStorage.getItem('coinHistory') || '[]');
-            coinHistory.push({
-                date: new Date().toISOString(),
-                amount: amount,
-                source: '黑魔法防御术训练'
-            });
-            localStorage.setItem('coinHistory', JSON.stringify(coinHistory));
-
-            localStorage.setItem('playerData', JSON.stringify(playerData));
-            document.getElementById('coinReward').textContent = `+${gameState.totalEarnedCoins}`;
-        }
-
-        // 简单音效系统
-        const AUDIO_CONTEXT = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AUDIO_CONTEXT();
-            }
-        }
-
-        function playSound(type) {
-            initAudio();
-
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            switch(type) {
-                case 'success':
-                    // 成功音效：上升音调
-                    oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-                    oscillator.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.1); // G5
-                    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                    oscillator.start(audioCtx.currentTime);
-                    oscillator.stop(audioCtx.currentTime + 0.3);
-                    break;
-                case 'error':
-                    // 错误音效：下降音调
-                    oscillator.frequency.setValueAtTime(300, audioCtx.currentTime);
-                    oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.2);
-                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-                    oscillator.start(audioCtx.currentTime);
-                    oscillator.stop(audioCtx.currentTime + 0.2);
-                    break;
-                case 'damage':
-                    // 受伤音效：低沉音调
-                    oscillator.type = 'sawtooth';
-                    oscillator.frequency.setValueAtTime(100, audioCtx.currentTime);
-                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                    oscillator.start(audioCtx.currentTime);
-                    oscillator.stop(audioCtx.currentTime + 0.3);
-                    break;
-            }
-        }
-
-        // 下一轮
-        function nextRound() {
-            document.getElementById('gameEndOverlay').style.display = 'none';
-            startRound(gameState.currentRound + 1);
         }
 
         // 初始化语言显示
         updateLanguage();
+        createMagicParticles();
     </script>
 </body>
 </html>
