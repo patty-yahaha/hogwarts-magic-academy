@@ -545,6 +545,124 @@
                 transform: translateX(-50%);
             }
         }
+
+        /* 魔法特效区域 */
+        .spell-effect-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spell-effect-area {
+            position: relative;
+            height: 300px;
+            background: radial-gradient(ellipse at center bottom, rgba(212, 175, 55, 0.05), transparent 70%);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        #spellCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 魔杖容器 */
+        .wand-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+
+        .wand {
+            width: 40px;
+            height: 200px;
+            transform-origin: center bottom;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* 魔杖发光效果 */
+        #wandTip {
+            transition: all 0.3s ease;
+        }
+
+        #wandTip.glow {
+            fill: #ffffff;
+            animation: wandTipGlow 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes wandTipGlow {
+            from {
+                filter: drop-shadow(0 0 10px #fff);
+            }
+            to {
+                filter: drop-shadow(0 0 30px #fff);
+            }
+        }
+
+        /* 魔杖施法动画 */
+        .wand.casting {
+            animation: wandSwing 0.8s ease-in-out;
+        }
+
+        @keyframes wandSwing {
+            0% { transform: rotate(-15deg); }
+            50% { transform: rotate(20deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* 魔杖失败动画 */
+        .wand.fail {
+            animation: wandShake 0.5s ease-in-out;
+        }
+
+        @keyframes wandShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px) rotate(-5deg); }
+            40% { transform: translateX(10px) rotate(5deg); }
+            60% { transform: translateX(-10px) rotate(-3deg); }
+            80% { transform: translateX(10px) rotate(3deg); }
+        }
+
+        /* 全屏闪光效果 */
+        .screenFlash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, rgba(255, 255, 200, 0.8) 0%, rgba(255, 255, 200, 0.4) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: 9999;
+            animation: screenFlashAnim 0.3s ease-out forwards;
+        }
+
+        @keyframes screenFlashAnim {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 响应式调整特效区高度 */
+        @media (max-width: 768px) {
+            .spell-effect-area {
+                height: 200px;
+            }
+
+            .wand {
+                width: 30px;
+                height: 150px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -578,6 +696,27 @@
             <div class="charms-game-area">
                 <!-- 主区域 -->
                 <div class="charms-main">
+                    <!-- 魔法特效渲染区 -->
+                    <div class="spell-effect-section">
+                        <div class="spell-effect-area" id="spellEffectArea">
+                            <!-- Canvas 特效画布 -->
+                            <canvas id="spellCanvas"></canvas>
+                            <!-- 魔杖 -->
+                            <div class="wand-container">
+                                <svg id="wand" class="wand" viewBox="0 0 20 200" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- 杖身 -->
+                                    <rect x="9" y="0" width="2" height="180" fill="#8B4513" rx="1"/>
+                                    <!-- 杖芯 -->
+                                    <rect x="9.5" y="0" width="1" height="180" fill="#D2B48C"/>
+                                    <!-- 杖底装饰 -->
+                                    <rect x="7" y="175" width="6" height="5" fill="#654321" rx="1"/>
+                                    <!-- 杖尖发光区 -->
+                                    <circle id="wandTip" cx="10" cy="0" r="3" fill="#D4AF37"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- 老师区域 -->
                     <div class="teacher-section">
                         <div class="teacher-avatar">🧙</div>
@@ -651,6 +790,7 @@
         });
     </script>
     <script src="js/coin-manager.js"></script>
+    <script src="js/spell-effects.js"></script>
     <script>
         // 咒语数据（初级 - 18个）
         const SPELLS_DATA = [
@@ -830,8 +970,12 @@
             const correct = input === gameState.currentSpell.spell.toLowerCase();
 
             if (correct) {
+                // 播放成功特效
+                SpellEffects.playSuccess(gameState.currentSpell.spell);
                 handleCorrectAnswer();
             } else {
+                // 播放失败特效
+                SpellEffects.playFail();
                 handleWrongAnswer();
             }
         }

@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>变形课 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* 变形课样式 */
+        .transfiguration-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .transfiguration-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 游戏主区域 */
+        .transfiguration-game-area {
+            display: flex;
+            gap: 20px;
+            min-height: 450px;
+            position: relative;
+        }
+
+        .transfiguration-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 老师区域 */
+        .teacher-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .teacher-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #d4af37, #f4e4ba);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+        }
+
+        .teacher-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            animation: avatarGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.6); }
+        }
+
+        .teacher-dialogue {
+            flex: 1;
+        }
+
+        .dialogue-bubble {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(201, 162, 39, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 12px 15px;
+            position: relative;
+        }
+
+        .dialogue-bubble::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 25px;
+            border: 8px solid transparent;
+            border-right-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .dialogue-text {
+            color: #d4af37;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        /* 画板区域 */
+        .canvas-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .canvas-container {
+            background: #1a1a1a;
+            border: 5px solid #8b4513;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        #transfigurationCanvas {
+            display: block;
+            width: 100%;
+            height: 300px;
+            cursor: crosshair;
+        }
+
+        /* 按钮区域 */
+        .button-section {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a3e;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #666, #888);
+            border: 2px solid #aaa;
+            color: white;
+        }
+
+        .action-btn.secondary:hover {
+            background: linear-gradient(135deg, #888, #aaa);
+            box-shadow: 0 5px 20px rgba(100, 100, 100, 0.5);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border: 2px solid #3498db;
+            color: white;
+        }
+
+        .action-btn.success:hover {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.5);
+        }
+
+        /* 评分区域 */
+        .score-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .score-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .stars-display {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .comment-text {
+            color: #c9a227;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .streak-display {
+            color: #e74c3c;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+        }
+
+        /* 状态面板 */
+        .status-panel {
+            width: 240px;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .status-label {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+        }
+
+        .status-value {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 隐藏初始状态 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .transfiguration-game-area {
+                flex-direction: column;
+            }
+
+            .status-panel {
+                width: 100%;
+            }
+
+            .teacher-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .teacher-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 3rem;
+            }
+
+            .dialogue-bubble::before {
+                left: 50%;
+                top: -15px;
+                border: 10px solid transparent;
+                border-bottom-color: rgba(212, 175, 55, 0.4);
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="transfiguration-container">
+            <!-- 顶部 -->
+            <div class="transfiguration-header">
+                <button class="back-btn" onclick="goBack()">← 返回大厅</button>
+                <h1 class="page-title">✨ 变形课 ✨</h1>
+            </div>
+
+            <!-- 游戏区域 -->
+            <div class="transfiguration-game-area">
+                <!-- 主区域 -->
+                <div class="transfiguration-main">
+                    <!-- 老师区域 -->
+                    <div class="teacher-section">
+                        <div class="teacher-avatar">🧙‍♀️</div>
+                        <div class="teacher-dialogue">
+                            <div class="dialogue-bubble">
+                                <p class="dialogue-text" id="teacherDialogue">
+                                    欢迎来到变形课！我是麦格教授。今天我们学习将火柴变成银针。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 画板区域 -->
+                    <div class="canvas-section">
+                        <div class="canvas-container">
+                            <canvas id="transfigurationCanvas"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 按钮区域 -->
+                    <div class="button-section">
+                        <button class="action-btn success" onclick="startTransfiguration()">开始变形</button>
+                        <button class="action-btn secondary" onclick="clearCanvas()">清除重画</button>
+                        <button class="action-btn" onclick="nextLevel()">下一关</button>
+                        <button class="action-btn" onclick="switchMode()">切换模式</button>
+                    </div>
+
+                    <!-- 评分区域 -->
+                    <div class="score-section">
+                        <div class="score-title">变形评分</div>
+                        <div class="stars-display" id="starsDisplay">⭐⭐⭐⭐⭐</div>
+                        <div class="comment-text" id="commentText">准备开始你的变形术</div>
+                        <div class="streak-display" id="streakDisplay">连续成功: 0</div>
+                    </div>
+                </div>
+
+                <!-- 状态面板 -->
+                <div class="status-panel">
+                    <div class="status-item">
+                        <span class="status-label">❤️ 好感度</span>
+                        <span class="status-value" id="favorabilityDisplay">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">🪙 金币</span>
+                        <span class="status-value" id="coinsDisplay">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">🔥 关卡</span>
+                        <span class="status-value" id="levelDisplay">1</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">🎮 模式</span>
+                        <span class="status-value" id="modeDisplay">单人</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/coin-manager.js"></script>
+    <script>
+        // 游戏状态
+        let gameState = {
+            isDrawing: false,
+            currentPath: [],
+            matchsticks: [],
+            streak: 0,
+            level: 1,
+            favorability: 0,
+            sessionCoins: 0,
+            timeLimit: null,
+            startTime: null,
+            mode: 'single' // single, multiple, moving, timeChallenge
+        };
+
+        // 标准银针模板（不同角度）
+        const needleTemplates = {
+            horizontal: {
+                name: '水平银针',
+                points: [],
+                angle: 0
+            },
+            slightRight: {
+                name: '微向右倾银针',
+                points: [],
+                angle: 30
+            },
+            slightLeft: {
+                name: '微向左倾银针',
+                points: [],
+                angle: -30
+            },
+            vertical: {
+                name: '垂直银针',
+                points: [],
+                angle: 90
+            }
+        };
+
+        // 初始化标准模板
+        function initTemplates() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const length = 250;
+
+            // 水平模板
+            needleTemplates.horizontal.points = generateLinePoints(
+                centerX - length / 2, centerY,
+                centerX + length / 2, centerY,
+                50
+            );
+
+            // 微向右倾30度
+            needleTemplates.slightRight.points = generateLinePoints(
+                centerX - length / 2, centerY - 30,
+                centerX + length / 2, centerY + 30,
+                50
+            );
+
+            // 微向左倾-30度
+            needleTemplates.slightLeft.points = generateLinePoints(
+                centerX - length / 2, centerY + 30,
+                centerX + length / 2, centerY - 30,
+                50
+            );
+
+            // 垂直模板
+            needleTemplates.vertical.points = generateLinePoints(
+                centerX, centerY - length / 2,
+                centerX, centerY + length / 2,
+                50
+            );
+        }
+
+        // 生成一条直线上的采样点
+        function generateLinePoints(x1, y1, x2, y2, numPoints) {
+            const points = [];
+            for (let i = 0; i < numPoints; i++) {
+                const t = i / (numPoints - 1);
+                points.push({
+                    x: x1 + (x2 - x1) * t,
+                    y: y1 + (y2 - y1) * t
+                });
+            }
+            return points;
+        }
+
+        // Canvas 相关
+        const canvas = document.getElementById('transfigurationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置 canvas 尺寸
+            const container = document.querySelector('.canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = 300;
+
+            // 初始化金币系统
+            if (window.CoinManager) {
+                CoinManager.initialize();
+            }
+
+            // 初始化火柴
+            initMatchstick();
+
+            // 初始化标准模板
+            initTemplates();
+
+            // 绘制初始画面
+            drawCanvas();
+
+            // 事件监听
+            setupEventListeners();
+
+            loadGameState();
+            updateDisplays();
+        });
+
+        // 初始化火柴位置
+        function initMatchstick() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // 根据游戏模式初始化火柴
+            gameState.matchsticks = [];
+
+            if (gameState.mode === 'single') {
+                // 单模式 - 中心位置一个火柴
+                gameState.matchsticks.push({
+                    x: centerX - 40,
+                    y: centerY - 5,
+                    width: 80,
+                    height: 10,
+                    id: 'single'
+                });
+            } else if (gameState.mode === 'multiple') {
+                // 多根火柴模式
+                const count = Math.min(gameState.level + 1, 3);
+                const spacing = 120;
+                for (let i = 0; i < count; i++) {
+                    const offsetX = (i - Math.floor(count / 2)) * spacing;
+                    gameState.matchsticks.push({
+                        x: centerX - 40 + offsetX,
+                        y: centerY - 5,
+                        width: 80,
+                        height: 10,
+                        id: `matchstick-${i}`
+                    });
+                }
+            } else if (gameState.mode === 'moving') {
+                // 移动火柴模式
+                gameState.matchsticks.push({
+                    x: centerX - 40 + Math.random() * 100 - 50,
+                    y: centerY - 5 + Math.random() * 60 - 30,
+                    width: 80,
+                    height: 10,
+                    id: 'moving'
+                });
+            }
+
+            // 为了向后兼容，保持单个matchstick引用
+            if (gameState.matchsticks.length > 0) {
+                gameState.matchstick = gameState.matchsticks[0];
+            }
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 鼠标事件
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+
+            // 触摸事件
+            canvas.addEventListener('touchstart', startDrawing);
+            canvas.addEventListener('touchmove', draw);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        // 开始绘制
+        function startDrawing(e) {
+            gameState.isDrawing = true;
+            gameState.currentPath = [];
+
+            const rect = canvas.getBoundingClientRect();
+            let x, y;
+
+            if (e.touches) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.clientX - rect.left;
+                y = e.clientY - rect.top;
+            }
+
+            gameState.currentPath.push({ x, y });
+        }
+
+        // 绘制
+        function draw(e) {
+            if (!gameState.isDrawing) return;
+
+            e.preventDefault();
+
+            const rect = canvas.getBoundingClientRect();
+            let x, y;
+
+            if (e.touches) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.clientX - rect.left;
+                y = e.clientY - rect.top;
+            }
+
+            gameState.currentPath.push({ x, y });
+            drawCanvas();
+        }
+
+        // 停止绘制
+        function stopDrawing() {
+            gameState.isDrawing = false;
+        }
+
+        // 清空画布
+        function clearCanvas() {
+            gameState.currentPath = [];
+            drawCanvas();
+        }
+
+        // 绘制整个画布
+        function drawCanvas() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制火柴
+            drawMatchstick();
+
+            // 绘制当前路径
+            if (gameState.currentPath.length > 1) {
+                drawPath(gameState.currentPath);
+            }
+        }
+
+        // 绘制火柴
+        function drawMatchstick() {
+            // 绘制所有火柴
+            gameState.matchsticks.forEach(matchstick => {
+                // 火柴杆
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(matchstick.x, matchstick.y, matchstick.width, matchstick.height);
+
+                // 火柴头（红色火焰）
+                ctx.fillStyle = '#FF4500';
+                ctx.beginPath();
+                ctx.arc(matchstick.x + matchstick.width, matchstick.y + matchstick.height / 2, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 火焰发光效果
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#FF6600';
+                ctx.fillStyle = '#FF8C00';
+                ctx.beginPath();
+                ctx.arc(matchstick.x + matchstick.width, matchstick.y + matchstick.height / 2, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        // 绘制路径
+        function drawPath(points) {
+            ctx.strokeStyle = '#C0C0C0';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.shadowBlur = 5;
+            ctx.shadowColor = '#FFFFFF';
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        // 开始变形
+        function startTransfiguration() {
+            if (gameState.currentPath.length < 10) {
+                showMessage('请画出更完整的银针形状', 'error');
+                return;
+            }
+
+            // 显示施法动画
+            showCastingAnimation();
+
+            // 延迟计算评分，让动画更自然
+            setTimeout(() => {
+                const score = calculateScore();
+                updateScoreDisplay(score);
+
+                // 如果变形成功，播放变形动画
+                if (score >= 60) {
+                    playTransfigurationAnimation();
+                }
+            }, 1500);
+        }
+
+        // 显示施法动画
+        function showCastingAnimation() {
+            const canvasEl = document.getElementById('transfigurationCanvas');
+            canvasEl.style.filter = 'brightness(1.3)';
+            canvasEl.style.transition = 'filter 0.5s ease';
+
+            // 播放魔法音效（如果有）
+            playMagicSound();
+
+            setTimeout(() => {
+                canvasEl.style.filter = 'brightness(1)';
+            }, 1000);
+        }
+
+        // 播放变形动画
+        function playTransfigurationAnimation() {
+            let progress = 0;
+            const duration = 1500;
+            const startTime = Date.now();
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                progress = Math.min(elapsed / duration, 1);
+
+                drawCanvas();
+
+                // 绘制变形过程
+                ctx.save();
+
+                // 为每个火柴绘制魔法粒子
+                gameState.matchsticks.forEach(matchstick => {
+                    drawMagicParticles(matchstick, progress);
+                });
+
+                // 火柴到银针的变形
+                if (progress < 0.5) {
+                    // 火柴溶解阶段
+                    const dissolveProgress = progress * 2;
+                    ctx.globalAlpha = 1 - dissolveProgress;
+                    drawMatchstick();
+                    ctx.globalAlpha = 1;
+                } else {
+                    // 银针出现阶段
+                    const appearProgress = (progress - 0.5) * 2;
+                    ctx.globalAlpha = appearProgress;
+                    gameState.matchsticks.forEach(matchstick => {
+                        drawSilverNeedle(matchstick, appearProgress);
+                    });
+                    ctx.globalAlpha = 1;
+                }
+
+                ctx.restore();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // 动画完成后，重置为火柴并清除路径
+                    setTimeout(() => {
+                        clearCanvas();
+                        initMatchstick();
+                        drawCanvas();
+                        showMessage('变形成功！继续下一关挑战。', 'success');
+                    }, 500);
+                }
+            }
+
+            animate();
+        }
+
+        // 绘制魔法粒子
+        function drawMagicParticles(matchstick, progress) {
+            const centerX = matchstick.x + matchstick.width / 2;
+            const centerY = matchstick.y + matchstick.height / 2;
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const angle = (i / particleCount) * Math.PI * 2;
+                const radius = 30 + progress * 50;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 2 + progress * 2, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(192, 192, 255, ${1 - progress})`;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#C0C0FF';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // 绘制银针
+        function drawSilverNeedle(matchstick, progress) {
+            const centerX = matchstick.x + matchstick.width / 2;
+            const centerY = matchstick.y + matchstick.height / 2;
+            const needleLength = matchstick.width * 1.5;
+            const needleWidth = matchstick.height * 0.5;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(progress, progress);
+
+            // 银针
+            ctx.strokeStyle = '#C0C0C0';
+            ctx.lineWidth = needleWidth;
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#FFFFFF';
+
+            ctx.beginPath();
+            ctx.moveTo(-needleLength / 2, 0);
+            ctx.lineTo(needleLength / 2, 0);
+            ctx.stroke();
+
+            // 针尖
+            ctx.beginPath();
+            ctx.moveTo(needleLength / 2, 0);
+            ctx.lineTo(needleLength / 2 + 8, -3);
+            ctx.lineTo(needleLength / 2 + 8, 3);
+            ctx.closePath();
+            ctx.fillStyle = '#C0C0C0';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // 播放魔法音效（简化实现）
+        function playMagicSound() {
+            // 这里可以添加实际的音频播放代码
+            console.log('Playing magic sound');
+        }
+
+        // 计算评分
+        function calculateScore() {
+            // 简化评分算法，使其更容易得到高分
+            if (gameState.currentPath.length < 15) {
+                return 30;
+            }
+
+            // 基础评分：路径长度
+            let score = 40;
+
+            // 计算路径覆盖率（匹配银针的基本形状）
+            const coverage = calculatePathCoverage();
+            score += coverage * 30;
+
+            // 计算路径平滑度
+            const smoothness = calculatePathSmoothness();
+            score += smoothness * 20;
+
+            // 计算路径位置匹配度（与火柴位置相关）
+            const positionScore = calculatePositionMatch();
+            score += positionScore * 10;
+
+            // 根据关卡难度调整评分
+            const difficultyFactor = 1 - (gameState.level * 0.03); // 降低难度因子
+            score *= difficultyFactor;
+
+            score = Math.max(0, Math.min(100, Math.floor(score)));
+
+            console.log(`评分计算: 覆盖率${coverage}, 平滑度${smoothness}, 位置${positionScore}, 最终${score}`);
+
+            return score;
+        }
+
+        // 计算路径覆盖率
+        function calculatePathCoverage() {
+            // 火柴位置
+            const matchstick = gameState.matchstick;
+            const matchstickCenterX = matchstick.x + matchstick.width / 2;
+            const matchstickCenterY = matchstick.y + matchstick.height / 2;
+
+            // 计算用户路径的分布范围
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+
+            gameState.currentPath.forEach(p => {
+                minX = Math.min(minX, p.x);
+                maxX = Math.max(maxX, p.x);
+                minY = Math.min(minY, p.y);
+                maxY = Math.max(maxY, p.y);
+            });
+
+            // 理想的银针覆盖范围应该比火柴长
+            const idealMinX = matchstickCenterX - 100;
+            const idealMaxX = matchstickCenterX + 150;
+            const idealMinY = matchstickCenterY - 15;
+            const idealMaxY = matchstickCenterY + 15;
+
+            // 计算覆盖度
+            const xCoverage = Math.max(0, Math.min(1,
+                (Math.min(maxX, idealMaxX) - Math.max(minX, idealMinX)) / (idealMaxX - idealMinX)
+            ));
+            const yCoverage = Math.max(0, Math.min(1,
+                (Math.min(maxY, idealMaxY) - Math.max(minY, idealMinY)) / (idealMaxY - idealMinY)
+            ));
+
+            return (xCoverage + yCoverage) / 2;
+        }
+
+        // 计算路径平滑度
+        function calculatePathSmoothness() {
+            if (gameState.currentPath.length < 2) return 0;
+
+            let totalDistance = 0;
+            let smoothnessScore = 0;
+
+            for (let i = 1; i < gameState.currentPath.length; i++) {
+                const dx = gameState.currentPath[i].x - gameState.currentPath[i-1].x;
+                const dy = gameState.currentPath[i].y - gameState.currentPath[i-1].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                totalDistance += distance;
+
+                // 平滑度：相邻点距离变化不大
+                if (i > 1) {
+                    const dxPrev = gameState.currentPath[i-1].x - gameState.currentPath[i-2].x;
+                    const dyPrev = gameState.currentPath[i-1].y - gameState.currentPath[i-2].y;
+                    const distancePrev = Math.sqrt(dxPrev * dxPrev + dyPrev * dyPrev);
+
+                    const ratio = Math.min(distance, distancePrev) / Math.max(distance, distancePrev);
+                    smoothnessScore += ratio;
+                }
+            }
+
+            if (gameState.currentPath.length < 3) return 0.5;
+
+            return Math.min(1, smoothnessScore / (gameState.currentPath.length - 2));
+        }
+
+        // 计算位置匹配度
+        function calculatePositionMatch() {
+            const matchstick = gameState.matchstick;
+            const matchstickCenterX = matchstick.x + matchstick.width / 2;
+            const matchstickCenterY = matchstick.y + matchstick.height / 2;
+
+            // 计算用户路径的中心
+            let sumX = 0, sumY = 0;
+            gameState.currentPath.forEach(p => {
+                sumX += p.x;
+                sumY += p.y;
+            });
+
+            const centerX = sumX / gameState.currentPath.length;
+            const centerY = sumY / gameState.currentPath.length;
+
+            // 距离火柴中心的距离
+            const distance = Math.sqrt(
+                Math.pow(centerX - matchstickCenterX, 2) +
+                Math.pow(centerY - matchstickCenterY, 2)
+            );
+
+            // 最大可接受距离
+            const maxDistance = 80;
+
+            return Math.max(0, 1 - (distance / maxDistance));
+        }
+
+        // 路径预处理
+        function preprocessPath(points) {
+            // 1. 平滑处理（移动平均）
+            const smoothed = [];
+            const windowSize = 3;
+            for (let i = 0; i < points.length; i++) {
+                let sumX = 0, sumY = 0, count = 0;
+                for (let j = Math.max(0, i - windowSize); j <= Math.min(points.length - 1, i + windowSize); j++) {
+                    sumX += points[j].x;
+                    sumY += points[j].y;
+                    count++;
+                }
+                smoothed.push({
+                    x: sumX / count,
+                    y: sumY / count
+                });
+            }
+
+            // 2. 标准化：将路径缩放到模板尺寸并居中
+            return normalizePath(smoothed);
+        }
+
+        // 路径标准化
+        function normalizePath(points) {
+            // 找到边界框
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+
+            points.forEach(p => {
+                minX = Math.min(minX, p.x);
+                maxX = Math.max(maxX, p.x);
+                minY = Math.min(minY, p.y);
+                maxY = Math.max(maxY, p.y);
+            });
+
+            // 计算尺寸和中心
+            const width = maxX - minX;
+            const height = maxY - minY;
+            const centerX = (minX + maxX) / 2;
+            const centerY = (minY + maxY) / 2;
+
+            // 目标尺寸（与模板相同）
+            const targetLength = 250;
+            const targetCenterX = canvas.width / 2;
+            const targetCenterY = canvas.height / 2;
+
+            // 计算缩放比例
+            const scale = targetLength / Math.max(width, height);
+
+            // 标准化路径
+            return points.map(p => ({
+                x: (p.x - centerX) * scale + targetCenterX,
+                y: (p.y - centerY) * scale + targetCenterY
+            }));
+        }
+
+        // 计算相似度（基于DTW算法简化版）
+        function calculateSimilarity(path1, path2) {
+            // 使用动态时间规整计算距离
+            const distMatrix = [];
+            for (let i = 0; i < path1.length; i++) {
+                distMatrix[i] = [];
+                for (let j = 0; j < path2.length; j++) {
+                    const dx = path1[i].x - path2[j].x;
+                    const dy = path1[i].y - path2[j].y;
+                    distMatrix[i][j] = Math.sqrt(dx * dx + dy * dy);
+                }
+            }
+
+            const dtw = [];
+            for (let i = 0; i < path1.length; i++) {
+                dtw[i] = [];
+                for (let j = 0; j < path2.length; j++) {
+                    if (i === 0 && j === 0) {
+                        dtw[i][j] = distMatrix[i][j];
+                    } else if (i === 0) {
+                        dtw[i][j] = distMatrix[i][j] + dtw[i][j - 1];
+                    } else if (j === 0) {
+                        dtw[i][j] = distMatrix[i][j] + dtw[i - 1][j];
+                    } else {
+                        dtw[i][j] = distMatrix[i][j] + Math.min(dtw[i - 1][j], dtw[i][j - 1], dtw[i - 1][j - 1]);
+                    }
+                }
+            }
+
+            const avgDistance = dtw[path1.length - 1][path2.length - 1] / (path1.length + path2.length);
+
+            // 将距离转换为相似度（0-1范围）
+            const maxDistance = 200; // 设定最大距离阈值
+            const similarity = Math.max(0, 1 - (avgDistance / maxDistance));
+
+            return similarity;
+        }
+
+        // 更新评分显示
+        function updateScoreDisplay(score) {
+            const stars = getStars(score);
+            const comment = getComment(score);
+
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('commentText').textContent = comment;
+
+            // 检查是否成功变形
+            if (score >= 60) {
+                gameState.streak++;
+
+                // 奖励金币
+                gameState.sessionCoins += 3;
+                if (window.CoinManager) {
+                    CoinManager.addCoins(3);
+                }
+
+                // 检查是否提升好感度
+                if (gameState.streak % 5 === 0) {
+                    gameState.favorability++;
+                    showMessage('优秀！好感度+1', 'success');
+                }
+            } else {
+                gameState.streak = 0;
+            }
+
+            updateDisplays();
+        }
+
+        // 获取星级
+        function getStars(score) {
+            if (score >= 90) return '⭐⭐⭐⭐⭐';
+            if (score >= 80) return '⭐⭐⭐⭐';
+            if (score >= 60) return '⭐⭐⭐';
+            if (score >= 40) return '⭐⭐';
+            return '⭐';
+        }
+
+        // 获取评语
+        function getComment(score) {
+            if (score >= 90) return '完美！变形术大师级水平';
+            if (score >= 80) return '非常好！接近完美';
+            if (score >= 60) return '合格！继续努力';
+            if (score >= 40) return '需要改进，再试一次';
+            return '变形失败，重新开始';
+        }
+
+        // 下一关
+        function nextLevel() {
+            gameState.level++;
+            gameState.currentPath = [];
+            initMatchstick();
+            drawCanvas();
+            updateDisplays();
+            showMessage(`第 ${gameState.level} 关，准备好！`, 'info');
+        }
+
+        // 显示消息
+        function showMessage(text, type) {
+            const dialogueEl = document.getElementById('teacherDialogue');
+            dialogueEl.textContent = text;
+
+            // 简单的样式变化
+            dialogueEl.style.color = type === 'success' ? '#2ecc71' :
+                                     type === 'error' ? '#e74c3c' : '#d4af37';
+        }
+
+        // 加载游戏状态
+        function loadGameState() {
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            try {
+                const savedMentorData = localStorage.getItem(mentorAffectionKey);
+                if (savedMentorData) {
+                    const data = JSON.parse(savedMentorData);
+                    gameState.favorability = data['mcgonagall'] || 0;
+                }
+            } catch (e) {
+                console.error('Error reading mentor affection data:', e);
+            }
+
+            const savedLevel = localStorage.getItem('transfigurationLevel');
+            if (savedLevel) {
+                gameState.level = parseInt(savedLevel);
+            }
+
+            const savedStreak = localStorage.getItem('transfigurationStreak');
+            if (savedStreak) {
+                gameState.streak = parseInt(savedStreak);
+            }
+
+            const savedMode = localStorage.getItem('transfigurationMode');
+            if (savedMode) {
+                gameState.mode = savedMode;
+            }
+
+            const savedSessionCoins = localStorage.getItem('transfigurationSessionCoins');
+            if (savedSessionCoins) {
+                gameState.sessionCoins = parseInt(savedSessionCoins);
+            } else {
+                gameState.sessionCoins = 0;
+            }
+        }
+
+        // 保存游戏状态
+        function saveGameState() {
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            let data = {};
+            try {
+                const savedData = localStorage.getItem(mentorAffectionKey);
+                if (savedData) {
+                    data = JSON.parse(savedData);
+                }
+            } catch (e) {
+                console.error('Error parsing mentor affection data:', e);
+            }
+
+            data['mcgonagall'] = gameState.favorability;
+            localStorage.setItem(mentorAffectionKey, JSON.stringify(data));
+
+            localStorage.setItem('transfigurationLevel', gameState.level.toString());
+            localStorage.setItem('transfigurationStreak', gameState.streak.toString());
+            localStorage.setItem('transfigurationMode', gameState.mode);
+            localStorage.setItem('transfigurationSessionCoins', gameState.sessionCoins.toString());
+        }
+
+        // 更新显示
+        function updateDisplays() {
+            document.getElementById('favorabilityDisplay').textContent = gameState.favorability;
+            document.getElementById('coinsDisplay').textContent = gameState.sessionCoins;
+            document.getElementById('levelDisplay').textContent = gameState.level;
+            document.getElementById('streakDisplay').textContent = `连续成功: ${gameState.streak}`;
+
+            // 更新模式显示
+            const modeText = getModeText();
+            document.getElementById('modeDisplay').textContent = modeText;
+
+            saveGameState();
+        }
+
+        // 获取模式显示文本
+        function getModeText() {
+            const modeMap = {
+                'single': '单人',
+                'multiple': '多根',
+                'moving': '移动',
+                'timeChallenge': '计时'
+            };
+            return modeMap[gameState.mode] || '单人';
+        }
+
+        // 切换模式
+        function switchMode() {
+            const modes = ['single', 'multiple', 'moving', 'timeChallenge'];
+            const currentIndex = modes.indexOf(gameState.mode);
+            const nextIndex = (currentIndex + 1) % modes.length;
+            gameState.mode = modes[nextIndex];
+
+            // 初始化新模式的火柴
+            initMatchstick();
+            clearCanvas();
+            drawCanvas();
+            updateDisplays();
+
+            // 显示模式说明
+            const modeDescription = getModeDescription();
+            showMessage(modeDescription, 'info');
+        }
+
+        // 获取模式说明
+        function getModeDescription() {
+            const descriptions = {
+                'single': '单人模式：画出一根银针，完成变形。',
+                'multiple': '多根火柴模式：画出多根银针，挑战更高难度。',
+                'moving': '移动火柴模式：火柴会移动，需要精准控制。',
+                'timeChallenge': '计时挑战模式：在时间限制内完成变形。'
+            };
+            return descriptions[gameState.mode] || '单人模式：画出一根银针，完成变形。';
+        }
+
+        // 返回
+        function goBack() {
+            saveGameState();
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'hogwarts-games.html';
+            }, 800);
+        }
+
+        // 页面关闭前保存状态
+        window.addEventListener('beforeunload', () => {
+            saveGameState();
+        });
+    </script>
+</body>
+</html>

@@ -835,10 +835,10 @@
                 </div>
 
                 <!-- 黑魔法防御术 -->
-                <div class="course-card coming-soon">
-                    <span class="course-tag">
-                        <span class="tag-zh">即将推出</span>
-                        <span class="tag-en">Coming Soon</span>
+                <div class="course-card" onclick="openDADAClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en" style="display: none;">Hot</span>
                     </span>
                     <div class="course-icon">🛡️</div>
                     <div class="course-name-zh">黑魔法防御术</div>
@@ -880,10 +880,10 @@
                 </div>
 
                 <!-- 变形课 -->
-                <div class="course-card coming-soon">
-                    <span class="course-tag">
-                        <span class="tag-zh">即将推出</span>
-                        <span class="tag-en">Coming Soon</span>
+                <div class="course-card" onclick="openTransfigurationClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en" style="display: none;">Hot</span>
                     </span>
                     <div class="course-icon">🔄</div>
                     <div class="course-name-zh">变形课</div>
@@ -1113,6 +1113,15 @@
             }, 800);
         }
 
+        // 打开黑魔法防御术
+        function openDADAClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'defense.html';
+            }, 800);
+        }
+
         // 打开飞行课
         function openFlyingClass() {
             if (!checkEnergy()) {
@@ -1125,6 +1134,15 @@
             document.body.style.transition = 'opacity 0.8s ease-in-out';
             setTimeout(() => {
                 window.location.href = 'flying-class.html';
+            }, 800);
+        }
+
+        // 打开变形课
+        function openTransfigurationClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'transfiguration-class.html';
             }, 800);
         }
 
