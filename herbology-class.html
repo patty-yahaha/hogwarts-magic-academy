@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>草药课 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* 草药课专用样式 */
+        .herbology-container {
+            max-width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 首页说明区域 */
+        .home-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .home-section.hidden {
+            display: none;
+        }
+
+        .home-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .home-description {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .home-description p {
+            color: #e0e0e0;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .home-description strong {
+            color: #d4af37;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 15px 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            border: 2px solid #1e8449;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+            text-transform: uppercase;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(39, 174, 96, 0.6);
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+        }
+
+        /* 游戏区域 */
+        .game-section {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            padding: 15px;
+            gap: 12px;
+        }
+
+        .game-section.visible {
+            display: flex;
+        }
+
+        /* 老师区域 */
+        .teacher-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            min-height: 100px;
+        }
+
+        .teacher-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(145deg, #27ae60, #1e8449);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+            position: relative;
+        }
+
+        .teacher-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            animation: avatarGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(39, 174, 96, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(39, 174, 96, 0.6); }
+        }
+
+        .teacher-dialogue {
+            flex: 1;
+            min-height: 50px;
+        }
+
+        .dialogue-bubble {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.15), rgba(30, 144, 255, 0.1));
+            border: 2px solid rgba(39, 174, 96, 0.4);
+            border-radius: 12px;
+            padding: 12px 15px;
+            position: relative;
+            color: #e0e0e0;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+        }
+
+        .dialogue-bubble::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 25px;
+            border: 8px solid transparent;
+            border-right-color: rgba(39, 174, 96, 0.4);
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 12px 15px;
+            height: 60px;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-value {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.3rem;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            font-weight: bold;
+        }
+
+        /* 九宫格花盆区域 */
+        .pots-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .pot {
+            background: linear-gradient(145deg, #8b7355, #6b5344);
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 10px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .pot:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 -10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .pot::before {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            width: 60%;
+            height: 40%;
+            background: linear-gradient(180deg, #8d6e63, #5d4037);
+            border-radius: 50% 50% 0 0;
+            z-index: 1;
+        }
+
+        /* 目标显示区域 */
+        .pot-target {
+            position: absolute;
+            top: 10px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .pot-target.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .pot-target.clicked {
+            animation: clickAnimation 0.5s ease-out;
+        }
+
+        .pot-target.timeout {
+            animation: timeoutAnimation 0.5s ease-out;
+        }
+
+        @keyframes clickAnimation {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.3); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+
+        @keyframes timeoutAnimation {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.9); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+
+        .pot-target.mandrake {
+            color: #2ecc71;
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+        }
+
+        .pot-target.peeves {
+            color: #9b59b6;
+            text-shadow: 0 0 10px rgba(155, 89, 182, 0.6);
+        }
+
+        /* 控制按钮 */
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .control-btn {
+            background: linear-gradient(145deg, rgba(40, 50, 70, 0.95), rgba(30, 40, 60, 0.98));
+            color: #e0e0e0;
+            padding: 12px 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            border-color: #d4af37;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .next-level-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-color: #21618c;
+        }
+
+        .next-level-btn:hover {
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.5);
+        }
+
+        /* 胜利信息 */
+        .victory-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.98), rgba(10, 20, 40, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px 50px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.5);
+        }
+
+        .victory-panel.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .victory-panel h2 {
+            color: #d4af37;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .victory-panel p {
+            color: #e0e0e0;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+
+        /* 失败信息 */
+        .fail-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(50, 10, 10, 0.98), rgba(40, 5, 5, 0.98));
+            border: 3px solid #e74c3c;
+            border-radius: 20px;
+            padding: 30px 50px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 20px 60px rgba(231, 76, 60, 0.5);
+        }
+
+        .fail-panel.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .fail-panel h2 {
+            color: #e74c3c;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+        }
+
+        .fail-panel p {
+            color: #e0e0e0;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+
+        .fail-panel .required {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        .fail-panel .your-coins {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        /* 金币变化提示 */
+        .coin-change {
+            position: fixed;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 2000;
+            animation: coinFloat 1s ease-out forwards;
+        }
+
+        .coin-change.positive {
+            color: #2ecc71;
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.8);
+        }
+
+        .coin-change.negative {
+            color: #e74c3c;
+            text-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+        }
+
+        @keyframes coinFloat {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .home-title {
+                font-size: 2rem;
+            }
+
+            .home-description {
+                padding: 15px;
+                font-size: 1rem;
+            }
+
+            .teacher-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.7rem;
+            }
+
+            .dialogue-bubble {
+                font-size: 0.9rem;
+            }
+
+            .status-value {
+                font-size: 1.1rem;
+            }
+
+            .pot-target {
+                width: 50px;
+                height: 50px;
+                font-size: 2.5rem;
+            }
+
+            .control-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">草药课</span>
+                <span class="title-text-en">Herbology Class</span>
+            </h1>
+        </header>
+
+        <!-- 首页 -->
+        <div class="herbology-container">
+            <div class="home-section">
+                <h2 class="home-title">🌿 斯普劳特教授的草药课</h2>
+                <div class="home-description">
+                    <p><strong>课程目标：</strong>学习识别和处理魔法植物，快速反应能力训练</p>
+                    <p><strong>玩法说明：</strong></p>
+                    <p>• 九宫格花盆中会随机冒出 <strong>曼德拉草幼苗（🌱）</strong> 和 <strong>皮皮鬼（🤡）</strong></p>
+                    <p>• 点击 <strong>曼德拉草</strong> 获得 1 金币，点击 <strong>皮皮鬼</strong> 扣除 5 金币</p>
+                    <p>• 每个目标持续 <strong>1.5秒</strong>，超时会消失</p>
+                    <p>• 每关有 <strong>10 轮冒出事件</strong>，结束后检查金币</p>
+                    <p><strong>挑战条件：</strong></p>
+                    <p>• 第 1 关（10个曼德拉草）：至少获得 <strong>8 金币</strong> 才能通过</p>
+                    <p>• 第 2 关（20个曼德拉草）：至少获得 <strong>15 金币</strong> 才能通过</p>
+                    <p>• 第 3 关（30个曼德拉草）：至少获得 <strong>20 金币</strong> 才能通过</p>
+                </div>
+                <button class="start-btn" onclick="startGame()">开始训练</button>
+            </div>
+
+            <!-- 游戏区域 -->
+            <div class="game-section">
+                <!-- 老师区域 -->
+                <div class="teacher-section">
+                    <div class="teacher-avatar">🌱</div>
+                    <div class="teacher-dialogue">
+                        <div class="dialogue-bubble" id="teacher-dialogue">
+                            欢迎来到草药课！现在开始你的训练，小心那些调皮的皮皮鬼！
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 状态栏 -->
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-label">关卡</span>
+                        <span class="status-value" id="level-display">1/3</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">金币</span>
+                        <span class="status-value" id="coins-display">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">进度</span>
+                        <span class="status-value" id="progress-display">0/10</span>
+                    </div>
+                </div>
+
+                <!-- 花盆网格 -->
+                <div class="pots-grid">
+                    <div class="pot" onclick="handlePotClick(0)"><div class="pot-target" id="pot-target-0"></div></div>
+                    <div class="pot" onclick="handlePotClick(1)"><div class="pot-target" id="pot-target-1"></div></div>
+                    <div class="pot" onclick="handlePotClick(2)"><div class="pot-target" id="pot-target-2"></div></div>
+                    <div class="pot" onclick="handlePotClick(3)"><div class="pot-target" id="pot-target-3"></div></div>
+                    <div class="pot" onclick="handlePotClick(4)"><div class="pot-target" id="pot-target-4"></div></div>
+                    <div class="pot" onclick="handlePotClick(5)"><div class="pot-target" id="pot-target-5"></div></div>
+                    <div class="pot" onclick="handlePotClick(6)"><div class="pot-target" id="pot-target-6"></div></div>
+                    <div class="pot" onclick="handlePotClick(7)"><div class="pot-target" id="pot-target-7"></div></div>
+                    <div class="pot" onclick="handlePotClick(8)"><div class="pot-target" id="pot-target-8"></div></div>
+                </div>
+
+                <!-- 控制按钮 -->
+                <div class="control-buttons">
+                    <button class="control-btn next-level-btn" id="next-level-btn" onclick="nextLevel()" disabled>下一关</button>
+                </div>
+            </div>
+
+            <!-- 胜利面板 -->
+            <div class="victory-panel" id="victory-panel">
+                <h2>🎉 恭喜你！</h2>
+                <p>你通过了草药课考试！</p>
+                <p>获得了 <strong id="victory-coins">0</strong> 金币奖励</p>
+                <button class="start-btn" onclick="initGame()">重新开始</button>
+            </div>
+
+            <!-- 失败面板 -->
+            <div class="fail-panel" id="fail-panel">
+                <h2>😔 挑战失败</h2>
+                <p>未达到关卡最低金币要求</p>
+                <p>
+                    要求: <span class="required" id="required-coins">0</span> 金币<br>
+                    你的金币: <span class="your-coins" id="your-coins">0</span> 金币
+                </p>
+                <p>请重新挑战！</p>
+                <button class="start-btn" onclick="initGame()">重新开始</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/coin-manager.js"></script>
+    <script>
+        // 音效管理器（使用 Web Audio API）
+        let audioContext = null;
+
+        function getAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        const SoundManager = {
+            playTone(frequency, duration, type = 'sine', volume = 0.3) {
+                try {
+                    const ctx = getAudioContext();
+                    const oscillator = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + duration);
+                } catch (e) {
+                    console.log('[Sound]', e);
+                }
+            },
+            mandrakeClick() {
+                // 轻快的"叮"声
+                this.playTone(880, 0.1, 'sine', 0.3);
+                setTimeout(() => this.playTone(1100, 0.1, 'sine', 0.2), 50);
+            },
+            mandrakeScream() {
+                // 短促的高音尖叫
+                this.playTone(1500, 0.3, 'sawtooth', 0.2);
+            },
+            peevesClick() {
+                // 滑稽的笑声/噗声
+                this.playTone(200, 0.2, 'square', 0.2);
+                setTimeout(() => this.playTone(150, 0.3, 'square', 0.15), 100);
+            },
+            levelComplete() {
+                // 简短胜利音效
+                this.playTone(523, 0.15, 'sine', 0.3);
+                setTimeout(() => this.playTone(659, 0.15, 'sine', 0.3), 150);
+                setTimeout(() => this.playTone(784, 0.3, 'sine', 0.3), 300);
+            },
+            victory() {
+                // 完整胜利音效
+                const notes = [523, 587, 659, 698, 784, 880, 988, 1047];
+                notes.forEach((freq, i) => {
+                    setTimeout(() => this.playTone(freq, 0.2, 'sine', 0.3), i * 100);
+                });
+            }
+        };
+
+        // 游戏状态管理
+        const LEVEL_GOLD_REQUIREMENTS = {
+            1: 8,
+            2: 15,
+            3: 20
+        };
+        const gameState = {
+            currentLevel: 1,
+            coins: 0,
+            sessionCoins: 0,  // 本局游戏内获得的金币（可负）
+            popupCount: 0,    // 已发生的冒出次数
+            maxPopups: 10,     // 每关总冒出事件数
+            mandrakeCount: 0,  // 成功点击曼德拉草次数
+            isPlaying: false,
+            activeTargets: [],
+            popupTimer: null,
+            levelStartTime: null
+        };
+
+        // 关卡配置
+        const LEVEL_CONFIG = {
+            1: { mandrakes: 1, peevesChance: 0.2, minCoins: 8 },
+            2: { mandrakes: 2, peevesChance: 0.3, minCoins: 15 },
+            3: { mandrakes: 3, peevesChance: 0.4, minCoins: 20 }
+        };
+
+        // 初始化游戏
+        function initGame() {
+            gameState.currentLevel = 1;
+            gameState.coins = CoinManager.getCurrentCoins();
+            gameState.sessionCoins = 0;  // 本局游戏内获得的金币（可负）
+            gameState.popupCount = 0;
+            gameState.mandrakeCount = 0;
+            gameState.isPlaying = false;
+            gameState.activeTargets = [];
+            if (gameState.popupTimer) {
+                clearTimeout(gameState.popupTimer);
+                gameState.popupTimer = null;
+            }
+
+            updateStatusDisplay();
+            hideVictoryPanel();
+            hideFailPanel();
+            showHomeScreen();
+            document.getElementById('next-level-btn').disabled = true;
+        }
+
+        // 显示首页
+        function showHomeScreen() {
+            document.querySelector('.home-section').style.display = 'block';
+            document.querySelector('.game-section').classList.remove('visible');
+        }
+
+        // 显示游戏区域
+        function showGameScreen() {
+            document.querySelector('.home-section').style.display = 'none';
+            document.querySelector('.game-section').classList.add('visible');
+        }
+
+        // 开始游戏
+        function startGame() {
+            showGameScreen();
+            gameState.isPlaying = true;
+            startLevel(gameState.currentLevel);
+        }
+
+        // 开始指定关卡
+        function startLevel(level) {
+            gameState.currentLevel = level;
+            gameState.popupCount = 0;
+            gameState.mandrakeCount = 0;
+            gameState.activeTargets = [];
+            updateStatusDisplay();
+            document.getElementById('next-level-btn').disabled = true;
+
+            // 更新老师对话
+            updateTeacherDialogue(level);
+
+            // 开始冒出事件循环
+            scheduleNextPopup();
+        }
+
+        // 更新老师对话
+        function updateTeacherDialogue(level) {
+            const dialogues = {
+                1: "很好！现在开始第一关，注意那些可爱的曼德拉草！",
+                2: "太棒了！第二关难度升级，会有更多的曼德拉草同时出现！",
+                3: "最后一关！小心，皮皮鬼出现的概率更高了！"
+            };
+            document.getElementById('teacher-dialogue').textContent = dialogues[level] || "继续加油！";
+        }
+
+        // 安排下一次冒出
+        function scheduleNextPopup() {
+            if (!gameState.isPlaying || gameState.popupCount >= gameState.maxPopups) {
+                if (gameState.popupCount >= gameState.maxPopups) {
+                    handleLevelComplete();
+                }
+                return;
+            }
+
+            // 等待0.5秒后开始下一个冒出事件
+            gameState.popupTimer = setTimeout(() => {
+                triggerPopupEvent();
+            }, 500);
+        }
+
+        // 触发冒出事件
+        function triggerPopupEvent() {
+            const config = LEVEL_CONFIG[gameState.currentLevel];
+
+            // 随机选择花盆位置
+            const availablePots = [];
+            for (let i = 0; i < 9; i++) {
+                if (!gameState.activeTargets.some(target => target.potIndex === i)) {
+                    availablePots.push(i);
+                }
+            }
+
+            // 生成曼德拉草
+            const mandrakeCount = config.mandrakes;
+            const selectedPots = [];
+
+            for (let i = 0; i < mandrakeCount && availablePots.length > 0; i++) {
+                const potIndex = availablePots.splice(Math.floor(Math.random() * availablePots.length), 1)[0];
+                spawnMandrake(potIndex);
+                selectedPots.push(potIndex);
+            }
+
+            // 生成皮皮鬼
+            if (Math.random() < config.peevesChance && availablePots.length > 0) {
+                const potIndex = availablePots[Math.floor(Math.random() * availablePots.length)];
+                spawnPeeves(potIndex);
+                selectedPots.push(potIndex);
+            }
+
+            gameState.popupCount++;
+            updateStatusDisplay();
+
+            // 安排下一次冒出
+            scheduleNextPopup();
+        }
+
+        // 生成曼德拉草
+        function spawnMandrake(potIndex) {
+            const target = {
+                potIndex,
+                type: 'mandrake',
+                timerId: setTimeout(() => {
+                    handleTargetTimeout(potIndex);
+                }, 1500)
+            };
+
+            gameState.activeTargets.push(target);
+            showTarget(potIndex, 'mandrake');
+        }
+
+        // 生成皮皮鬼
+        function spawnPeeves(potIndex) {
+            const target = {
+                potIndex,
+                type: 'peeves',
+                timerId: setTimeout(() => {
+                    handleTargetTimeout(potIndex);
+                }, 1500)
+            };
+
+            gameState.activeTargets.push(target);
+            showTarget(potIndex, 'peeves');
+        }
+
+        // 显示目标
+        function showTarget(potIndex, type) {
+            const targetElement = document.getElementById(`pot-target-${potIndex}`);
+            targetElement.textContent = type === 'mandrake' ? '🌱' : '🤡';
+            targetElement.className = `pot-target ${type} visible`;
+        }
+
+        // 隐藏目标
+        function hideTarget(potIndex) {
+            const targetElement = document.getElementById(`pot-target-${potIndex}`);
+            targetElement.className = 'pot-target';
+            targetElement.textContent = '';
+        }
+
+        // 处理目标超时
+        function handleTargetTimeout(potIndex) {
+            const targetIndex = gameState.activeTargets.findIndex(t => t.potIndex === potIndex);
+            if (targetIndex !== -1) {
+                const target = gameState.activeTargets[targetIndex];
+
+                if (target.type === 'mandrake') {
+                    SoundManager.mandrakeScream();
+                }
+
+                hideTarget(potIndex);
+                gameState.activeTargets.splice(targetIndex, 1);
+            }
+        }
+
+        // 处理花盆点击
+        // 显示金币变化提示
+        function showCoinChange(amount, potIndex) {
+            const pot = document.getElementById(`pot-target-${potIndex}`);
+            const rect = pot.getBoundingClientRect();
+
+            const changeElement = document.createElement('div');
+            changeElement.className = `coin-change ${amount > 0 ? 'positive' : 'negative'}`;
+            changeElement.textContent = amount > 0 ? `+${amount}` : `${amount}`;
+            changeElement.style.left = rect.left + rect.width / 2 + 'px';
+            changeElement.style.top = rect.top + rect.height / 2 + 'px';
+            changeElement.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(changeElement);
+
+            setTimeout(() => {
+                changeElement.remove();
+            }, 1000);
+        }
+
+        function handlePotClick(potIndex) {
+            if (!gameState.isPlaying) return;
+
+            const targetIndex = gameState.activeTargets.findIndex(t => t.potIndex === potIndex);
+
+            if (targetIndex !== -1) {
+                const target = gameState.activeTargets[targetIndex];
+
+                // 停止计时器
+                clearTimeout(target.timerId);
+
+                let changeAmount = 0;
+                if (target.type === 'mandrake') {
+                    // 点击曼德拉草，加金币
+                    changeAmount = 1;
+                    gameState.sessionCoins += changeAmount;
+                    gameState.mandrakeCount++;
+                    SoundManager.mandrakeClick();
+                } else {
+                    // 点击皮皮鬼，减金币（允许为负）
+                    changeAmount = -5;
+                    gameState.sessionCoins += changeAmount;
+                    SoundManager.peevesClick();
+                }
+
+                // 显示金币变化提示
+                showCoinChange(changeAmount, potIndex);
+
+                // 点击动画
+                const targetElement = document.getElementById(`pot-target-${potIndex}`);
+                targetElement.classList.add('clicked');
+
+                // 移除目标
+                setTimeout(() => {
+                    hideTarget(potIndex);
+                }, 300);
+
+                gameState.activeTargets.splice(targetIndex, 1);
+                updateStatusDisplay();
+            }
+        }
+
+        // 处理关卡完成
+        function handleLevelComplete() {
+            const config = LEVEL_CONFIG[gameState.currentLevel];
+            const currentCoins = gameState.sessionCoins;
+
+            // 检查是否达到最低金币要求
+            if (currentCoins < config.minCoins) {
+                // 挑战失败
+                showFailPanel(config.minCoins, currentCoins);
+                return;
+            }
+
+            // 达到要求，继续游戏
+            SoundManager.levelComplete();
+            document.getElementById('next-level-btn').disabled = false;
+
+            if (gameState.currentLevel < 3) {
+                document.getElementById('teacher-dialogue').textContent =
+                    `太棒了！第 ${gameState.currentLevel} 关完成！准备进入下一关。`;
+            } else {
+                // 游戏完成
+                setTimeout(() => {
+                    showVictoryPanel();
+                }, 1000);
+            }
+        }
+
+        // 手动进入下一关
+        function nextLevel() {
+            if (gameState.currentLevel < 3) {
+                startLevel(gameState.currentLevel + 1);
+            }
+        }
+
+        // 显示胜利面板
+        function showVictoryPanel() {
+            SoundManager.victory();
+
+            // 更新 CoinManager 中的金币
+            if (gameState.sessionCoins > 0) {
+                CoinManager.addCoins(gameState.sessionCoins);
+            } else if (gameState.sessionCoins < 0) {
+                // 处理负值金币 - 直接更新到 CoinManager
+                const newCoins = Math.max(0, CoinManager.getCurrentCoins() + gameState.sessionCoins);
+                CoinManager.setCurrentCoins(newCoins);
+            }
+
+            document.getElementById('victory-coins').textContent =
+                gameState.sessionCoins;
+            document.getElementById('victory-panel').classList.add('visible');
+            gameState.isPlaying = false;
+        }
+
+        // 隐藏胜利面板
+        function hideVictoryPanel() {
+            document.getElementById('victory-panel').classList.remove('visible');
+        }
+
+        // 显示失败面板
+        function showFailPanel(requiredCoins, yourCoins) {
+            document.getElementById('required-coins').textContent = requiredCoins;
+            document.getElementById('your-coins').textContent = yourCoins;
+            document.getElementById('fail-panel').classList.add('visible');
+
+            // 更新老师对话
+            const level = gameState.currentLevel;
+            document.getElementById('teacher-dialogue').textContent =
+                `哎呀！第 ${level} 关失败了。你需要至少 ${requiredCoins} 金币才能通过，继续努力！`;
+
+            gameState.isPlaying = false;
+        }
+
+        // 隐藏失败面板
+        function hideFailPanel() {
+            document.getElementById('fail-panel').classList.remove('visible');
+        }
+
+        // 更新状态栏显示
+        function updateStatusDisplay() {
+            document.getElementById('level-display').textContent =
+                `${gameState.currentLevel}/3`;
+            // 显示游戏内金币（初始金币 + 本局变化）
+            document.getElementById('coins-display').textContent =
+                gameState.coins + gameState.sessionCoins;
+            const required = LEVEL_GOLD_REQUIREMENTS[gameState.currentLevel];
+            // 进度显示：当前曼德拉草点击数 / 目标金币数（每关需要的最少金币数）
+            document.getElementById('progress-display').textContent =
+                `${gameState.mandrakeCount}/${required}`;
+        }
+
+        // 返回课程列表
+        function goBack() {
+            if (gameState.isPlaying) {
+                gameState.isPlaying = false;
+                if (gameState.popupTimer) {
+                    clearTimeout(gameState.popupTimer);
+                }
+            }
+
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'classes.html';
+            }, 800);
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化金币显示
+            gameState.coins = CoinManager.getCurrentCoins();
+            gameState.sessionCoins = 0;
+            updateStatusDisplay();
+        });
+    </script>
+</body>
+</html>

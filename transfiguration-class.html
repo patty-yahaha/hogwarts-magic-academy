@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="academy.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
     <style>
-        /* 变形课样式 */
+        /* 变形课页面样式 */
         .transfiguration-container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px 15px;
         }
@@ -29,240 +29,13 @@
             text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
         }
 
-        /* 游戏主区域 */
-        .transfiguration-game-area {
-            display: flex;
-            gap: 20px;
-            min-height: 450px;
-            position: relative;
-        }
-
-        .transfiguration-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* 老师区域 */
-        .teacher-section {
-            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
-            border: 3px solid rgba(212, 175, 55, 0.4);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            gap: 15px;
-            align-items: flex-start;
-        }
-
-        .teacher-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(145deg, #d4af37, #f4e4ba);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            flex-shrink: 0;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
-            position: relative;
-        }
-
-        .teacher-avatar::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            animation: avatarGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes avatarGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.6); }
-        }
-
-        .teacher-dialogue {
-            flex: 1;
-        }
-
-        .dialogue-bubble {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(201, 162, 39, 0.1));
-            border: 2px solid rgba(212, 175, 55, 0.4);
-            border-radius: 12px;
-            padding: 12px 15px;
-            position: relative;
-        }
-
-        .dialogue-bubble::before {
-            content: '';
-            position: absolute;
-            left: -12px;
-            top: 25px;
-            border: 8px solid transparent;
-            border-right-color: rgba(212, 175, 55, 0.4);
-        }
-
-        .dialogue-text {
-            color: #d4af37;
-            font-family: 'MedievalSharp', cursive;
-            font-size: 1rem;
-            line-height: 1.4;
-        }
-
-        /* 画板区域 */
-        .canvas-section {
-            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
-            border: 3px solid rgba(212, 175, 55, 0.4);
-            border-radius: 20px;
-            padding: 20px;
-            position: relative;
-        }
-
-        .canvas-container {
-            background: #1a1a1a;
-            border: 5px solid #8b4513;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        #transfigurationCanvas {
-            display: block;
-            width: 100%;
-            height: 300px;
-            cursor: crosshair;
-        }
-
-        /* 按钮区域 */
-        .button-section {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            background: linear-gradient(135deg, #d4af37, #c9a227);
-            border: 2px solid #ffd700;
-            color: #1a1a3e;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .action-btn:hover {
-            background: linear-gradient(135deg, #ffd700, #d4af37);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
-        }
-
-        .action-btn.secondary {
-            background: linear-gradient(135deg, #666, #888);
-            border: 2px solid #aaa;
-            color: white;
-        }
-
-        .action-btn.secondary:hover {
-            background: linear-gradient(135deg, #888, #aaa);
-            box-shadow: 0 5px 20px rgba(100, 100, 100, 0.5);
-        }
-
-        .action-btn.success {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            border: 2px solid #3498db;
-            color: white;
-        }
-
-        .action-btn.success:hover {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.5);
-        }
-
-        /* 评分区域 */
-        .score-section {
-            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
-            border: 3px solid rgba(212, 175, 55, 0.4);
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .score-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
-            color: #d4af37;
-            margin-bottom: 15px;
-        }
-
-        .stars-display {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #ffd700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-        }
-
-        .comment-text {
-            color: #c9a227;
-            font-family: 'MedievalSharp', cursive;
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-
-        .streak-display {
-            color: #e74c3c;
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-        }
-
-        /* 状态面板 */
-        .status-panel {
-            width: 240px;
-            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
-            border: 3px solid rgba(212, 175, 55, 0.4);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            background: rgba(212, 175, 55, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .status-label {
-            color: #c9a227;
-            font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-        }
-
-        .status-value {
-            color: #d4af37;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        /* 返回按钮 */
         .back-btn {
             background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
             border: 2px solid #d4af37;
             color: #d4af37;
-            padding: 12px 24px;
+            padding: 10px 20px;
             font-family: 'Cinzel', serif;
-            font-size: 1rem;
+            font-size: 0.9rem;
             letter-spacing: 2px;
             border-radius: 25px;
             cursor: pointer;
@@ -276,19 +49,483 @@
             box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
         }
 
+        /* 游戏介绍区域 */
+        .game-intro {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .intro-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .intro-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .intro-description {
+            color: #c9a227;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 模式选择器 */
+        .mode-selector-intro {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .mode-btn-intro {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        .mode-btn-intro:hover {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+            transform: translateY(-2px);
+        }
+
+        .mode-btn-intro.active {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .mode-btn-intro small {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* 规则说明 */
+        .rules-section-intro {
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .rules-title-intro {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .rules-list-intro {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rule-item-intro {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(212, 175, 55, 0.03);
+            border-radius: 8px;
+        }
+
+        .rule-icon-intro {
+            font-size: 1rem;
+            font-weight: bold;
+            min-width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .rule-text-intro {
+            color: #c9a227;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .start-game-btn {
+            background: linear-gradient(145deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+            display: block;
+            margin: 0 auto;
+        }
+
+        .start-game-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        /* 游戏模态框 */
+        .game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-modal.show {
+            display: flex;
+        }
+
+        .game-modal-content {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.98), rgba(10, 20, 40, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 15px 20px;
+            max-width: 950px;
+            width: 95%;
+            max-height: 95vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .game-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.3rem;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .game-close-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #1a1a3e;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-close-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+        }
+
+        /* 倒计时显示 */
+        .timer-display-game {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .timer-text-game {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #e74c3c;
+            text-shadow: 0 0 12px rgba(231, 76, 60, 0.6);
+        }
+
+        .timer-text-game.warning {
+            animation: timerPulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 游戏主区域 */
+        .transfiguration-game-area {
+            display: flex;
+            gap: 15px;
+        }
+
+        .transfiguration-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* 老师区域 */
+        .teacher-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .teacher-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #d4af37, #f4e4ba);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .dialogue-bubble {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(201, 162, 39, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 10px;
+            padding: 10px 12px;
+            position: relative;
+            flex: 1;
+        }
+
+        .dialogue-bubble::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 20px;
+            border: 6px solid transparent;
+            border-right-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .dialogue-text {
+            color: #d4af37;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* 进度指示器 */
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .progress-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #333;
+            border: 2px solid #d4af37;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.completed {
+            background: #27ae60;
+            border-color: #2ecc71;
+        }
+
+        .progress-dot.current {
+            background: #d4af37;
+            animation: dotPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* 画板区域 */
+        .canvas-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .canvas-container {
+            background: #1a1a1a;
+            border: 4px solid #8b4513;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        #transfigurationCanvas {
+            display: block;
+            width: 100%;
+            height: 240px;
+            cursor: crosshair;
+        }
+
+        /* 按钮区域 */
+        .button-section {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a3e;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #666, #888);
+            border: 2px solid #aaa;
+            color: white;
+        }
+
+        .action-btn.secondary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #888, #aaa);
+            box-shadow: 0 5px 15px rgba(100, 100, 100, 0.5);
+        }
+
+        /* 评分区域 */
+        .score-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .score-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .stars-display {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        .comment-text {
+            color: #c9a227;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .score-detail {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        /* 状态面板 */
+        .status-panel {
+            width: 200px;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .status-label {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+        }
+
+        .status-value {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
         /* 隐藏初始状态 */
         .hidden {
             display: none !important;
         }
 
         /* 响应式设计 */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .transfiguration-game-area {
                 flex-direction: column;
             }
 
             .status-panel {
                 width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
             }
 
             .teacher-section {
@@ -297,17 +534,21 @@
             }
 
             .teacher-avatar {
-                width: 100px;
-                height: 100px;
-                font-size: 3rem;
+                width: 70px;
+                height: 70px;
+                font-size: 2.2rem;
             }
 
             .dialogue-bubble::before {
                 left: 50%;
-                top: -15px;
-                border: 10px solid transparent;
+                top: -12px;
+                border: 8px solid transparent;
                 border-bottom-color: rgba(212, 175, 55, 0.4);
                 transform: translateX(-50%);
+            }
+
+            #transfigurationCanvas {
+                height: 200px;
             }
         }
     </style>
@@ -324,6 +565,74 @@
                 <h1 class="page-title">✨ 变形课 ✨</h1>
             </div>
 
+            <!-- 介绍页面 -->
+            <div id="introPage">
+                <div class="game-intro">
+                    <div class="intro-icon">🧙‍♀️</div>
+                    <div class="intro-title">麦格教授的变形课</div>
+                    <div class="intro-description">
+                        欢迎来到变形课！今天我们将学习如何将火柴变成银针。<br>
+                        选择一种模式，开始你的变形术练习吧！
+                    </div>
+
+                    <!-- 模式选择器 -->
+                    <div class="mode-selector-intro">
+                        <button class="mode-btn-intro active" onclick="selectMode('basic')" id="intro-btn-basic">
+                            📍 基础模式
+                            <small>10秒/关，多根同时出现</small>
+                        </button>
+                        <button class="mode-btn-intro" onclick="selectMode('sequential')" id="intro-btn-sequential">
+                            🔗 多根火柴
+                            <small>20秒/关，依次出现</small>
+                        </button>
+                        <button class="mode-btn-intro" onclick="selectMode('moving')" id="intro-btn-moving">
+                            🏃 移动火柴
+                            <small>30秒/关，预判位置</small>
+                        </button>
+                    </div>
+
+                    <!-- 规则说明 -->
+                    <div class="rules-section-intro" id="rulesSectionIntro">
+                        <div class="rules-title-intro">📜 玩法说明</div>
+                        <div class="rules-list-intro" id="rulesListIntro">
+                            <div class="rule-item-intro">
+                                <span class="rule-icon-intro">1️⃣</span>
+                                <span class="rule-text-intro">选择模式后点击"开始挑战"按钮</span>
+                            </div>
+                            <div class="rule-item-intro">
+                                <span class="rule-icon-intro">2️⃣</span>
+                                <span class="rule-text-intro">在画板上沿着火柴画出银针的形状</span>
+                            </div>
+                            <div class="rule-item-intro">
+                                <span class="rule-icon-intro">3️⃣</span>
+                                <span class="rule-text-intro">基础模式多根火柴同时出现，多根模式依次出现</span>
+                            </div>
+                            <div class="rule-item-intro">
+                                <span class="rule-icon-intro">4️⃣</span>
+                                <span class="rule-text-intro">获得60分以上即可成功变形！</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="start-game-btn" onclick="startGame()">开始挑战</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏模态框 -->
+    <div class="game-modal" id="gameModal">
+        <div class="game-modal-content">
+            <div class="game-header">
+                <span class="game-title" id="gameTitle">📍 基础模式 - 第1关</span>
+                <button class="game-close-btn" onclick="closeGame()">✕</button>
+            </div>
+
+            <!-- 倒计时显示 -->
+            <div class="timer-display-game hidden" id="timerDisplayGame">
+                <span class="timer-text-game" id="timerTextGame">10</span>
+            </div>
+
             <!-- 游戏区域 -->
             <div class="transfiguration-game-area">
                 <!-- 主区域 -->
@@ -331,13 +640,18 @@
                     <!-- 老师区域 -->
                     <div class="teacher-section">
                         <div class="teacher-avatar">🧙‍♀️</div>
-                        <div class="teacher-dialogue">
-                            <div class="dialogue-bubble">
-                                <p class="dialogue-text" id="teacherDialogue">
-                                    欢迎来到变形课！我是麦格教授。今天我们学习将火柴变成银针。
-                                </p>
-                            </div>
+                        <div class="dialogue-bubble">
+                            <p class="dialogue-text" id="teacherDialogue">
+                                开始！沿着火柴画出银针！
+                            </p>
                         </div>
+                    </div>
+
+                    <!-- 进度指示器 -->
+                    <div class="progress-indicator hidden" id="progressIndicator">
+                        <div class="progress-dot" id="dot-1"></div>
+                        <div class="progress-dot" id="dot-2"></div>
+                        <div class="progress-dot" id="dot-3"></div>
                     </div>
 
                     <!-- 画板区域 -->
@@ -349,10 +663,9 @@
 
                     <!-- 按钮区域 -->
                     <div class="button-section">
-                        <button class="action-btn success" onclick="startTransfiguration()">开始变形</button>
-                        <button class="action-btn secondary" onclick="clearCanvas()">清除重画</button>
-                        <button class="action-btn" onclick="nextLevel()">下一关</button>
-                        <button class="action-btn" onclick="switchMode()">切换模式</button>
+                        <button class="action-btn hidden" onclick="clearCanvas()" id="btn-clear">清除重画</button>
+                        <button class="action-btn hidden" onclick="retryLevel()" id="btn-retry">重试本关</button>
+                        <button class="action-btn hidden" onclick="nextLevel()" id="btn-nextLevel">下一关</button>
                     </div>
 
                     <!-- 评分区域 -->
@@ -360,7 +673,7 @@
                         <div class="score-title">变形评分</div>
                         <div class="stars-display" id="starsDisplay">⭐⭐⭐⭐⭐</div>
                         <div class="comment-text" id="commentText">准备开始你的变形术</div>
-                        <div class="streak-display" id="streakDisplay">连续成功: 0</div>
+                        <div class="score-detail hidden" id="scoreDetail"></div>
                     </div>
                 </div>
 
@@ -380,7 +693,11 @@
                     </div>
                     <div class="status-item">
                         <span class="status-label">🎮 模式</span>
-                        <span class="status-value" id="modeDisplay">单人</span>
+                        <span class="status-value" id="modeDisplay">基础</span>
+                    </div>
+                    <div class="status-item hidden" id="matchstickCountItem">
+                        <span class="status-label">🔥 火柴</span>
+                        <span class="status-value" id="matchstickCountDisplay">1/3</span>
                     </div>
                 </div>
             </div>
@@ -392,186 +709,371 @@
     <script>
         // 游戏状态
         let gameState = {
+            mode: 'basic', // basic, sequential, moving
+            level: 1,
+            totalMatchsticks: 1,
+            completedMatchsticks: 0,
+            matchsticks: [],
             isDrawing: false,
             currentPath: [],
-            matchsticks: [],
+            allPaths: [], // 基础模式多根火柴时保存所有路径
             streak: 0,
-            level: 1,
             favorability: 0,
             sessionCoins: 0,
-            timeLimit: null,
-            startTime: null,
-            mode: 'single' // single, multiple, moving, timeChallenge
+            timeLimit: 10,
+            remainingTime: 10,
+            timerInterval: null,
+            isPlaying: false,
+            levelCompleted: false,
+            modeCompleted: { basic: false, sequential: false, moving: false },
+            movingAnimation: null,
+            matchstickStartTime: null
         };
 
-        // 标准银针模板（不同角度）
-        const needleTemplates = {
-            horizontal: {
-                name: '水平银针',
-                points: [],
-                angle: 0
+        // 各模式配置
+        const modeConfig = {
+            basic: {
+                name: '基础',
+                displayName: '📍 基础模式',
+                timeLimit: 10,
+                matchstickCounts: [1, 2, 3],
+                reward: 5
             },
-            slightRight: {
-                name: '微向右倾银针',
-                points: [],
-                angle: 30
+            sequential: {
+                name: '多根火柴',
+                displayName: '🔗 多根火柴',
+                timeLimit: 20,
+                matchstickCounts: [3, 4, 5],
+                reward: 10
             },
-            slightLeft: {
-                name: '微向左倾银针',
-                points: [],
-                angle: -30
-            },
-            vertical: {
-                name: '垂直银针',
-                points: [],
-                angle: 90
+            moving: {
+                name: '移动火柴',
+                displayName: '🏃 移动火柴',
+                timeLimit: 30,
+                matchstickCounts: [1, 3, 5],
+                reward: 15
             }
         };
-
-        // 初始化标准模板
-        function initTemplates() {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const length = 250;
-
-            // 水平模板
-            needleTemplates.horizontal.points = generateLinePoints(
-                centerX - length / 2, centerY,
-                centerX + length / 2, centerY,
-                50
-            );
-
-            // 微向右倾30度
-            needleTemplates.slightRight.points = generateLinePoints(
-                centerX - length / 2, centerY - 30,
-                centerX + length / 2, centerY + 30,
-                50
-            );
-
-            // 微向左倾-30度
-            needleTemplates.slightLeft.points = generateLinePoints(
-                centerX - length / 2, centerY + 30,
-                centerX + length / 2, centerY - 30,
-                50
-            );
-
-            // 垂直模板
-            needleTemplates.vertical.points = generateLinePoints(
-                centerX, centerY - length / 2,
-                centerX, centerY + length / 2,
-                50
-            );
-        }
-
-        // 生成一条直线上的采样点
-        function generateLinePoints(x1, y1, x2, y2, numPoints) {
-            const points = [];
-            for (let i = 0; i < numPoints; i++) {
-                const t = i / (numPoints - 1);
-                points.push({
-                    x: x1 + (x2 - x1) * t,
-                    y: y1 + (y2 - y1) * t
-                });
-            }
-            return points;
-        }
 
         // Canvas 相关
         const canvas = document.getElementById('transfigurationCanvas');
-        const ctx = canvas.getContext('2d');
+        let ctx = null;
+
+        // 初始化 canvas
+        function initCanvas() {
+            if (!ctx) {
+                ctx = canvas.getContext('2d');
+            }
+            const container = document.querySelector('.canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = 240;
+        }
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 设置 canvas 尺寸
-            const container = document.querySelector('.canvas-container');
-            canvas.width = container.clientWidth;
-            canvas.height = 300;
-
-            // 初始化金币系统
             if (window.CoinManager) {
                 CoinManager.initialize();
             }
 
-            // 初始化火柴
-            initMatchstick();
-
-            // 初始化标准模板
-            initTemplates();
-
-            // 绘制初始画面
-            drawCanvas();
-
-            // 事件监听
             setupEventListeners();
-
             loadGameState();
             updateDisplays();
         });
 
-        // 初始化火柴位置
-        function initMatchstick() {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-
-            // 根据游戏模式初始化火柴
-            gameState.matchsticks = [];
-
-            if (gameState.mode === 'single') {
-                // 单模式 - 中心位置一个火柴
-                gameState.matchsticks.push({
-                    x: centerX - 40,
-                    y: centerY - 5,
-                    width: 80,
-                    height: 10,
-                    id: 'single'
-                });
-            } else if (gameState.mode === 'multiple') {
-                // 多根火柴模式
-                const count = Math.min(gameState.level + 1, 3);
-                const spacing = 120;
-                for (let i = 0; i < count; i++) {
-                    const offsetX = (i - Math.floor(count / 2)) * spacing;
-                    gameState.matchsticks.push({
-                        x: centerX - 40 + offsetX,
-                        y: centerY - 5,
-                        width: 80,
-                        height: 10,
-                        id: `matchstick-${i}`
-                    });
-                }
-            } else if (gameState.mode === 'moving') {
-                // 移动火柴模式
-                gameState.matchsticks.push({
-                    x: centerX - 40 + Math.random() * 100 - 50,
-                    y: centerY - 5 + Math.random() * 60 - 30,
-                    width: 80,
-                    height: 10,
-                    id: 'moving'
-                });
-            }
-
-            // 为了向后兼容，保持单个matchstick引用
-            if (gameState.matchsticks.length > 0) {
-                gameState.matchstick = gameState.matchsticks[0];
-            }
-        }
-
         // 设置事件监听器
         function setupEventListeners() {
-            // 鼠标事件
             canvas.addEventListener('mousedown', startDrawing);
             canvas.addEventListener('mousemove', draw);
             canvas.addEventListener('mouseup', stopDrawing);
             canvas.addEventListener('mouseleave', stopDrawing);
-
-            // 触摸事件
             canvas.addEventListener('touchstart', startDrawing);
             canvas.addEventListener('touchmove', draw);
             canvas.addEventListener('touchend', stopDrawing);
         }
 
+        // 选择模式（介绍页面）
+        function selectMode(mode) {
+            gameState.mode = mode;
+
+            document.querySelectorAll('.mode-btn-intro').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`intro-btn-${mode}`).classList.add('active');
+
+            updateIntroRules();
+        }
+
+        // 更新介绍页面的规则
+        function updateIntroRules() {
+            const rulesList = document.getElementById('rulesListIntro');
+            const mode = gameState.mode;
+
+            if (mode === 'basic') {
+                rulesList.innerHTML = `
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">1️⃣</span>
+                        <span class="rule-text-intro">每关有10秒时间，快速画出银针</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">2️⃣</span>
+                        <span class="rule-text-intro">第1关1根火柴，第2关2根，第3关3根</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">3️⃣</span>
+                        <span class="rule-text-intro">长度偏离火柴棒超过10%算失败</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">4️⃣</span>
+                        <span class="rule-text-intro">线段超出火柴棒范围算失败，抖动适当扣分</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">5️⃣</span>
+                        <span class="rule-text-intro">全部通关可获得5金币奖励！</span>
+                    </div>
+                `;
+            } else if (mode === 'sequential') {
+                rulesList.innerHTML = `
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">1️⃣</span>
+                        <span class="rule-text-intro">每关有20秒时间，火柴依次出现</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">2️⃣</span>
+                        <span class="rule-text-intro">第1关3根，第2关4根，第3关5根</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">3️⃣</span>
+                        <span class="rule-text-intro">画完一根评分过关再画下一根</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">4️⃣</span>
+                        <span class="rule-text-intro">单根失败可重画该根，全部通关得10金币！</span>
+                    </div>
+                `;
+            } else if (mode === 'moving') {
+                rulesList.innerHTML = `
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">1️⃣</span>
+                        <span class="rule-text-intro">火柴从左向右移动，4秒到达后消失</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">2️⃣</span>
+                        <span class="rule-text-intro">第1关1根，第2关3根，第3关5根</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">3️⃣</span>
+                        <span class="rule-text-intro">在火柴移动时画出，预判最终位置</span>
+                    </div>
+                    <div class="rule-item-intro">
+                        <span class="rule-icon-intro">4️⃣</span>
+                        <span class="rule-text-intro">火柴消失时自动评分，没画则失败，全部通关得15金币！</span>
+                    </div>
+                `;
+            }
+        }
+
+        // 开始游戏
+        function startGame() {
+            gameState.level = 1;
+            gameState.completedMatchsticks = 0;
+            gameState.isPlaying = false;
+            gameState.levelCompleted = false;
+            gameState.allPaths = [];
+
+            document.getElementById('introPage').style.display = 'none';
+            document.getElementById('gameModal').classList.add('show');
+
+            initCanvas();
+            updateGameTitle();
+            startChallenge();
+        }
+
+        // 关闭游戏
+        function closeGame() {
+            if (gameState.isPlaying) {
+                stopChallenge();
+            }
+            document.getElementById('gameModal').classList.remove('show');
+            document.getElementById('introPage').style.display = 'block';
+            resetGameUI();
+        }
+
+        // 更新游戏标题
+        function updateGameTitle() {
+            const config = modeConfig[gameState.mode];
+            document.getElementById('gameTitle').textContent =
+                `${config.displayName} - 第${gameState.level}关`;
+        }
+
+        // 开始挑战
+        function startChallenge() {
+            gameState.isPlaying = true;
+            gameState.levelCompleted = false;
+            gameState.completedMatchsticks = 0;
+            gameState.currentPath = [];
+            gameState.allPaths = [];
+
+            initLevel();
+            startTimer();
+
+            if (gameState.mode === 'moving') {
+                startMovingMatchstick();
+            }
+
+            updateGameUI();
+            drawCanvas();
+            showMessage('开始！沿着火柴画出银针！');
+        }
+
+        // 初始化关卡
+        function initLevel() {
+            const config = modeConfig[gameState.mode];
+            gameState.totalMatchsticks = config.matchstickCounts[gameState.level - 1];
+            gameState.timeLimit = config.timeLimit;
+            gameState.remainingTime = config.timeLimit;
+            gameState.currentPath = [];
+            gameState.completedMatchsticks = 0;
+            gameState.allPaths = [];
+
+            initMatchsticks();
+            updateProgressIndicator();
+            updateGameTitle();
+        }
+
+        // 初始化火柴
+        function initMatchsticks() {
+            gameState.matchsticks = [];
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const count = gameState.totalMatchsticks;
+
+            if (gameState.mode === 'basic') {
+                if (count === 1) {
+                    gameState.matchsticks.push(createMatchstick(centerX - 40, centerY - 5));
+                } else if (count === 2) {
+                    gameState.matchsticks.push(createMatchstick(centerX - 100, centerY - 40));
+                    gameState.matchsticks.push(createMatchstick(centerX + 20, centerY + 30));
+                } else if (count === 3) {
+                    gameState.matchsticks.push(createMatchstick(centerX - 40, centerY - 70));
+                    gameState.matchsticks.push(createMatchstick(centerX - 100, centerY + 40));
+                    gameState.matchsticks.push(createMatchstick(centerX + 20, centerY + 40));
+                }
+            } else if (gameState.mode === 'sequential') {
+                gameState.matchsticks.push(createMatchstick(centerX - 40, centerY - 5));
+            } else if (gameState.mode === 'moving') {
+                gameState.matchsticks.push(createMatchstick(-80, centerY - 5));
+                gameState.matchsticks[0].startX = -80;
+                gameState.matchsticks[0].endX = canvas.width;
+            }
+        }
+
+        // 创建单个火柴
+        function createMatchstick(x, y) {
+            return {
+                x: x,
+                y: y,
+                width: 80,
+                height: 10,
+                id: `matchstick-${Date.now()}`
+            };
+        }
+
+        // 开始计时器
+        function startTimer() {
+            updateTimerDisplay();
+            document.getElementById('timerDisplayGame').classList.remove('hidden');
+
+            gameState.timerInterval = setInterval(() => {
+                gameState.remainingTime -= 0.1;
+                updateTimerDisplay();
+
+                if (gameState.remainingTime <= 0) {
+                    handleTimeout();
+                }
+            }, 100);
+        }
+
+        // 更新计时器显示
+        function updateTimerDisplay() {
+            const timerText = document.getElementById('timerTextGame');
+            const displayTime = Math.ceil(gameState.remainingTime);
+            timerText.textContent = displayTime;
+
+            if (displayTime <= 3) {
+                timerText.classList.add('warning');
+            } else {
+                timerText.classList.remove('warning');
+            }
+        }
+
+        // 处理超时
+        function handleTimeout() {
+            stopChallenge();
+            showMessage('时间到！挑战失败，再试一次吧！', 'error');
+            document.getElementById('btn-retry').classList.remove('hidden');
+        }
+
+        // 停止挑战
+        function stopChallenge() {
+            gameState.isPlaying = false;
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+            if (gameState.movingAnimation) {
+                cancelAnimationFrame(gameState.movingAnimation);
+                gameState.movingAnimation = null;
+            }
+            document.getElementById('timerDisplayGame').classList.add('hidden');
+        }
+
+        // 开始移动火柴
+        function startMovingMatchstick() {
+            if (!gameState.matchsticks[0]) return;
+
+            const matchstick = gameState.matchsticks[0];
+            matchstick.x = matchstick.startX;
+            gameState.matchstickStartTime = Date.now();
+            gameState.currentPath = [];
+
+            animateMovingMatchstick();
+        }
+
+        // 移动火柴动画
+        function animateMovingMatchstick() {
+            if (!gameState.isPlaying) return;
+
+            const matchstick = gameState.matchsticks[0];
+            const elapsed = (Date.now() - gameState.matchstickStartTime) / 1000;
+            const progress = Math.min(elapsed / 4, 1);
+
+            matchstick.x = matchstick.startX + progress * (matchstick.endX - matchstick.startX);
+
+            drawCanvas();
+
+            if (progress < 1) {
+                gameState.movingAnimation = requestAnimationFrame(animateMovingMatchstick);
+            } else {
+                handleMovingMatchstickEnd();
+            }
+        }
+
+        // 处理移动火柴结束
+        function handleMovingMatchstickEnd() {
+            if (gameState.currentPath.length < 10) {
+                stopChallenge();
+                showMessage('火柴消失了！你还没画线，挑战失败！', 'error');
+                document.getElementById('btn-retry').classList.remove('hidden');
+            } else {
+                const finalX = gameState.matchsticks[0].endX - 80;
+                gameState.matchsticks[0].x = finalX;
+                const score = calculateScore();
+                handleScore(score);
+            }
+        }
+
         // 开始绘制
         function startDrawing(e) {
+            if (!gameState.isPlaying) return;
+
             gameState.isDrawing = true;
             gameState.currentPath = [];
 
@@ -591,7 +1093,7 @@
 
         // 绘制
         function draw(e) {
-            if (!gameState.isDrawing) return;
+            if (!gameState.isDrawing || !gameState.isPlaying) return;
 
             e.preventDefault();
 
@@ -612,44 +1114,250 @@
 
         // 停止绘制
         function stopDrawing() {
+            if (!gameState.isDrawing || !gameState.isPlaying) return;
             gameState.isDrawing = false;
+
+            if (gameState.currentPath.length > 10) {
+                if (gameState.mode !== 'moving') {
+                    if (gameState.mode === 'basic' && gameState.matchsticks.length > 1) {
+                        // 基础模式多根火柴：保存当前路径，继续画下一根
+                        gameState.allPaths.push([...gameState.currentPath]);
+                        gameState.currentPath = [];
+
+                        if (gameState.allPaths.length >= gameState.matchsticks.length) {
+                            // 所有火柴都画完了，一起评分
+                            const score = calculateScoreForBasic();
+                            handleScore(score);
+                        } else {
+                            showMessage('好的！画下一根火柴！');
+                        }
+                    } else {
+                        // 单根火柴或其他模式
+                        const score = calculateScore();
+                        handleScore(score);
+                    }
+                }
+            }
         }
 
-        // 清空画布
+        // 处理评分
+        function handleScore(score) {
+            updateScoreDisplay(score);
+
+            const professorComment = getProfessorComment(score);
+            showMessage(professorComment);
+
+            if (score >= 60) {
+                // 播放变形动画
+                playTransfigurationAnimation();
+
+                gameState.streak++;
+
+                setTimeout(() => {
+                    if (gameState.mode === 'sequential') {
+                        gameState.completedMatchsticks++;
+                        if (gameState.completedMatchsticks < gameState.totalMatchsticks) {
+                            nextMatchstick();
+                        } else {
+                            completeLevel();
+                        }
+                    } else if (gameState.mode === 'moving') {
+                        gameState.completedMatchsticks++;
+                        if (gameState.completedMatchsticks < gameState.totalMatchsticks) {
+                            nextMovingMatchstick();
+                        } else {
+                            completeLevel();
+                        }
+                    } else {
+                        completeLevel();
+                    }
+                }, 1500);
+            } else {
+                gameState.streak = 0;
+
+                if (gameState.mode === 'sequential') {
+                    document.getElementById('btn-clear').classList.remove('hidden');
+                    showMessage(`${professorComment} 重画这根火柴吧！`, 'error');
+                } else if (gameState.mode === 'moving') {
+                    document.getElementById('btn-retry').classList.remove('hidden');
+                    showMessage(`${professorComment} 重试本关吧！`, 'error');
+                } else {
+                    document.getElementById('btn-retry').classList.remove('hidden');
+                    showMessage(`${professorComment} 重试本关吧！`, 'error');
+                }
+            }
+        }
+
+        // 基础模式评分（多根火柴）- 使用新规则
+        function calculateScoreForBasic() {
+            let totalScore = 0;
+            let pathIndex = 0;
+            let failed = false;
+
+            gameState.matchsticks.forEach((matchstick, index) => {
+                if (gameState.allPaths[pathIndex]) {
+                    const savedPath = gameState.currentPath;
+                    gameState.currentPath = gameState.allPaths[pathIndex];
+
+                    const coverage = calculatePathCoverageForMatchstick(matchstick);
+                    const lengthScore = calculateLengthScoreForMatchstick(matchstick);
+                    const positionScore = calculatePositionScoreForMatchstick(matchstick);
+                    const jitterScore = calculateJitterScore();
+
+                    if (lengthScore === -99 || positionScore === -99) {
+                        failed = true;
+                    } else {
+                        let matchScore = 50 + coverage * 30 + jitterScore;
+                        totalScore += Math.max(0, Math.min(100, matchScore));
+                    }
+
+                    gameState.currentPath = savedPath;
+                    pathIndex++;
+                }
+            });
+
+            if (failed) {
+                return 0;
+            }
+
+            return Math.floor(totalScore / gameState.matchsticks.length);
+        }
+
+        // 下一根顺序火柴
+        function nextMatchstick() {
+            gameState.currentPath = [];
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const angles = [0, 45, -45, 90, -90];
+            const angle = angles[gameState.completedMatchsticks % angles.length];
+            const distance = 60;
+
+            const offsetX = Math.cos(angle * Math.PI / 180) * distance;
+            const offsetY = Math.sin(angle * Math.PI / 180) * distance;
+
+            gameState.matchsticks = [createMatchstick(centerX - 40 + offsetX, centerY - 5 + offsetY)];
+
+            updateProgressIndicator();
+            drawCanvas();
+            showMessage('好的！画下一根火柴！');
+        }
+
+        // 下一根移动火柴
+        function nextMovingMatchstick() {
+            gameState.currentPath = [];
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const positions = [centerY - 5, centerY - 50, centerY + 40, centerY - 80, centerY + 70];
+            const yPos = positions[gameState.completedMatchsticks % positions.length];
+
+            gameState.matchsticks = [createMatchstick(-80, yPos)];
+            gameState.matchsticks[0].startX = -80;
+            gameState.matchsticks[0].endX = canvas.width;
+
+            updateProgressIndicator();
+            drawCanvas();
+
+            setTimeout(() => {
+                if (gameState.isPlaying) {
+                    startMovingMatchstick();
+                    showMessage('好的！画下一根火柴！');
+                }
+            }, 500);
+        }
+
+        // 完成关卡
+        function completeLevel() {
+            stopChallenge();
+            gameState.levelCompleted = true;
+
+            if (gameState.level >= 3 && !gameState.modeCompleted[gameState.mode]) {
+                gameState.modeCompleted[gameState.mode] = true;
+                const reward = modeConfig[gameState.mode].reward;
+                gameState.sessionCoins += reward;
+                if (window.CoinManager) {
+                    CoinManager.addCoins(reward);
+                }
+                showMessage(`太棒了！${modeConfig[gameState.mode].name}模式全部通关！获得${reward}金币！`, 'success');
+            } else if (gameState.level < 3) {
+                showMessage('太棒了！这一关通过了！', 'success');
+                document.getElementById('btn-nextLevel').classList.remove('hidden');
+            } else {
+                showMessage('太棒了！这一关通过了！', 'success');
+            }
+
+            updateDisplays();
+        }
+
+        // 下一关
+        function nextLevel() {
+            initCanvas();
+            gameState.level++;
+            gameState.completedMatchsticks = 0;
+            gameState.levelCompleted = false;
+            resetGameUI();
+            updateDisplays();
+            drawCanvas();
+            showMessage(`第 ${gameState.level} 关，准备好了吗？`);
+            setTimeout(() => {
+                startChallenge();
+            }, 1000);
+        }
+
+        // 重试关卡
+        function retryLevel() {
+            initCanvas();
+            gameState.completedMatchsticks = 0;
+            gameState.levelCompleted = false;
+            resetGameUI();
+            drawCanvas();
+            showMessage('再试一次！');
+            setTimeout(() => {
+                startChallenge();
+            }, 1000);
+        }
+
+        // 清除画布
         function clearCanvas() {
             gameState.currentPath = [];
             drawCanvas();
+            document.getElementById('btn-clear').classList.add('hidden');
         }
 
         // 绘制整个画布
         function drawCanvas() {
-            // 清空画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMatchsticks();
 
-            // 绘制火柴
-            drawMatchstick();
+            if (gameState.mode === 'basic' && gameState.allPaths.length > 0) {
+                // 绘制之前保存的路径（透明度降低）
+                gameState.allPaths.forEach((path, index) => {
+                    if (path.length > 1) {
+                        ctx.save();
+                        ctx.globalAlpha = 0.5;
+                        drawPath(path);
+                        ctx.restore();
+                    }
+                });
+            }
 
-            // 绘制当前路径
             if (gameState.currentPath.length > 1) {
                 drawPath(gameState.currentPath);
             }
         }
 
         // 绘制火柴
-        function drawMatchstick() {
-            // 绘制所有火柴
+        function drawMatchsticks() {
             gameState.matchsticks.forEach(matchstick => {
-                // 火柴杆
                 ctx.fillStyle = '#8B4513';
                 ctx.fillRect(matchstick.x, matchstick.y, matchstick.width, matchstick.height);
 
-                // 火柴头（红色火焰）
                 ctx.fillStyle = '#FF4500';
                 ctx.beginPath();
                 ctx.arc(matchstick.x + matchstick.width, matchstick.y + matchstick.height / 2, 8, 0, Math.PI * 2);
                 ctx.fill();
 
-                // 火焰发光效果
                 ctx.shadowBlur = 15;
                 ctx.shadowColor = '#FF6600';
                 ctx.fillStyle = '#FF8C00';
@@ -680,43 +1388,229 @@
             ctx.shadowBlur = 0;
         }
 
-        // 开始变形
-        function startTransfiguration() {
-            if (gameState.currentPath.length < 10) {
-                showMessage('请画出更完整的银针形状', 'error');
-                return;
+        // 计算评分
+        function calculateScore() {
+            let score = 50;
+            let deductions = [];
+
+            if (gameState.currentPath.length < 15) {
+                return 30;
             }
 
-            // 显示施法动画
-            showCastingAnimation();
+            // 基础覆盖度
+            let totalCoverage = 0;
+            let matchCount = 0;
+            let failedMatches = 0;
 
-            // 延迟计算评分，让动画更自然
-            setTimeout(() => {
-                const score = calculateScore();
-                updateScoreDisplay(score);
+            gameState.matchsticks.forEach(matchstick => {
+                const coverage = calculatePathCoverageForMatchstick(matchstick);
+                const lengthScore = calculateLengthScoreForMatchstick(matchstick);
+                const positionScore = calculatePositionScoreForMatchstick(matchstick);
+                const smoothness = calculatePathSmoothness();
 
-                // 如果变形成功，播放变形动画
-                if (score >= 60) {
-                    playTransfigurationAnimation();
+                // 严格的失败条件
+                if (lengthScore === -99 || positionScore === -99) {
+                    failedMatches++;
+                } else {
+                    totalCoverage += coverage;
+                    score += lengthScore + positionScore + smoothness * 10;
+                    matchCount++;
                 }
-            }, 1500);
+            });
+
+            if (failedMatches > 0) {
+                return 0; // 任何一根火柴失败，整个关卡失败
+            }
+
+            if (matchCount > 0) {
+                const avgCoverage = totalCoverage / matchCount;
+                score += avgCoverage * 30;
+            }
+
+            score = Math.max(0, Math.min(100, Math.floor(score)));
+
+            if (deductions.length > 0) {
+                document.getElementById('scoreDetail').textContent = deductions.join(' | ');
+                document.getElementById('scoreDetail').classList.remove('hidden');
+            } else {
+                document.getElementById('scoreDetail').classList.add('hidden');
+            }
+
+            return score;
         }
 
-        // 显示施法动画
-        function showCastingAnimation() {
-            const canvasEl = document.getElementById('transfigurationCanvas');
-            canvasEl.style.filter = 'brightness(1.3)';
-            canvasEl.style.transition = 'filter 0.5s ease';
+        // 计算特定火柴的路径覆盖率
+        function calculatePathCoverageForMatchstick(matchstick) {
+            const matchCenterX = matchstick.x + matchstick.width / 2;
+            const matchCenterY = matchstick.y + matchstick.height / 2;
 
-            // 播放魔法音效（如果有）
-            playMagicSound();
+            let nearMatchstick = 0;
+            gameState.currentPath.forEach(p => {
+                const dist = Math.sqrt(
+                    Math.pow(p.x - matchCenterX, 2) +
+                    Math.pow(p.y - matchCenterY, 2)
+                );
+                if (dist < 60) nearMatchstick++;
+            });
 
-            setTimeout(() => {
-                canvasEl.style.filter = 'brightness(1)';
-            }, 1000);
+            return Math.min(1, nearMatchstick / gameState.currentPath.length * 2);
         }
 
-        // 播放变形动画
+        // 计算特定火柴的位置匹配度
+        function calculatePositionMatchForMatchstick(matchstick) {
+            const matchCenterX = matchstick.x + matchstick.width / 2;
+            const matchCenterY = matchstick.y + matchstick.height / 2;
+
+            let sumX = 0, sumY = 0;
+            gameState.currentPath.forEach(p => {
+                sumX += p.x;
+                sumY += p.y;
+            });
+
+            const centerX = sumX / gameState.currentPath.length;
+            const centerY = sumY / gameState.currentPath.length;
+
+            const distance = Math.sqrt(
+                Math.pow(centerX - matchCenterX, 2) +
+                Math.pow(centerY - matchCenterY, 2)
+            );
+
+            const maxDistance = 80;
+            return Math.max(0, 1 - (distance / maxDistance));
+        }
+
+        // 计算长度评分（新规则）
+        function calculateLengthScoreForMatchstick(matchstick) {
+            let totalLength = 0;
+            for (let i = 1; i < gameState.currentPath.length; i++) {
+                const dx = gameState.currentPath[i].x - gameState.currentPath[i-1].x;
+                const dy = gameState.currentPath[i].y - gameState.currentPath[i-1].y;
+                totalLength += Math.sqrt(dx * dx + dy * dy);
+            }
+
+            const matchstickLength = matchstick.width;
+            const idealLength = matchstickLength;
+            const lengthRatio = totalLength / idealLength;
+
+            // 严格规则：超过10%算失败
+            if (lengthRatio < 0.9 || lengthRatio > 1.1) {
+                return -99; // 失败
+            }
+            return 0; // 长度符合要求
+        }
+
+        // 计算位置评分（新规则）
+        function calculatePositionScoreForMatchstick(matchstick) {
+            // 火柴棒范围：左右各延伸10%，上下各10px
+            const matchstickLeft = matchstick.x - matchstick.width * 0.1;
+            const matchstickRight = matchstick.x + matchstick.width * 1.1;
+            const matchstickTop = matchstick.y - 10;
+            const matchstickBottom = matchstick.y + matchstick.height + 10;
+
+            let outOfBoundsCount = 0;
+
+            gameState.currentPath.forEach(p => {
+                if (p.x < matchstickLeft || p.x > matchstickRight ||
+                    p.y < matchstickTop || p.y > matchstickBottom) {
+                    outOfBoundsCount++;
+                }
+            });
+
+            // 严格规则：有一点超出就算失败
+            if (outOfBoundsCount > 0) {
+                return -99; // 失败
+            }
+            return 0; // 位置符合要求
+        }
+
+        // 计算路径抖动（新规则）
+        function calculateJitterScore() {
+            let totalJitter = 0;
+
+            for (let i = 2; i < gameState.currentPath.length; i++) {
+                const dx1 = gameState.currentPath[i-1].x - gameState.currentPath[i-2].x;
+                const dy1 = gameState.currentPath[i-1].y - gameState.currentPath[i-2].y;
+                const dx2 = gameState.currentPath[i].x - gameState.currentPath[i-1].x;
+                const dy2 = gameState.currentPath[i].y - gameState.currentPath[i-1].y;
+
+                const angle1 = Math.atan2(dy1, dx1) * 180 / Math.PI;
+                const angle2 = Math.atan2(dy2, dx2) * 180 / Math.PI;
+                const angleDiff = Math.abs(angle1 - angle2);
+
+                totalJitter += angleDiff;
+            }
+
+            const avgJitter = totalJitter / Math.max(1, gameState.currentPath.length - 2);
+
+            if (avgJitter > 20) {
+                return -20; // 严重抖动
+            } else if (avgJitter > 10) {
+                return -10; // 抖动较大
+            } else if (avgJitter > 5) {
+                return -5; // 轻微抖动
+            }
+            return 0; // 路径较直
+        }
+
+        // 计算路径平滑度
+        function calculatePathSmoothness() {
+            if (gameState.currentPath.length < 3) return 0.5;
+
+            let smoothnessScore = 0;
+            for (let i = 2; i < gameState.currentPath.length; i++) {
+                const dx1 = gameState.currentPath[i-1].x - gameState.currentPath[i-2].x;
+                const dy1 = gameState.currentPath[i-1].y - gameState.currentPath[i-2].y;
+                const dx2 = gameState.currentPath[i].x - gameState.currentPath[i-1].x;
+                const dy2 = gameState.currentPath[i].y - gameState.currentPath[i-1].y;
+
+                const dot = dx1 * dx2 + dy1 * dy2;
+                const mag1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+                const mag2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+                if (mag1 > 0 && mag2 > 0) {
+                    const cosAngle = dot / (mag1 * mag2);
+                    smoothnessScore += (cosAngle + 1) / 2;
+                }
+            }
+
+            return smoothnessScore / (gameState.currentPath.length - 2);
+        }
+
+        // 获取麦格教授的评价
+        function getProfessorComment(score) {
+            if (score >= 80) return '不错，很漂亮';
+            if (score >= 60) return '还不错';
+            return '太糟糕了';
+        }
+
+        // 更新评分显示
+        function updateScoreDisplay(score) {
+            const stars = getStars(score);
+            const comment = getComment(score);
+
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('commentText').textContent = comment;
+
+            if (score >= 60) {
+                gameState.sessionCoins += 3;
+                if (window.CoinManager) {
+                    CoinManager.addCoins(3);
+                }
+            }
+
+            updateDisplays();
+        }
+
+        // 获取星级
+        function getStars(score) {
+            if (score >= 90) return '⭐⭐⭐⭐⭐';
+            if (score >= 80) return '⭐⭐⭐⭐';
+            if (score >= 60) return '⭐⭐⭐';
+            if (score >= 40) return '⭐⭐';
+            return '⭐';
+        }
+
+        // 火柴变银针动画
         function playTransfigurationAnimation() {
             let progress = 0;
             const duration = 1500;
@@ -741,7 +1635,7 @@
                     // 火柴溶解阶段
                     const dissolveProgress = progress * 2;
                     ctx.globalAlpha = 1 - dissolveProgress;
-                    drawMatchstick();
+                    drawMatchsticks();
                     ctx.globalAlpha = 1;
                 } else {
                     // 银针出现阶段
@@ -758,12 +1652,9 @@
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
-                    // 动画完成后，重置为火柴并清除路径
+                    // 动画完成后，重置为火柴
                     setTimeout(() => {
-                        clearCanvas();
-                        initMatchstick();
                         drawCanvas();
-                        showMessage('变形成功！继续下一关挑战。', 'success');
                     }, 500);
                 }
             }
@@ -797,7 +1688,7 @@
         function drawSilverNeedle(matchstick, progress) {
             const centerX = matchstick.x + matchstick.width / 2;
             const centerY = matchstick.y + matchstick.height / 2;
-            const needleLength = matchstick.width * 1.5;
+            const needleLength = matchstick.width * 1.1; // 10% longer than matchstick
             const needleWidth = matchstick.height * 0.5;
 
             ctx.save();
@@ -828,270 +1719,6 @@
             ctx.restore();
         }
 
-        // 播放魔法音效（简化实现）
-        function playMagicSound() {
-            // 这里可以添加实际的音频播放代码
-            console.log('Playing magic sound');
-        }
-
-        // 计算评分
-        function calculateScore() {
-            // 简化评分算法，使其更容易得到高分
-            if (gameState.currentPath.length < 15) {
-                return 30;
-            }
-
-            // 基础评分：路径长度
-            let score = 40;
-
-            // 计算路径覆盖率（匹配银针的基本形状）
-            const coverage = calculatePathCoverage();
-            score += coverage * 30;
-
-            // 计算路径平滑度
-            const smoothness = calculatePathSmoothness();
-            score += smoothness * 20;
-
-            // 计算路径位置匹配度（与火柴位置相关）
-            const positionScore = calculatePositionMatch();
-            score += positionScore * 10;
-
-            // 根据关卡难度调整评分
-            const difficultyFactor = 1 - (gameState.level * 0.03); // 降低难度因子
-            score *= difficultyFactor;
-
-            score = Math.max(0, Math.min(100, Math.floor(score)));
-
-            console.log(`评分计算: 覆盖率${coverage}, 平滑度${smoothness}, 位置${positionScore}, 最终${score}`);
-
-            return score;
-        }
-
-        // 计算路径覆盖率
-        function calculatePathCoverage() {
-            // 火柴位置
-            const matchstick = gameState.matchstick;
-            const matchstickCenterX = matchstick.x + matchstick.width / 2;
-            const matchstickCenterY = matchstick.y + matchstick.height / 2;
-
-            // 计算用户路径的分布范围
-            let minX = Infinity, maxX = -Infinity;
-            let minY = Infinity, maxY = -Infinity;
-
-            gameState.currentPath.forEach(p => {
-                minX = Math.min(minX, p.x);
-                maxX = Math.max(maxX, p.x);
-                minY = Math.min(minY, p.y);
-                maxY = Math.max(maxY, p.y);
-            });
-
-            // 理想的银针覆盖范围应该比火柴长
-            const idealMinX = matchstickCenterX - 100;
-            const idealMaxX = matchstickCenterX + 150;
-            const idealMinY = matchstickCenterY - 15;
-            const idealMaxY = matchstickCenterY + 15;
-
-            // 计算覆盖度
-            const xCoverage = Math.max(0, Math.min(1,
-                (Math.min(maxX, idealMaxX) - Math.max(minX, idealMinX)) / (idealMaxX - idealMinX)
-            ));
-            const yCoverage = Math.max(0, Math.min(1,
-                (Math.min(maxY, idealMaxY) - Math.max(minY, idealMinY)) / (idealMaxY - idealMinY)
-            ));
-
-            return (xCoverage + yCoverage) / 2;
-        }
-
-        // 计算路径平滑度
-        function calculatePathSmoothness() {
-            if (gameState.currentPath.length < 2) return 0;
-
-            let totalDistance = 0;
-            let smoothnessScore = 0;
-
-            for (let i = 1; i < gameState.currentPath.length; i++) {
-                const dx = gameState.currentPath[i].x - gameState.currentPath[i-1].x;
-                const dy = gameState.currentPath[i].y - gameState.currentPath[i-1].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                totalDistance += distance;
-
-                // 平滑度：相邻点距离变化不大
-                if (i > 1) {
-                    const dxPrev = gameState.currentPath[i-1].x - gameState.currentPath[i-2].x;
-                    const dyPrev = gameState.currentPath[i-1].y - gameState.currentPath[i-2].y;
-                    const distancePrev = Math.sqrt(dxPrev * dxPrev + dyPrev * dyPrev);
-
-                    const ratio = Math.min(distance, distancePrev) / Math.max(distance, distancePrev);
-                    smoothnessScore += ratio;
-                }
-            }
-
-            if (gameState.currentPath.length < 3) return 0.5;
-
-            return Math.min(1, smoothnessScore / (gameState.currentPath.length - 2));
-        }
-
-        // 计算位置匹配度
-        function calculatePositionMatch() {
-            const matchstick = gameState.matchstick;
-            const matchstickCenterX = matchstick.x + matchstick.width / 2;
-            const matchstickCenterY = matchstick.y + matchstick.height / 2;
-
-            // 计算用户路径的中心
-            let sumX = 0, sumY = 0;
-            gameState.currentPath.forEach(p => {
-                sumX += p.x;
-                sumY += p.y;
-            });
-
-            const centerX = sumX / gameState.currentPath.length;
-            const centerY = sumY / gameState.currentPath.length;
-
-            // 距离火柴中心的距离
-            const distance = Math.sqrt(
-                Math.pow(centerX - matchstickCenterX, 2) +
-                Math.pow(centerY - matchstickCenterY, 2)
-            );
-
-            // 最大可接受距离
-            const maxDistance = 80;
-
-            return Math.max(0, 1 - (distance / maxDistance));
-        }
-
-        // 路径预处理
-        function preprocessPath(points) {
-            // 1. 平滑处理（移动平均）
-            const smoothed = [];
-            const windowSize = 3;
-            for (let i = 0; i < points.length; i++) {
-                let sumX = 0, sumY = 0, count = 0;
-                for (let j = Math.max(0, i - windowSize); j <= Math.min(points.length - 1, i + windowSize); j++) {
-                    sumX += points[j].x;
-                    sumY += points[j].y;
-                    count++;
-                }
-                smoothed.push({
-                    x: sumX / count,
-                    y: sumY / count
-                });
-            }
-
-            // 2. 标准化：将路径缩放到模板尺寸并居中
-            return normalizePath(smoothed);
-        }
-
-        // 路径标准化
-        function normalizePath(points) {
-            // 找到边界框
-            let minX = Infinity, maxX = -Infinity;
-            let minY = Infinity, maxY = -Infinity;
-
-            points.forEach(p => {
-                minX = Math.min(minX, p.x);
-                maxX = Math.max(maxX, p.x);
-                minY = Math.min(minY, p.y);
-                maxY = Math.max(maxY, p.y);
-            });
-
-            // 计算尺寸和中心
-            const width = maxX - minX;
-            const height = maxY - minY;
-            const centerX = (minX + maxX) / 2;
-            const centerY = (minY + maxY) / 2;
-
-            // 目标尺寸（与模板相同）
-            const targetLength = 250;
-            const targetCenterX = canvas.width / 2;
-            const targetCenterY = canvas.height / 2;
-
-            // 计算缩放比例
-            const scale = targetLength / Math.max(width, height);
-
-            // 标准化路径
-            return points.map(p => ({
-                x: (p.x - centerX) * scale + targetCenterX,
-                y: (p.y - centerY) * scale + targetCenterY
-            }));
-        }
-
-        // 计算相似度（基于DTW算法简化版）
-        function calculateSimilarity(path1, path2) {
-            // 使用动态时间规整计算距离
-            const distMatrix = [];
-            for (let i = 0; i < path1.length; i++) {
-                distMatrix[i] = [];
-                for (let j = 0; j < path2.length; j++) {
-                    const dx = path1[i].x - path2[j].x;
-                    const dy = path1[i].y - path2[j].y;
-                    distMatrix[i][j] = Math.sqrt(dx * dx + dy * dy);
-                }
-            }
-
-            const dtw = [];
-            for (let i = 0; i < path1.length; i++) {
-                dtw[i] = [];
-                for (let j = 0; j < path2.length; j++) {
-                    if (i === 0 && j === 0) {
-                        dtw[i][j] = distMatrix[i][j];
-                    } else if (i === 0) {
-                        dtw[i][j] = distMatrix[i][j] + dtw[i][j - 1];
-                    } else if (j === 0) {
-                        dtw[i][j] = distMatrix[i][j] + dtw[i - 1][j];
-                    } else {
-                        dtw[i][j] = distMatrix[i][j] + Math.min(dtw[i - 1][j], dtw[i][j - 1], dtw[i - 1][j - 1]);
-                    }
-                }
-            }
-
-            const avgDistance = dtw[path1.length - 1][path2.length - 1] / (path1.length + path2.length);
-
-            // 将距离转换为相似度（0-1范围）
-            const maxDistance = 200; // 设定最大距离阈值
-            const similarity = Math.max(0, 1 - (avgDistance / maxDistance));
-
-            return similarity;
-        }
-
-        // 更新评分显示
-        function updateScoreDisplay(score) {
-            const stars = getStars(score);
-            const comment = getComment(score);
-
-            document.getElementById('starsDisplay').textContent = stars;
-            document.getElementById('commentText').textContent = comment;
-
-            // 检查是否成功变形
-            if (score >= 60) {
-                gameState.streak++;
-
-                // 奖励金币
-                gameState.sessionCoins += 3;
-                if (window.CoinManager) {
-                    CoinManager.addCoins(3);
-                }
-
-                // 检查是否提升好感度
-                if (gameState.streak % 5 === 0) {
-                    gameState.favorability++;
-                    showMessage('优秀！好感度+1', 'success');
-                }
-            } else {
-                gameState.streak = 0;
-            }
-
-            updateDisplays();
-        }
-
-        // 获取星级
-        function getStars(score) {
-            if (score >= 90) return '⭐⭐⭐⭐⭐';
-            if (score >= 80) return '⭐⭐⭐⭐';
-            if (score >= 60) return '⭐⭐⭐';
-            if (score >= 40) return '⭐⭐';
-            return '⭐';
-        }
-
         // 获取评语
         function getComment(score) {
             if (score >= 90) return '完美！变形术大师级水平';
@@ -1101,82 +1728,93 @@
             return '变形失败，重新开始';
         }
 
-        // 下一关
-        function nextLevel() {
-            gameState.level++;
+        // 更新进度指示器
+        function updateProgressIndicator() {
+            const indicator = document.getElementById('progressIndicator');
+
+            if (gameState.mode === 'sequential' || gameState.mode === 'moving' ||
+                (gameState.mode === 'basic' && gameState.matchsticks.length > 1)) {
+                indicator.classList.remove('hidden');
+                document.getElementById('matchstickCountItem').classList.remove('hidden');
+
+                const currentCount = gameState.mode === 'basic' ?
+                    (gameState.allPaths.length + 1) : (gameState.completedMatchsticks + 1);
+
+                document.getElementById('matchstickCountDisplay').textContent =
+                    `${currentCount}/${gameState.totalMatchsticks}`;
+
+                for (let i = 1; i <= 3; i++) {
+                    const dot = document.getElementById(`dot-${i}`);
+                    const completed = gameState.mode === 'basic' ?
+                        (i <= gameState.allPaths.length) : (i <= gameState.completedMatchsticks);
+                    const current = gameState.mode === 'basic' ?
+                        (i === gameState.allPaths.length + 1) : (i === gameState.completedMatchsticks + 1);
+
+                    if (completed) {
+                        dot.className = 'progress-dot completed';
+                    } else if (current) {
+                        dot.className = 'progress-dot current';
+                    } else {
+                        dot.className = 'progress-dot';
+                    }
+
+                    if (i <= gameState.totalMatchsticks) {
+                        dot.style.display = 'block';
+                    } else {
+                        dot.style.display = 'none';
+                    }
+                }
+            } else if (gameState.isPlaying) {
+                indicator.classList.remove('hidden');
+                document.getElementById('matchstickCountItem').classList.add('hidden');
+
+                for (let i = 1; i <= 3; i++) {
+                    const dot = document.getElementById(`dot-${i}`);
+                    if (i < gameState.level) {
+                        dot.className = 'progress-dot completed';
+                    } else if (i === gameState.level) {
+                        dot.className = 'progress-dot current';
+                    } else {
+                        dot.className = 'progress-dot';
+                    }
+                }
+            } else {
+                indicator.classList.add('hidden');
+                document.getElementById('matchstickCountItem').classList.add('hidden');
+            }
+        }
+
+        // 更新游戏UI
+        function updateGameUI() {
+            document.getElementById('btn-clear').classList.add('hidden');
+            document.getElementById('btn-retry').classList.add('hidden');
+            document.getElementById('btn-nextLevel').classList.add('hidden');
+            updateProgressIndicator();
+        }
+
+        // 重置游戏UI
+        function resetGameUI() {
+            document.getElementById('btn-clear').classList.add('hidden');
+            document.getElementById('btn-retry').classList.add('hidden');
+            document.getElementById('btn-nextLevel').classList.add('hidden');
+            document.getElementById('timerDisplayGame').classList.add('hidden');
+            document.getElementById('progressIndicator').classList.add('hidden');
+            document.getElementById('matchstickCountItem').classList.add('hidden');
+            document.getElementById('scoreDetail').classList.add('hidden');
+
+            document.getElementById('starsDisplay').textContent = '⭐⭐⭐⭐⭐';
+            document.getElementById('commentText').textContent = '准备开始你的变形术';
+
             gameState.currentPath = [];
-            initMatchstick();
-            drawCanvas();
-            updateDisplays();
-            showMessage(`第 ${gameState.level} 关，准备好！`, 'info');
+            gameState.allPaths = [];
         }
 
         // 显示消息
-        function showMessage(text, type) {
+        function showMessage(text, type = 'info') {
             const dialogueEl = document.getElementById('teacherDialogue');
             dialogueEl.textContent = text;
-
-            // 简单的样式变化
             dialogueEl.style.color = type === 'success' ? '#2ecc71' :
                                      type === 'error' ? '#e74c3c' : '#d4af37';
-        }
-
-        // 加载游戏状态
-        function loadGameState() {
-            const mentorAffectionKey = 'hogwarts_mentor_affection';
-            try {
-                const savedMentorData = localStorage.getItem(mentorAffectionKey);
-                if (savedMentorData) {
-                    const data = JSON.parse(savedMentorData);
-                    gameState.favorability = data['mcgonagall'] || 0;
-                }
-            } catch (e) {
-                console.error('Error reading mentor affection data:', e);
-            }
-
-            const savedLevel = localStorage.getItem('transfigurationLevel');
-            if (savedLevel) {
-                gameState.level = parseInt(savedLevel);
-            }
-
-            const savedStreak = localStorage.getItem('transfigurationStreak');
-            if (savedStreak) {
-                gameState.streak = parseInt(savedStreak);
-            }
-
-            const savedMode = localStorage.getItem('transfigurationMode');
-            if (savedMode) {
-                gameState.mode = savedMode;
-            }
-
-            const savedSessionCoins = localStorage.getItem('transfigurationSessionCoins');
-            if (savedSessionCoins) {
-                gameState.sessionCoins = parseInt(savedSessionCoins);
-            } else {
-                gameState.sessionCoins = 0;
-            }
-        }
-
-        // 保存游戏状态
-        function saveGameState() {
-            const mentorAffectionKey = 'hogwarts_mentor_affection';
-            let data = {};
-            try {
-                const savedData = localStorage.getItem(mentorAffectionKey);
-                if (savedData) {
-                    data = JSON.parse(savedData);
-                }
-            } catch (e) {
-                console.error('Error parsing mentor affection data:', e);
-            }
-
-            data['mcgonagall'] = gameState.favorability;
-            localStorage.setItem(mentorAffectionKey, JSON.stringify(data));
-
-            localStorage.setItem('transfigurationLevel', gameState.level.toString());
-            localStorage.setItem('transfigurationStreak', gameState.streak.toString());
-            localStorage.setItem('transfigurationMode', gameState.mode);
-            localStorage.setItem('transfigurationSessionCoins', gameState.sessionCoins.toString());
         }
 
         // 更新显示
@@ -1184,69 +1822,26 @@
             document.getElementById('favorabilityDisplay').textContent = gameState.favorability;
             document.getElementById('coinsDisplay').textContent = gameState.sessionCoins;
             document.getElementById('levelDisplay').textContent = gameState.level;
-            document.getElementById('streakDisplay').textContent = `连续成功: ${gameState.streak}`;
-
-            // 更新模式显示
-            const modeText = getModeText();
-            document.getElementById('modeDisplay').textContent = modeText;
-
-            saveGameState();
+            document.getElementById('modeDisplay').textContent = modeConfig[gameState.mode].name;
         }
 
-        // 获取模式显示文本
-        function getModeText() {
-            const modeMap = {
-                'single': '单人',
-                'multiple': '多根',
-                'moving': '移动',
-                'timeChallenge': '计时'
-            };
-            return modeMap[gameState.mode] || '单人';
+        // 加载游戏状态
+        function loadGameState() {
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            try {
+                const savedAffection = localStorage.getItem(mentorAffectionKey);
+                if (savedAffection) {
+                    gameState.favorability = parseInt(savedAffection) || 0;
+                }
+            } catch (e) {
+                console.log('无法加载本地存储数据');
+            }
         }
 
-        // 切换模式
-        function switchMode() {
-            const modes = ['single', 'multiple', 'moving', 'timeChallenge'];
-            const currentIndex = modes.indexOf(gameState.mode);
-            const nextIndex = (currentIndex + 1) % modes.length;
-            gameState.mode = modes[nextIndex];
-
-            // 初始化新模式的火柴
-            initMatchstick();
-            clearCanvas();
-            drawCanvas();
-            updateDisplays();
-
-            // 显示模式说明
-            const modeDescription = getModeDescription();
-            showMessage(modeDescription, 'info');
-        }
-
-        // 获取模式说明
-        function getModeDescription() {
-            const descriptions = {
-                'single': '单人模式：画出一根银针，完成变形。',
-                'multiple': '多根火柴模式：画出多根银针，挑战更高难度。',
-                'moving': '移动火柴模式：火柴会移动，需要精准控制。',
-                'timeChallenge': '计时挑战模式：在时间限制内完成变形。'
-            };
-            return descriptions[gameState.mode] || '单人模式：画出一根银针，完成变形。';
-        }
-
-        // 返回
+        // 返回大厅
         function goBack() {
-            saveGameState();
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.8s ease-in-out';
-            setTimeout(() => {
-                window.location.href = 'hogwarts-games.html';
-            }, 800);
+            window.location.href = 'academy.html';
         }
-
-        // 页面关闭前保存状态
-        window.addEventListener('beforeunload', () => {
-            saveGameState();
-        });
     </script>
 </body>
 </html>

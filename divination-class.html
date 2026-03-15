@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>占卜课 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* 占卜课样式 */
+        .divination-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .divination-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 游戏区域 */
+        .divination-game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: auto;
+            position: relative;
+        }
+
+        /* 老师区域 */
+        .teacher-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .teacher-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #d4af37, #f4e4ba);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+        }
+
+        .teacher-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            animation: avatarGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.6); }
+        }
+
+        .teacher-dialogue {
+            flex: 1;
+        }
+
+        .dialogue-bubble {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(201, 162, 39, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 12px 15px;
+            position: relative;
+        }
+
+        .dialogue-bubble::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 25px;
+            border: 8px solid transparent;
+            border-right-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .dialogue-text {
+            color: #d4af37;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        /* 水晶球区域 */
+        .crystal-ball-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .crystal-ball-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .crystal-ball {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #f0e6d2 0%, #d4af37 30%, #b8860b 70%, #8b6914 100%);
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            box-shadow: 0 0 60px rgba(212, 175, 55, 0.6),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .crystal-ball:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 80px rgba(212, 175, 55, 0.8),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .crystal-ball.active {
+            animation: crystalShake 0.5s ease;
+        }
+
+        @keyframes crystalShake {
+            0%, 100% { transform: translateX(0) scale(1); }
+            25% { transform: translateX(-5px) scale(1.02); }
+            75% { transform: translateX(5px) scale(1.02); }
+        }
+
+        .crystal-ball.fade-out {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s ease;
+        }
+
+        .crystal-glow {
+            position: absolute;
+            inset: -5px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent);
+            border-radius: 50%;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .crystal-core {
+            position: absolute;
+            inset: 25px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .fog-effect {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            animation: fogMove 3s ease-in-out infinite;
+        }
+
+        @keyframes fogMove {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-5px) scale(1.05); }
+        }
+
+        .divination-image {
+            width: 80%;
+            height: 80%;
+            object-fit: cover;
+            border-radius: 50%;
+            filter: grayscale(100%) blur(10px) brightness(0.6) contrast(1.2);
+            transition: all 0.8s ease;
+            image-rendering: pixelated;
+            transform: scale(1.1);
+        }
+
+        .divination-image.revealed {
+            filter: grayscale(100%) blur(3px) brightness(0.9);
+            image-rendering: auto;
+        }
+
+        .crystal-base {
+            width: 180px;
+            height: 30px;
+            background: linear-gradient(145deg, #654321, #8b6914);
+            border-radius: 50%;
+            margin-top: -10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 选项区域 */
+        .options-section {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .options-grid {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            max-width: 100%;
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+
+        .option-btn {
+            flex: 1;
+            min-width: 0;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.15), rgba(201, 162, 39, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.25), rgba(201, 162, 39, 0.2));
+            border-color: #d4af37;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(145deg, rgba(39, 174, 96, 0.2), rgba(46, 204, 113, 0.15));
+            border-color: #27ae60;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .option-btn.wrong {
+            background: linear-gradient(145deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.15));
+            border-color: #e74c3c;
+            animation: wrongShake 0.5s ease;
+        }
+
+        .option-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* 倒计时 */
+        .timer-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .timer {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            background: linear-gradient(135deg, rgba(20, 30, 50, 0.9), rgba(10, 20, 40, 0.95));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 10px 20px;
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .timer.warning {
+            color: #e74c3c;
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 提示区域 */
+        .rules-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 15px;
+        }
+
+        .rules-title {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .rules-text {
+            color: #c9a227;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border: 2px solid #3498db;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.5);
+        }
+
+        /* 结束面板 */
+        .end-panel {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .end-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .stars-display {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0.6);
+        }
+
+        .coins-reward {
+            color: #c9a227;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .final-message {
+            color: #c9a227;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a3e;
+            padding: 12px 24px;
+            border-radius: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 隐藏类 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .teacher-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .teacher-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 3rem;
+            }
+
+            .dialogue-bubble::before {
+                left: 50%;
+                top: -15px;
+                border: 10px solid transparent;
+                border-bottom-color: rgba(212, 175, 55, 0.4);
+                transform: translateX(-50%);
+            }
+
+            .crystal-ball {
+                width: 220px;
+                height: 220px;
+            }
+
+            .crystal-core {
+                inset: 25px;
+            }
+
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .option-btn {
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+
+            .timer {
+                font-size: 2rem;
+                padding: 10px 20px;
+                min-width: 100px;
+            }
+
+            .rules-title {
+                font-size: 1.1rem;
+            }
+
+            .rules-text {
+                font-size: 0.85rem;
+            }
+
+            .end-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .option-btn {
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+
+            .timer {
+                font-size: 1.8rem;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="divination-container">
+            <!-- 顶部 -->
+            <div class="divination-header">
+                <button class="back-btn" onclick="goBack()">← 返回大厅</button>
+                <h1 class="page-title">🔮 占卜课 🔮</h1>
+            </div>
+
+            <!-- 游戏区域 -->
+            <div class="divination-game-area">
+                <!-- 老师区域 -->
+                <div class="teacher-section">
+                    <div class="teacher-avatar">🧙‍♀️</div>
+                    <div class="teacher-dialogue">
+                        <div class="dialogue-bubble">
+                            <p class="dialogue-text" id="teacherDialogue">
+                                欢迎来到占卜课！我是特里劳妮教授。点击水晶球，让我们开始探索命运的迷雾。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 水晶球区域 -->
+                <div class="crystal-ball-section">
+                    <div class="crystal-ball-container" id="crystalBallContainer">
+                        <div class="crystal-ball" id="crystalBall">
+                            <div class="crystal-glow"></div>
+                            <div class="crystal-core" id="crystalCore">
+                                <div class="fog-effect"></div>
+                                <img id="divinationImage" class="divination-image hidden" alt="占卜图像">
+                            </div>
+                        </div>
+                        <div class="crystal-base"></div>
+                    </div>
+                </div>
+
+                <!-- 选项区域 -->
+                <div class="options-section" id="optionsSection">
+                    <div class="options-grid" id="optionsGrid">
+                        <!-- 选项按钮将通过JS动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 倒计时 -->
+                <div class="timer-section">
+                    <div class="timer" id="timer">10</div>
+                </div>
+
+                <!-- 提示区域 -->
+                <div class="rules-section" id="rulesSection">
+                    <h3 class="rules-title">✨ 玩法规则 ✨</h3>
+                    <p class="rules-text">
+                        点击水晶球，特里劳妮教授会展示模糊的占卜图像。在10秒内选择你认为正确的答案，测试你的占卜能力！
+                    </p>
+                    <button class="start-btn" onclick="startGame()">开始占卜</button>
+                </div>
+
+                <!-- 结束面板 -->
+                <div class="end-panel hidden" id="endPanel">
+                    <h2 class="end-title">🔮 占卜结束 🔮</h2>
+                    <div class="stars-display">
+                        <span class="stars" id="starsDisplay">⭐⭐⭐</span>
+                    </div>
+                    <div class="coins-reward">
+                        <span class="coins" id="coinsDisplay">获得 30 金币</span>
+                    </div>
+                    <div class="final-message" id="finalMessage"></div>
+                    <button class="restart-btn" onclick="restartGame()">重新占卜</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/coin-manager.js"></script>
+    <script>
+        // 占卜课游戏代码
+        const DIVINATION_DATA = [
+            {
+                question: "你看到了什么动物的轮廓？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🦄%3C/text%3E%3C/svg%3E",
+                options: ["独角兽", "凤凰", "龙", "夜骐"],
+                correct: 0,
+                feedback: "非常好！这是独角兽的象征，代表纯洁和高贵。"
+            },
+            {
+                question: "这个符号代表什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E☠️%3C/text%3E%3C/svg%3E",
+                options: ["死亡圣器", "魂器", "预言球", "魔法阵"],
+                correct: 0,
+                feedback: "正确！这是死亡圣器的符号，由长老魔杖、复活石和隐形衣组成。"
+            },
+            {
+                question: "你看到了哪个霍格沃茨地点？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🏰%3C/text%3E%3C/svg%3E",
+                options: ["禁林", "天文台", "密室", "有求必应屋"],
+                correct: 3,
+                feedback: "太棒了！这是有求必应屋，只有真正需要的人才能找到它。"
+            },
+            {
+                question: "这个图案预示着什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E⚠️%3C/text%3E%3C/svg%3E",
+                options: ["爱情", "危险", "财富", "旅行"],
+                correct: 1,
+                feedback: "敏锐的直觉！这个图案预示着即将到来的危险。"
+            },
+            {
+                question: "这个魔法生物是什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🔥%3C/text%3E%3C/svg%3E",
+                options: ["凤凰", "火龙", "三头犬", "八眼蜘蛛"],
+                correct: 0,
+                feedback: "完美！这是凤凰，代表希望和重生。"
+            },
+            {
+                question: "这是哪个魔法物品？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🪄%3C/text%3E%3C/svg%3E",
+                options: ["魔杖", "飞天扫帚", "坩埚", "魔法书"],
+                correct: 0,
+                feedback: "正确！这是魔杖，每个巫师都需要的重要工具。"
+            },
+            {
+                question: "你看到了什么符号？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E📜%3C/text%3E%3C/svg%3E",
+                options: ["预言球", "魔法阵", "咒语书", "死亡圣器"],
+                correct: 0,
+                feedback: "很好！这是预言球，用于预测未来的重要工具。"
+            },
+            {
+                question: "这个霍格沃茨地点是？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🌲%3C/text%3E%3C/svg%3E",
+                options: ["魁地奇球场", "禁林", "医务室", "图书馆"],
+                correct: 1,
+                feedback: "正确！这是禁林，里面隐藏着许多魔法生物。"
+            },
+            {
+                question: "这是什么魔法生物？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E👁️%3C/text%3E%3C/svg%3E",
+                options: ["三头犬", "八眼蜘蛛", "夜骐", "独角兽"],
+                correct: 2,
+                feedback: "非常好！这是夜骐，只有见过死亡的人才能看到它们。"
+            },
+            {
+                question: "这个图案代表什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🧪%3C/text%3E%3C/svg%3E",
+                options: ["变形术", "魔药学", "占卜", "咒语"],
+                correct: 1,
+                feedback: "正确！这是魔药学的符号，代表各种魔法药水。"
+            },
+            {
+                question: "你看到了什么魔法工具？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E⚗️%3C/text%3E%3C/svg%3E",
+                options: ["坩埚", "魔杖", "飞天扫帚", "水晶球"],
+                correct: 0,
+                feedback: "很好！这是坩埚，用于调制魔法药水。"
+            },
+            {
+                question: "这个符号代表什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🔄%3C/text%3E%3C/svg%3E",
+                options: ["变形术", "悬浮咒", "石化咒", "锁腿咒"],
+                correct: 0,
+                feedback: "正确！这是变形术的符号，代表改变物体形态的魔法。"
+            },
+            {
+                question: "你看到了什么魔法生物？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🐉%3C/text%3E%3C/svg%3E",
+                options: ["龙", "凤凰", "独角兽", "夜骐"],
+                correct: 0,
+                feedback: "完美！这是龙，强大而危险的魔法生物。"
+            },
+            {
+                question: "这个霍格沃茨设施是？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🏟️%3C/text%3E%3C/svg%3E",
+                options: ["魁地奇球场", "天文台", "图书馆", "礼堂"],
+                correct: 0,
+                feedback: "正确！这是魁地奇球场，霍格沃茨的重要体育设施。"
+            },
+            {
+                question: "你看到了什么魔法物品？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🧹%3C/text%3E%3C/svg%3E",
+                options: ["飞天扫帚", "魔杖", "坩埚", "魔法书"],
+                correct: 0,
+                feedback: "很好！这是飞天扫帚，巫师们的交通工具。"
+            },
+            {
+                question: "这个符号代表什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🔮%3C/text%3E%3C/svg%3E",
+                options: ["占卜", "黑魔法", "白魔法", "变形术"],
+                correct: 0,
+                feedback: "正确！这是占卜的符号，代表预测未来的艺术。"
+            },
+            {
+                question: "你看到了什么魔法生物？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🦹‍♂️%3C/text%3E%3C/svg%3E",
+                options: ["巨怪", "摄魂怪", "食死徒", "家养小精灵"],
+                correct: 1,
+                feedback: "很好！这是摄魂怪，会吸走快乐的魔法生物。"
+            },
+            {
+                question: "这个魔法工具是什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E📚%3C/text%3E%3C/svg%3E",
+                options: ["魔法书", "预言球", "魔杖", "飞天扫帚"],
+                correct: 0,
+                feedback: "正确！这是魔法书，包含各种魔法知识。"
+            },
+            {
+                question: "你看到了什么图案？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🔒%3C/text%3E%3C/svg%3E",
+                options: ["锁腿咒", "石化咒", "遗忘咒", "阿瓦达索命"],
+                correct: 0,
+                feedback: "很好！这是锁腿咒，能让对手无法移动。"
+            },
+            {
+                question: "这个霍格沃茨地点是？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🔬%3C/text%3E%3C/svg%3E",
+                options: ["实验室", "天文台", "医务室", "图书馆"],
+                correct: 1,
+                feedback: "正确！这是天文台，用于天文观测和占卜。"
+            },
+            {
+                question: "你看到了什么魔法生物？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🕷️%3C/text%3E%3C/svg%3E",
+                options: ["八眼蜘蛛", "巨怪", "家养小精灵", "摄魂怪"],
+                correct: 0,
+                feedback: "很好！这是八眼蜘蛛，一种危险的魔法生物。"
+            },
+            {
+                question: "这个符号代表什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E💤%3C/text%3E%3C/svg%3E",
+                options: ["睡眠咒", "遗忘咒", "悬浮咒", "石化咒"],
+                correct: 0,
+                feedback: "正确！这是睡眠咒，能让人陷入沉睡。"
+            },
+            {
+                question: "你看到了什么魔法物品？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🎩%3C/text%3E%3C/svg%3E",
+                options: ["分院帽", "隐形衣", "时间转换器", "魔法石"],
+                correct: 0,
+                feedback: "很好！这是分院帽，用来分配学生到各个学院。"
+            },
+            {
+                question: "这个霍格沃茨地点是？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E💉%3C/text%3E%3C/svg%3E",
+                options: ["医务室", "图书馆", "礼堂", "实验室"],
+                correct: 0,
+                feedback: "正确！这是医务室，由庞弗雷夫人管理。"
+            },
+            {
+                question: "你看到了什么魔法生物？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E👻%3C/text%3E%3C/svg%3E",
+                options: ["幽灵", "摄魂怪", "食死徒", "家养小精灵"],
+                correct: 0,
+                feedback: "很好！这是霍格沃茨的幽灵，永远留在校园里。"
+            },
+            {
+                question: "这个符号代表什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E⚡%3C/text%3E%3C/svg%3E",
+                options: ["闪电咒", "火焰咒", "水咒", "空气咒"],
+                correct: 0,
+                feedback: "正确！这是闪电咒，强大的攻击魔法。"
+            },
+            {
+                question: "你看到了什么魔法物品？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E⏰%3C/text%3E%3C/svg%3E",
+                options: ["时间转换器", "魔法石", "隐形衣", "分院帽"],
+                correct: 0,
+                feedback: "很好！这是时间转换器，用于时光倒流。"
+            },
+            {
+                question: "这个霍格沃茨地点是？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🍽️%3C/text%3E%3C/svg%3E",
+                options: ["礼堂", "图书馆", "医务室", "实验室"],
+                correct: 0,
+                feedback: "正确！这是霍格沃茨的大礼堂，学生们在这里用餐。"
+            },
+            {
+                question: "你看到了什么魔法生物？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🦅%3C/text%3E%3C/svg%3E",
+                options: ["猫头鹰", "凤凰", "龙", "夜骐"],
+                correct: 0,
+                feedback: "很好！这是猫头鹰，用于发送邮件的魔法生物。"
+            },
+            {
+                question: "这个符号代表什么？",
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%23333'/%3E%3Ctext x='100' y='110' text-anchor='middle' fill='%23666' font-size='30' font-family='Arial'%3E🔒%3C/text%3E%3C/svg%3E",
+                options: ["锁咒", "开门咒", "悬浮咒", "遗忘咒"],
+                correct: 1,
+                feedback: "正确！这是开门咒，能打开各种锁具。"
+            }
+        ];
+
+        // 游戏状态
+        let gameState = {
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 10,
+            questions: [],
+            timer: null,
+            timeLeft: 10,
+            isGameActive: false,
+            isImageRevealed: false,
+            isAnswered: false
+        };
+
+        // DOM 元素
+        const teacherDialogue = document.getElementById('teacherDialogue');
+        const crystalBall = document.getElementById('crystalBall');
+        const crystalBallContainer = document.getElementById('crystalBallContainer');
+        const crystalCore = document.getElementById('crystalCore');
+        const divinationImage = document.getElementById('divinationImage');
+        const optionsGrid = document.getElementById('optionsGrid');
+        const optionsSection = document.getElementById('optionsSection');
+        const timer = document.getElementById('timer');
+        const rulesSection = document.getElementById('rulesSection');
+        const endPanel = document.getElementById('endPanel');
+        const starsDisplay = document.getElementById('starsDisplay');
+        const coinsDisplay = document.getElementById('coinsDisplay');
+        const finalMessage = document.getElementById('finalMessage');
+
+        // 返回大厅
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'classes.html';
+            }, 800);
+        }
+
+        // 开始游戏
+        function startGame() {
+            // 从30道题目中随机选择10道
+            gameState.questions = [];
+            const availableQuestions = [...DIVINATION_DATA];
+
+            for (let i = 0; i < 10; i++) {
+                const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+                gameState.questions.push(availableQuestions[randomIndex]);
+                availableQuestions.splice(randomIndex, 1);
+            }
+
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.isGameActive = true;
+            gameState.isImageRevealed = false;
+            gameState.isAnswered = false;
+
+            // 隐藏提示区域，显示游戏区域
+            rulesSection.classList.add('hidden');
+            optionsSection.classList.remove('hidden');
+
+            // 重置UI
+            divinationImage.classList.add('hidden');
+            crystalBall.classList.remove('fade-out');
+            divinationImage.classList.remove('revealed');
+            optionsGrid.innerHTML = '';
+            timer.textContent = '10';
+            timer.classList.remove('warning');
+
+            // 显示第一个问题
+            showQuestion();
+        }
+
+        // 显示问题
+        function showQuestion() {
+            if (gameState.currentQuestion >= gameState.totalQuestions) {
+                endGame();
+                return;
+            }
+
+            const currentQ = gameState.questions[gameState.currentQuestion];
+
+            // 重置状态
+            gameState.isImageRevealed = false;
+            gameState.isAnswered = false;
+            gameState.timeLeft = 10;
+
+            // 显示老师对话
+            teacherDialogue.textContent = currentQ.question;
+
+            // 重置UI
+            divinationImage.classList.add('hidden');
+            crystalBall.classList.remove('fade-out');
+            divinationImage.classList.remove('revealed');
+            divinationImage.src = currentQ.image;
+            optionsGrid.innerHTML = '';
+            timer.textContent = '10';
+            timer.classList.remove('warning');
+
+            // 生成选项按钮
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectOption(index);
+                optionsGrid.appendChild(btn);
+            });
+
+            // 启用选项按钮
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('correct', 'wrong');
+            });
+
+            // 重置水晶球
+            crystalBall.style.opacity = '1';
+            crystalBall.style.transform = 'scale(1)';
+            crystalBall.classList.remove('fade-out');
+        }
+
+        // 水晶球点击事件
+        crystalBall.addEventListener('click', function() {
+            if (!gameState.isGameActive || gameState.isImageRevealed) {
+                return;
+            }
+
+            revealImage();
+        });
+
+        // 显示图像
+        function revealImage() {
+            gameState.isImageRevealed = true;
+            crystalBall.classList.add('fade-out');
+
+            setTimeout(() => {
+                divinationImage.classList.remove('hidden');
+                setTimeout(() => {
+                    divinationImage.classList.add('revealed');
+                }, 100);
+            }, 800);
+
+            // 开始倒计时
+            startTimer();
+        }
+
+        // 开始倒计时
+        function startTimer() {
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+            }
+
+            gameState.timeLeft = 10;
+            timer.textContent = '10';
+            timer.classList.remove('warning');
+
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                timer.textContent = gameState.timeLeft;
+
+                if (gameState.timeLeft <= 3) {
+                    timer.classList.add('warning');
+                }
+
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        // 选项选择
+        function selectOption(selectedIndex) {
+            if (!gameState.isGameActive || gameState.isAnswered) {
+                return;
+            }
+
+            gameState.isAnswered = true;
+            const currentQ = gameState.questions[gameState.currentQuestion];
+            const isCorrect = selectedIndex === currentQ.correct;
+
+            // 停止计时器
+            clearInterval(gameState.timer);
+
+            // 标记正确/错误选项
+            const optionButtons = document.querySelectorAll('.option-btn');
+            optionButtons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === currentQ.correct) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            // 更新分数
+            if (isCorrect) {
+                gameState.score++;
+                teacherDialogue.textContent = "你的'天目'已觉醒，命运的迷雾正为你消散！";
+            } else {
+                teacherDialogue.textContent = "唉，喧嚣扰了'天目'，命运的线索你未能捕捉。";
+            }
+
+            // 继续到下一题
+            setTimeout(() => {
+                gameState.currentQuestion++;
+                showQuestion();
+            }, 2000);
+        }
+
+        // 超时处理
+        function handleTimeout() {
+            if (gameState.isAnswered) {
+                return;
+            }
+
+            gameState.isAnswered = true;
+            const currentQ = gameState.questions[gameState.currentQuestion];
+
+            // 禁用选项按钮
+            const optionButtons = document.querySelectorAll('.option-btn');
+            optionButtons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === currentQ.correct) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            // 显示超时提示
+            teacherDialogue.textContent = "啊…… 星辰已转，迷雾重聚，你错过了命运的提示。";
+
+            // 继续到下一题
+            setTimeout(() => {
+                gameState.currentQuestion++;
+                showQuestion();
+            }, 2000);
+        }
+
+        // 结束游戏
+        function endGame() {
+            gameState.isGameActive = false;
+            clearInterval(gameState.timer);
+
+            // 计算星星和金币奖励
+            let stars = 0;
+            let coins = 0;
+
+            if (gameState.score >= 6) {
+                stars = 1;
+                coins = 5;
+            }
+            if (gameState.score >= 8) {
+                stars = 2;
+                coins = 10;
+            }
+            if (gameState.score === 10) {
+                stars = 3;
+                coins = 15;
+            }
+
+            // 显示结束面板
+            starsDisplay.textContent = '⭐'.repeat(stars);
+            coinsDisplay.textContent = `获得 ${coins} 金币`;
+
+            let message = '';
+            if (stars === 3) {
+                message = "太棒了！你是占卜天才！特里劳妮教授对你刮目相看。";
+            } else if (stars === 2) {
+                message = "很好！你的占卜能力已经相当不错了。";
+            } else if (stars === 1) {
+                message = "不错！继续练习，你的'天目'会变得更敏锐。";
+            } else {
+                message = "别灰心！继续学习，你会慢慢掌握占卜的艺术。";
+            }
+
+            finalMessage.textContent = message;
+
+            // 隐藏游戏区域，显示结束面板
+            optionsSection.classList.add('hidden');
+            timer.textContent = '';
+            divinationImage.classList.add('hidden');
+            crystalBall.classList.add('fade-out');
+            endPanel.classList.remove('hidden');
+
+            // 更新金币
+            CoinManager.addCoins(coins);
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            endPanel.classList.add('hidden');
+            rulesSection.classList.remove('hidden');
+            startGame();
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保图像加载
+            divinationImage.onload = function() {
+                console.log('图像加载成功');
+            };
+
+            divinationImage.onerror = function() {
+                console.error('图像加载失败，尝试重试');
+                // 这里可以添加重试逻辑
+            };
+        });
+    </script>
+</body>
+</html>

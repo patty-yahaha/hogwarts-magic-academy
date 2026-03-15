@@ -238,9 +238,10 @@
                 </div>
 
                 <!-- 变形课 -->
-                <div class="course-card coming-soon">
-                    <span class="course-tag">
-                        <span class="tag-zh">即将推出</span>
+                <div class="course-card" onclick="openTransfigurationClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
                     </span>
                     <div class="course-icon">🔄</div>
                     <div class="course-name-zh">变形课</div>
@@ -252,9 +253,10 @@
                 </div>
 
                 <!-- 占卜课 -->
-                <div class="course-card coming-soon">
-                    <span class="course-tag">
-                        <span class="tag-zh">即将推出</span>
+                <div class="course-card" onclick="openDivinationClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">热门</span>
+                        <span class="tag-en">Hot</span>
                     </span>
                     <div class="course-icon">🔮</div>
                     <div class="course-name-zh">占卜课</div>
@@ -266,9 +268,10 @@
                 </div>
 
                 <!-- 魔法史 -->
-                <div class="course-card coming-soon">
-                    <span class="course-tag">
-                        <span class="tag-zh">即将推出</span>
+                <div class="course-card" onclick="openHistoryClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">新</span>
+                        <span class="tag-en">New</span>
                     </span>
                     <div class="course-icon">📜</div>
                     <div class="course-name-zh">魔法史</div>
@@ -280,9 +283,10 @@
                 </div>
 
                 <!-- 草药学 -->
-                <div class="course-card coming-soon">
-                    <span class="course-tag">
-                        <span class="tag-zh">即将推出</span>
+                <div class="course-card" onclick="openHerbologyClass()">
+                    <span class="course-tag new">
+                        <span class="tag-zh">新</span>
+                        <span class="tag-en">New</span>
                     </span>
                     <div class="course-icon">🌿</div>
                     <div class="course-name-zh">草药学</div>
@@ -361,6 +365,42 @@
             document.body.style.transition = 'opacity 0.8s ease-in-out';
             setTimeout(() => {
                 window.location.href = 'defense.html';
+            }, 800);
+        }
+
+        // 打开占卜课
+        function openDivinationClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'divination-class.html';
+            }, 800);
+        }
+
+        // 打开草药课
+        function openHerbologyClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'herbology-class.html';
+            }, 800);
+        }
+
+        // 打开变形课
+        function openTransfigurationClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'transfiguration-class.html';
+            }, 800);
+        }
+
+        // 打开魔法史
+        function openHistoryClass() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'history-of-magic.html';
             }, 800);
         }
 

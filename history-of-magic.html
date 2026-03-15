@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔法史课 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* 魔法史课特定样式 */
+        body {
+            font-family: 'Cinzel', serif;
+        }
+
+        .history-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px 10px;
+        }
+
+        /* 宾斯教授区域 */
+        .professor-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .binns-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .binns-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(139, 90, 43, 0.3), rgba(101, 67, 33, 0.3));
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            opacity: 0.7;
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .binns-avatar:hover {
+            opacity: 0.85;
+            transform: scale(1.05);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .binns-speech {
+            background: linear-gradient(135deg, rgba(210, 180, 140, 0.95), rgba(245, 245, 220, 0.95));
+            border: 2px solid rgba(139, 90, 43, 0.5);
+            border-radius: 15px;
+            padding: 8px 15px;
+            margin-top: 10px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+            color: #3d2817;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 游戏区域 */
+        .game-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            max-height: 55vh;
+            overflow: hidden;
+        }
+
+        /* 待排序区 */
+        .sorting-area {
+            background: linear-gradient(135deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .area-title {
+            font-family: 'Cinzel Decorative', cursive;
+            color: #d4af37;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 卡片样式 */
+        .event-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .event-cards::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .event-cards::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.5);
+            border-radius: 3px;
+        }
+
+        .event-card {
+            background: linear-gradient(135deg, rgba(245, 245, 220, 0.9), rgba(210, 180, 140, 0.9));
+            border: 2px solid rgba(139, 90, 43, 0.6);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-family: 'MedievalSharp', cursive;
+            color: #3d2817;
+            font-size: 0.85rem;
+        }
+
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(139, 90, 43, 0.03) 2px,
+                rgba(139, 90, 43, 0.03) 4px
+            );
+            pointer-events: none;
+        }
+
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139, 90, 43, 0.4);
+            border-color: rgba(139, 90, 43, 0.8);
+        }
+
+        .event-card.selected {
+            background: linear-gradient(135deg, rgba(255, 230, 150, 0.95), rgba(255, 200, 100, 0.95));
+            border-color: #d4af37;
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .event-card.placed {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .event-card.placed:hover {
+            transform: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 时间轴槽位 */
+        .timeline-area {
+            background: linear-gradient(135deg, rgba(30, 20, 10, 0.9), rgba(20, 10, 5, 0.95));
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .timeline-slots {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .timeline-slots::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .timeline-slots::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.5);
+            border-radius: 3px;
+        }
+
+        .timeline-slot {
+            background: linear-gradient(135deg, rgba(245, 245, 220, 0.1), rgba(210, 180, 140, 0.1));
+            border: 2px dashed rgba(212, 175, 55, 0.4);
+            border-radius: 8px;
+            padding: 10px;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-slot.filled {
+            background: linear-gradient(135deg, rgba(245, 245, 220, 0.3), rgba(210, 180, 140, 0.3));
+            border: 2px solid rgba(212, 175, 55, 0.6);
+        }
+
+        .slot-number {
+            position: absolute;
+            top: 3px;
+            left: 10px;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 0.9rem;
+            color: #d4af37;
+            opacity: 0.7;
+        }
+
+        /* 解析区域 */
+        .analysis-section {
+            background: linear-gradient(135deg, rgba(245, 245, 220, 0.95), rgba(210, 180, 140, 0.95));
+            border: 2px solid rgba(139, 90, 43, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+            font-family: 'MedievalSharp', cursive;
+            color: #3d2817;
+        }
+
+        .analysis-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .analysis-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1rem;
+            color: #8b4513;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .analysis-date {
+            font-style: italic;
+            margin-bottom: 8px;
+            text-align: center;
+            color: #654321;
+            font-size: 0.85rem;
+        }
+
+        .analysis-content {
+            line-height: 1.4;
+            font-size: 0.85rem;
+        }
+
+        /* 控制按钮 */
+        .control-section {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .game-btn {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 10px 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .game-btn:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 通关画面 */
+        .win-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .win-overlay.active {
+            display: flex;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .win-content {
+            background: linear-gradient(135deg, rgba(245, 245, 220, 0.98), rgba(210, 180, 140, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 30px;
+            padding: 60px 80px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.5);
+            animation: zoomIn 0.5s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .win-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #8b4513;
+            margin-bottom: 30px;
+        }
+
+        .win-message {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #3d2817;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        /* 提示信息 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1001;
+            font-family: 'Cinzel', serif;
+        }
+
+        .toast.show {
+            display: block;
+            animation: toastIn 0.3s ease-in;
+        }
+
+        @keyframes toastIn {
+            from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .game-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .history-container {
+                padding: 20px 15px;
+            }
+
+            .binns-speech {
+                font-size: 1rem;
+                padding: 15px 20px;
+                max-width: 90%;
+            }
+
+            .win-content {
+                padding: 40px 50px;
+                margin: 20px;
+            }
+
+            .win-title {
+                font-size: 2rem;
+            }
+
+            .control-section {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <!-- 顶部导航 -->
+        <header class="academy-header">
+            <button class="back-btn" onclick="goBack()">
+                ← <span class="back-text-zh">返回</span><span class="back-text-en">Back</span>
+            </button>
+            <h1 class="academy-title">
+                <span class="title-text-zh">魔法史课</span>
+                <span class="title-text-en">History of Magic</span>
+            </h1>
+        </header>
+
+        <div class="history-container">
+            <!-- 宾斯教授区域 -->
+            <div class="professor-section">
+                <div class="binns-container">
+                    <div class="binns-avatar" onclick="binnsClick()">
+                        👻
+                    </div>
+                </div>
+                <div class="binns-speech" id="binnsSpeech">
+                    <span id="professorText">请...将事件...按时间顺序排列...</span>
+                </div>
+            </div>
+
+            <!-- 游戏区域 -->
+            <div class="game-section">
+                <!-- 待排序区 -->
+                <div class="sorting-area">
+                    <h3 class="area-title">📜 待排序事件池</h3>
+                    <div class="event-cards" id="sortingPool"></div>
+                </div>
+
+                <!-- 时间轴区 -->
+                <div class="timeline-area">
+                    <h3 class="area-title">⏰ 时间轴槽位</h3>
+                    <div class="timeline-slots" id="timelineSlots"></div>
+                </div>
+            </div>
+
+            <!-- 解析区域 -->
+            <div class="analysis-section" id="analysisSection">
+                <h3 class="analysis-title" id="analysisTitle"></h3>
+                <div class="analysis-date" id="analysisDate"></div>
+                <div class="analysis-content" id="analysisContent"></div>
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="control-section">
+                <button class="game-btn" onclick="resetGame()">🔄 <span class="btn-text-zh">重置游戏</span><span class="btn-text-en">Reset</span></button>
+                <button class="game-btn" onclick="showAnswer()">📖 <span class="btn-text-zh">查看答案</span><span class="btn-text-en">Show Answer</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通关画面 -->
+    <div class="win-overlay" id="winOverlay">
+        <div class="win-content">
+            <div class="win-title">🎉 <span class="title-zh">恭喜通关！</span><span class="title-en">Congratulations!</span></div>
+            <div class="win-message" id="winMessage"></div>
+            <button class="game-btn" onclick="playAgain()">🎮 <span class="btn-text-zh">再玩一次</span><span class="btn-text-en">Play Again</span></button>
+        </div>
+    </div>
+
+    <!-- 提示信息 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 事件数据
+        const events = [
+            {
+                id: 1,
+                title: "霍格沃茨创办",
+                date: "一千多年前",
+                description: "由当时最伟大的四个男女巫师——戈德里克·格兰芬多、赫尔加·赫奇帕奇、罗伊纳·拉文克劳和萨拉查·斯莱特林共同建造。因为在那个年代老百姓害怕魔法并迫害巫师，他们为了远离麻瓜窥视的目光，建立了这座城堡，共同寻找并培养有魔法苗头的年轻人。"
+            },
+            {
+                id: 2,
+                title: "国际巫师大会召开",
+                date: "1289年",
+                description: "这是幽灵宾斯教授在极其枯燥的魔法史课上讲解的真实历史事件之一。在这一年的十月，一个由撒丁岛魔法师组成的专门小组参与了此次具有历史意义的大会。"
+            },
+            {
+                id: 3,
+                title: "人头狮身蝎尾兽伤人案",
+                date: "1296年",
+                description: "这是魔法史图书馆卷宗里记载的一起著名的攫食动物案例。一只人头龙身狮尾怪兽咬了人，但因为大家对它极度恐惧，都不敢接近它，最后人们只好放了这头怪兽。"
+            },
+            {
+                id: 4,
+                title: "鹰头马身有翼兽被判罪",
+                date: "1772年",
+                description: "魔法史文献中记载的另一起著名的攫食动物案例。与1296年的怪兽伤人案不同，这只鹰头马身有翼兽在事件中被正式判了罪，并遭遇了令现代学生感到残忍恶心的对待。"
+            },
+            {
+                id: 5,
+                title: "邓布利多击败格林德沃",
+                date: "1945年",
+                description: "这是现任霍格沃茨校长阿不思·邓布利多广为人知的伟大贡献之一。他在这一年成功击败了黑巫师格林德沃。除此之外，邓布利多在魔法史上的成就还包括发现龙血的十二种用途，以及与尼可·勒梅在炼金术方面的合作。"
+            },
+            {
+                id: 6,
+                title: "霍格沃茨密室初次被打开",
+                date: "五十年前（《哈利·波特与密室》时间线）",
+                description: "建校初期萨拉查·斯莱特林留下的“密室”被打开，里面的怪兽攻击了几个学生，并导致一名麻瓜出身的女生死亡。当时的五年级学生汤姆·里德尔声称抓住了打开密室的人致其被开除，里德尔因此获得了一块金光闪闪的特殊贡献奖牌。"
+            },
+            {
+                id: 7,
+                title: "小天狼星·布莱克被捕入狱",
+                date: "十二年前（《哈利·波特与阿兹卡班的囚徒》时间线）",
+                description: "魔法界发生了一起惨烈的街道爆炸事件，街道被炸出一个大坑，导致小矮星·彼得和十二个麻瓜丧生。魔法部判定小天狼星·布莱克背叛了波特夫妇并制造了这起大屠杀，他随后被关进由摄魂怪严密看守的阿兹卡班巫师监狱。"
+            },
+            {
+                id: 8,
+                title: "伏地魔倒台与\"大难不死的男孩\"出现",
+                date: "十多年前的万圣节前夕（哈利一岁时）",
+                description: "一百年来最强大、让魔法界处于黑暗统治十一年的黑巫师伏地魔闯入波特家，杀害了哈利的父母。但当他对一岁的哈利施展死咒时，咒语莫名其妙地失灵并反弹。伏地魔失去法力逃跑，哈利只在额头留下一道闪电形伤疤，终结了黑暗时代，成为魔法界闻名的“大难不死的男孩”。"
+            },
+            {
+                id: 9,
+                title: "古灵阁非法闯入事件",
+                date: "七月三十一日（哈利十一岁生日当天）",
+                description: "被认为除霍格沃茨外最安全的古灵阁魔法银行遭到不知名的黑势力男女巫师非法闯入。然而，被闯入者搜索过的713号地下金库已于当日早些时候被海格提取一空，因此并未造成任何物品丢失。"
+            },
+            {
+                id: 10,
+                title: "第422届魁地奇世界杯决赛及黑魔标记重现",
+                date: "暑假期间（哈利四年级开学前）",
+                description: "十万名巫师聚集观看爱尔兰国家队与保加利亚国家队的精彩决赛，最终爱尔兰队获胜。但赛后营地发生了残害麻瓜的骚乱，代表神秘人的“黑魔标记”十三年来第一次出现在半空中，给整个魔法界带来了极大的恐慌。"
+            }
+        ];
+
+        let selectedCard = null;
+        let placedEvents = {};
+        let correctCount = 0;
+        let shuffledEvents = [];
+
+        // 初始化
+        function init() {
+            shuffleEvents();
+            renderSortingPool();
+            renderTimelineSlots();
+            updateLanguage();
+        }
+
+        // 打乱事件
+        function shuffleEvents() {
+            shuffledEvents = [...events];
+            for (let i = shuffledEvents.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledEvents[i], shuffledEvents[j]] = [shuffledEvents[j], shuffledEvents[i]];
+            }
+        }
+
+        // 渲染待排序区
+        function renderSortingPool() {
+            const sortingPool = document.getElementById('sortingPool');
+            sortingPool.innerHTML = shuffledEvents.map(event => {
+                return `
+                    <div class="event-card" data-id="${event.id}" onclick="selectCard(${event.id})">
+                        <div>${event.title}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染时间轴槽位
+        function renderTimelineSlots() {
+            const timelineSlots = document.getElementById('timelineSlots');
+            timelineSlots.innerHTML = Array.from({length: 10}, (_, index) => {
+                const slotIndex = index + 1;
+                return `
+                    <div class="timeline-slot" data-slot="${slotIndex}" onclick="placeCard(${slotIndex})">
+                        <div class="slot-number">${slotIndex < 10 ? '0' + slotIndex : slotIndex}</div>
+                        <div id="slot-${slotIndex}"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 选择卡片
+        function selectCard(eventId) {
+            // 如果卡片已放置，不允许再选择
+            if (placedEvents[eventId]) {
+                return;
+            }
+
+            // 取消之前的选中
+            const allCards = document.querySelectorAll('.event-card');
+            allCards.forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // 选中当前卡片
+            const eventCard = document.querySelector(`[data-id="${eventId}"]`);
+            if (selectedCard === eventId) {
+                selectedCard = null;
+            } else {
+                selectedCard = eventId;
+                eventCard.classList.add('selected');
+            }
+        }
+
+        // 放置卡片
+        function placeCard(slotNumber) {
+            if (!selectedCard) {
+                showToast('请先选择一张卡片');
+                return;
+            }
+
+            const slotId = `slot-${slotNumber}`;
+            const slot = document.getElementById(slotId);
+
+            // 检查槽位是否已填充
+            if (slot.children.length > 0) {
+                showToast('该位置已放置卡片');
+                return;
+            }
+
+            const event = events.find(e => e.id === selectedCard);
+
+            // 检查是否正确
+            if (event.id === slotNumber) {
+                // 放置卡片
+                slot.innerHTML = `<div class="placed-event">${event.title}</div>`;
+                const slotDiv = document.querySelector(`[data-slot="${slotNumber}"]`);
+                slotDiv.classList.add('filled');
+
+                // 标记为已放置
+                placedEvents[selectedCard] = true;
+                const cardElement = document.querySelector(`[data-id="${selectedCard}"]`);
+                cardElement.classList.add('placed');
+                cardElement.classList.remove('selected');
+
+                // 显示解析
+                showAnalysis(event);
+
+                // 更新宾斯教授台词
+                updateBinnsSpeech('correct');
+
+                correctCount++;
+
+                // 检查连续正确
+                if (correctCount % 3 === 0) {
+                    setTimeout(() => {
+                        updateBinnsSpeech('impressed');
+                    }, 1000);
+                }
+
+                // 检查通关
+                if (correctCount === events.length) {
+                    setTimeout(() => {
+                        showWinScreen();
+                    }, 1000);
+                }
+            } else {
+                // 错误放置
+                showToast('顺序不对，再试试看');
+                updateBinnsSpeech('wrong');
+
+                // 取消选中
+                const cardElement = document.querySelector(`[data-id="${selectedCard}"]`);
+                cardElement.classList.remove('selected');
+                selectedCard = null;
+            }
+        }
+
+        // 显示解析
+        function showAnalysis(event) {
+            const analysisSection = document.getElementById('analysisSection');
+            const analysisTitle = document.getElementById('analysisTitle');
+            const analysisDate = document.getElementById('analysisDate');
+            const analysisContent = document.getElementById('analysisContent');
+
+            analysisTitle.textContent = event.title;
+            analysisDate.textContent = event.date;
+            analysisContent.textContent = event.description;
+
+            analysisSection.classList.add('active');
+        }
+
+        // 更新宾斯教授台词
+        function updateBinnsSpeech(type) {
+            const professorText = document.getElementById('professorText');
+            const speeches = {
+                start: "请...将事件...按时间顺序排列...",
+                correct: "嗯...正确...",
+                wrong: "不对...再试试...",
+                impressed: "令人惊讶...你竟然在听课...",
+                win: "很好...非常正确...你可以去休息了..."
+            };
+
+            professorText.textContent = speeches[type] || speeches.start;
+        }
+
+        // 宾斯教授点击
+        function binnsClick() {
+            const binnsSpeech = document.getElementById('binnsSpeech');
+            binnsSpeech.textContent = "我...还活着...不，我死了...";
+            setTimeout(() => {
+                updateBinnsSpeech('start');
+            }, 2000);
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 重置游戏
+        function resetGame() {
+            selectedCard = null;
+            placedEvents = {};
+            correctCount = 0;
+            shuffleEvents();
+            renderSortingPool();
+            renderTimelineSlots();
+            document.getElementById('analysisSection').classList.remove('active');
+            updateBinnsSpeech('start');
+        }
+
+        // 查看答案
+        function showAnswer() {
+            // 显示答案模态框
+            showToast('答案已显示在控制台');
+            console.log('正确顺序：');
+            events.forEach(event => {
+                console.log(`${event.id}. ${event.title}`);
+            });
+        }
+
+        // 显示通关画面
+        function showWinScreen() {
+            updateBinnsSpeech('win');
+            document.getElementById('winMessage').innerHTML = `
+                宾斯教授难得地露出一丝微笑：<br>
+                "很好...非常正确...你可以去休息了..."
+            `;
+            document.getElementById('winOverlay').classList.add('active');
+        }
+
+        // 再玩一次
+        function playAgain() {
+            document.getElementById('winOverlay').classList.remove('active');
+            resetGame();
+        }
+
+        // 语言切换
+        let currentLang = localStorage.getItem('siteLanguage') || 'zh';
+
+        function updateLanguage() {
+            document.body.classList.remove('lang-zh', 'lang-en');
+            document.body.classList.add(currentLang === 'zh' ? 'lang-zh' : 'lang-en');
+
+            // 更新按钮文字
+            const backBtn = document.querySelector('.back-btn');
+            if (backBtn) {
+                backBtn.innerHTML = currentLang === 'zh' ?
+                    '← 返回' : '← Back';
+            }
+        }
+
+        // 返回课程选择
+        function goBack() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'classes.html';
+            }, 800);
+        }
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
