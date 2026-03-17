@@ -590,12 +590,12 @@
                 <div class="teacher-card" id="teacherCard">
                     <span class="teacher-badge">Professor</span>
                     <div class="teacher-avatar" id="teacherAvatar">
-                        👨‍🏫
+                        🧙‍♂️
                     </div>
                     <div class="teacher-info">
                         <div class="teacher-name">
-                            <span class="name-zh">麦格教授</span>
-                            <span class="name-en">Professor McGonagall</span>
+                            <span class="name-zh">邓布利多教授</span>
+                            <span class="name-en">Professor Dumbledore</span>
                         </div>
                         <div class="teacher-affection-container">
                             <div class="teacher-affection">
@@ -781,8 +781,8 @@
         const QUIZ_THRESHOLD_SCORE = 95;
         const QUIZ_MAX_ATTEMPTS = 3;
 
-        // 麦格教授ID
-        const MCGONAGALL_ID = 'mcgonagall';
+        // 邓布利多教授ID
+        const DUMBLEDORE_ID = 'dumbledore';
 
         // 获取老师好感度数据
         function getMentorAffectionData() {
@@ -790,7 +790,7 @@
             if (!data) {
                 // 初始化数据
                 const initialData = {
-                    [MCGONAGALL_ID]: 0,
+                    [DUMBLEDORE_ID]: 0,
                     totalStudyMinutes: 0,
                     lastStudyTime: Date.now(),
                     quizAttempts: {}, // 存储每个测验的完成次数 {quizId: count}
@@ -808,22 +808,22 @@
         }
 
         // 获取麦格教授好感度
-        function getMcGonagallAffection() {
+        function getDumbledoreAffection() {
             const data = getMentorAffectionData();
-            return data[MCGONAGALL_ID] || 0;
+            return data[DUMBLEDORE_ID] || 0;
         }
 
         // 增加麦格教授好感度
-        function addMcGonagallAffection(amount, source) {
+        function addDumbledoreAffection(amount, source) {
             const data = getMentorAffectionData();
-            const oldAffection = data[MCGONAGALL_ID] || 0;
-            data[MCGONAGALL_ID] = oldAffection + amount;
+            const oldAffection = data[DUMBLEDORE_ID] || 0;
+            data[DUMBLEDORE_ID] = oldAffection + amount;
             saveMentorAffectionData(data);
         }
 
         // 更新好感度显示
         function updateAffectionDisplay() {
-            const affection = getMcGonagallAffection();
+            const affection = getDumbledoreAffection();
             const affectionValue = document.getElementById('affectionValue');
             const affectionMessage = document.getElementById('affectionMessage');
 
@@ -900,8 +900,8 @@
 
         // 增加好感度
         function addAffection(amount, source) {
-            const oldAffection = getMcGonagallAffection();
-            addMcGonagallAffection(amount, source);
+            const oldAffection = getDumbledoreAffection();
+            addDumbledoreAffection(amount, source);
 
             // 显示增加动画
             if (amount > 0) {
@@ -910,7 +910,7 @@
 
             updateAffectionDisplay();
 
-            console.log(`Affection increased from ${oldAffection} to ${getMcGonagallAffection()} (${source})`);
+            console.log(`Affection increased from ${oldAffection} to ${getDumbledoreAffection()} (${source})`);
         }
 
         // 显示好感度增加动画

@@ -2007,10 +2007,17 @@
             // 检查是否已存在（避免重复）
             if (!playerData.roomDecorations.find(d => d.id === decoration.id)) {
                 playerData.roomDecorations.push(decoration);
-                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+
+                // 从背包中移除该装饰品
+                playerData.inventory.splice(draggedItem.sourceIndex, 1);
+
+                savePlayerData();
 
                 // 创建装饰品元素
                 createRoomDecorationElement(decoration);
+
+                // 重新加载背包列表
+                loadRoomInventory();
 
                 console.log('✅ 装饰品已添加到房间:', decoration.nameZh);
             } else {
@@ -2047,6 +2054,12 @@
 
             // 使其可拖动
             makeElementDraggable(decorEl, decoration.id, roomArea);
+
+            // 添加右键菜单事件
+            decorEl.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showDecorationContextMenu(e, decoration.id);
+            });
         }
 
         // 加载房间中的物品
@@ -2102,6 +2115,17 @@
 
             // 从房间移除物品
             playerData.room.items = playerData.room.items.filter(i => i.id !== itemId);
+
+            // 将物品添加回背包
+            const backpackItem = {
+                id: Date.now(), // 生成一个新的唯一 id
+                icon: roomItem.icon,
+                nameZh: roomItem.name,
+                nameEn: roomItem.name, // 假设英文名称与中文名称相同，或可以添加逻辑获取英文名称
+                type: 'item' // 默认类型
+            };
+            playerData.inventory.push(backpackItem);
+
             savePlayerData();
 
             // 隐藏上下文菜单
@@ -2158,6 +2182,88 @@
             setTimeout(() => {
                 document.addEventListener('click', hideContextMenu, { once: true });
             }, 0);
+        }
+
+        // 显示装饰品右键上下文菜单
+        function showDecorationContextMenu(e, decorationId) {
+            // 隐藏已存在的菜单
+            hideContextMenu();
+
+            // 创建菜单
+            const menu = document.createElement('div');
+            menu.className = 'room-context-menu';
+            menu.id = 'roomContextMenu';
+
+            // 创建删除按钮
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '🗑️ 删除物品';
+            deleteBtn.onclick = () => {
+                removeDecoration(decorationId);
+            };
+
+            menu.appendChild(deleteBtn);
+
+            // 计算菜单位置（在鼠标旁边）
+            let x = e.clientX + 10;
+            let y = e.clientY + 10;
+
+            // 确保菜单不会超出屏幕
+            const menuWidth = 150;
+            const menuHeight = 50;
+            if (x + menuWidth > window.innerWidth) {
+                x = e.clientX - menuWidth - 10;
+            }
+            if (y + menuHeight > window.innerHeight) {
+                y = e.clientY - menuHeight - 10;
+            }
+
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+
+            document.body.appendChild(menu);
+
+            // 点击菜单外部关闭菜单
+            setTimeout(() => {
+                document.addEventListener('click', hideContextMenu, { once: true });
+            }, 0);
+        }
+
+        // 删除装饰品（返回背包）
+        function removeDecoration(decorationId) {
+            const decorationIndex = playerData.roomDecorations.findIndex(d => d.id === decorationId);
+            if (decorationIndex === -1) return;
+
+            const decoration = playerData.roomDecorations[decorationIndex];
+
+            // 从房间移除装饰品
+            playerData.roomDecorations.splice(decorationIndex, 1);
+
+            // 将装饰品添加回背包
+            const backpackItem = {
+                id: decoration.id,
+                icon: decoration.icon,
+                name: decoration.nameZh,
+                nameZh: decoration.nameZh,
+                nameEn: decoration.nameEn,
+                type: 'decoration',
+                description: '房间装饰品，可从背包拖动到房间中',
+                decorationId: decoration.id,
+                canUse: true
+            };
+            playerData.inventory.push(backpackItem);
+
+            savePlayerData();
+
+            // 隐藏上下文菜单
+            hideContextMenu();
+
+            // 重新加载房间物品
+            loadRoomItems();
+            loadRoomInventory();
+
+            // 显示提示
+            showRoomTip('装饰品已返回背包！');
         }
 
         // 隐藏右键上下文菜单
@@ -2340,12 +2446,16 @@
 
                         // 添加到房间数据
                         playerData.room.items.push(roomItem);
+
+                        // 从背包中移除该物品
+                        playerData.inventory.splice(draggedItem.sourceIndex, 1);
+
                         savePlayerData();
 
                         // 创建元素
                         createRoomItemElement(roomItem);
 
-                        // 重新加载背包列表（物品保留在背包中，可多次放置）
+                        // 重新加载背包列表（物品已从背包中移除）
                         loadRoomInventory();
                     }
                 }

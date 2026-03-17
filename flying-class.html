@@ -140,7 +140,7 @@
         /* 分数显示（游戏中） */
         .score-display {
             position: absolute;
-            top: 20px;
+            top: 90px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 2.5rem;
@@ -148,6 +148,17 @@
             text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
             z-index: 100;
             font-weight: bold;
+        }
+
+        /* 生命值显示 */
+        .hearts-display {
+            position: fixed;
+            top: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
         }
 
         /* 开始界面 */
@@ -634,6 +645,129 @@
                 background: transparent;
             }
         }
+
+        .heart-icon {
+            font-size: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .heart-icon.lost {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
+        .heart-icon.blink {
+            animation: heartBlink 0.5s ease-in-out infinite;
+        }
+
+        @keyframes heartBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 倒计时显示 */
+        .timer-display {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 10px 30px;
+            z-index: 100;
+            font-size: 1.8rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 连击显示 */
+        .combo-display {
+            position: fixed;
+            top: 220px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+            display: none;
+        }
+
+        /* 提示消息 */
+        .hint-message {
+            position: fixed;
+            top: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            font-size: 1.3rem;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.8);
+            display: none;
+            animation: hintFade 2s ease-out forwards;
+        }
+
+        @keyframes hintFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 数字提示动画 */
+        .number-pop {
+            position: fixed;
+            font-size: 1.8rem;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 1000;
+            animation: numberPop 1s ease-out forwards;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .number-pop.positive {
+            color: #27ae60;
+        }
+
+        .number-pop.negative {
+            color: #e74c3c;
+        }
+
+        .number-pop.coin {
+            color: #ffd700;
+        }
+
+        @keyframes numberPop {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(-10px) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(1);
+            }
+        }
+
+        /* 速度提示 */
+        .speed-hint {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            font-size: 1.2rem;
+            color: #d4af37;
+            text-align: center;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -675,6 +809,25 @@
         <!-- 游戏画布 -->
         <canvas id="gameCanvas"></canvas>
 
+        <!-- 倒计时显示 -->
+        <div class="timer-display" id="timerDisplay" style="display: none;">60</div>
+
+        <!-- 生命值显示 -->
+        <div class="hearts-display" id="heartsDisplay" style="display: none;">
+            <span class="heart-icon" id="heart1">❤️</span>
+            <span class="heart-icon" id="heart2">❤️</span>
+            <span class="heart-icon" id="heart3">❤️</span>
+        </div>
+
+        <!-- 连击显示 -->
+        <div class="combo-display" id="comboDisplay">🔥 0 连击!</div>
+
+        <!-- 提示消息 -->
+        <div class="hint-message" id="hintMessage"></div>
+
+        <!-- 速度提示 -->
+        <div class="speed-hint" id="speedHint" style="display: none;"></div>
+
         <!-- 游戏中分数 -->
         <div class="score-display" id="scoreDisplay" style="display: none;">0</div>
 
@@ -688,6 +841,15 @@
             </button>
         </div>
 
+        <!-- 速度显示 -->
+        <div class="speed-display" id="speedDisplay" style="position: fixed; top: 160px; right: 20px; display: none; z-index: 9999; background: linear-gradient(145deg, rgba(30, 20, 10, 0.95), rgba(20, 10, 5, 0.98)); border: 3px solid #d4af37; border-radius: 15px; padding: 10px 20px; font-family: 'Cinzel', serif; transition: all 0.3s ease;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                <div style="font-size: 0.8rem; color: #a08050;">当前速度</div>
+                <div style="font-size: 1.5rem; color: #d4af37; font-weight: bold;" id="currentSpeedValue">0</div>
+                <div style="font-size: 0.7rem; color: #c9a830;">像素/帧</div>
+            </div>
+        </div>
+
         <!-- 暂停界面 -->
         <div class="game-over-screen" id="pauseScreen" style="display: none;">
             <h1 class="game-title">
@@ -697,8 +859,8 @@
             <div class="stats-container">
                 <div class="stat-item">
                     <span class="stat-label">
-                        <span class="label-zh">当前分数：</span>
-                        <span class="label-en">Current Score:</span>
+                        <span class="label-zh">已穿过柱子：</span>
+                        <span class="label-en">Pillars Passed:</span>
                     </span>
                     <span class="stat-value" id="pauseScore">0</span>
                 </div>
@@ -763,12 +925,20 @@
                     <span class="inst-en">⬇️ Release to fall down</span>
                 </div>
                 <div class="instruction-item">
-                    <span class="inst-zh">💰 每5根石柱获得金币奖励</span>
-                    <span class="inst-en">💰 Earn coins for every 5 pillars</span>
+                    <span class="inst-zh">❤️ 3条生命，撞到柱子掉1条，3条用完游戏结束</span>
+                    <span class="inst-en">❤️ 3 lives - lose one when hitting a pillar</span>
                 </div>
                 <div class="instruction-item">
-                    <span class="inst-zh">⚠️ 碰到石柱或边界游戏结束</span>
-                    <span class="inst-en">⚠️ Avoid pillars and boundaries</span>
+                    <span class="inst-zh">⏰ 游戏时长：60秒倒计时</span>
+                    <span class="inst-en">⏰ Game duration: 60 seconds</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="inst-zh">🪙 穿过柱子得金币，速度越快金币越多</span>
+                    <span class="inst-en">🪙 Earn coins by passing pillars - faster = more coins</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="inst-zh">🔥 连击穿过柱子获得额外奖励</span>
+                    <span class="inst-en">🔥 Combo bonuses for consecutive passes</span>
                 </div>
             </div>
 
@@ -794,17 +964,25 @@
             <div class="stats-container">
                 <div class="stat-item">
                     <span class="stat-label">
-                        <span class="label-zh">本次得分</span>
-                        <span class="label-en">Score</span>
+                        <span class="label-zh">穿过柱子数</span>
+                        <span class="label-en">Pillars Passed</span>
                     </span>
                     <span class="stat-value" id="finalScore">0</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">
-                        <span class="label-zh">获得金币</span>
-                        <span class="label-en">Coins Earned</span>
+                        <span class="label-zh">获得金币（金加隆）</span>
+                        <span class="label-en">Galleons Earned</span>
                     </span>
                     <span class="stat-value coins" id="coinsEarned">0 🪙</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">
+                        <span class="label-zh">霍琦夫人好感度</span>
+                        <span class="label-en">Madam Hooch Affection</span>
+                    </span>
+                    <span class="stat-value" id="finalAffection">0</span>
+                    <span class="heart-icon">❤️</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">
@@ -1081,10 +1259,21 @@
         let lastAffectionUpdate = 0; // 上次好感度更新的分数
         let poorPerformanceCount = 0; // 通过柱子少于3根的次数统计
         let sessionCoins = 0; // 本局金币
+        let hearts = 3; // 生命值（3颗红心）
+        let comboCount = 0; // 连击数
+        let crashCount = 0; // 本局碰撞次数
+        let gameTimeLeft = 90; // 游戏倒计时（秒）
+        let timerInterval = null; // 倒计时定时器
+        let isInvincible = false; // 无敌状态
+        let invincibleTimer = null; // 无敌定时器
+        let totalDistanceMoved = 0; // 累计移动距离（用于计算柱子生成）
+
+        // 每日游戏次数
+        let dailyGameCount = 0; // 今日游戏次数
 
         // 扫帚加成（动态计算）
         let currentBroomStats = null;
-        let currentPillarSpeed = 2;
+        let currentPillarSpeed = 3; // 初始速度3
         let currentPillarGap = 154;
 
         // 每日游戏时间限制
@@ -1095,10 +1284,10 @@
         // 物理参数（基础值，基于 60 FPS）
         const GRAVITY = 0.35;
         const FLAP_STRENGTH = -4.5;
-        const BASE_PILLAR_SPEED = 2; // 基础速度（每 60 FPS 移动 2 像素）
+        const BASE_PILLAR_SPEED = 3; // 基础速度3（每 60 FPS 移动 3 像素）
         const BASE_PILLAR_GAP = 154; // 基础缝隙
         const PILLAR_WIDTH = 80;
-        const PILLAR_SPAWN_INTERVAL = 3000; // 柱子生成间隔（毫秒）
+        const PILLAR_SPATIAL_DISTANCE = 360; // 柱子之间的固定空间距离（初始: 3×120帧=360像素）
         const TARGET_FPS = 60; // 目标帧率
 
         // 时间增量计算
@@ -1239,11 +1428,52 @@
 
             // 加载每日游戏时间
             loadDailyPlayTime();
+            // 加载每日游戏次数
+            loadDailyGameCount();
+        }
+
+        // 获取今天的日期字符串
+        function getTodayDate() {
+            const today = new Date();
+            return today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        }
+
+        // 加载每日游戏次数
+        function loadDailyGameCount() {
+            const today = getTodayDate();
+            const savedData = localStorage.getItem('flyingClassDailyGameCount');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.date === today) {
+                    dailyGameCount = data.count || 0;
+                } else {
+                    dailyGameCount = 0;
+                    saveDailyGameCount();
+                }
+            } else {
+                dailyGameCount = 0;
+            }
+        }
+
+        // 保存每日游戏次数
+        function saveDailyGameCount() {
+            const today = getTodayDate();
+            const data = {
+                date: today,
+                count: dailyGameCount
+            };
+            localStorage.setItem('flyingClassDailyGameCount', JSON.stringify(data));
+        }
+
+        // 检查是否是当日第一次游戏
+        function isFirstGameToday() {
+            loadDailyGameCount();
+            return dailyGameCount === 0;
         }
 
         // 更新好感度显示
         function updateAffectionDisplay() {
-            document.getElementById('affectionValue').textContent = affection;
+            document.getElementById('affectionValue').textContent = affection.toFixed(1);
         }
 
         // 同步好感度到导师专区
@@ -1282,12 +1512,6 @@
         // 保存最高分
         function saveHighScore() {
             localStorage.setItem('flyingClassHighScore', highScore.toString());
-        }
-
-        // 获取今天的日期字符串
-        function getTodayDate() {
-            const today = new Date();
-            return today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         }
 
         // 加载每日游戏时间
@@ -1427,8 +1651,14 @@
 
         // 绘制巫师
         function drawWizard() {
-            // 确保透明度为1，确保颜色正常显示
-            ctx.globalAlpha = 1;
+            // 无敌状态闪烁效果
+            if (isInvincible) {
+                const blink = Math.floor(Date.now() / 100) % 2 === 0;
+                ctx.globalAlpha = blink ? 0.5 : 1;
+            } else {
+                ctx.globalAlpha = 1;
+            }
+
             // 重置任何滤镜效果
             ctx.shadowColor = 'transparent';
             ctx.shadowBlur = 0;
@@ -1455,24 +1685,185 @@
             ctx.restore();
         }
 
-        // 绘制石柱
+        // 更新生命值显示
+        function updateHeartsDisplay() {
+            for (let i = 1; i <= 3; i++) {
+                const heart = document.getElementById('heart' + i);
+                if (i <= hearts) {
+                    heart.classList.remove('lost');
+                    if (hearts === 2 && i >= 2) {
+                        heart.classList.add('blink');
+                    } else if (hearts === 1 && i === 1) {
+                        heart.classList.add('blink');
+                    } else {
+                        heart.classList.remove('blink');
+                    }
+                } else {
+                    heart.classList.add('lost');
+                    heart.classList.remove('blink');
+                }
+            }
+        }
+
+        // 根据速度获取当前速度区间配置
+        function getSpeedConfig() {
+            const speed = currentPillarSpeed;
+            if (speed < 4) {
+                return {
+                    background: 'slow',
+                    sound: 'soft',
+                    pillarColor: 'wood',
+                    hint: '你刚骑上扫帚~'
+                };
+            } else if (speed < 6) {
+                return {
+                    background: 'normal',
+                    sound: 'medium',
+                    pillarColor: 'woodGlow',
+                    hint: '飞得不错！'
+                };
+            } else if (speed < 8) {
+                return {
+                    background: 'fast',
+                    sound: 'whistling',
+                    pillarColor: 'silver',
+                    hint: '哇，越来越快了！'
+                };
+            } else if (speed < 10) {
+                return {
+                    background: 'veryFast',
+                    sound: 'sharp',
+                    pillarColor: 'gold',
+                    hint: '你是专业的找球手！'
+                };
+            } else {
+                return {
+                    background: 'extreme',
+                    sound: 'harsh',
+                    pillarColor: 'rainbow',
+                    hint: '天哪，这速度破纪录了！'
+                };
+            }
+        }
+
+        // 绘制背景（根据速度变化）
+        function drawBackground() {
+            const config = getSpeedConfig();
+
+            // 根据速度设置渐变天空
+            let gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            switch(config.background) {
+                case 'slow':
+                    gradient.addColorStop(0, '#0a1628');
+                    gradient.addColorStop(0.5, '#1a2845');
+                    gradient.addColorStop(1, '#2a3855');
+                    break;
+                case 'normal':
+                    gradient.addColorStop(0, '#0a2038');
+                    gradient.addColorStop(0.5, '#1a3550');
+                    gradient.addColorStop(1, '#2a4560');
+                    break;
+                case 'fast':
+                    gradient.addColorStop(0, '#102040');
+                    gradient.addColorStop(0.5, '#203060');
+                    gradient.addColorStop(1, '#304070');
+                    break;
+                case 'veryFast':
+                    gradient.addColorStop(0, '#181840');
+                    gradient.addColorStop(0.5, '#282860');
+                    gradient.addColorStop(1, '#383880');
+                    break;
+                case 'extreme':
+                    gradient.addColorStop(0, '#201030');
+                    gradient.addColorStop(0.5, '#302050');
+                    gradient.addColorStop(1, '#403070');
+                    break;
+            }
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // 绘制移动的星星（速度越快移动越快）
+            const starSpeed = config.background === 'extreme' ? 5 :
+                            config.background === 'veryFast' ? 3 :
+                            config.background === 'fast' ? 2 :
+                            config.background === 'normal' ? 1.5 : 1;
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 30; i++) {
+                const x = (i * 73 + Date.now() * 0.01 * starSpeed) % CANVAS_WIDTH;
+                const y = (i * 47) % CANVAS_HEIGHT;
+                const size = (Math.sin(Date.now() * 0.003 + i) + 1) * 1.5;
+                ctx.globalAlpha = 0.3 + Math.sin(Date.now() * 0.002 + i) * 0.3;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+
+            // 残影效果（速度极快时）
+            if (config.background === 'extreme') {
+                ctx.globalAlpha = 0.1;
+                for (let i = 0; i < 5; i++) {
+                    const x = (Date.now() * 0.5 + i * 200) % (CANVAS_WIDTH + 200) - 100;
+                    ctx.fillStyle = '#ff6b6b';
+                    ctx.fillRect(x, 0, 10, CANVAS_HEIGHT);
+                }
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // 绘制石柱（根据速度变化颜色）
         function drawPillars() {
+            const config = getSpeedConfig();
+
             pillars.forEach(pillar => {
-                // 魔法柱渐变 - 紫金色调
-                const gradient = ctx.createLinearGradient(pillar.x, 0, pillar.x + PILLAR_WIDTH, 0);
-                gradient.addColorStop(0, '#6b4c7a'); // 深紫色
-                gradient.addColorStop(0.25, '#8b5ba8'); // 中紫色
-                gradient.addColorStop(0.5, '#d4af37'); // 金色
-                gradient.addColorStop(0.75, '#9b6ba8'); // 浅紫色
-                gradient.addColorStop(1, '#7a4a8a'); // 深灰紫
+                // 根据速度设置柱子渐变
+                let gradient = ctx.createLinearGradient(pillar.x, 0, pillar.x + PILLAR_WIDTH, 0);
+                switch(config.pillarColor) {
+                    case 'wood':
+                        gradient.addColorStop(0, '#6b4c3a');
+                        gradient.addColorStop(0.25, '#8b6b5a');
+                        gradient.addColorStop(0.5, '#a47c5c');
+                        gradient.addColorStop(0.75, '#8b6b5a');
+                        gradient.addColorStop(1, '#6b4c3a');
+                        break;
+                    case 'woodGlow':
+                        gradient.addColorStop(0, '#7b5c4a');
+                        gradient.addColorStop(0.25, '#9b7b6a');
+                        gradient.addColorStop(0.5, '#b48c6c');
+                        gradient.addColorStop(0.75, '#9b7b6a');
+                        gradient.addColorStop(1, '#7b5c4a');
+                        break;
+                    case 'silver':
+                        gradient.addColorStop(0, '#888899');
+                        gradient.addColorStop(0.25, '#aaaaaa');
+                        gradient.addColorStop(0.5, '#cccccc');
+                        gradient.addColorStop(0.75, '#aaaaaa');
+                        gradient.addColorStop(1, '#888899');
+                        break;
+                    case 'gold':
+                        gradient.addColorStop(0, '#b89637');
+                        gradient.addColorStop(0.25, '#d4af57');
+                        gradient.addColorStop(0.5, '#ffd700');
+                        gradient.addColorStop(0.75, '#d4af57');
+                        gradient.addColorStop(1, '#b89637');
+                        break;
+                    case 'rainbow':
+                        const hue = (Date.now() * 0.1) % 360;
+                        gradient.addColorStop(0, `hsl(${hue}, 80%, 50%)`);
+                        gradient.addColorStop(0.25, `hsl(${(hue + 60) % 360}, 80%, 60%)`);
+                        gradient.addColorStop(0.5, `hsl(${(hue + 120) % 360}, 80%, 70%)`);
+                        gradient.addColorStop(0.75, `hsl(${(hue + 180) % 360}, 80%, 60%)`);
+                        gradient.addColorStop(1, `hsl(${(hue + 240) % 360}, 80%, 50%)`);
+                        break;
+                }
 
                 ctx.fillStyle = gradient;
 
                 // 上方柱子
                 ctx.fillRect(pillar.x, 0, PILLAR_WIDTH, pillar.topHeight);
 
-                // 金色边框
-                ctx.strokeStyle = '#d4af37';
+                // 边框颜色
+                ctx.strokeStyle = config.pillarColor === 'gold' || config.pillarColor === 'rainbow' ? '#ffd700' : '#d4af37';
                 ctx.lineWidth = 3;
                 ctx.strokeRect(pillar.x, 0, PILLAR_WIDTH, pillar.topHeight);
 
@@ -1502,15 +1893,71 @@
                     ctx.stroke();
                 }
 
-                // 魔法光晕效果
-                ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
-                ctx.shadowBlur = 15;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
+                // 发光效果（高级速度时）
+                if (config.pillarColor === 'gold' || config.pillarColor === 'rainbow') {
+                    ctx.shadowColor = config.pillarColor === 'gold' ? 'rgba(255, 215, 0, 0.8)' : 'rgba(255, 100, 100, 0.8)';
+                    ctx.shadowBlur = 20;
+                } else if (config.pillarColor === 'silver') {
+                    ctx.shadowColor = 'rgba(200, 200, 200, 0.6)';
+                    ctx.shadowBlur = 10;
+                }
             });
             // 重置阴影
             ctx.shadowColor = 'transparent';
             ctx.shadowBlur = 0;
+        }
+
+        // 显示提示消息
+        function showHintMessage(message, color = '#d4af37') {
+            const hintEl = document.getElementById('hintMessage');
+            hintEl.textContent = message;
+            hintEl.style.color = color;
+            hintEl.style.display = 'block';
+            hintEl.style.animation = 'none';
+            hintEl.offsetHeight; // 触发重绘
+            hintEl.style.animation = 'hintFade 2s ease-out forwards';
+            setTimeout(() => {
+                hintEl.style.display = 'none';
+            }, 2000);
+        }
+
+        // 显示数字弹出动画
+        function showNumberPop(x, y, value, type) {
+            const numEl = document.createElement('div');
+            numEl.className = 'number-pop ' + type;
+            numEl.textContent = (value > 0 ? '+' : '') + value;
+            numEl.style.left = x + 'px';
+            numEl.style.top = y + 'px';
+            document.body.appendChild(numEl);
+            setTimeout(() => numEl.remove(), 1000);
+        }
+
+        // 根据速度计算单根柱子金币
+        function calculateCoinPerPillar() {
+            const speed = currentPillarSpeed;
+            if (speed < 5) return 1;
+            if (speed < 8) return 2;
+            if (speed < 11) return 3;
+            return 4;
+        }
+
+        // 计算连击奖励
+        function calculateComboBonus(combo) {
+            if (combo >= 30) return 30;
+            if (combo >= 20) return 15;
+            if (combo >= 10) return 5;
+            return 0;
+        }
+
+        // 应用防刷机制到金币
+        function applyAntiFarmCoins(coins) {
+            if (dailyGameCount <= 3) return coins;
+            return Math.floor(coins / 2);
+        }
+
+        // 保护机制：好感度不低于0
+        function protectAffection() {
+            if (affection < 0) affection = 0;
         }
 
         // 生成柱子
@@ -1547,30 +1994,6 @@
             });
         }
 
-        // 计算金币奖励（分层奖励 + 扫帚加成）
-        function calculateCoins(pillarsPassed) {
-            let totalCoins = 0;
-
-            // 1-20根：每5根给5金币
-            if (pillarsPassed <= 20) {
-                totalCoins = Math.floor(pillarsPassed / 5) * 5;
-            }
-            // 21-50根：前20根20金币 + 每5根给8金币
-            else if (pillarsPassed <= 50) {
-                totalCoins = 20 + Math.floor((pillarsPassed - 20) / 5) * 8;
-            }
-            // 51-100根：前50根68金币 + 每5根给10金币
-            else {
-                totalCoins = 68 + Math.floor((pillarsPassed - 50) / 5) * 10;
-            }
-
-            // 应用扫帚金币加成
-            if (currentBroomStats && currentBroomStats.coinBonus > 0) {
-                totalCoins = Math.floor(totalCoins * (1 + currentBroomStats.coinBonus / 100));
-            }
-
-            return totalCoins;
-        }
 
         // 更新柱子
         function updatePillars() {
@@ -1625,12 +2048,125 @@
             return null; // 无碰撞
         }
 
+        // 处理碰撞
+        function handleCollision(collisionType) {
+            if (collisionType === 'crash' || collisionType === 'fail') {
+                hearts--;
+                crashCount++;
+                comboCount = 0; // 重置连击
+                document.getElementById('comboDisplay').style.display = 'none';
+
+                playSound('crash');
+
+                // 更新生命值显示
+                updateHeartsDisplay();
+                showNumberPop(wizard.x, wizard.y, -1, 'negative');
+
+                // 好感度扣除
+                if (crashCount >= 2) {
+                    affection = Math.max(0, affection - 0.3); // 连续碰撞扣更多
+                    showHintMessage('集中注意力！');
+                    showNumberPop(100, 80, -0.3, 'negative');
+                } else {
+                    affection = Math.max(0, affection - 0.1);
+                    showHintMessage('啊哦！');
+                    showNumberPop(100, 80, -0.1, 'negative');
+                }
+                updateAffectionDisplay();
+                saveAffection();
+
+                // 重置巫师位置
+                wizard.y = CANVAS_HEIGHT / 2;
+                wizard.velocity = 0;
+
+                // 检查是否还有生命
+                if (hearts <= 0) {
+                    affection = Math.max(0, affection - 1.0); // 死亡扣1.0
+                    updateAffectionDisplay();
+                    saveAffection();
+                    showHintMessage('下次要更小心哦', '#e74c3c');
+                    showNumberPop(100, 80, -1.0, 'negative');
+                    setTimeout(() => endGame(), 1000);
+                } else {
+                    // 进入无敌状态 1.5 秒
+                    isInvincible = true;
+                    if (invincibleTimer) clearTimeout(invincibleTimer);
+                    invincibleTimer = setTimeout(() => {
+                        isInvincible = false;
+                    }, 1500);
+                }
+            }
+        }
+
+        // 倒计时结束游戏
+        function endGameByTimer() {
+            clearInterval(timerInterval);
+            endGame();
+        }
+
+        // 结束游戏（总结）
+        function endGame() {
+            gameRunning = false;
+            if (timerInterval) clearInterval(timerInterval);
+            if (invincibleTimer) clearTimeout(invincibleTimer); // 清除无敌定时器
+
+            // 隐藏游戏控制按钮
+            document.getElementById('gameControls').style.display = 'none';
+
+            // 更新每日游戏时间
+            updateGameTime();
+
+            // 更新显示
+            document.getElementById('timerDisplay').style.display = 'none';
+            document.getElementById('heartsDisplay').style.display = 'none';
+            document.getElementById('speedHint').style.display = 'none';
+            document.getElementById('scoreDisplay').style.display = 'none';
+            document.getElementById('comboDisplay').style.display = 'none';
+            document.getElementById('speedDisplay').style.display = 'none';
+
+            // 计算最终金币（应用防刷机制）
+            const finalCoins = applyAntiFarmCoins(sessionCoins);
+            coins += finalCoins;
+            updateCoinDisplay();
+
+            // 确保使用 updateCumulativeCoins 同时更新当前金币和累计金币
+            updateCumulativeCoins(finalCoins);
+
+            // 更新每日飞行进度
+            const todayDailyConsecutive = parseInt(localStorage.getItem('dailyFlyingConsecutive') || '0');
+            if (passedPillars > todayDailyConsecutive) {
+                localStorage.setItem('dailyFlyingConsecutive', passedPillars.toString());
+            }
+
+            // 保存好感度
+            saveAffection();
+
+            // 检查是否新纪录
+            isNewRecord = passedPillars > highScore;
+            if (isNewRecord) {
+                highScore = passedPillars;
+                saveHighScore();
+            }
+
+            // 显示结算界面
+            document.getElementById('finalScore').textContent = passedPillars; // 使用实际通过的柱子数
+            document.getElementById('coinsEarned').textContent = finalCoins + ' 🪙';
+            document.getElementById('finalAffection').textContent = affection.toFixed(1); // 显示最终好感度
+            document.getElementById('highScore').textContent = highScore;
+            document.getElementById('newRecord').style.display = isNewRecord ? 'inline' : 'none';
+
+            document.getElementById('gameOverScreen').style.display = 'flex';
+        }
+
         // 游戏循环
         function gameLoop(currentTime = 0) {
             if (!gameRunning) return;
 
             // 计算时间增量
             const deltaTime = getDeltaTime(currentTime);
+
+            // 更新速度显示
+            document.getElementById('currentSpeedValue').textContent = currentPillarSpeed.toFixed(2);
 
             // 清空画布
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -1644,7 +2180,7 @@
                 lastPillarTime = Date.now();
             }
 
-            // 移动柱子（使用当前扫帚速度，乘以时间增量）
+            // 移动柱子（使用当前速度，乘以时间增量）
             pillars.forEach(pillar => {
                 pillar.x -= currentPillarSpeed * deltaTime;
 
@@ -1654,39 +2190,53 @@
                     score++;
                     passedPillars = score;
                     document.getElementById('scoreDisplay').textContent = score;
+                    playSound('pass'); // 播放穿柱子成功音效
 
-                    // 每10根柱子加速一次
-                    // 通过10根后1.1倍速，20根后1.2倍速，以此类推
-                    const speedMultiplier = 1 + Math.floor(score / 10) * 0.1;
-                    currentPillarSpeed = BASE_PILLAR_SPEED * speedMultiplier * (1 - currentBroomStats.speedBonus);
-
-                    // 每10分增加好感度（考虑扫帚加成）
-                    const affectionThreshold = 10 - currentBroomStats.affectionBonus;
-                    if (affectionThreshold > 0 && score - lastAffectionUpdate >= affectionThreshold) {
-                        affection++;
-                        lastAffectionUpdate = score;
-                        updateAffectionDisplay();
-                        saveAffection();
+                    // 增加连击
+                    comboCount++;
+                    if (comboCount >= 10) {
+                        document.getElementById('comboDisplay').textContent = '🔥 ' + comboCount + ' 连击!';
+                        document.getElementById('comboDisplay').style.display = 'block';
                     }
 
-                    // 达到100根柱子，游戏结束（胜利）
-                    if (score >= MAX_PILLARS) {
-                        setTimeout(() => {
-                            gameOver();
-                        }, 500);
-                        return;
+                    // 每穿过一根柱子，速度+0.05，最高12
+                    currentPillarSpeed = Math.min(currentPillarSpeed + 0.05, 12);
+                    // 更新速度提示
+                    const speedConfig = getSpeedConfig();
+                    document.getElementById('speedHint').textContent = speedConfig.hint;
+
+                    // 计算金币奖励（防刷机制只在游戏结束时应用）
+                    let coinReward = calculateCoinPerPillar();
+                    // 连击奖励
+                    const comboBonus = calculateComboBonus(comboCount);
+                    if (comboBonus > 0) {
+                        coinReward += comboBonus;
+                        showHintMessage(comboCount + '连击！+' + comboBonus + '金币！', '#ff6b6b');
+                    }
+                    // 增加金币
+                    sessionCoins += coinReward;
+                    updateGameCoinsDisplay();
+                    showNumberPop(wizard.x + 50, wizard.y - 20, coinReward, 'coin');
+
+                    // 好感度：每根柱子+0.2
+                    affection = Math.min(affection + 0.2, 999999);
+                    updateAffectionDisplay();
+                    saveAffection();
+                    showNumberPop(100, 80, 0.2, 'positive');
+                    if (Math.random() > 0.7) { // 30%概率显示提示
+                        showHintMessage('不错！');
                     }
                 }
             });
 
-            // 使用累积时间生成柱子，确保间距一致（基于60 FPS）
-            // 将毫秒转换为帧数（3000ms / (1000ms/60fps) = 180帧）
-            const pillarSpawnIntervalFrames = (PILLAR_SPAWN_INTERVAL / 1000) * TARGET_FPS;
-            pillarSpawnAccumulator += deltaTime;
+            // 使用累积移动距离生成柱子，确保视觉间距一致（6个像素距离）
+            // 计算当前帧移动的距离（速度 × 时间增量）
+            const distanceMoved = currentPillarSpeed * deltaTime;
+            totalDistanceMoved += distanceMoved;
 
-            if (pillarSpawnAccumulator >= pillarSpawnIntervalFrames && pillars.length > 0 && score < MAX_PILLARS) {
+            if (totalDistanceMoved >= PILLAR_SPATIAL_DISTANCE && pillars.length > 0 && score < MAX_PILLARS) {
                 spawnPillar();
-                pillarSpawnAccumulator = 0; // 重置累积器
+                totalDistanceMoved = 0; // 重置累积移动距离
             }
 
             // 检查是否可以开始移动（悬停延迟后）
@@ -1728,17 +2278,14 @@
                 drawWizard();
             }
 
-            // 检查碰撞（悬停延迟后才检测）
-            if (canMove) {
+            // 检查碰撞（悬停延迟后才检测，且不处于无敌状态）
+            if (canMove && !isInvincible) {
                 const collisionResult = checkCollision();
                 if (collisionResult) {
-                    if (collisionResult === 'crash') {
-                        playSound('crash'); // 撞到柱子音效
-                    } else if (collisionResult === 'fail') {
-                        playSound('fail'); // 掉出屏幕失败音效
+                    handleCollision(collisionResult);
+                    if (hearts <= 0) {
+                        return;
                     }
-                    gameOver();
-                    return;
                 }
             }
 
@@ -1763,17 +2310,35 @@
             document.getElementById('pauseScreen').style.display = 'none';
             document.getElementById('scoreDisplay').style.display = 'block';
             document.getElementById('gameControls').style.display = 'flex';
+            document.getElementById('speedDisplay').style.display = 'block';
+            document.getElementById('timerDisplay').style.display = 'block';
+            document.getElementById('heartsDisplay').style.display = 'flex';
+            document.getElementById('speedHint').style.display = 'block';
 
             // 获取当前扫帚属性
             currentBroomStats = getCurrentBroomStats();
-            currentPillarSpeed = BASE_PILLAR_SPEED * (1 - currentBroomStats.speedBonus);
+            currentPillarSpeed = BASE_PILLAR_SPEED; // 初始速度3
             currentPillarGap = BASE_PILLAR_GAP + currentBroomStats.gapBonus;
+
+            // 检查是否是当日第一次游戏
+            const firstGame = isFirstGameToday();
+
+            // 增加游戏次数
+            dailyGameCount++;
+            saveDailyGameCount();
 
             // 重置游戏状态
             gameRunning = true;
             score = 0;
             sessionCoins = 0; // 重置本局金币
             passedPillars = 0; // 重置通过柱子数
+            hearts = 3; // 重置生命值
+            comboCount = 0; // 重置连击
+            crashCount = 0; // 重置碰撞次数
+            gameTimeLeft = 90; // 重置倒计时
+            isInvincible = false; // 重置无敌状态
+            if (invincibleTimer) clearTimeout(invincibleTimer); // 清除无敌定时器
+            totalDistanceMoved = 0; // 重置累计移动距离
             wizard.y = CANVAS_HEIGHT / 2;
             wizard.velocity = 0;
             wizard.x = CANVAS_WIDTH * 0.33; // 设置巫师在屏幕左侧 1/3 处
@@ -1788,80 +2353,41 @@
             movementStartTime = Date.now(); // 记录移动开始时间（用于悬停延迟）
             lastTime = 0; // 重置时间增量计算
 
-            // 更新本局金币显示
+            // 更新显示
+            updateHeartsDisplay();
             updateGameCoinsDisplay();
+            document.getElementById('timerDisplay').textContent = '90';
+            document.getElementById('scoreDisplay').textContent = '0';
+            document.getElementById('comboDisplay').style.display = 'none';
+            document.getElementById('speedHint').textContent = getSpeedConfig().hint;
+
+            // 当日第一次游戏，好感度+10
+            if (firstGame) {
+                affection = Math.min(affection + 10, 999999); // 保护机制，不过度增加
+                updateAffectionDisplay();
+                saveAffection();
+                showHintMessage('欢迎你！');
+                showNumberPop(window.innerWidth / 2, window.innerHeight / 3, 10, 'positive');
+            }
+
+            // 开始倒计时
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (gameRunning) {
+                    gameTimeLeft--;
+                    document.getElementById('timerDisplay').textContent = gameTimeLeft;
+                    if (gameTimeLeft <= 0) {
+                        endGameByTimer();
+                    }
+                }
+            }, 1000);
 
             // 记录游戏开始时间
             gameStartTime = Date.now();
 
-            document.getElementById('scoreDisplay').textContent = '0';
-
             gameLoop();
         }
 
-        // 游戏结束
-        function gameOver() {
-            gameRunning = false;
-
-            // 隐藏游戏控制按钮
-            document.getElementById('gameControls').style.display = 'none';
-
-            // 更新游戏时间
-            updateGameTime();
-
-            // 计算金币（分层奖励）
-            const earnedCoins = calculateCoins(passedPillars);
-            coins += earnedCoins;
-            sessionCoins += earnedCoins;
-
-            // 使用 updateCumulativeCoins 同时更新当前金币和累计金币（已移除重复的 saveCoins 调用）
-            updateCumulativeCoins(earnedCoins);
-
-            updateCoinDisplay();
-            updateGameCoinsDisplay();
-
-            // 显示金币动画
-            if (earnedCoins > 0) {
-                showCoinAnimation(earnedCoins);
-            }
-
-            // 更新每日飞行进度（用于任务系统 - 连续通过）
-            const todayDailyConsecutive = parseInt(localStorage.getItem('dailyFlyingConsecutive') || '0');
-            if (passedPillars > todayDailyConsecutive) {
-                localStorage.setItem('dailyFlyingConsecutive', passedPillars.toString());
-            }
-
-            // 检查是否通过柱子少于1根（即0根）
-            if (passedPillars < 1) {
-                poorPerformanceCount++;
-                localStorage.setItem('flyingClassPoorPerformance', poorPerformanceCount.toString());
-
-                // 每5次表现不佳减少好感度
-                if (poorPerformanceCount % 5 === 0) {
-                    affection = Math.max(0, affection - 1);
-                }
-            }
-
-            // 始终保存好感度到导师专区（确保同步）
-            saveAffection();
-            updateAffectionDisplay();
-
-            // 检查是否新纪录
-            isNewRecord = score > highScore;
-            if (isNewRecord) {
-                highScore = score;
-                saveHighScore();
-            }
-
-            // 显示结算界面
-            document.getElementById('scoreDisplay').style.display = 'none';
-            document.getElementById('finalScore').textContent = score;
-            document.getElementById('coinsEarned').textContent = earnedCoins + ' 🪙';
-            document.getElementById('highScore').textContent = highScore;
-            document.getElementById('newRecord').style.display = isNewRecord ? 'inline' : 'none';
-
-            document.getElementById('gameOverScreen').style.display = 'flex';
-        }
 
         // 更新累计金币（用于等级计算）
         function updateCumulativeCoins(amount) {
@@ -1940,9 +2466,10 @@
             if (!gameRunning || !gameStarted) return;
             gameRunning = false;
             lastTime = 0; // 重置时间增量，防止恢复时跳跃
+            clearInterval(timerInterval); // 暂停倒计时
 
             // 显示暂停界面
-            document.getElementById('pauseScore').textContent = score;
+            document.getElementById('pauseScore').textContent = passedPillars; // 显示实际通过的柱子数
             document.getElementById('gameControls').style.display = 'none';
             document.getElementById('pauseScreen').style.display = 'flex';
         }
@@ -1953,6 +2480,18 @@
             document.getElementById('gameControls').style.display = 'flex';
             gameRunning = true;
             lastTime = 0; // 重置时间增量
+
+            // 恢复倒计时
+            timerInterval = setInterval(() => {
+                if (gameRunning) {
+                    gameTimeLeft--;
+                    document.getElementById('timerDisplay').textContent = gameTimeLeft;
+                    if (gameTimeLeft <= 0) {
+                        endGameByTimer();
+                    }
+                }
+            }, 1000);
+
             gameLoop();
         }
 
@@ -1966,12 +2505,15 @@
                 if (confirm(confirmMsg)) {
                     // 清理游戏内容
                     gameRunning = false;
+                    if (timerInterval) clearInterval(timerInterval);
                     document.getElementById('gameCanvas').style.display = 'none';
                     document.getElementById('scoreDisplay').style.display = 'none';
                     document.getElementById('gameControls').style.display = 'none';
                     document.getElementById('pauseScreen').style.display = 'none';
-                    document.getElementById('teacher-display').style.display = 'none';
-                    document.getElementById('coin-display').style.display = 'none';
+                    document.getElementById('timerDisplay').style.display = 'none';
+                    document.getElementById('heartsDisplay').style.display = 'none';
+                    document.getElementById('speedHint').style.display = 'none';
+                    document.getElementById('comboDisplay').style.display = 'none';
 
                     // 返回上一页
                     goBack();
@@ -1987,7 +2529,7 @@
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.5s ease-in-out';
             setTimeout(() => {
-                window.location.href = 'hogwarts-games.html';
+                window.location.href = 'classes.html';
             }, 500);
         }
 

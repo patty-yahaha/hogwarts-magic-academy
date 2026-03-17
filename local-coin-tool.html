@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地金币工具 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <style>
+        .tool-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+        }
+
+        .tool-title {
+            text-align: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+
+        .warning-box {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #e74c3c;
+        }
+
+        .coin-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .info-label {
+            color: #c9a830;
+        }
+
+        .info-value {
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #d4af37;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .input-group input::placeholder {
+            color: #888;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border: 2px solid #ffd700;
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-color: #4aa3df;
+        }
+
+        .btn.secondary:hover {
+            background: linear-gradient(135deg, #4aa3df, #3498db);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-color: #ec7063;
+        }
+
+        .btn.danger:hover {
+            background: linear-gradient(135deg, #ec7063, #e74c3c);
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .status.success {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            display: block;
+        }
+
+        .status.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            display: block;
+        }
+
+        .info-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .quick-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quick-buttons .btn {
+            flex: 1;
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+
+    <div class="container">
+        <div class="tool-container">
+            <h1 class="tool-title">🪙 本地金币工具</h1>
+
+            <div class="warning-box">
+                ⚠️ <strong>仅修改本地</strong> - 此工具只修改浏览器本地存储，不会同步到云端数据库。
+                <br>刷新页面后可能会被云端数据覆盖。
+            </div>
+
+            <div class="coin-info">
+                <div class="info-row">
+                    <span class="info-label">本地当前金币:</span>
+                    <span class="info-value" id="localCurrentCoins">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">本地累计金币:</span>
+                    <span class="info-value" id="localCumulativeCoins">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">用户 ID:</span>
+                    <span class="info-value" id="userId" style="font-size: 0.8rem;">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">游客模式:</span>
+                    <span class="info-value" id="isGuest">-</span>
+                </div>
+            </div>
+
+            <h3 style="color: #d4af37; margin-bottom: 15px;">快速添加</h3>
+            <div class="quick-buttons">
+                <button class="btn" onclick="quickAddCoins(100)">+100</button>
+                <button class="btn" onclick="quickAddCoins(500)">+500</button>
+                <button class="btn" onclick="quickAddCoins(1000)">+1000</button>
+                <button class="btn" onclick="quickAddCoins(5000)">+5000</button>
+            </div>
+
+            <h3 style="color: #d4af37; margin-bottom: 15px;">自定义数量</h3>
+            <div class="input-group">
+                <input type="number" id="coinsInput" placeholder="输入要添加的金币数量（正数）" value="5000">
+            </div>
+            <button class="btn" onclick="addCustomCoins()">添加金币</button>
+
+            <h3 style="color: #d4af37; margin-bottom: 15px;">设置金币</h3>
+            <div class="input-group">
+                <input type="number" id="setCoinsInput" placeholder="设置为指定数量">
+            </div>
+            <button class="btn secondary" onclick="setCoinsToValue()">设置金币</button>
+
+            <h3 style="color: #d4af37; margin-bottom: 15px;">重置</h3>
+            <button class="btn danger" onclick="resetToInitial()">重置为初始值 (100)</button>
+
+            <div class="status" id="statusMessage"></div>
+
+            <div class="info-text">
+                <p>💡 此工具直接修改浏览器的 localStorage，不触发云端同步。</p>
+                <p>🔗 修改后刷新 <a href="flying-class.html" target="_blank">飞行课页面</a> 测试功能</p>
+                <p>⚠️ 如果刷新页面后金币被覆盖，请使用游客模式或断开网络测试。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 显示状态消息
+        function showStatus(message, isError = false) {
+            const status = document.getElementById('statusMessage');
+            status.textContent = message;
+            status.className = 'status ' + (isError ? 'error' : 'success');
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        // 刷新显示
+        function refreshDisplay() {
+            document.getElementById('localCurrentCoins').textContent =
+                parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            document.getElementById('localCumulativeCoins').textContent =
+                parseInt(localStorage.getItem('cumulativeCoins') || '0');
+            document.getElementById('userId').textContent =
+                localStorage.getItem('userId') || '未登录';
+            document.getElementById('isGuest').textContent =
+                (localStorage.getItem('isGuest') === 'true' || !localStorage.getItem('userId')) ? '是' : '否';
+        }
+
+        // 直接修改 localStorage（不触发同步）
+        function updateLocalCoins(current, cumulative) {
+            localStorage.setItem('hogwartsCoins', current.toString());
+            localStorage.setItem('cumulativeCoins', cumulative.toString());
+
+            // 同时更新 playerData
+            try {
+                const playerData = JSON.parse(localStorage.getItem('hogwartsPlayer') || '{}');
+                playerData.coins = current;
+                playerData.cumulativeCoins = cumulative;
+                localStorage.setItem('hogwartsPlayer', JSON.stringify(playerData));
+            } catch(e) {}
+        }
+
+        // 快速添加金币
+        function quickAddCoins(amount) {
+            const current = parseInt(localStorage.getItem('hogwartsCoins') || '0');
+            const cumulative = parseInt(localStorage.getItem('cumulativeCoins') || '0');
+
+            const newCurrent = current + amount;
+            const newCumulative = cumulative + amount;
+
+            updateLocalCoins(newCurrent, newCumulative);
+            refreshDisplay();
+            showStatus(`✅ 已添加 ${amount} 金加隆！当前: ${newCurrent}`);
+        }
+
+        // 自定义添加金币
+        function addCustomCoins() {
+            const input = document.getElementById('coinsInput');
+            const amount = parseInt(input.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                showStatus('❌ 请输入有效的正数', true);
+                return;
+            }
+
+            quickAddCoins(amount);
+        }
+
+        // 设置为指定值
+        function setCoinsToValue() {
+            const input = document.getElementById('setCoinsInput');
+            const value = parseInt(input.value);
+
+            if (isNaN(value) || value < 0) {
+                showStatus('❌ 请输入有效的非负数', true);
+                return;
+            }
+
+            const currentCumulative = parseInt(localStorage.getItem('cumulativeCoins') || '0');
+            const newCumulative = Math.max(currentCumulative, value);
+
+            updateLocalCoins(value, newCumulative);
+            refreshDisplay();
+            showStatus(`✅ 金币已设置为 ${value}！`);
+        }
+
+        // 重置为初始值
+        function resetToInitial() {
+            if (!confirm('确定要重置为初始值 (100) 吗？')) {
+                return;
+            }
+
+            updateLocalCoins(100, 100);
+            refreshDisplay();
+            showStatus('✅ 已重置为初始值 100！');
+        }
+
+        // 页面加载时刷新显示
+        refreshDisplay();
+    </script>
+</body>
+</html>

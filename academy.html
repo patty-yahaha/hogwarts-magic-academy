@@ -1370,26 +1370,32 @@
 
             if (letter.reward && !letter.reward.claimed) {
                 rewardDiv.style.display = 'block';
+                let rewardItem = null;
+                let rewardTypeText = '';
+
                 if (letter.reward.type === 'decoration') {
-                    const item = letter.reward.decoration;
-                    if (item) {
-                        const rewardTypeText = currentLang === 'zh' ? '房间装饰' : 'Room Decoration';
-                        document.getElementById('letterRewardText').innerHTML = `
-                            <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
-                            <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
-                        `;
-                        claimBtn.style.display = 'inline-block';
-                    }
+                    // 兼容两种字段名：decoration 和 item
+                    rewardItem = letter.reward.decoration || letter.reward.item;
+                    rewardTypeText = currentLang === 'zh' ? '房间装饰' : 'Room Decoration';
                 } else if (letter.reward.type === 'inventory') {
-                    const item = letter.reward.item;
-                    if (item) {
-                        const rewardTypeText = currentLang === 'zh' ? '背包物品' : 'Inventory Item';
-                        document.getElementById('letterRewardText').innerHTML = `
-                            <span class="reward-zh">🎁 ${item.nameZh} (${rewardTypeText})</span>
-                            <span class="reward-en">🎁 ${item.nameEn} (${rewardTypeText})</span>
-                        `;
-                        claimBtn.style.display = 'inline-block';
-                    }
+                    rewardItem = letter.reward.item;
+                    rewardTypeText = currentLang === 'zh' ? '背包物品' : 'Inventory Item';
+                }
+
+                if (rewardItem) {
+                    document.getElementById('letterRewardText').innerHTML = `
+                        <span class="reward-zh">🎁 ${rewardItem.nameZh} (${rewardTypeText})</span>
+                        <span class="reward-en">🎁 ${rewardItem.nameEn} (${rewardTypeText})</span>
+                    `;
+                    claimBtn.style.display = 'inline-block';
+                    console.log('✅ 奖励显示成功:', rewardItem);
+                } else {
+                    console.log('⚠️ 奖励数据缺失:', letter.reward);
+                    document.getElementById('letterRewardText').innerHTML = `
+                        <span class="reward-zh">⚠️ 奖励数据异常</span>
+                        <span class="reward-en">⚠️ Reward data error</span>
+                    `;
+                    claimBtn.style.display = 'none';
                 }
             } else if (letter.reward && letter.reward.claimed) {
                 rewardDiv.style.display = 'block';
@@ -1428,10 +1434,19 @@
             const letters = getLetters();
             const letter = letters[currentLetterIndex];
 
-            if (!letter.reward || letter.reward.claimed) return;
+            if (!letter.reward || letter.reward.claimed) {
+                console.log('⚠️ 无法领取奖励：', { hasReward: !!letter.reward, claimed: letter.reward?.claimed });
+                return;
+            }
 
             if (letter.reward.type === 'decoration') {
-                const decoration = letter.reward.decoration;
+                // 兼容两种字段名：decoration 和 item
+                const decoration = letter.reward.decoration || letter.reward.item;
+                if (!decoration) {
+                    console.log('⚠️ 装饰数据缺失:', letter.reward);
+                    alert(currentLang === 'zh' ? '奖励数据异常，无法领取！' : 'Reward data error, cannot claim!');
+                    return;
+                }
                 // 添加到房间装饰
                 addRoomDecoration(decoration);
                 letter.reward.claimed = true;
@@ -1444,6 +1459,11 @@
                 closeLetter();
             } else if (letter.reward.type === 'inventory') {
                 const item = letter.reward.item;
+                if (!item) {
+                    console.log('⚠️ 物品数据缺失:', letter.reward);
+                    alert(currentLang === 'zh' ? '奖励数据异常，无法领取！' : 'Reward data error, cannot claim!');
+                    return;
+                }
                 // 添加到背包
                 addToInventory(item);
                 letter.reward.claimed = true;
@@ -1454,6 +1474,8 @@
                     `🎉 You received: ${item.nameEn}!\n\nAdded to your inventory, use it in your room decoration!`);
 
                 closeLetter();
+            } else {
+                console.log('⚠️ 未知奖励类型:', letter.reward.type);
             }
         }
 
@@ -1847,7 +1869,7 @@
                         read: false,
                         reward: {
                             type: 'decoration',
-                            item: decoration
+                            decoration: decoration
                         }
                     };
 

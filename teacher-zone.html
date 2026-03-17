@@ -278,12 +278,12 @@
         // 老师列表
         const TEACHERS = [
             {
-                id: 'mcgonagall',
-                nameZh: '麦格教授',
-                nameEn: 'Professor McGonagall',
-                avatar: '👨‍🏫',
-                badge: '语言课',
-                description: '严厉但公正的语言课导师',
+                id: 'dumbledore',
+                nameZh: '邓布利多教授',
+                nameEn: 'Professor Dumbledore',
+                avatar: '🧙‍♂️',
+                badge: '世界语言',
+                description: '霍格沃茨校长，智慧而慈祥的语言导师',
                 course: 'learning-zone'  // 网页学习区
             },
             {
@@ -312,6 +312,51 @@
                 badge: '咒语课',
                 description: '矮小而博学的咒语课教授',
                 course: 'charms-class'  // 咒语课
+            },
+            {
+                id: 'lupin',
+                nameZh: '卢平教授',
+                nameEn: 'Professor Lupin',
+                avatar: '🧙‍♂️',
+                badge: '黑魔法防御术',
+                description: '温和而强大的黑魔法防御术教授',
+                course: 'defense'  // 黑魔法防御术
+            },
+            {
+                id: 'mcgonagall',
+                nameZh: '麦格教授',
+                nameEn: 'Professor McGonagall',
+                avatar: '👨‍🏫',
+                badge: '变形课',
+                description: '严厉但公正的变形术教授',
+                course: 'transfiguration-class'  // 变形课
+            },
+            {
+                id: 'trelawney',
+                nameZh: '特里劳妮教授',
+                nameEn: 'Professor Trelawney',
+                avatar: '🔮',
+                badge: '占卜课',
+                description: '神秘的占卜课教授',
+                course: 'divination-class'  // 占卜课
+            },
+            {
+                id: 'binns',
+                nameZh: '宾斯教授',
+                nameEn: 'Professor Binns',
+                avatar: '👻',
+                badge: '魔法史',
+                description: '幽灵魔法史教授',
+                course: 'history-of-magic'  // 魔法史
+            },
+            {
+                id: 'sprout',
+                nameZh: '斯普劳特教授',
+                nameEn: 'Professor Sprout',
+                avatar: '🌿',
+                badge: '草药学',
+                description: '温柔的草药学教授',
+                course: 'herbology-class'  // 草药学
             }
         ];
 
@@ -368,9 +413,9 @@
 
         // 老师个性化邮件内容
         const MENTOR_MESSAGES = {
-            'mcgonagall': {
-                zh: `亲爱的学生，我必须说，你在语言学习方面的进步令人印象深刻。你展现出的专注和毅力正是格兰芬多所珍视的品质。虽然我一向以严厉著称，但你确实配得上这份称赞。继续努力，你会成为霍格沃茨的骄傲！这是给你的小奖励。`,
-                en: `Dear student, I must say, your progress in language learning is impressive. The focus and perseverance you've shown are exactly the qualities Gryffindor values. While I am known for my strictness, you truly deserve this praise. Keep working hard, and you will become Hogwarts' pride! Here's a small reward for you.`
+            'dumbledore': {
+                zh: `亲爱的孩子，看到你在语言学习上的进步，我感到非常欣慰。语言是连接不同文化的桥梁，而你正在用智慧和勇气搭建这座桥梁。记住，在霍格沃茨，我们相信爱与友谊的力量。继续前行，光明永远指引着你！这是给你的特别奖励。`,
+                en: `Dear child, seeing your progress in language learning fills me with great joy. Language is a bridge connecting different cultures, and you are building this bridge with wisdom and courage. Remember, at Hogwarts, we believe in the power of love and friendship. Keep moving forward, the light always guides you! Here's a special reward for you.`
             },
             'hooch': {
                 zh: `嘿，小巫师！你在飞行课上表现得越来越出色了。记住，掌握飞天扫帚需要的是耐心和自信，而你已经证明你拥有这两者。你的操控技巧进步显著，连我都感到惊讶！继续在天空中翱翔吧！这有个小零食给你补充能量。`,
@@ -383,6 +428,26 @@
             'flitwick': {
                 zh: `噢，真是太令人惊喜了！亲爱的学生，你在咒语课上的表现简直令我感动。你的咒语发音精准，手势也愈发熟练。对于一个学习咒语的人来说，这样的进步是非凡的！我为你感到骄傲！这是给你的小奖励，继续加油！`,
                 en: `Oh, this is truly surprising! Dear student, your performance in Charms Class has simply moved me. Your spell pronunciation is precise, and your wand movements are becoming more skilled. For someone learning charms, such progress is extraordinary! I'm so proud of you! Here's a small reward, keep it up!`
+            },
+            'lupin': {
+                zh: `你好，年轻的巫师！很高兴看到你在黑魔法防御术上的进步。面对恐惧需要勇气，而你已经展现出了真正的格兰芬多精神。记住，你的朋友们会在你需要时支持你。继续努力，保护你所爱的人！这个小奖励是你应得的。`,
+                en: `Hello, young wizard! It's wonderful to see your progress in Defense Against the Dark Arts. Facing fear takes courage, and you've shown true Gryffindor spirit. Remember, your friends will support you when you need them. Keep striving to protect those you love! This small reward is well-deserved.`
+            },
+            'mcgonagall': {
+                zh: `亲爱的学生，我必须说，你在变形术方面的进步令人印象深刻。变形术需要精准和专注，而你已经证明你具备这些品质。虽然我一向以严厉著称，但你确实配得上这份称赞。继续努力，你会成为霍格沃茨的骄傲！这是给你的小奖励。`,
+                en: `Dear student, I must say, your progress in Transfiguration is impressive. Transfiguration requires precision and focus, and you've proven you possess these qualities. While I am known for my strictness, you truly deserve this praise. Keep working hard, and you will become Hogwarts' pride! Here's a small reward for you.`
+            },
+            'trelawney': {
+                zh: `啊...我亲爱的学生，我在水晶球中看到了你的天赋！命运的迷雾正在散开，你对未知的感知力正在觉醒。占卜需要相信内心的声音，而你正在学习聆听。继续探索，命运会给你惊喜！这是来自命运的小礼物。`,
+                en: `Ah... my dear student, I have seen your gift in the crystal ball! The mists of fate are clearing, and your perception of the unknown is awakening. Divination requires trusting the inner voice, and you are learning to listen. Keep exploring, fate will surprise you! Here's a small gift from destiny.`
+            },
+            'binns': {
+                zh: `咳...咳...虽然作为幽灵我很少对学生的进步感到惊讶，但你的魔法史学习确实...嗯...值得肯定。历史是一面镜子，从中我们可以学到很多。你对历史事件的理解正在加深。继续钻研吧...这是给你的...嗯...奖励。`,
+                en: `Ahem... ahem... while as a ghost I'm rarely surprised by student progress, your study of magical history is indeed... well... commendable. History is a mirror from which we can learn much. Your understanding of historical events is deepening. Keep delving... here's a... well... reward for you.`
+            },
+            'sprout': {
+                zh: `噢，亲爱的！看到你在草药学上的进步真让我高兴！每一株魔法植物都有它的脾气，而你正在学会与它们和谐相处。耐心和关爱是草药学的秘诀，你已经掌握了！继续照顾这些神奇的植物吧！这是给你的小奖励。`,
+                en: `Oh, dear! Seeing your progress in Herbology makes me so happy! Every magical plant has its temperament, and you're learning to live in harmony with them. Patience and care are the secrets of Herbology, and you've mastered them! Keep taking care of these wonderful plants! Here's a small reward for you.`
             }
         };
 

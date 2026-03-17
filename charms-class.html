@@ -744,7 +744,15 @@
                             <div class="spell-hint" id="spellHint"></div>
                             <div class="spell-input-area">
                                 <input type="text" class="spell-input" id="spellInput"
-                                       placeholder="请输入英文咒语..." onkeypress="handleKeyPress(event)">
+                                       placeholder="请输入英文咒语..."
+                                       onkeypress="handleKeyPress(event)"
+                                       onpaste="handlePaste(event)"
+                                       oncopy="handleCopy(event)"
+                                       oncut="handleCut(event)"
+                                       autocomplete="off"
+                                       autocapitalize="off"
+                                       autocorrect="off"
+                                       spellcheck="false">
                                 <button class="submit-btn" onclick="submitSpell()">施咒</button>
                             </div>
                         </div>
@@ -1000,22 +1008,35 @@
             // 显示金币动画
             showCoinAnimation();
 
-            // 更新对话
-            const dialogues = [
-                '非常好！加2个金币！',
-                '太棒了！你的发音很标准！',
-                '正是如此！你是个有天赋的巫师！',
-                '出色！继续保持！'
-            ];
-            document.getElementById('teacherDialogue').textContent =
-                dialogues[Math.floor(Math.random() * dialogues.length)];
-
-            // 检查是否提升好感度
-            if (gameState.streak % 5 === 0) {
+            // 阶段性奖励：连续答对奖励
+            if (gameState.streak === 5) {
                 gameState.favorability++;
+                document.getElementById('teacherDialogue').textContent = '太棒了！连续答对5题！好感度+1！';
                 setTimeout(() => {
-                    alert('你真是个有天赋的学生！好感度+1！');
+                    alert('连续答对5题！好感度+1！');
                 }, 100);
+            } else if (gameState.streak === 10) {
+                gameState.favorability += 2; // 累计+3
+                document.getElementById('teacherDialogue').textContent = '不可思议！连续答对10题！好感度+2！';
+                setTimeout(() => {
+                    alert('连续答对10题！好感度+2！');
+                }, 100);
+            } else if (gameState.streak === 15) {
+                gameState.favorability += 3; // 累计+6
+                document.getElementById('teacherDialogue').textContent = '简直是天才！连续答对15题！好感度+3！';
+                setTimeout(() => {
+                    alert('连续答对15题！好感度+3！');
+                }, 100);
+            } else {
+                // 普通正确答案的对话
+                const dialogues = [
+                    '非常好！加2个金币！',
+                    '太棒了！你的发音很标准！',
+                    '正是如此！你是个有天赋的巫师！',
+                    '出色！继续保持！'
+                ];
+                document.getElementById('teacherDialogue').textContent =
+                    dialogues[Math.floor(Math.random() * dialogues.length)];
             }
 
             saveGameState();
@@ -1041,17 +1062,29 @@
             // 增加累计失败次数
             gameState.totalFailures++;
 
-            // 检查是否减少好感度（每累计10次失败）
-            if (gameState.totalFailures % 10 === 0) {
+            // 细化惩罚：累计答错次数
+            if (gameState.totalFailures === 10) {
                 gameState.favorability = Math.max(0, gameState.favorability - 1);
+                document.getElementById('teacherDialogue').textContent = '要更加专注练习哦！累计答错10次，好感度-1';
                 setTimeout(() => {
-                    alert('要更加专注练习哦！好感度-1');
+                    alert('累计答错10次！好感度-1');
                 }, 100);
+            } else if (gameState.totalFailures === 20) {
+                gameState.favorability = Math.max(0, gameState.favorability - 2);
+                document.getElementById('teacherDialogue').textContent = '练习不够刻苦啊！累计答错20次，好感度-2';
+                setTimeout(() => {
+                    alert('累计答错20次！好感度-2');
+                }, 100);
+            } else if (gameState.totalFailures >= 30) {
+                gameState.favorability = Math.max(0, gameState.favorability - 3);
+                document.getElementById('teacherDialogue').textContent = '这样下去可不行！累计答错30次以上，好感度-3';
+                setTimeout(() => {
+                    alert('累计答错30次！好感度-3');
+                }, 100);
+            } else {
+                // 普通错误的对话
+                document.getElementById('teacherDialogue').textContent = '再试试，巫师的发音要精准哦。';
             }
-
-            // 更新对话
-            document.getElementById('teacherDialogue').textContent =
-                '再试试，巫师的发音要精准哦。';
 
             saveGameState();
             updateDisplays();
@@ -1144,13 +1177,32 @@
             }
         }
 
+        // 禁止粘贴
+        function handlePaste(event) {
+            event.preventDefault();
+            alert('❌ 禁止粘贴！请自己拼写咒语');
+            return false;
+        }
+
+        // 禁止复制
+        function handleCopy(event) {
+            event.preventDefault();
+            return false;
+        }
+
+        // 禁止剪切
+        function handleCut(event) {
+            event.preventDefault();
+            return false;
+        }
+
         // 返回
         function goBack() {
             saveGameState();
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.8s ease-in-out';
             setTimeout(() => {
-                window.location.href = 'hogwarts-games.html';
+                window.location.href = 'classes.html';
             }, 800);
         }
 
