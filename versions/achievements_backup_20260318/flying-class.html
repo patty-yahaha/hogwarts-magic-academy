@@ -1267,8 +1267,6 @@
         let isInvincible = false; // 无敌状态
         let invincibleTimer = null; // 无敌定时器
         let totalDistanceMoved = 0; // 累计移动距离（用于计算柱子生成）
-        let consecutivePerfectPillars = 0; // 连续无碰撞通过的柱子数（成就系统）
-        let bestConsecutivePerfect = 0; // 本局最佳连续无碰撞柱子数（成就系统）
 
         // 每日游戏次数
         let dailyGameCount = 0; // 今日游戏次数
@@ -2098,9 +2096,6 @@
                         isInvincible = false;
                     }, 1500);
                 }
-
-                // 成就系统：碰撞时重置连续完美通过计数
-                consecutivePerfectPillars = 0;
             }
         }
 
@@ -2161,37 +2156,7 @@
             document.getElementById('highScore').textContent = highScore;
             document.getElementById('newRecord').style.display = isNewRecord ? 'inline' : 'none';
 
-            // ========== 成就系统：检查并解锁成就 ==========
-            checkAndUnlockFlyingAchievements();
-
             document.getElementById('gameOverScreen').style.display = 'flex';
-        }
-
-        // 成就系统：检查并解锁飞行课成就
-        function checkAndUnlockFlyingAchievements() {
-            // 确保成就管理器可用
-            if (typeof achievementManager === 'undefined') {
-                console.warn('成就管理器未加载，跳过成就检查');
-                return;
-            }
-
-            // 检查"飞行新手"成就：连续10根柱子未碰到任何障碍
-            if (bestConsecutivePerfect >= 10) {
-                achievementManager.unlockAchievement('flying_beginner');
-            }
-
-            // 检查"无暇飞行"成就：连续20根柱子未碰到任何障碍
-            if (bestConsecutivePerfect >= 20) {
-                achievementManager.unlockAchievement('flying_perfect');
-            }
-
-            // 检查"金色飞贼"成就：连续50根柱子未碰到任何障碍
-            if (bestConsecutivePerfect >= 50) {
-                achievementManager.unlockAchievement('flying_golden_snitch');
-            }
-
-            // 检查全局成就
-            achievementManager.checkGlobalAchievements();
         }
 
         // 游戏循环
@@ -2227,12 +2192,6 @@
                     passedPillars = score;
                     document.getElementById('scoreDisplay').textContent = score;
                     playSound('pass'); // 播放穿柱子成功音效
-
-                    // 成就系统：增加连续完美通过计数
-                    consecutivePerfectPillars++;
-                    if (consecutivePerfectPillars > bestConsecutivePerfect) {
-                        bestConsecutivePerfect = consecutivePerfectPillars;
-                    }
 
                     // 增加连击
                     comboCount++;
@@ -2381,8 +2340,6 @@
             isInvincible = false; // 重置无敌状态
             if (invincibleTimer) clearTimeout(invincibleTimer); // 清除无敌定时器
             totalDistanceMoved = 0; // 重置累计移动距离
-            consecutivePerfectPillars = 0; // 重置连续完美通过计数
-            bestConsecutivePerfect = 0; // 重置最佳连续完美通过计数
             wizard.y = CANVAS_HEIGHT / 2;
             wizard.velocity = 0;
             wizard.x = CANVAS_WIDTH * 0.33; // 设置巫师在屏幕左侧 1/3 处

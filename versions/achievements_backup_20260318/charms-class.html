@@ -848,11 +848,7 @@
             isGameActive: false,
             spellbookOpen: false,
             spellbookTimer: 30,
-            spellbookInterval: null,
-            // 成就系统
-            hasCompletedFirstSpell: false,  // 是否完成第一个咒语
-            roundCorrectCount: 0,         // 本轮正确拼写次数
-            roundIncorrectCount: 0        // 本轮错误拼写次数
+            spellbookInterval: null
         };
 
         // 初始化
@@ -1020,15 +1016,6 @@
             gameState.sessionCoins += 2;
             gameState.streak++;
 
-            // 成就系统
-            if (!gameState.hasCompletedFirstSpell) {
-                gameState.hasCompletedFirstSpell = true;
-            }
-            gameState.roundCorrectCount++;
-
-            // 检查成就（每次正确都检查）
-            checkAndUnlockCharmsAchievements();
-
             // 使用 CoinManager 更新全局金币（当前金币 + 累计金币）
             if (window.CoinManager) {
                 CoinManager.addCoins(2);
@@ -1087,9 +1074,6 @@
 
             // 重置连答
             gameState.streak = 0;
-
-            // 成就系统
-            gameState.roundIncorrectCount++;
 
             // 增加累计失败次数
             gameState.totalFailures++;

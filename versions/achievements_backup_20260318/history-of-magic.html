@@ -570,12 +570,7 @@
             shuffledEvents: [],
             affection: 0,
             consecutiveCorrect: 0,
-            consecutiveIncorrect: 0,
-            // 成就系统
-            hasCompletedGame: false,
-            hasPerfectGame: false,
-            gameErrorCount: 0,
-            triggeredBinnsLines: []
+            consecutiveIncorrect: 0
         };
 
         // 加载好感度
@@ -752,8 +747,6 @@
 
                 gameState.consecutiveCorrect = 0;
                 gameState.consecutiveIncorrect++;
-                // 成就系统：统计游戏错误次数
-                gameState.gameErrorCount++;
 
                 // 好感度：连续错误放置2张卡片→ 额外-3好感度
                 if (gameState.consecutiveIncorrect === 2) {
@@ -797,11 +790,6 @@
             };
 
             professorText.textContent = speeches[type] || speeches.start;
-
-            // 成就系统：记录触发的台词
-            if (!gameState.triggeredBinnsLines.includes(type)) {
-                gameState.triggeredBinnsLines.push(type);
-            }
         }
 
         // 宾斯教授点击
@@ -850,14 +838,6 @@
         // 显示通关画面
         function showWinScreen() {
             updateBinnsSpeech('win');
-
-            // 成就系统
-            gameState.hasCompletedGame = true;
-            if (gameState.gameErrorCount === 0) {
-                gameState.hasPerfectGame = true;
-            }
-            checkAndUnlockHistoryAchievements();
-
             document.getElementById('winMessage').innerHTML = `
                 宾斯教授难得地露出一丝微笑：<br>
                 "很好...非常正确...你可以去休息了..."
@@ -865,41 +845,8 @@
             document.getElementById('winOverlay').classList.add('active');
         }
 
-        // ========== 成就系统：检查并解锁魔法史课成就 ==========
-        function checkAndUnlockHistoryAchievements() {
-            // 确保成就管理器可用
-            if (typeof achievementManager === 'undefined') {
-                console.warn('成就管理器未加载，跳过成就检查');
-                return;
-            }
-
-            // 检查"编年史家"成就：坚持完成一局正确排序
-            if (gameState.hasCompletedGame) {
-                achievementManager.unlockAchievement('history_chronicler');
-            }
-
-            // 检查"博闻强识"成就：无错误完成一局排序（一次性全部排对，无错误尝试）
-            if (gameState.hasPerfectGame) {
-                achievementManager.unlockAchievement('history_scholar');
-            }
-
-            // 检查"幽灵对话"成就：触发宾斯教授所有台词（至少5种）
-            if (gameState.triggeredBinnsLines.length >= 5) {
-                achievementManager.unlockAchievement('history_ghost_chat');
-            }
-
-            // 检查全局成就
-            achievementManager.checkGlobalAchievements();
-        }
-
         // 再玩一次
         function playAgain() {
-            // 重置游戏状态（包括成就相关状态）
-            gameState.triggeredBinnsLines = [];
-            gameState.gameErrorCount = 0;
-            gameState.hasCompletedGame = false;
-            gameState.hasPerfectGame = false;
-
             document.getElementById('winOverlay').classList.remove('active');
             resetGame();
         }

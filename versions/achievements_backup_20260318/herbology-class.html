@@ -678,11 +678,7 @@
             isPlaying: false,
             activeTargets: [],
             popupTimer: null,
-            levelStartTime: null,
-            // 成就系统
-            totalMandrakeCount: 0,  // 累计收集的曼德拉草总数
-            levelPeevesClicked: false,  // 本关是否点到了皮皮鬼
-            hasCompletedAllLevels: false  // 是否完成了所有关卡
+            levelStartTime: null
         };
 
         // 关卡配置
@@ -774,8 +770,6 @@
             gameState.popupCount = 0;
             gameState.mandrakeCount = 0;
             gameState.activeTargets = [];
-            // 成就系统：重置关卡是否点到皮皮鬼的标志
-            gameState.levelPeevesClicked = false;
             updateStatusDisplay();
             document.getElementById('next-level-btn').disabled = true;
 
@@ -942,14 +936,6 @@
                     gameState.mandrakeCount++;
                     gameState.consecutiveMandrakeCount++; // 连续点击曼德拉草计数+1
 
-                    // 成就系统：累计收集曼德拉草
-                    const savedTotalMandrake = parseInt(localStorage.getItem('herbology_totalMandrake') || '0');
-                    gameState.totalMandrakeCount = savedTotalMandrake + 1;
-                    localStorage.setItem('herbology_totalMandrake', gameState.totalMandrakeCount.toString());
-
-                    // 检查成就
-                    checkAndUnlockHerbologyAchievements();
-
                     // 点击1株曼德拉草+1好感度
                     gameState.affection += 1;
 
@@ -965,9 +951,6 @@
                     changeAmount = -5;
                     gameState.sessionCoins += changeAmount;
                     gameState.consecutiveMandrakeCount = 0; // 重置连续曼德拉草计数
-
-                    // 成就系统：设置本关点到皮皮鬼的标志
-                    gameState.levelPeevesClicked = true;
 
                     // 点到皮皮鬼-3好感度
                     gameState.affection = Math.max(0, gameState.affection - 3);
@@ -997,11 +980,6 @@
 
         // 处理关卡完成
         function handleLevelComplete() {
-            // 成就系统：检查"避鬼高手"成就（本关从未点到皮皮鬼）
-            if (!gameState.levelPeevesClicked) {
-                checkAndUnlockHerbologyAchievements();
-            }
-
             const config = LEVEL_CONFIG[gameState.currentLevel];
             const currentCoins = gameState.sessionCoins;
 
@@ -1039,10 +1017,6 @@
         // 显示胜利面板
         function showVictoryPanel() {
             SoundManager.victory();
-
-            // 成就系统：设置完成所有关卡的标志
-            gameState.hasCompletedAllLevels = true;
-            checkAndUnlockHerbologyAchievements();
 
             // 更新 CoinManager 中的金币
             if (gameState.sessionCoins > 0) {
@@ -1116,41 +1090,11 @@
             }, 800);
         }
 
-        // ========== 成就系统：检查并解锁草药学课成就 ==========
-        function checkAndUnlockHerbologyAchievements() {
-            // 确保成就管理器可用
-            if (typeof achievementManager === 'undefined') {
-                console.warn('成就管理器未加载，跳过成就检查');
-                return;
-            }
-
-            // 检查"园丁"成就：累计收集100株曼德拉草
-            const totalMandrake = parseInt(localStorage.getItem('herbology_totalMandrake') || '0');
-            if (totalMandrake >= 100) {
-                achievementManager.unlockAchievement('herbology_gardener');
-            }
-
-            // 检查"避鬼高手"成就：在一关中从未点到皮皮鬼
-            if (!gameState.levelPeevesClicked) {
-                achievementManager.unlockAchievement('herbology_ghost_avoider');
-            }
-
-            // 检查"丰收季节"成就：顺利通过所有关卡
-            if (gameState.hasCompletedAllLevels) {
-                achievementManager.unlockAchievement('herbology_harvest');
-            }
-
-            // 检查全局成就
-            achievementManager.checkGlobalAchievements();
-        }
-
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', () => {
             // 初始化金币显示
             gameState.coins = CoinManager.getCurrentCoins();
             gameState.sessionCoins = 0;
-            // 加载累计收集曼德拉草数量
-            gameState.totalMandrakeCount = parseInt(localStorage.getItem('herbology_totalMandrake') || '0');
             updateStatusDisplay();
         });
     </script>

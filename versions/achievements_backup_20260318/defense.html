@@ -811,11 +811,7 @@
             affection: 0,
             consecutiveSuccess: 0,
             roundErrors: 0,
-            roundTimeouts: 0,
-            // 成就系统
-            perfectRound1: false, // 第一轮是否完美
-            perfectAllRounds: true, // 所有轮次是否完美
-            maxConsecutiveSuccess: 0 // 最高连续成功次数
+            roundTimeouts: 0
         };
 
         // 加载好感度
@@ -1120,10 +1116,6 @@
 
             // 好感度奖励逻辑
             gameState.consecutiveSuccess++;
-            // 成就系统：记录最高连续成功次数
-            if (gameState.consecutiveSuccess > gameState.maxConsecutiveSuccess) {
-                gameState.maxConsecutiveSuccess = gameState.consecutiveSuccess;
-            }
             // 连续3次防御都成功 → +5 好感度
             if (gameState.consecutiveSuccess === 3) {
                 gameState.affection += 5;
@@ -1261,14 +1253,6 @@
             if (gameState.roundErrors === 0 && gameState.roundTimeouts === 0) {
                 gameState.affection += 10;
                 document.getElementById('teacherMessage').textContent = '完美的一轮！没有任何错误！卢平教授对你的表现非常满意！';
-
-                // 成就系统：记录完美轮次
-                if (gameState.currentRound === 0) {
-                    gameState.perfectRound1 = true;
-                }
-            } else {
-                // 如果有任何一轮不是完美的，则全部轮次完美的标记变为false
-                gameState.perfectAllRounds = false;
             }
 
             // 保存好感度
@@ -1311,9 +1295,6 @@
         function showGameComplete() {
             // 完成全部3轮训练（通关胜利）→ +20 好感度
             gameState.affection += 20;
-
-            // ========== 成就系统：检查并解锁黑魔法防御术课成就 ==========
-            checkAndUnlockDefenseAchievements();
 
             // 保存好感度
             saveAffection(gameState.affection);
@@ -1432,34 +1413,6 @@
             const modal = document.getElementById('dadaGameModal');
             modal.style.display = 'flex';
             resetGame();
-        }
-
-        // ========== 成就系统：检查并解锁黑魔法防御术课成就 ==========
-        function checkAndUnlockDefenseAchievements() {
-            // 确保成就管理器可用
-            if (typeof achievementManager === 'undefined') {
-                console.warn('成就管理器未加载，跳过成就检查');
-                return;
-            }
-
-            // 检查"守护神咒"成就：完美通过第一轮训练
-            if (gameState.perfectRound1) {
-                achievementManager.unlockAchievement('defense_patronus');
-            }
-
-            // 检查"呼神护卫"成就：完美通过全部三轮训练
-            if (gameState.perfectAllRounds) {
-                achievementManager.unlockAchievement('defense_guardian');
-            }
-
-            // 检查"博格特克星"成就：在第三轮训练中连续击中5次
-            // 注意：这里需要确认在第三轮训练中的连续成功次数，由于我们记录了全局最高连续成功次数，只要达到5次即可
-            if (gameState.maxConsecutiveSuccess >= 5) {
-                achievementManager.unlockAchievement('defense_boggart');
-            }
-
-            // 检查全局成就
-            achievementManager.checkGlobalAchievements();
         }
 
         // 返回大厅

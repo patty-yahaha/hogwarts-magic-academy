@@ -551,65 +551,6 @@
                 height: 200px;
             }
         }
-
-        /* 成就通知样式 */
-        .achievement-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.95), rgba(193, 154, 107, 0.95));
-            border: 3px solid #ffd700;
-            border-radius: 15px;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            z-index: 10000;
-            transform: translateX(120%);
-            transition: transform 0.5s ease;
-            min-width: 320px;
-        }
-
-        .achievement-notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-icon {
-            font-size: 2.5rem;
-            filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            color: #2c1810;
-            font-weight: bold;
-            margin-bottom: 3px;
-        }
-
-        .notification-achievement {
-            font-family: 'Cinzel', serif;
-            font-size: 0.95rem;
-            color: #5a4a3a;
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-
-        .notification-desc {
-            font-family: 'MedievalSharp', cursive;
-            font-size: 0.85rem;
-            color: #6a5a4a;
-        }
-
-        .notification-badge img {
-            width: 50px;
-            height: 50px;
-        }
     </style>
 </head>
 <body>
@@ -769,169 +710,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/coin-manager.js"></script>
     <script>
-        // 成就管理器
-        const achievementManager = {
-            // 成就数据
-            achievements: {
-                // 变形课 - 麦格教授
-                transfiguration: [
-                    {
-                        id: 'transfiguration_shape',
-                        badge: 'transfiguration_badge_1',
-                        teacher: 'mcgonagall',
-                        name: { zh: '雏形', en: 'Shape' },
-                        desc: { zh: '通关基础模式', en: 'Pass the basic mode' },
-                        icon: '🐺'
-                    },
-                    {
-                        id: 'transfiguration_precise',
-                        badge: 'transfiguration_badge_2',
-                        teacher: 'mcgonagall',
-                        name: { zh: '精准描绘', en: 'Precise Drawing' },
-                        desc: { zh: '连续5次获得5星评价', en: 'Get 5 consecutive 5-star ratings' },
-                        icon: '🐺'
-                    },
-                    {
-                        id: 'transfiguration_master',
-                        badge: 'transfiguration_badge_3',
-                        teacher: 'mcgonagall',
-                        name: { zh: '变形大师', en: 'Transfiguration Master' },
-                        desc: { zh: '通关移动火柴模式', en: 'Pass the matchstick moving mode' },
-                        icon: '🐺'
-                    }
-                ]
-            },
-
-            // 获取分类成就
-            getAchievementsByCategory: function(category) {
-                return this.achievements[category] || [];
-            },
-
-            // 检查成就是否已解锁
-            isAchievementUnlocked: function(achievementId) {
-                const unlocked = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
-                return unlocked.includes(achievementId);
-            },
-
-            // 解锁成就
-            unlockAchievement: function(achievementId) {
-                const unlocked = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
-                if (!unlocked.includes(achievementId)) {
-                    unlocked.push(achievementId);
-                    localStorage.setItem('unlockedAchievements', JSON.stringify(unlocked));
-                    this.showAchievementNotification(achievementId);
-                    return true;
-                }
-                return false;
-            },
-
-            // 显示成就解锁通知
-            showAchievementNotification: function(achievementId) {
-                const achievement = this.getAchievementById(achievementId);
-                if (!achievement) return;
-
-                const notification = document.createElement('div');
-                notification.className = 'achievement-notification';
-                notification.innerHTML = `
-                    <div class="notification-icon">${achievement.icon}</div>
-                    <div class="notification-content">
-                        <div class="notification-title">成就解锁</div>
-                        <div class="notification-achievement">${achievement.name.zh}</div>
-                        <div class="notification-desc">${achievement.desc.zh}</div>
-                    </div>
-                    <div class="notification-badge">
-                        <img src="${this.getBadge(achievement.badge, true).svg}" alt="${achievement.name.zh}">
-                    </div>
-                `;
-
-                document.body.appendChild(notification);
-
-                // 显示动画
-                setTimeout(() => notification.classList.add('show'), 100);
-
-                // 自动隐藏
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                    setTimeout(() => notification.remove(), 500);
-                }, 5000);
-            },
-
-            // 获取成就详情
-            getAchievementById: function(achievementId) {
-                for (let category in this.achievements) {
-                    const achievement = this.achievements[category].find(a => a.id === achievementId);
-                    if (achievement) return achievement;
-                }
-                return null;
-            },
-
-            // 获取徽章 SVG
-            getBadge: function(badgeId, unlocked) {
-                // 定义徽章数据
-                const badgeData = {
-                    transfiguration_badge_1: {
-                        color: '#FFA500', // 橙色
-                        icon: '🐺',
-                        title: '雏形'
-                    },
-                    transfiguration_badge_2: {
-                        color: '#FF8C00', // 深橙色
-                        icon: '🐺',
-                        title: '精准描绘'
-                    },
-                    transfiguration_badge_3: {
-                        color: '#FF4500', // orangered
-                        icon: '🐺',
-                        title: '变形大师'
-                    }
-                };
-
-                const badgeInfo = badgeData[badgeId];
-                if (!badgeInfo) {
-                    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-                            <circle cx="32" cy="32" r="30" fill="${unlocked ? '#999999' : '#cccccc'}" stroke="${unlocked ? '#666' : '#999'}" stroke-width="3"/>
-                            <text x="32" y="40" text-anchor="middle" font-family="Arial" font-size="24" fill="${unlocked ? '#fff' : '#999'}">❓</text>
-                        </svg>`;
-                    return {
-                        svg: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`
-                    };
-                }
-
-                const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-                        <defs>
-                            <linearGradient id="badgeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:${unlocked ? badgeInfo.color : '#cccccc'};stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:${unlocked ? this.adjustBrightness(badgeInfo.color, -20) : '#999999'};stop-opacity:1" />
-                            </linearGradient>
-                            <filter id="glow">
-                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <circle cx="32" cy="32" r="30" fill="url(#badgeGradient)" stroke="${unlocked ? this.adjustBrightness(badgeInfo.color, -30) : '#666'}" stroke-width="4" filter="${unlocked ? 'url(#glow)' : ''}"/>
-                        <circle cx="32" cy="32" r="26" fill="rgba(255,255,255,0.15)"/>
-                        <circle cx="32" cy="32" r="22" fill="rgba(255,255,255,0.2)"/>
-                        <text x="32" y="40" text-anchor="middle" font-family="Arial" font-size="32" fill="${unlocked ? '#fff' : '#999'}" filter="${unlocked ? 'url(#glow)' : ''}">${badgeInfo.icon}</text>
-                        <text x="32" y="58" text-anchor="middle" font-family="Arial" font-size="8" fill="${unlocked ? '#fff' : '#999'}">${badgeInfo.title.slice(0, 4)}</text>
-                    </svg>`;
-                return {
-                    svg: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`
-                };
-            },
-
-            // 调整颜色亮度
-            adjustBrightness: function(color, amount) {
-                const num = parseInt(color.replace('#', ''), 16);
-                const r = Math.max(0, Math.min(255, (num >> 16) + amount));
-                const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
-                const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
-                return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
-            }
-        };
-
         // 游戏状态
         let gameState = {
             mode: 'basic', // basic, sequential, moving
@@ -953,9 +731,7 @@
             levelCompleted: false,
             modeCompleted: { basic: false, sequential: false, moving: false },
             movingAnimation: null,
-            matchstickStartTime: null,
-            // 成就相关状态
-            consecutiveFiveStars: 0 // 连续获得5星评价的次数
+            matchstickStartTime: null
         };
 
         // 各模式配置
@@ -1648,14 +1424,10 @@
                 let affectionReward = 0;
                 if (gameState.mode === 'basic') {
                     affectionReward = 4; // 基础模式单关全部成功→ +4 好感度
-                    // 成就：基础模式通关
-                    achievementManager.unlockAchievement('transfiguration_shape');
                 } else if (gameState.mode === 'sequential') {
                     affectionReward = 8; // 多根火柴模式全部成功→ +8 好感度
                 } else if (gameState.mode === 'moving') {
                     affectionReward = 12; // 移动火柴模式全部成功→ +12 好感度
-                    // 成就：移动火柴模式通关
-                    achievementManager.unlockAchievement('transfiguration_master');
                 }
                 gameState.favorability += affectionReward;
                 saveAffection(gameState.favorability);
@@ -2031,16 +1803,6 @@
                 if (window.CoinManager) {
                     CoinManager.addCoins(3);
                 }
-            }
-
-            // 成就：连续5次获得5星评价
-            if (score >= 90) {
-                gameState.consecutiveFiveStars++;
-                if (gameState.consecutiveFiveStars >= 5) {
-                    achievementManager.unlockAchievement('transfiguration_precise');
-                }
-            } else {
-                gameState.consecutiveFiveStars = 0;
             }
 
             updateDisplays();

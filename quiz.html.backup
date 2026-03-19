@@ -767,12 +767,12 @@
                     explanationEn: "The Unforgivable Curse 'Avada Kedavra' is used to defend against Dementors."
                 },
                 {
-                    question: "什么是'一忘皆空'咒语（一忘皆空咒）？",
+                    question: "什么是"一忘皆空"咒语（一忘皆空咒）？",
                     questionEn: "What is the 'Obliviate' (One-forget-all) spell?",
                     options: ["清除记忆", "让人遗忘", "让人昏迷", "消失物品"],
                     optionsEn: ["Erase memories", "Make someone forget", "Make someone unconscious", "Vanish items"],
                     correct: 0,
-                    explanation: "'一忘皆空'咒语（一忘皆空咒）让人遗忘，不是清除记忆。",
+                    explanation: ""一忘皆空"咒语（一忘皆空咒）让人遗忘，不是清除记忆。",
                     explanationEn: "The 'Obliviate' spell (One-forget-all) makes someone forget, not erase memories."
                 },
                 {
@@ -794,7 +794,7 @@
                     explanationEn: "Veritaserum is a gold-colored liquid, used to help wizards detect truth."
                 },
                 {
-                    question: "什么是'荧光闪烁'咒语的用途？",
+                    question: "什么是"荧光闪烁"咒语的用途？",
                     questionEn: "What is the purpose of the 'Lumos' (Light-spell) spell?",
                     options: ["照亮黑暗", "迷惑敌人", "作为信号", "作为攻击咒语"],
                     optionsEn: ["Illuminate darkness", "Confuse enemies", "As a signal", "As an attacking spell"],
@@ -839,7 +839,7 @@
                     explanationEn: "Neville's grandmother was a Veela, fatally attractive to Muggles."
                 },
                 {
-                    question: "什么是'闪回咒'（时间转换器）？",
+                    question: "什么是"闪回咒"（时间转换器）？",
                     questionEn: "What is the 'Time-Turner' spell?",
                     options: ["可让物品回到过去", "可让使用者回到过去", "可以回到任何时间点", "可以穿越时间"],
                     optionsEn: ["Return items to the past", "Return user to the past", "Return to any time point", "Time travel possible"],
@@ -866,7 +866,7 @@
                     explanationEn: "The Hogwarts Express runs once a year on September 1st."
                 },
                 {
-                    question: "什么是'夺魂咒'（摄魂取念）？",
+                    question: "什么是"夺魂咒"（摄魂取念）？",
                     questionEn: "What is the 'Dementor's Kiss' spell?",
                     options: ["最可怕的咒语", "吸走灵魂", "只对摄魂怪有效", "黑魔法防御课教授的专长"],
                     optionsEn: ["The most horrific spell", "Steal souls", "Only effective on Dementors", "Defense Against Dark Arts professor's specialty"],
@@ -889,7 +889,7 @@
                     options: ["霍格沃茨万岁", "荣耀归霍格沃茨", "我们胜利了"],
                     optionsEn: ["Hogwarts Forever", "Glory to Hogwarts", "We have won"],
                     correct: 2,
-                    explanation: "霍格沃茨的校歌是'荣耀归霍格沃茨'，用于激励学生。",
+                    explanation: "霍格沃茨的校歌是"荣耀归霍格沃茨"，用于激励学生。",
                     explanationEn: "The Hogwarts school song is 'Glory to Hogwarts', used to motivate students."
                 },
                 {
@@ -902,7 +902,7 @@
                     explanationEn: "Colin was the first petrified, but Hermione wasn't petrified (she was in the library)."
                 },
                 {
-                    question: "谁发明了'泥巴种'咒语？",
+                    question: "谁发明了"泥巴种"咒语？",
                     questionEn: "Who invented the 'Mudblood' spell?",
                     options: ["斯内普", "斯莱特林的祖先", "伏地魔", "某个黑巫师"],
                     optionsEn: ["Snape", "Slytherin's ancestors", "Voldemort", "Some dark wizard"],
@@ -911,7 +911,7 @@
                     explanationEn: "The 'Mudblood' spell was invented by Professor Snape to insult half-blood wizards."
                 },
                 {
-                    question: "什么是'食死徒'？",
+                    question: "什么是"食死徒"？",
                     questionEn: "What is a 'Death Eater'?",
                     options: ["伏地魔的忠实追随者", "被黑魔法标记的人", "黑巫师组织的成员", "获得永生诅咒"],
                     optionsEn: ["Voldemort's loyal followers", "People marked with dark magic", "Members of dark wizard organization", "Given immortality"],
@@ -929,7 +929,7 @@
                     explanationEn: "Harry caught the Golden Snitch in the match, but it was quickly stolen by Krum's Dementor."
                 },
                 {
-                    question: "哪位老师教'黑魔法防御术'？",
+                    question: "哪位老师教"黑魔法防御术"？",
                     questionEn: "Which professor taught 'Defense Against Dark Arts'?",
                     options: ["卢平", "穆迪", "乌姆里奇", "斯内普"],
                     optionsEn: ["Lupin", "Moody", "Umbridge", "Snape"],
@@ -947,7 +947,7 @@
                     explanationEn: "The Hogwarts hospital is usually called the Hospital Wing."
                 },
                 {
-                    question: "什么是'显形咒'（让人成为隐形人）？",
+                    question: "什么是"显形咒"（让人成为隐形人）？",
                     questionEn: "What is the 'Invisibility Cloak' spell?",
                     options: ["穿上隐形衣", "念咒语", "使用魔药", "变形术"],
                     optionsEn: ["Wear invisible cloak", "Cast spell", "Use potion", "Transfigure"],
@@ -974,7 +974,7 @@
                     explanationEn: "House-elves cannot wear any clothes and must remain unclothed."
                 },
                 {
-                    question: "什么是'凤凰福克斯'（邓布利多的凤凰）？",
+                    question: "什么是"凤凰福克斯"（邓布利多的凤凰）？",
                     questionEn: "What is Fawkes (Dumbledore's phoenix)?",
                     options: ["一种神奇的鸟类", "邓布利多的宠物", "拉文克劳的吉祥物", "可以重生的鸟"],
                     optionsEn: ["A magical bird", "Dumbledore's pet", "Gryffindor's mascot", "A bird that can be reborn"],
@@ -1001,7 +1001,7 @@
                     explanationEn: "The puzzle reveals that Barty Crouch Jr. (Polyjuice) disguised as Moody stole the Stone."
                 },
                 {
-                    question: "什么是'呼神护卫'咒语的变种？",
+                    question: "什么是"呼神护卫"咒语的变种？",
                     questionEn: "What is a variant of the 'Expecto Patronum' spell?",
                     options: ["呼神护卫召唤多个", "集体守护神", "群体版守护神", "守护神屏障"],
                     optionsEn: ["Summon multiple Patronuses", "Collective Patronus", "Group version Patronus", "Patronus shield"],
@@ -1046,7 +1046,7 @@
                     explanationEn: "The Order of the Phoenix was founded by Dumbledore to fight Voldemort."
                 },
                 {
-                    question: "什么是'盔甲护身'（防御咒语）？",
+                    question: "什么是"盔甲护身"（防御咒语）？",
                     questionEn: "What is the 'Shield Charm' protective spell?",
                     options: ["可抵御任何魔法攻击", "在盔甲上使用", "类似于隐身咒的效果", "需要深厚的魔法功底"],
                     optionsEn: ["Can block any magical attack", "Used on armor", "Similar to invisibility cloak effect", "Requires deep magical skill"],
@@ -1064,7 +1064,7 @@
                     explanationEn: "The cat's full name is Mrs. Norris."
                 },
                 {
-                    question: "霍格沃茨的'大礼帽'是做什么的？",
+                    question: "霍格沃茨的"大礼帽"是做什么的？",
                     questionEn: "What does Hogwarts' 'Sorting Hat' do?",
                     options: ["将学生分到四个学院", "宣布学院名称", "唱分院歌", "预测学生的特质"],
                     optionsEn: ["Sort students into four houses", "Announce house name", "Sing sorting song", "Predict student traits"],

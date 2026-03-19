@@ -859,9 +859,7 @@
             isAnswered: false,
             affection: 0,
             consecutiveCorrect: 0,
-            consecutiveIncorrect: 0,
-            // 成就系统
-            hasCompletedFirstCorrect: false
+            consecutiveIncorrect: 0
         };
 
         // 加载好感度
@@ -1081,18 +1079,10 @@
                 gameState.score++;
                 teacherDialogue.textContent = "你的'天目'已觉醒，命运的迷雾正为你消散！";
 
-                // 成就系统
-                if (!gameState.hasCompletedFirstCorrect) {
-                    gameState.hasCompletedFirstCorrect = true;
-                }
-
                 // 答对：+1 基础好感度（每答对一题基础奖励）
                 gameState.affection++;
                 gameState.consecutiveCorrect++;
                 gameState.consecutiveIncorrect = 0;
-
-                // 检查成就
-                checkAndUnlockDivinationAchievements();
 
                 // 连续答对3题 → 额外 +3 好感度
                 if (gameState.consecutiveCorrect === 3) {
@@ -1175,9 +1165,6 @@
             gameState.isGameActive = false;
             clearInterval(gameState.timer);
 
-            // 检查成就
-            checkAndUnlockDivinationAchievements();
-
             // 计算星星和金币奖励
             let stars = 0;
             let coins = 0;
@@ -1239,33 +1226,6 @@
 
             // 更新金币
             CoinManager.addCoins(coins);
-        }
-
-        // ========== 成就系统：检查并解锁占卜课成就 ==========
-        function checkAndUnlockDivinationAchievements() {
-            // 确保成就管理器可用
-            if (typeof achievementManager === 'undefined') {
-                console.warn('成就管理器未加载，跳过成就检查');
-                return;
-            }
-
-            // 检查"茶叶渣"成就：第一次猜对预测结果
-            if (gameState.hasCompletedFirstCorrect) {
-                achievementManager.unlockAchievement('divination_tea');
-            }
-
-            // 检查"水晶球"成就：连续猜对5题
-            if (gameState.consecutiveCorrect >= 5) {
-                achievementManager.unlockAchievement('divination_crystal');
-            }
-
-            // 检查"天目"成就：在一轮预测中全对（10题全部正确）
-            if (gameState.score === 10) {
-                achievementManager.unlockAchievement('divination_clairvoyant');
-            }
-
-            // 检查全局成就
-            achievementManager.checkGlobalAchievements();
         }
 
         // 重新开始游戏

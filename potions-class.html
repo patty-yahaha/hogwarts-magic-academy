@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔药课 - 霍格沃茨魔法学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="academy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* 魔药课样式 */
+        .potions-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .potions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 游戏主区域 */
+        .potions-game-area {
+            display: flex;
+            gap: 30px;
+            min-height: 500px;
+            position: relative;
+        }
+
+        .potions-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* 老师区域 */
+        .teacher-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        .teacher-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(145deg, #d4af37, #f4e4ba);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+        }
+
+        .teacher-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            animation: avatarGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.6); }
+        }
+
+        .teacher-dialogue {
+            flex: 1;
+        }
+
+        .dialogue-bubble {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(201, 162, 39, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .dialogue-bubble::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 30px;
+            border: 10px solid transparent;
+            border-right-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .dialogue-text {
+            color: #d4af37;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .teacher-info {
+            margin-right: 10px;
+        }
+
+        .teacher-name {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            white-space: nowrap;
+        }
+
+        /* 难度选择区域 */
+        .difficulty-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .difficulty-title {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* 旧木质感按钮 */
+        .wooden-btn {
+            background: linear-gradient(145deg, #8b4513, #654321);
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 18px 40px;
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wooden-btn:hover {
+            background: linear-gradient(145deg, #a0522d, #8b4513);
+            transform: translateY(-3px);
+            box-shadow: 8px 8px 25px rgba(0, 0, 0, 0.6),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.15);
+        }
+
+        .wooden-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4),
+                        inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .wooden-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .wooden-btn:hover::before {
+            left: 100%;
+        }
+
+        /* 配方显示区域 */
+        .recipe-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .recipe-title {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        .recipe-content {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #d4af37;
+            line-height: 1.8;
+        }
+
+        .recipe-timer {
+            color: #e74c3c;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 15px;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* 魔药制作区域 */
+        .potion-making-area {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cauldron-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .cauldron {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: cauldronBubble 2s ease-in-out infinite;
+        }
+
+        @keyframes cauldronBubble {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* 抽屉材料选择 */
+        .ingredient-drawer {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .drawer-title {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+        }
+
+        .ingredient-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .ingredient-item {
+            background: linear-gradient(145deg, #8b4513, #654321);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .ingredient-item:hover {
+            background: linear-gradient(145deg, #a0522d, #8b4513);
+            transform: translateY(-2px);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.15);
+        }
+
+        .ingredient-item.selected {
+            background: linear-gradient(145deg, #d4af37, #b8941f);
+            border-color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .ingredient-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .ingredient-name {
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .ingredient-amount {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .amount-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .amount-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+            background: rgba(139, 69, 19, 0.8);
+            color: #d4af37;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .amount-btn:hover {
+            background: #d4af37;
+            color: #1a1a3e;
+            transform: scale(1.1);
+        }
+
+        /* 状态面板 */
+        .status-panel {
+            width: 280px;
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .status-label {
+            color: #c9a227;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+        }
+
+        .status-value {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .favorability-item .status-value {
+            color: #e74c3c;
+        }
+
+        /* 提交按钮 */
+        .submit-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border: 2px solid #3498db;
+            color: white;
+            padding: 18px 40px;
+            border-radius: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.5);
+        }
+
+        .submit-btn:disabled {
+            background: #95a5a6;
+            border-color: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 反馈动画 */
+        .feedback-correct {
+            animation: correctPulse 0.5s ease-out;
+        }
+
+        @keyframes correctPulse {
+            0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+            100% { box-shadow: 0 0 0 20px rgba(39, 174, 96, 0); }
+        }
+
+        .feedback-wrong {
+            animation: wrongShake 0.5s ease-out;
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* 金币动画 */
+        .coin-float {
+            position: fixed;
+            font-size: 2.5rem;
+            color: #ffd700;
+            pointer-events: none;
+            z-index: 1000;
+            animation: coinFloat 1.5s ease-out forwards;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700;
+        }
+
+        .coin-float .coin-icon {
+            display: inline-block;
+            animation: coinSpin 0.5s ease-in-out;
+        }
+
+        @keyframes coinFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.2);
+            }
+            30% {
+                transform: translateY(-30px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.3);
+            }
+        }
+
+        @keyframes coinSpin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            background: linear-gradient(135deg, #2a1a3e, #1a1a3e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 12px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 隐藏初始状态 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 调试信息区 */
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 15px;
+            color: #d4af37;
+            font-family: monospace;
+            font-size: 0.85rem;
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .debug-info h4 {
+            margin: 0 0 10px 0;
+            color: #ffd700;
+        }
+
+        .debug-item {
+            margin: 5px 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .potions-game-area {
+                flex-direction: column;
+            }
+
+            .status-panel {
+                width: 100%;
+            }
+
+            .ingredient-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .teacher-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .teacher-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 3rem;
+            }
+
+            .dialogue-bubble::before {
+                left: 50%;
+                top: -15px;
+                border: 10px solid transparent;
+                border-bottom-color: rgba(212, 175, 55, 0.4);
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="magic-particles"></div>
+
+    <div class="container">
+        <div class="potions-container">
+            <!-- 顶部 -->
+            <div class="potions-header">
+                <button class="back-btn" onclick="goBack()">← 返回大厅</button>
+                <h1 class="page-title">⚗️ 魔药课 ⚗️</h1>
+            </div>
+
+            <!-- 游戏区域 -->
+            <div class="potions-game-area">
+                <!-- 主区域 -->
+                <div class="potions-main">
+                    <!-- 老师区域 -->
+                    <div class="teacher-section">
+                        <div class="teacher-avatar">🧙‍♀️</div>
+                        <div class="teacher-info">
+                            <div class="teacher-name">西弗勒斯·斯内普教授 (Professor Snape)</div>
+                        </div>
+                        <div class="teacher-dialogue">
+                            <div class="dialogue-bubble">
+                                <p class="dialogue-text" id="teacherDialogue">
+                                    欢迎来到魔药课！我是斯内普教授。今天我们将学习精确的魔药配方。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 难度选择 -->
+                    <div class="difficulty-section" id="difficultySection">
+                        <div class="difficulty-title">选择难度</div>
+                        <div class="difficulty-buttons">
+                            <button class="wooden-btn" onclick="startGame('初级')">初级 (3材料 - 10秒)</button>
+                            <button class="wooden-btn" onclick="startGame('中级')">中级 (4材料 - 10秒)</button>
+                            <button class="wooden-btn" onclick="startGame('高级')">高级 (5材料 - 10秒)</button>
+                        </div>
+                    </div>
+
+                    <!-- 配方显示区 -->
+                    <div class="recipe-section hidden" id="recipeSection">
+                        <div class="recipe-title">配方记忆阶段</div>
+                        <div class="recipe-content" id="recipeContent"></div>
+                        <div class="recipe-timer" id="recipeTimer">30</div>
+                        <div style="margin-top: 20px;">
+                            <button class="wooden-btn" onclick="showMakingStage()">查看材料 →</button>
+                        </div>
+                    </div>
+
+                    <!-- 魔药制作区 -->
+                    <div class="potion-making-area hidden" id="makingSection">
+                        <div class="cauldron-container">
+                            <div class="cauldron">🫖</div>
+                        </div>
+                        <div class="ingredient-drawer">
+                            <div class="drawer-header">
+                                <h3 class="drawer-title">选择配料</h3>
+                                <button class="wooden-btn" onclick="showRecipeStage()" style="padding: 10px 20px; font-size: 0.9rem;">← 查看配方</button>
+                            </div>
+                            <div class="ingredient-grid" id="ingredientGrid"></div>
+                            <div style="text-align: center; margin-top: 25px;">
+                                <button class="submit-btn" onclick="submitPotion()" id="submitBtn">🫖 熬制魔药</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 状态面板 -->
+                <div class="status-panel">
+                    <div class="status-item favorability-item">
+                        <span class="status-label">❤️ 好感度</span>
+                        <span class="status-value" id="favorabilityDisplay">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">🪙 本节金币</span>
+                        <span class="status-value" id="coinsDisplay">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">🔥 连答</span>
+                        <span class="status-value" id="streakDisplay">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 调试信息区 -->
+    <div class="debug-info" id="debugInfo">
+        <h4>🔍 金币调试信息</h4>
+        <div class="debug-item">当前金币: <span id="debugCurrentCoins">-</span></div>
+        <div class="debug-item">累计金币: <span id="debugCumulativeCoins">-</span></div>
+        <button onclick="forceSync()" style="margin-top: 10px; width: 100%; padding: 8px; background: #d4af37; border: none; border-radius: 5px; cursor: pointer; color: #1a1a2e; font-weight: bold;">🔄 强制同步到云端</button>
+        <div id="syncStatus" class="debug-item" style="margin-top: 5px; color: #ffd700;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 创建全局 Supabase 客户端（用于认证）
+        window.sb = supabase.createClient('https://xxalvnwmqhfcohcvebnp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4YWx2bndtcWhmY29oY3ZlYm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzk3NDksImV4cCI6MjA4Nzc1NTc0OX0.VcFTOE9cUOqnsDL3QazvPje93LoKgA2tlXLt0NK2FKg', {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true
+            }
+        });
+    </script>
+    <script src="js/coin-manager.js"></script>
+    <script>
+        // 魔药配方数据
+        const POTIONS_DATA = {
+            '初级': [
+                { name: '治疗疥疮药水', ingredients: { '干荨麻': 2, '蛇毒牙': 2, '豪猪刺': 1 }, icon: '💚' },
+                { name: '肿胀药水', ingredients: { '干荨麻': 1, '带触角鼻涕虫': 2, '豪猪刺': 1 }, icon: '💛' },
+                { name: '基础清醒药剂', ingredients: { '薄荷花瓣': 2, '阳光草': 1, '柠檬皮': 1 }, icon: '🧡' },
+                { name: '小伤口愈合剂', ingredients: { '蒲公英汁': 2, '白鲜叶': 1, '蜂蜜': 1 }, icon: '💙' },
+                { name: '简易解毒剂', ingredients: { '蒜块': 2, '艾草': 1, '薄荷油': 1 }, icon: '💜' },
+                { name: '安眠小药水', ingredients: { '罂粟籽': 2, '薰衣草': 1, '夜之花': 1 }, icon: '🖤' },
+                { name: '勇气小药水', ingredients: { '勇气草': 2, '火棘果': 1, '银粉': 1 }, icon: '❤️' },
+                { name: '基础提神药水', ingredients: { '薄荷汁': 2, '晨露': 1, '云絮粉': 1 }, icon: '💚' },
+                { name: '轻度止痛药水', ingredients: { '舒缓草': 2, '月光花瓣': 1, '甘草': 1 }, icon: '💛' },
+                { name: '基础抗寒药水', ingredients: { '冬莓': 2, '冰苔藓': 1, '羊毛脂': 1 }, icon: '🧡' }
+            ],
+            '中级': [
+                { name: '缩身药剂', ingredients: { '雏菊根': 2, '死毛虫': 2, '无花果': 1, '耗子胆汁': 1 }, icon: '💚' },
+                { name: '温和呕吐解除剂', ingredients: { '姜根': 1, '甘草': 2, '薄荷油': 1, '清水': 1 }, icon: '💛' },
+                { name: '皮肤软化药水', ingredients: { '芦荟': 2, '蜂蜜': 1, '软叶草': 1, '玫瑰花瓣': 1 }, icon: '🧡' },
+                { name: '防晕药剂', ingredients: { '姜粉': 1, '平稳草': 2, '薄荷油': 1, '柠檬皮': 1 }, icon: '💙' },
+                { name: '气味遮盖药水', ingredients: { '香草': 2, '玫瑰花瓣': 1, '无味花粉': 1, '晨露': 1 }, icon: '💜' },
+                { name: '轻度火焰防护', ingredients: { '耐火苔藓': 2, '灰烬花瓣': 1, '火蜥蜴血': 1, '石粉': 1 }, icon: '🖤' },
+                { name: '基础速度药水', ingredients: { '迅影花': 2, '风之尘': 1, '猎豹尾毛': 1, '阳光草': 1 }, icon: '❤️' },
+                { name: '轻微魔力恢复', ingredients: { '魔力花': 2, '精灵尘': 1, '月光露水': 1, '水晶粉': 1 }, icon: '💚' },
+                { name: '温和抗热药水', ingredients: { '凉叶草': 2, '雪莲花': 1, '冰晶粉': 1, '薄荷花瓣': 1 }, icon: '💛' },
+                { name: '幻觉小驱散剂', ingredients: { '清醒薄荷': 2, '真实花瓣': 1, '独角兽毛': 1, '薰衣草': 1 }, icon: '🧡' }
+            ],
+            '高级': [
+                { name: '标准疥疮治愈药水', ingredients: { '干荨麻': 2, '蛇毒牙': 2, '带触角鼻涕虫': 2, '豪猪刺': 1, '水蛭汁液': 1 }, icon: '💚' },
+                { name: '水下呼吸药水', ingredients: { '鱼鳃草': 2, '海草': 2, '珍珠粉': 1, '盐水': 1, '风之尘': 1 }, icon: '💛' },
+                { name: '简易隐形药水', ingredients: { '雾影草': 2, '蝙蝠翅膀': 1, '月光露水': 1, '星尘粉': 1, '水晶粉': 1 }, icon: '🧡' },
+                { name: '力量增强药水', ingredients: { '巨人胡须': 2, '石南根': 2, '铁屑': 1, '火龙鳞片': 1, '勇气草': 1 }, icon: '💙' },
+                { name: '夜视药水', ingredients: { '夜猫眼草': 2, '萤光苔藓': 1, '蝙蝠眼珠': 1, '黑暗花瓣': 1, '清水': 1 }, icon: '💜' },
+                { name: '骨骼强健药水', ingredients: { '骨粉': 2, '钙质海藻': 1, '独角兽角屑': 1, '石粉': 1, '蜂蜜': 1 }, icon: '🖤' },
+                { name: '基础魔法防护', ingredients: { '魔法苔藓': 2, '银线草': 1, '星尘粉': 1, '耐火苔藓': 1, '水晶粉': 1 }, icon: '❤️' },
+                { name: '基础魔法增幅', ingredients: { '增幅草': 2, '魔法花粉': 1, '龙血': 1, '精灵尘': 1, '月光花': 1 }, icon: '💚' },
+                { name: '漂浮药水', ingredients: { '羽扇豆': 2, '风之花': 1, '云絮粉': 1, '星尘粉': 1, '轻羽': 1 }, icon: '💛' },
+                { name: '简化版复方汤剂', ingredients: { '流液草': 2, '双角兽角粉': 1, '蛇牙': 1, '艾草': 1, '目标毛发': 1 }, icon: '🧡' }
+            ]
+        };
+
+        // 配料图标
+        const INGREDIENT_ICONS = {
+            '干荨麻': '🌿', '蛇毒牙': '🦷', '豪猪刺': '🌵', '带触角鼻涕虫': '🐌', '薄荷花瓣': '🌺', '阳光草': '☀️',
+            '柠檬皮': '🍋', '蒲公英汁': '🌼', '白鲜叶': '🍃', '蜂蜜': '🍯', '蒜块': '🧄', '艾草': '🌱',
+            '薄荷油': '💧', '罂粟籽': '🌾', '薰衣草': '💜', '夜之花': '🌙', '勇气草': '🔥', '火棘果': '🍒',
+            '银粉': '⚪', '薄荷汁': '🌿', '晨露': '💦', '云絮粉': '☁️', '舒缓草': '😌', '月光花瓣': '🌙',
+            '甘草': '🍬', '冬莓': '❄️', '冰苔藓': '🧊', '羊毛脂': '🐑', '雏菊根': '🌼', '死毛虫': '🐛',
+            '无花果': '🌰', '耗子胆汁': '🐭', '姜根': '🧄', '清水': '💧', '芦荟': '🌵', '软叶草': '🍃',
+            '玫瑰花瓣': '🌹', '姜粉': '🌶️', '平稳草': '⚖️', '香草': '🌿', '无味花粉': '🌸', '耐火苔藓': '🔥',
+            '灰烬花瓣': '❄️', '火蜥蜴血': '🧡', '石粉': '🪨', '迅影花': '⚡', '风之尘': '💨', '猎豹尾毛': '🐆',
+            '魔力花': '✨', '精灵尘': '🧚', '月光露水': '🌙', '水晶粉': '💎', '凉叶草': '❄️', '雪莲花': '☃️',
+            '冰晶粉': '❄️', '清醒薄荷': '🧠', '真实花瓣': '🌸', '独角兽毛': '🦄', '鱼鳃草': '🐠', '海草': '🌊',
+            '珍珠粉': '💎', '盐水': '🌊', '雾影草': '🌫️', '蝙蝠翅膀': '🦇', '星尘粉': '⭐', '巨人胡须': '🧔',
+            '石南根': '🎋', '铁屑': '⚙️', '火龙鳞片': '🔥', '夜猫眼草': '🦉', '萤光苔藓': '✨', '蝙蝠眼珠': '👁️',
+            '黑暗花瓣': '🌑', '骨粉': '💀', '钙质海藻': '🌊', '独角兽角屑': '🦄', '魔法苔藓': '✨', '银线草': '⚡',
+            '增幅草': '📈', '魔法花粉': '🌸', '龙血': '🩸', '月光花': '🌙', '羽扇豆': '🌺', '风之花': '💨',
+            '轻羽': '🪶', '流液草': '💧', '双角兽角粉': '🦌', '目标毛发': '🪮'
+        };
+
+        // 游戏状态
+        let gameState = {
+            sessionCoins: 0,
+            favorability: 0,
+            streak: 0,
+            currentDifficulty: null,
+            currentPotion: null,
+            selectedIngredients: {},
+            recipeTimer: null,
+            isGameActive: false,
+            // 成就系统：记录各难度完成的关卡
+            completedBeginner: [],
+            completedIntermediate: []
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.CoinManager) {
+                CoinManager.initialize();
+            }
+            loadGameState();
+            updateDisplays();
+            createMagicParticles();
+        });
+
+        // 加载游戏状态
+        function loadGameState() {
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            let mentorAffection = null;
+            try {
+                const savedMentorData = localStorage.getItem(mentorAffectionKey);
+                if (savedMentorData) {
+                    mentorAffection = JSON.parse(savedMentorData);
+                    gameState.favorability = mentorAffection['snape'] || 0;
+                }
+            } catch (e) {
+                console.error('Error reading mentor affection data:', e);
+            }
+
+            const saved = localStorage.getItem('potionsGameState');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (gameState.favorability === 0) {
+                    gameState.favorability = parsed.favorability || 0;
+                    gameState.streak = parsed.streak || 0;
+                }
+                // 加载成就相关数据
+                gameState.completedBeginner = parsed.completedBeginner || [];
+                gameState.completedIntermediate = parsed.completedIntermediate || [];
+            }
+        }
+
+        // 保存游戏状态
+        function saveGameState() {
+            const mentorAffectionKey = 'hogwarts_mentor_affection';
+            let data = {};
+            try {
+                const savedData = localStorage.getItem(mentorAffectionKey);
+                if (savedData) {
+                    data = JSON.parse(savedData);
+                }
+            } catch (e) {
+                console.error('Error parsing mentor affection data:', e);
+            }
+            data['snape'] = gameState.favorability;
+            localStorage.setItem(mentorAffectionKey, JSON.stringify(data));
+            localStorage.setItem('potionsGameState', JSON.stringify(gameState));
+        }
+
+        // 更新显示
+        function updateDisplays() {
+            document.getElementById('favorabilityDisplay').textContent = gameState.favorability;
+            document.getElementById('streakDisplay').textContent = gameState.streak;
+            document.getElementById('coinsDisplay').textContent = gameState.sessionCoins;
+            updateDebugInfo();
+        }
+
+        // 更新调试信息
+        function updateDebugInfo() {
+            const current = window.CoinManager ? CoinManager.getCurrentCoins() : 0;
+            const cumulative = window.CoinManager ? CoinManager.getCumulativeCoins() : 0;
+            document.getElementById('debugCurrentCoins').textContent = current;
+            document.getElementById('debugCumulativeCoins').textContent = cumulative;
+        }
+
+        // 强制同步到云端
+        async function forceSync() {
+            const statusEl = document.getElementById('syncStatus');
+            if (!window.CoinManager) {
+                statusEl.textContent = '❌ CoinManager 未加载';
+                return;
+            }
+
+            statusEl.textContent = '⏳ 正在同步...';
+
+            try {
+                await CoinManager.forceSyncToCloud();
+                statusEl.textContent = '✅ 同步成功！请刷新排行榜查看';
+            } catch (error) {
+                statusEl.textContent = '❌ 同步失败: ' + error.message;
+            }
+        }
+
+        // 开始游戏
+        function startGame(difficulty) {
+            gameState.currentDifficulty = difficulty;
+            const potions = POTIONS_DATA[difficulty];
+            const randomIndex = Math.floor(Math.random() * potions.length);
+            gameState.currentPotion = potions[randomIndex];
+            gameState.selectedIngredients = {};
+
+            // 显示配方阶段
+            document.getElementById('difficultySection').classList.add('hidden');
+            document.getElementById('recipeSection').classList.remove('hidden');
+            document.getElementById('makingSection').classList.add('hidden');
+
+            // 生成配方文本
+            let recipeText = `<strong>${gameState.currentPotion.name}</strong><br>`;
+            for (let [name, amount] of Object.entries(gameState.currentPotion.ingredients)) {
+                recipeText += `${INGREDIENT_ICONS[name]} ${name} ×${amount}<br>`;
+            }
+            document.getElementById('recipeContent').innerHTML = recipeText;
+
+            // 设置计时器（所有难度都是10秒）
+            let timeLimit = 10;
+            document.getElementById('recipeTimer').textContent = timeLimit;
+
+            gameState.recipeTimer = setInterval(() => {
+                timeLimit--;
+                document.getElementById('recipeTimer').textContent = timeLimit;
+                if (timeLimit <= 0) {
+                    clearInterval(gameState.recipeTimer);
+                    showMakingStage();
+                }
+            }, 1000);
+
+            // 斯内普对话
+            const dialogues = [
+                '记住这个配方，不要出错。',
+                '配方很简单，但精度要求极高。',
+                '不要让我失望...',
+                '你的记忆应该能处理这么简单的配方。',
+                '注意剂量，不要多也不要少。'
+            ];
+            document.getElementById('teacherDialogue').textContent = dialogues[Math.floor(Math.random() * dialogues.length)];
+        }
+
+        // 显示制作阶段
+        function showMakingStage() {
+            document.getElementById('recipeSection').classList.add('hidden');
+            document.getElementById('makingSection').classList.remove('hidden');
+
+            // 只在第一次进入制作阶段时初始化配料
+            if (document.getElementById('ingredientGrid').innerHTML === '') {
+                // 显示所有可能的配料（当前级别的所有配料）
+                const allIngredients = new Set();
+                POTIONS_DATA[gameState.currentDifficulty].forEach(potion => {
+                    Object.keys(potion.ingredients).forEach(ing => allIngredients.add(ing));
+                });
+
+                Array.from(allIngredients).forEach(name => {
+                    if (!(name in gameState.selectedIngredients)) {
+                        gameState.selectedIngredients[name] = 0;
+                    }
+                    createIngredientItem(name);
+                });
+
+                // 斯内普对话
+                const dialogues = [
+                    '现在开始制作。',
+                    '按精确剂量添加每种配料。',
+                    '记住，我在盯着你。',
+                    '不要添加多余的配料。'
+                ];
+                document.getElementById('teacherDialogue').textContent = dialogues[Math.floor(Math.random() * dialogues.length)];
+            }
+        }
+
+        // 显示配方阶段（用于切换回配方查看）
+        function showRecipeStage() {
+            document.getElementById('makingSection').classList.add('hidden');
+            document.getElementById('recipeSection').classList.remove('hidden');
+        }
+
+        // 创建配料项
+        function createIngredientItem(name) {
+            const grid = document.getElementById('ingredientGrid');
+            const item = document.createElement('div');
+            item.className = 'ingredient-item';
+            item.innerHTML = `
+                <div class="ingredient-icon">${INGREDIENT_ICONS[name]}</div>
+                <div class="ingredient-name">${name}</div>
+                <div class="ingredient-amount" id="amount_${name}">×0</div>
+                <div class="amount-controls">
+                    <button class="amount-btn" onclick="changeAmount('${name}', -1)">-</button>
+                    <button class="amount-btn" onclick="changeAmount('${name}', 1)">+</button>
+                </div>
+            `;
+            grid.appendChild(item);
+        }
+
+        // 改变配料数量
+        function changeAmount(name, delta) {
+            const newAmount = Math.max(0, Math.min(5, gameState.selectedIngredients[name] + delta));
+            gameState.selectedIngredients[name] = newAmount;
+            document.getElementById(`amount_${name}`).textContent = `×${newAmount}`;
+
+            // 更新选中状态
+            const grid = document.getElementById('ingredientGrid');
+            grid.querySelectorAll('.ingredient-item').forEach((el, index) => {
+                const names = Array.from(new Set(Object.keys(POTIONS_DATA[gameState.currentDifficulty].flatMap(p => Object.keys(p.ingredients)))));
+                if (newAmount > 0 && names[index] === name) {
+                    el.classList.add('selected');
+                } else if (newAmount === 0 && el.classList.contains('selected')) {
+                    el.classList.remove('selected');
+                }
+            });
+        }
+
+        // 提交魔药
+        function submitPotion() {
+            // 检查是否符合配方
+            let correct = true;
+            const expected = gameState.currentPotion.ingredients;
+            const actual = gameState.selectedIngredients;
+
+            for (let [name, amount] of Object.entries(expected)) {
+                if (actual[name] !== amount) {
+                    correct = false;
+                    break;
+                }
+            }
+
+            // 检查是否有额外的配料
+            for (let [name, amount] of Object.entries(actual)) {
+                if (amount > 0 && !expected.hasOwnProperty(name)) {
+                    correct = false;
+                    break;
+                }
+            }
+
+            if (correct) {
+                handleCorrectAnswer();
+            } else {
+                handleWrongAnswer();
+            }
+        }
+
+        // 处理正确答案
+        function handleCorrectAnswer() {
+            const makingSection = document.getElementById('makingSection');
+            makingSection.classList.add('feedback-correct');
+            setTimeout(() => {
+                makingSection.classList.remove('feedback-correct');
+            }, 500);
+
+            // 奖励金币
+            let reward = 2;
+            if (gameState.currentDifficulty === '中级') reward = 3;
+            if (gameState.currentDifficulty === '高级') reward = 5;
+
+            gameState.sessionCoins += reward;
+            gameState.streak++;
+            gameState.favorability++;
+
+            if (window.CoinManager) {
+                CoinManager.addCoins(reward);
+            }
+
+            // 显示金币动画
+            showCoinAnimation(reward);
+
+            // 斯内普对话
+            const dialogues = [
+                '勉强通过。',
+                '尚可，继续保持。',
+                '你记住了。',
+                '这次剂量是对的。',
+                '没那么糟糕。'
+            ];
+            document.getElementById('teacherDialogue').textContent = dialogues[Math.floor(Math.random() * dialogues.length)];
+
+            saveGameState();
+            updateDisplays();
+
+            // ========== 成就系统：记录完成的关卡并检查成就 ==========
+            if (gameState.currentDifficulty === '初级') {
+                if (!gameState.completedBeginner.includes(gameState.currentPotion.name)) {
+                    gameState.completedBeginner.push(gameState.currentPotion.name);
+                }
+            } else if (gameState.currentDifficulty === '中级') {
+                if (!gameState.completedIntermediate.includes(gameState.currentPotion.name)) {
+                    gameState.completedIntermediate.push(gameState.currentPotion.name);
+                }
+            }
+            saveGameState();
+            checkAndUnlockPotionsAchievements();
+
+            // 下一题
+            setTimeout(() => {
+                startGame(gameState.currentDifficulty);
+            }, 1500);
+        }
+
+        // 处理错误答案
+        function handleWrongAnswer() {
+            const makingSection = document.getElementById('makingSection');
+            makingSection.classList.add('feedback-wrong');
+            setTimeout(() => {
+                makingSection.classList.remove('feedback-wrong');
+            }, 500);
+
+            gameState.streak = 0;
+            gameState.favorability = Math.max(0, gameState.favorability - 1);
+
+            // 显示正确配方
+            let correctRecipe = `<strong>正确配方：</strong><br>`;
+            for (let [name, amount] of Object.entries(gameState.currentPotion.ingredients)) {
+                correctRecipe += `${INGREDIENT_ICONS[name]} ${name} ×${amount}<br>`;
+            }
+
+            // 斯内普对话
+            const dialogues = [
+                '配方完全错误！',
+                '连基本剂量都搞错了。',
+                '我很失望...',
+                '你的记忆糟透了。',
+                '剂量！精度！'
+            ];
+            document.getElementById('teacherDialogue').textContent = dialogues[Math.floor(Math.random() * dialogues.length)];
+
+            saveGameState();
+            updateDisplays();
+
+            // 重置制作阶段
+            setTimeout(() => {
+                startGame(gameState.currentDifficulty);
+            }, 2000);
+        }
+
+        // 金币动画
+        function showCoinAnimation(amount) {
+            const flash = document.createElement('div');
+            flash.className = 'coin-flash';
+            document.body.appendChild(flash);
+
+            setTimeout(() => {
+                flash.remove();
+            }, 300);
+
+            const coin = document.createElement('div');
+            coin.className = 'coin-float';
+            coin.innerHTML = `<span class="coin-icon">🪙</span> +${amount}`;
+            coin.style.left = '50%';
+            coin.style.top = '50%';
+            coin.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(coin);
+
+            setTimeout(() => {
+                coin.remove();
+            }, 1500);
+        }
+
+        // ========== 成就系统：检查并解锁魔药课成就 ==========
+        function checkAndUnlockPotionsAchievements() {
+            // 确保成就管理器可用
+            if (typeof achievementManager === 'undefined') {
+                console.warn('成就管理器未加载，跳过成就检查');
+                return;
+            }
+
+            // 检查"坩埚初学者"成就：完成初级难度所有关卡
+            if (gameState.completedBeginner.length >= POTIONS_DATA['初级'].length) {
+                achievementManager.unlockAchievement('potions_apprentice');
+            }
+
+            // 检查"魔药大师"成就：完成中级难度所有关卡
+            if (gameState.completedIntermediate.length >= POTIONS_DATA['中级'].length) {
+                achievementManager.unlockAchievement('potions_master');
+            }
+
+            // 检查"精准配比"成就：在任意一关中获得满分（这里的满分指完美无错误完成）
+            // 由于每次正确完成都是满分，只要有一次正确完成就可以算（或者可以通过 streak 来判断）
+            if (gameState.streak >= 1) {
+                achievementManager.unlockAchievement('potions_perfect');
+            }
+
+            // 检查全局成就
+            achievementManager.checkGlobalAchievements();
+        }
+
+        // 返回
+        function goBack() {
+            saveGameState();
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease-in-out';
+            setTimeout(() => {
+                window.location.href = 'classes.html';
+            }, 800);
+        }
+
+        // 创建魔法粒子
+        function createMagicParticles() {
+            const container = document.querySelector('.magic-particles');
+            if (!container) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 页面关闭前保存状态
+        window.addEventListener('beforeunload', () => {
+            saveGameState();
+        });
+    </script>
+</body>
+</html>

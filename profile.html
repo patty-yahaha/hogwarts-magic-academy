@@ -1023,6 +1023,161 @@
             margin-bottom: 20px;
         }
 
+        /* 成就徽章系统 */
+        .achievements-section {
+            background: linear-gradient(145deg, rgba(20, 30, 50, 0.95), rgba(10, 20, 40, 0.98));
+            border: 4px solid #d4af37;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .achievements-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .achievement-stat-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.6), rgba(20, 10, 5, 0.8));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .achievement-stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .achievement-stat-value {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .achievement-stat-label {
+            font-size: 0.9rem;
+            color: #c9a227;
+        }
+
+        .achievements-category {
+            margin-bottom: 40px;
+        }
+
+        .achievements-category-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .badge-card {
+            background: linear-gradient(145deg, rgba(30, 20, 10, 0.8), rgba(20, 10, 5, 0.9));
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .badge-card:hover {
+            transform: translateY(-5px);
+            border-color: #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .badge-card.locked {
+            opacity: 0.6;
+        }
+
+        .badge-card.unlocked {
+            border-color: #d4af37;
+        }
+
+        .badge-icon-wrapper {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+
+        .badge-icon {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .badge-card.locked .badge-icon {
+            filter: grayscale(100%);
+        }
+
+        .badge-card.unlocked .badge-icon {
+            filter: none;
+        }
+
+        /* 微光动画 */
+        .badge-card.unlocked .badge-icon-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: badgeShimmer 2s infinite;
+        }
+
+        @keyframes badgeShimmer {
+            0% { transform: translateX(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) rotate(45deg); opacity: 0; }
+        }
+
+        .badge-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+
+        .badge-card.locked .badge-name {
+            color: #888;
+        }
+
+        .badge-desc {
+            font-size: 0.75rem;
+            color: #8b7355;
+            line-height: 1.4;
+        }
+
+        .badge-card.locked .badge-desc {
+            color: #666;
+        }
+
+        .badge-locked-text {
+            font-size: 0.7rem;
+            color: #e74c3c;
+            margin-top: 8px;
+        }
+
         .pet-name {
             font-family: 'Cinzel', serif;
             font-size: 1.5rem;
@@ -1176,6 +1331,10 @@
                 <span class="tab-icon">🐾</span>
                 <span class="tab-text">宠物</span>
             </button>
+            <button class="tab-btn" onclick="switchTab('achievements')" id="tabAchievements">
+                <span class="tab-icon">🏆</span>
+                <span class="tab-text">成就徽章</span>
+            </button>
         </div>
 
         <!-- 背包区域 -->
@@ -1265,6 +1424,103 @@
             </div>
         </div>
 
+        <!-- 成就徽章区域 -->
+        <div class="tab-content" id="contentAchievements" style="display: none;">
+            <div class="achievements-section">
+                <h2 class="section-title">🏆 我的成就徽章 🏆</h2>
+
+                <!-- 成就统计 -->
+                <div class="achievements-stats">
+                    <div class="achievement-stat-card">
+                        <div class="achievement-stat-icon">🏅</div>
+                        <div class="achievement-stat-value" id="totalAchievements">0</div>
+                        <div class="achievement-stat-label">总成就数</div>
+                    </div>
+                    <div class="achievement-stat-card">
+                        <div class="achievement-stat-icon">✅</div>
+                        <div class="achievement-stat-value" id="unlockedAchievements">0</div>
+                        <div class="achievement-stat-label">已解锁</div>
+                    </div>
+                    <div class="achievement-stat-card">
+                        <div class="achievement-stat-icon">🔒</div>
+                        <div class="achievement-stat-value" id="lockedAchievements">0</div>
+                        <div class="achievement-stat-label">未解锁</div>
+                    </div>
+                </div>
+
+                <!-- 各课程成就 -->
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">🧹 飞行课成就</h3>
+                    <div class="achievements-grid" id="flyingAchievementsGrid">
+                        <!-- 飞行课成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">⚗️ 魔药课成就</h3>
+                    <div class="achievements-grid" id="potionsAchievementsGrid">
+                        <!-- 魔药课成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">🛡️ 黑魔法防御术成就</h3>
+                    <div class="achievements-grid" id="defenseAchievementsGrid">
+                        <!-- 黑魔法防御术成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">✨ 咒语课成就</h3>
+                    <div class="achievements-grid" id="charmsAchievementsGrid">
+                        <!-- 咒语课成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">🦉 占卜课成就</h3>
+                    <div class="achievements-grid" id="divinationAchievementsGrid">
+                        <!-- 占卜课成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">🌿 草药学成就</h3>
+                    <div class="achievements-grid" id="herbologyAchievementsGrid">
+                        <!-- 草药学成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">📜 魔法史成就</h3>
+                    <div class="achievements-grid" id="historyAchievementsGrid">
+                        <!-- 魔法史成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">🐺 变形课成就</h3>
+                    <div class="achievements-grid" id="transfigurationAchievementsGrid">
+                        <!-- 变形课成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">🌍 世界语言课成就</h3>
+                    <div class="achievements-grid" id="languageAchievementsGrid">
+                        <!-- 世界语言课成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <div class="achievements-category">
+                    <h3 class="achievements-category-title">🏆 全局成就</h3>
+                    <div class="achievements-grid" id="globalAchievementsGrid">
+                        <!-- 全局成就将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 宠物区域 -->
         <div class="tab-content" id="contentPets" style="display: none;">
             <div class="pets-section">
@@ -1304,6 +1560,617 @@
 
     <script src="js/coin-manager.js"></script>
     <script>
+        // 成就管理器
+        const achievementManager = {
+            // 成就数据
+            achievements: {
+                // 飞行课 - 霍琦夫人
+                flying: [
+                    {
+                        id: 'flying_beginner',
+                        badge: 'flying_badge_1',
+                        teacher: 'hooch',
+                        name: { zh: '飞行新手', en: 'Flying Novice' },
+                        desc: { zh: '连续10根柱子未碰到任何障碍', en: 'Fly through 10 consecutive pillars without hitting any obstacles' },
+                        icon: '🧹'
+                    },
+                    {
+                        id: 'flying_perfect',
+                        badge: 'flying_badge_2',
+                        teacher: 'hooch',
+                        name: { zh: '无暇飞行', en: 'Flawless Flight' },
+                        desc: { zh: '连续20根柱子未碰到任何障碍', en: 'Fly through 20 consecutive pillars without hitting any obstacles' },
+                        icon: '🧹'
+                    },
+                    {
+                        id: 'flying_golden_snitch',
+                        badge: 'flying_badge_3',
+                        teacher: 'hooch',
+                        name: { zh: '金色飞贼', en: 'Golden Snitch' },
+                        desc: { zh: '连续50根柱子未碰到任何障碍', en: 'Fly through 50 consecutive pillars without hitting any obstacles' },
+                        icon: '🧹'
+                    }
+                ],
+                // 魔药课 - 斯内普教授
+                potions: [
+                    {
+                        id: 'potions_apprentice',
+                        badge: 'potions_badge_1',
+                        teacher: 'snape',
+                        name: { zh: '坩埚初学者', en: 'Cauldron Apprentice' },
+                        desc: { zh: '完成初级难度所有关卡', en: 'Complete all beginner difficulty levels' },
+                        icon: '⚗️'
+                    },
+                    {
+                        id: 'potions_master',
+                        badge: 'potions_badge_2',
+                        teacher: 'snape',
+                        name: { zh: '魔药大师', en: 'Potions Master' },
+                        desc: { zh: '完成中级难度所有关卡', en: 'Complete all intermediate difficulty levels' },
+                        icon: '⚗️'
+                    },
+                    {
+                        id: 'potions_perfect',
+                        badge: 'potions_badge_3',
+                        teacher: 'snape',
+                        name: { zh: '精准配比', en: 'Precision Brewing' },
+                        desc: { zh: '在任意一关中获得满分', en: 'Get a perfect score in any level' },
+                        icon: '⚗️'
+                    }
+                ],
+                // 黑魔法防御术 - 卢平教授
+                defense: [
+                    {
+                        id: 'defense_patronus',
+                        badge: 'defense_badge_1',
+                        teacher: 'lupin',
+                        name: { zh: '守护神咒', en: 'Expecto Patronum' },
+                        desc: { zh: '完美通过第一轮训练', en: 'Perfectly pass the first training round' },
+                        icon: '🛡️'
+                    },
+                    {
+                        id: 'defense_guardian',
+                        badge: 'defense_badge_2',
+                        teacher: 'lupin',
+                        name: { zh: '呼神护卫', en: 'Expecto Patronum' },
+                        desc: { zh: '完美通过全部三轮训练', en: 'Perfectly pass all three training rounds' },
+                        icon: '🛡️'
+                    },
+                    {
+                        id: 'defense_boggart',
+                        badge: 'defense_badge_3',
+                        teacher: 'lupin',
+                        name: { zh: '博格特克星', en: 'Boggart Buster' },
+                        desc: { zh: '在第三轮训练中连续击中5次', en: 'Hit 5 consecutive times in the third training round' },
+                        icon: '🛡️'
+                    }
+                ],
+                // 咒语课 - 弗立维教授
+                charms: [
+                    {
+                        id: 'charms_first',
+                        badge: 'charms_badge_1',
+                        teacher: 'flitwick',
+                        name: { zh: '羽加迪姆', en: 'Wingardium Leviosa' },
+                        desc: { zh: '正确拼写第一个咒语', en: 'Correctly spell the first spell' },
+                        icon: '✨'
+                    },
+                    {
+                        id: 'charms_streak',
+                        badge: 'charms_badge_2',
+                        teacher: 'flitwick',
+                        name: { zh: '咒语连发', en: 'Spell Streak' },
+                        desc: { zh: '连续正确拼写10个咒语', en: 'Correctly spell 10 consecutive spells' },
+                        icon: '✨'
+                    },
+                    {
+                        id: 'charms_pride',
+                        badge: 'charms_badge_3',
+                        teacher: 'flitwick',
+                        name: { zh: '弗立维的骄傲', en: 'Flitwick\'s Pride' },
+                        desc: { zh: '以全正确成绩完成一轮咒语拼写', en: 'Complete a round of spell spelling with all correct answers' },
+                        icon: '✨'
+                    }
+                ],
+                // 占卜课 - 特里劳妮教授
+                divination: [
+                    {
+                        id: 'divination_tea',
+                        badge: 'divination_badge_1',
+                        teacher: 'trelawney',
+                        name: { zh: '茶叶渣', en: 'Tea Leaves' },
+                        desc: { zh: '第一次猜对预测结果', en: 'Guess the prediction correctly for the first time' },
+                        icon: '🦉'
+                    },
+                    {
+                        id: 'divination_crystal',
+                        badge: 'divination_badge_2',
+                        teacher: 'trelawney',
+                        name: { zh: '水晶球', en: 'Crystal Ball' },
+                        desc: { zh: '连续猜对5题', en: 'Guess 5 consecutive questions correctly' },
+                        icon: '🦉'
+                    },
+                    {
+                        id: 'divination_clairvoyant',
+                        badge: 'divination_badge_3',
+                        teacher: 'trelawney',
+                        name: { zh: '天目', en: 'Clairvoyant' },
+                        desc: { zh: '在一轮预测中全对（10题全部正确）', en: 'Get all 10 questions correct in one round of predictions' },
+                        icon: '🦉'
+                    }
+                ],
+                // 草药学 - 斯普劳特教授
+                herbology: [
+                    {
+                        id: 'herbology_gardener',
+                        badge: 'herbology_badge_1',
+                        teacher: 'sprout',
+                        name: { zh: '园丁', en: 'Gardener' },
+                        desc: { zh: '累计收集100株曼德拉草', en: 'Collect 100 Mandrake plants in total' },
+                        icon: '🌿'
+                    },
+                    {
+                        id: 'herbology_ghost_avoider',
+                        badge: 'herbology_badge_2',
+                        teacher: 'sprout',
+                        name: { zh: '避鬼高手', en: 'Ghost Avoider' },
+                        desc: { zh: '在一关中从未点到皮皮鬼', en: 'Never click Peeves in one level' },
+                        icon: '🌿'
+                    },
+                    {
+                        id: 'herbology_harvest',
+                        badge: 'herbology_badge_3',
+                        teacher: 'sprout',
+                        name: { zh: '丰收季节', en: 'Harvest Season' },
+                        desc: { zh: '顺利通过所有关卡', en: 'Successfully pass all levels' },
+                        icon: '🌿'
+                    }
+                ],
+                // 魔法史 - 宾斯教授
+                history: [
+                    {
+                        id: 'history_chronicler',
+                        badge: 'history_badge_1',
+                        teacher: 'binns',
+                        name: { zh: '编年史家', en: 'Chronicler' },
+                        desc: { zh: '坚持完成一局正确排序', en: 'Successfully complete an event sorting game' },
+                        icon: '📜'
+                    },
+                    {
+                        id: 'history_scholar',
+                        badge: 'history_badge_2',
+                        teacher: 'binns',
+                        name: { zh: '博闻强识', en: 'Scholarly Knowledge' },
+                        desc: { zh: '无错误完成一局排序（一次性全部排对，无错误尝试）', en: 'Complete an event sorting game without any mistakes' },
+                        icon: '📜'
+                    },
+                    {
+                        id: 'history_ghost_chat',
+                        badge: 'history_badge_3',
+                        teacher: 'binns',
+                        name: { zh: '幽灵对话', en: 'Ghost Conversation' },
+                        desc: { zh: '触发宾斯教授所有台词', en: 'Trigger all of Professor Binns\'s lines' },
+                        icon: '📜'
+                    }
+                ],
+                // 变形课 - 麦格教授
+                transfiguration: [
+                    {
+                        id: 'transfiguration_shape',
+                        badge: 'transfiguration_badge_1',
+                        teacher: 'mcgonagall',
+                        name: { zh: '雏形', en: 'Shape' },
+                        desc: { zh: '通关基础模式', en: 'Pass the basic mode' },
+                        icon: '🐺'
+                    },
+                    {
+                        id: 'transfiguration_precise',
+                        badge: 'transfiguration_badge_2',
+                        teacher: 'mcgonagall',
+                        name: { zh: '精准描绘', en: 'Precise Drawing' },
+                        desc: { zh: '连续5次获得5星评价', en: 'Get 5 consecutive 5-star ratings' },
+                        icon: '🐺'
+                    },
+                    {
+                        id: 'transfiguration_master',
+                        badge: 'transfiguration_badge_3',
+                        teacher: 'mcgonagall',
+                        name: { zh: '变形大师', en: 'Transfiguration Master' },
+                        desc: { zh: '通关移动火柴模式', en: 'Pass the matchstick moving mode' },
+                        icon: '🐺'
+                    }
+                ],
+                // 世界语言课 - 邓布利多教授
+                language: [
+                    {
+                        id: 'language_top_student',
+                        badge: 'language_badge_1',
+                        teacher: 'dumbledore',
+                        name: { zh: '年级第一', en: 'Top Student' },
+                        desc: { zh: '以满分完成一次综合测验', en: 'Complete a comprehensive test with perfect score' },
+                        icon: '🌍'
+                    },
+                    {
+                        id: 'language_dumbledores_encouragement',
+                        badge: 'language_badge_2',
+                        teacher: 'dumbledore',
+                        name: { zh: '邓布利多的鼓励', en: 'Dumbledore\'s Encouragement' },
+                        desc: { zh: '累计学习时长达到5小时', en: 'Accumulate 5 hours of study time' },
+                        icon: '🌍'
+                    },
+                    {
+                        id: 'language_linguist',
+                        badge: 'language_badge_3',
+                        teacher: 'dumbledore',
+                        name: { zh: '凤凰社的语言学家', en: 'Phoenix Order Linguist' },
+                        desc: { zh: '累计学习时长达到10小时', en: 'Accumulate 10 hours of study time' },
+                        icon: '🌍'
+                    }
+                ],
+                // 全局成就
+                global: [
+                    {
+                        id: 'global_jack_of_all_trades',
+                        badge: 'global_badge_1',
+                        teacher: 'all',
+                        name: { zh: '万事通', en: 'Jack of All Trades' },
+                        desc: { zh: '在9门课程中各获得至少一个成就', en: 'Earn at least one achievement in all 9 courses' },
+                        icon: '🏆'
+                    },
+                    {
+                        id: 'global_professors_favorite',
+                        badge: 'global_badge_2',
+                        teacher: 'all',
+                        name: { zh: '教授们的宠儿', en: 'Professors\' Favorite' },
+                        desc: { zh: '累计解锁10个成就', en: 'Unlock a total of 10 achievements' },
+                        icon: '🏆'
+                    },
+                    {
+                        id: 'global_hogwarts_scholar',
+                        badge: 'global_badge_3',
+                        teacher: 'all',
+                        name: { zh: '霍格沃茨学霸', en: 'Hogwarts Scholar' },
+                        desc: { zh: '累计解锁20个成就', en: 'Unlock a total of 20 achievements' },
+                        icon: '🏆'
+                    }
+                ]
+            },
+
+            // 获取所有成就
+            getAllAchievements: function() {
+                let allAchievements = [];
+                Object.values(this.achievements).forEach(category => {
+                    allAchievements = allAchievements.concat(category);
+                });
+                return allAchievements;
+            },
+
+            // 获取分类成就
+            getAchievementsByCategory: function(category) {
+                return this.achievements[category] || [];
+            },
+
+            // 获取成就详情
+            getAchievementById: function(achievementId) {
+                for (let category in this.achievements) {
+                    const achievement = this.achievements[category].find(a => a.id === achievementId);
+                    if (achievement) return achievement;
+                }
+                return null;
+            },
+
+            // 获取已解锁的成就
+            getUnlockedAchievements: function() {
+                return JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+            },
+
+            // 检查成就是否已解锁
+            isAchievementUnlocked: function(achievementId) {
+                const unlocked = this.getUnlockedAchievements();
+                return unlocked.includes(achievementId);
+            },
+
+            // 解锁成就
+            unlockAchievement: function(achievementId) {
+                const unlocked = this.getUnlockedAchievements();
+                if (!unlocked.includes(achievementId)) {
+                    unlocked.push(achievementId);
+                    localStorage.setItem('unlockedAchievements', JSON.stringify(unlocked));
+                    this.showAchievementNotification(achievementId);
+                    return true;
+                }
+                return false;
+            },
+
+            // 显示成就解锁通知
+            showAchievementNotification: function(achievementId) {
+                const achievement = this.getAchievementById(achievementId);
+                if (!achievement) return;
+
+                const notification = document.createElement('div');
+                notification.className = 'achievement-notification';
+                notification.innerHTML = `
+                    <div class="notification-icon">${achievement.icon}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">成就解锁</div>
+                        <div class="notification-achievement">${achievement.name.zh}</div>
+                        <div class="notification-desc">${achievement.desc.zh}</div>
+                    </div>
+                    <div class="notification-badge">
+                        <img src="${this.getBadge(achievement.badge, true).svg}" alt="${achievement.name.zh}">
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+
+                // 显示动画
+                setTimeout(() => notification.classList.add('show'), 100);
+
+                // 自动隐藏
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 500);
+                }, 5000);
+            },
+
+            // 获取徽章 SVG
+            getBadge: function(badgeId, unlocked) {
+                // 定义徽章数据
+                const badgeData = {
+                    // 飞行课
+                    flying_badge_1: {
+                        color: '#FFD700', // 金色
+                        icon: '🧹',
+                        title: '飞行新手'
+                    },
+                    flying_badge_2: {
+                        color: '#C0C0C0', // 银色
+                        icon: '🧹',
+                        title: '无暇飞行'
+                    },
+                    flying_badge_3: {
+                        color: '#CD7F32', // 青铜色
+                        icon: '🧹',
+                        title: '金色飞贼'
+                    },
+                    // 魔药课
+                    potions_badge_1: {
+                        color: '#9370DB', // 深紫色
+                        icon: '⚗️',
+                        title: '坩埚初学者'
+                    },
+                    potions_badge_2: {
+                        color: '#4B0082', // 靛蓝色
+                        icon: '⚗️',
+                        title: '魔药大师'
+                    },
+                    potions_badge_3: {
+                        color: '#8A2BE2', // 蓝紫色
+                        icon: '⚗️',
+                        title: '精准配比'
+                    },
+                    // 黑魔法防御术
+                    defense_badge_1: {
+                        color: '#00BFFF', // 天蓝色
+                        icon: '🛡️',
+                        title: '守护神咒'
+                    },
+                    defense_badge_2: {
+                        color: '#0000CD', // 深蓝色
+                        icon: '🛡️',
+                        title: '呼神护卫'
+                    },
+                    defense_badge_3: {
+                        color: '#1E90FF', //  dodger蓝
+                        icon: '🛡️',
+                        title: '博格特克星'
+                    },
+                    // 咒语课
+                    charms_badge_1: {
+                        color: '#FF69B4', // 粉色
+                        icon: '✨',
+                        title: '羽加迪姆'
+                    },
+                    charms_badge_2: {
+                        color: '#FF1493', // 深粉色
+                        icon: '✨',
+                        title: '咒语连发'
+                    },
+                    charms_badge_3: {
+                        color: '#C71585', // 玫红色
+                        icon: '✨',
+                        title: '弗立维的骄傲'
+                    },
+                    // 占卜课
+                    divination_badge_1: {
+                        color: '#DA70D6', // 兰花紫
+                        icon: '🦉',
+                        title: '茶叶渣'
+                    },
+                    divination_badge_2: {
+                        color: '#BA55D3', // 中紫色
+                        icon: '🦉',
+                        title: '水晶球'
+                    },
+                    divination_badge_3: {
+                        color: '#9932CC', // 暗orchid
+                        icon: '🦉',
+                        title: '天目'
+                    },
+                    // 草药学
+                    herbology_badge_1: {
+                        color: '#32CD32', // 酸橙绿
+                        icon: '🌿',
+                        title: '园丁'
+                    },
+                    herbology_badge_2: {
+                        color: '#228B22', // 森林绿
+                        icon: '🌿',
+                        title: '避鬼高手'
+                    },
+                    herbology_badge_3: {
+                        color: '#006400', // 深绿色
+                        icon: '🌿',
+                        title: '丰收季节'
+                    },
+                    // 魔法史
+                    history_badge_1: {
+                        color: '#D2691E', // 巧克力色
+                        icon: '📜',
+                        title: '编年史家'
+                    },
+                    history_badge_2: {
+                        color: '#8B4513', //  saddlebrown
+                        icon: '📜',
+                        title: '博闻强识'
+                    },
+                    history_badge_3: {
+                        color: '#A0522D', //  sienna
+                        icon: '📜',
+                        title: '幽灵对话'
+                    },
+                    // 变形课
+                    transfiguration_badge_1: {
+                        color: '#FFA500', // 橙色
+                        icon: '🐺',
+                        title: '雏形'
+                    },
+                    transfiguration_badge_2: {
+                        color: '#FF8C00', // 深橙色
+                        icon: '🐺',
+                        title: '精准描绘'
+                    },
+                    transfiguration_badge_3: {
+                        color: '#FF4500', //  orangered
+                        icon: '🐺',
+                        title: '变形大师'
+                    },
+                    // 世界语言课
+                    language_badge_1: {
+                        color: '#4169E1', //  royalblue
+                        icon: '🌍',
+                        title: '年级第一'
+                    },
+                    language_badge_2: {
+                        color: '#00008B', //  darkblue
+                        icon: '🌍',
+                        title: '邓布利多的鼓励'
+                    },
+                    language_badge_3: {
+                        color: '#191970', //  midnightblue
+                        icon: '🌍',
+                        title: '凤凰社的语言学家'
+                    },
+                    // 全局成就
+                    global_badge_1: {
+                        color: '#FFD700', // 金色
+                        icon: '🏆',
+                        title: '万事通'
+                    },
+                    global_badge_2: {
+                        color: '#C0C0C0', // 银色
+                        icon: '🏆',
+                        title: '教授们的宠儿'
+                    },
+                    global_badge_3: {
+                        color: '#CD7F32', // 青铜色
+                        icon: '🏆',
+                        title: '霍格沃茨学霸'
+                    }
+                };
+
+                const badgeInfo = badgeData[badgeId];
+                if (!badgeInfo) {
+                    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                            <circle cx="32" cy="32" r="30" fill="${unlocked ? '#999999' : '#cccccc'}" stroke="${unlocked ? '#666' : '#999'}" stroke-width="3"/>
+                            <text x="32" y="40" text-anchor="middle" font-family="Arial" font-size="24" fill="${unlocked ? '#fff' : '#999'}">❓</text>
+                        </svg>`;
+                    return {
+                        svg: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`
+                    };
+                }
+
+                const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                        <defs>
+                            <linearGradient id="badgeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:${unlocked ? badgeInfo.color : '#cccccc'};stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:${unlocked ? this.adjustBrightness(badgeInfo.color, -20) : '#999999'};stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="32" cy="32" r="30" fill="url(#badgeGradient)" stroke="${unlocked ? this.adjustBrightness(badgeInfo.color, -30) : '#666'}" stroke-width="4" filter="${unlocked ? 'url(#glow)' : ''}"/>
+                        <circle cx="32" cy="32" r="26" fill="rgba(255,255,255,0.15)"/>
+                        <circle cx="32" cy="32" r="22" fill="rgba(255,255,255,0.2)"/>
+                        <text x="32" y="40" text-anchor="middle" font-family="Arial" font-size="32" fill="${unlocked ? '#fff' : '#999'}" filter="${unlocked ? 'url(#glow)' : ''}">${badgeInfo.icon}</text>
+                        <text x="32" y="58" text-anchor="middle" font-family="Arial" font-size="8" fill="${unlocked ? '#fff' : '#999'}">${badgeInfo.title.slice(0, 4)}</text>
+                    </svg>`;
+                return {
+                    svg: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`
+                };
+            },
+
+            // 调整颜色亮度
+            adjustBrightness: function(color, amount) {
+                const num = parseInt(color.replace('#', ''), 16);
+                const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+                const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+                const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+                return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+            },
+
+            // 检查并解锁全局成就
+            checkGlobalAchievements: function() {
+                // 检查"万事通"成就
+                const courses = ['flying', 'potions', 'defense', 'charms', 'divination', 'herbology', 'history', 'transfiguration', 'language'];
+                const unlockedByCourse = {};
+                courses.forEach(course => {
+                    const courseAchievements = this.getAchievementsByCategory(course);
+                    const hasUnlocked = courseAchievements.some(achievement => this.isAchievementUnlocked(achievement.id));
+                    unlockedByCourse[course] = hasUnlocked;
+                });
+
+                const allCoursesHaveAchievements = courses.every(course => unlockedByCourse[course]);
+                if (allCoursesHaveAchievements) {
+                    this.unlockAchievement('global_jack_of_all_trades');
+                }
+
+                // 检查"教授们的宠儿"成就 (10个成就)
+                const totalUnlocked = this.getUnlockedAchievements().length;
+                if (totalUnlocked >= 10) {
+                    this.unlockAchievement('global_professors_favorite');
+                }
+
+                // 检查"霍格沃茨学霸"成就 (20个成就)
+                if (totalUnlocked >= 20) {
+                    this.unlockAchievement('global_hogwarts_scholar');
+                }
+            }
+        };
+
+        // 获取教师名称
+        function getTeacherName(teacherId) {
+            const teacherNames = {
+                'hooch': { zh: '霍琦夫人', en: 'Madam Hooch' },
+                'snape': { zh: '斯内普教授', en: 'Professor Snape' },
+                'lupin': { zh: '卢平教授', en: 'Professor Lupin' },
+                'flitwick': { zh: '弗立维教授', en: 'Professor Flitwick' },
+                'trelawney': { zh: '特里劳妮教授', en: 'Professor Trelawney' },
+                'sprout': { zh: '斯普劳特教授', en: 'Professor Sprout' },
+                'binns': { zh: '宾斯教授', en: 'Professor Binns' },
+                'mcgonagall': { zh: '麦格教授', en: 'Professor McGonagall' },
+                'dumbledore': { zh: '邓布利多教授', en: 'Professor Dumbledore' },
+                'all': { zh: '全体教授', en: 'All Professors' }
+            };
+            const name = teacherNames[teacherId];
+            return name ? name.zh : teacherId;
+        }
+
         // 等级配置
         const LEVELS = [
             { coins: 0, nameZh: '见习生', nameEn: 'Student', level: 0 },
@@ -1835,6 +2702,7 @@
             document.getElementById('contentItems').style.display = 'none';
             document.getElementById('contentWardrobe').style.display = 'none';
             document.getElementById('contentPets').style.display = 'none';
+            document.getElementById('contentAchievements').style.display = 'none';
 
             // Show selected content
             if (tab === 'inventory') {
@@ -1853,7 +2721,109 @@
             } else if (tab === 'pets') {
                 document.getElementById('contentPets').style.display = 'block';
                 loadPetsInventory();
+            } else if (tab === 'achievements') {
+                document.getElementById('contentAchievements').style.display = 'block';
+                loadAchievementsData();
             }
+        }
+        // ========== 成就徽章系统 ==========
+        // 加载成就数据
+        function loadAchievementsData() {
+            // 确保成就管理器已初始化
+            if (typeof achievementManager === 'undefined') {
+                console.error('成就管理器未初始化');
+                return;
+            }
+
+            // 加载所有成就
+            const allAchievements = achievementManager.getAllAchievements();
+            const unlockedAchievements = achievementManager.getUnlockedAchievements();
+
+            // 更新统计信息
+            document.getElementById('totalAchievements').textContent = allAchievements.length;
+            document.getElementById('unlockedAchievements').textContent = unlockedAchievements.length;
+            document.getElementById('lockedAchievements').textContent = allAchievements.length - unlockedAchievements.length;
+
+            // 渲染各课程成就
+            renderCourseAchievements('flying', 'flyingAchievementsGrid');
+            renderCourseAchievements('potions', 'potionsAchievementsGrid');
+            renderCourseAchievements('defense', 'defenseAchievementsGrid');
+            renderCourseAchievements('charms', 'charmsAchievementsGrid');
+            renderCourseAchievements('divination', 'divinationAchievementsGrid');
+            renderCourseAchievements('herbology', 'herbologyAchievementsGrid');
+            renderCourseAchievements('history', 'historyAchievementsGrid');
+            renderCourseAchievements('transfiguration', 'transfigurationAchievementsGrid');
+            renderCourseAchievements('language', 'languageAchievementsGrid');
+            renderCourseAchievements('global', 'globalAchievementsGrid');
+        }
+
+        // 渲染课程成就
+        function renderCourseAchievements(category, containerId) {
+            const container = document.getElementById(containerId);
+            const categoryAchievements = achievementManager.getAchievementsByCategory(category);
+
+            if (categoryAchievements.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; color: #8b7355; padding: 40px;">
+                        暂无该课程的成就
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = categoryAchievements.map(achievement => {
+                const isUnlocked = achievementManager.isAchievementUnlocked(achievement.id);
+                const badge = achievementManager.getBadge(achievement.badge, isUnlocked);
+
+                return `
+                    <div class="badge-card ${isUnlocked ? 'unlocked' : 'locked'}" onclick="showAchievementDetails('${achievement.id}')">
+                        <div class="badge-icon-wrapper">
+                            <img src="${badge.svg}" alt="${achievement.name.zh}" class="badge-icon">
+                        </div>
+                        <div class="badge-name">${achievement.name.zh}</div>
+                        <div class="badge-desc">${achievement.desc.zh}</div>
+                        ${!isUnlocked ? '<div class="badge-locked-text">🔒 未解锁</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 显示成就详情
+        function showAchievementDetails(achievementId) {
+            const achievement = achievementManager.getAchievementById(achievementId);
+            if (!achievement) return;
+
+            const isUnlocked = achievementManager.isAchievementUnlocked(achievementId);
+            const badge = achievementManager.getBadge(achievement.badge, isUnlocked);
+
+            const message = `
+                🏆 ${achievement.name.zh}
+                ${isUnlocked ? '✅ 已解锁' : '🔒 未解锁'}
+
+                ${achievement.desc.zh}
+
+                教师：${getTeacherName(achievement.teacher)}
+            `;
+
+            alert(message);
+        }
+
+        // 获取教师名称
+        function getTeacherName(teacherId) {
+            const teacherNames = {
+                hooch: '霍琦夫人',
+                snape: '斯内普教授',
+                lupin: '卢平教授',
+                flitwick: '弗立维教授',
+                trelawney: '特里劳妮教授',
+                sprout: '斯普劳特教授',
+                binns: '宾斯教授',
+                mcgonagall: '麦格教授',
+                dumbledore: '邓布利多教授',
+                all: '所有教授'
+            };
+
+            return teacherNames[teacherId] || '未知教师';
         }
 
         // ========== 宠物功能 ==========
