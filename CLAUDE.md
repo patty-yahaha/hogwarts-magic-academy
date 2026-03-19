@@ -26,7 +26,9 @@ hogwarts-magic-academy/
 ├── index.html              # 分院选择页面
 ├── login.html              # 登录/注册/访客模式
 ├── academy.html            # 主枢纽（玩家控制面板）
+├── wizard-camp.html        # 巫师营地（原成就墙已移至个人资料页）
 ├── classes.html            # 课程选择菜单
+├── profile.html            # 个人资料页（包含完整的成就徽章展示墙）
 ├── [class]-*.html          # 各课程页面（飞行课、魔药课等）
 ├── js/
 │   ├── coin-manager.js     # 统一的加隆管理与云端同步
@@ -39,7 +41,7 @@ hogwarts-magic-academy/
 │   ├── SUPABASE_SETUP_GUIDE.md
 │   ├── Game-Rules-System.md
 │   └── 游戏规则体系.md
-└── [其他页面]              # 商店、个人资料、排行榜等
+└── [其他页面]              # 商店、排行榜等
 ```
 
 ### 核心系统
@@ -171,6 +173,10 @@ const SUPABASE_KEY = 'eyJhbGc...';
 ### 成就系统与个人资料页问题
 
 #### 1. 已完成的部分：
+- **成就系统架构重构**：
+  - 删除了独立的 wizard-achievements.html 页面
+  - 所有成就功能统一整合到 profile.html 的"徽章展示墙"
+  - 修改了 wizard-camp.html，去掉"巫师成就墙"按钮，改为2列布局
 - **个人资料页升级**：添加了"徽章展示墙"按钮和完整的徽章展示界面
 - **成就管理系统**：创建了 `achievementManager` 对象，包含完整的成就管理功能
 - **动态徽章生成**：实现了徽章 SVG 生成（灰色/彩色两种状态）
@@ -184,21 +190,25 @@ const SUPABASE_KEY = 'eyJhbGc...';
   - 草药学课：园丁、避鬼高手、丰收季节
   - 魔法史课：编年史家、博闻强识、幽灵对话
   - 变形课：雏形、精准描绘、变形大师
-- **wizard-achievements.html 修复**：
-  - 清理了新旧代码混合的问题
-  - 成就容器ID已统一为正确的格式（如 `flyingAchievements`）
-  - 确保 `renderAchievements()` 函数能正确调用 achievementManager
-  - 添加了成就通知的CSS样式
 - **profile.html 修复**：
   - 添加了完整的 `achievementManager` 定义
   - 添加了 `getTeacherName()` 函数
   - 确保徽章展示墙能正确加载和显示
+  - 修复了 SVG 编码问题（使用 encodeURIComponent 替代 btoa）
+  - 修复了 switchTab 函数的语法错误
 
 #### 2. 未完成的部分：
 - **世界语言课成就**：暂时搁置
 
 #### 3. 文件备份信息：
 - 所有课程页面已备份至 `versions/achievements_backup_20260318/` 目录
+- 原 wizard-achievements.html 也在备份目录中
+
+#### 4. 成就系统使用说明：
+- 用户通过个人资料页（profile.html）的"徽章展示墙"按钮进入成就页面
+- 所有成就的解锁、查看都统一在个人资料页中
+- 各课程页面会自动触发成就解锁逻辑
+- 成就通过 localStorage 的 `unlockedAchievements` 键存储
 
 ---
 
@@ -237,19 +247,27 @@ CoinManager: 开始同步金币到云端 {userId: '...', currentCoins: ..., cumu
 
 ## 踩坑记录
 
-### 1. btoa 编码 SVG 字符问题
+### 1. 成就系统架构重构
+- **问题**：成就系统分散在 wizard-achievements.html 和 profile.html 两个页面，导致功能重复和用户体验不佳
+- **解决方案**：统一成就功能到 profile.html 的"徽章展示墙"，删除单独的 wizard-achievements.html 页面
+- **受影响文件**：
+  - 删除：wizard-achievements.html
+  - 修改：wizard-camp.html（去掉成就墙按钮）
+  - 保留：profile.html（完整成就功能）
+
+### 2. btoa 编码 SVG 字符问题
 - **问题**：`btoa()` 函数无法编码包含中文字符和 emoji 的 SVG 字符串
 - **错误信息**：`Uncaught InvalidCharacterError: Failed to execute 'btoa' on 'Window'`
 - **解决方案**：使用 `encodeURIComponent()` 和 UTF-8 编码的 data URL 代替 base64 编码
-- **受影响文件**：wizard-achievements.html、profile.html、transfiguration-class.html
+- **受影响文件**：profile.html、transfiguration-class.html
 
-### 2. 函数未定义错误
+### 3. 函数未定义错误
 - **问题**：`switchTab` 函数未定义
 - **错误信息**：`Uncaught ReferenceError: switchTab is not defined`
 - **解决方案**：确保函数定义完整，包含闭合大括号 `}`
 - **受影响文件**：profile.html
 
-### 3. 语法错误导致页面功能异常
+### 4. 语法错误导致页面功能异常
 - **问题**：`Uncaught SyntaxError: Unexpected end of input`
 - **解决方案**：检查 JavaScript 函数和代码块的完整性，确保所有括号正确匹配
 - **受影响文件**：profile.html
