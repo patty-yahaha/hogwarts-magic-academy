@@ -36,10 +36,10 @@
             font-style: italic;
         }
 
-        /* 营地布局 - 改为3列 */
+        /* 营地布局 - 改为2列 */
         .camp-layout {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 40px;
             padding: 20px;
         }
@@ -178,7 +178,7 @@
 
         @media (max-width: 1200px) {
             .camp-layout {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
         }
 
@@ -544,15 +544,6 @@
 
             <!-- 营地布局 -->
             <div class="camp-layout">
-                <!-- 巫师成就墙 -->
-                <div class="camp-section-btn" onclick="openAchievements()">
-                    <div class="section-icon">🏆</div>
-                    <div class="section-title-zh">巫师成就墙</div>
-                    <div class="section-title-en">Achievement Wall</div>
-                    <div class="section-desc-zh">解锁你的魔法成就，展示你的荣耀</div>
-                    <div class="section-desc-en">Unlock magical achievements and show your glory</div>
-                </div>
-
                 <!-- 巫师留言板（原聊天大厅） -->
                 <div class="camp-section-btn" onclick="openMessageBoard()">
                     <div class="notification-badge hidden" id="messageBoardBadge">0</div>
@@ -615,14 +606,6 @@
         }
 
         // 页面跳转
-        function openAchievements() {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.8s ease-in-out';
-            setTimeout(() => {
-                window.location.href = 'wizard-achievements.html';
-            }, 800);
-        }
-
         function openMessageBoard() {
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.8s ease-in-out';
