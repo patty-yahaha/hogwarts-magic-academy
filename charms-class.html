@@ -270,7 +270,7 @@
             z-index: 100;
         }
 
-        .spellbook-toggle:hover {
+        .spellbook-toggle:hover:not([style*="pointer-events: none"]) {
             transform: translateY(-50%) scale(1.1);
             box-shadow: 5px 5px 30px rgba(212, 175, 55, 0.5);
         }
@@ -683,7 +683,7 @@
     <div class="magic-particles"></div>
 
     <!-- 咒语书图标 -->
-    <div class="spellbook-toggle" onclick="toggleSpellbook()" title="咒语书">
+    <div class="spellbook-toggle" id="spellbookToggle" onclick="toggleSpellbook()" title="咒语书">
         📖
     </div>
 
@@ -693,7 +693,7 @@
             <h2 class="spellbook-title">✨ 咒语书（初级）✨</h2>
             <button class="spellbook-close" onclick="toggleSpellbook()">✕</button>
         </div>
-        <div class="spellbook-timer" id="spellbookTimer">30</div>
+        <div class="spellbook-timer" id="spellbookTimer">15</div>
         <div class="spell-list" id="spellList"></div>
     </div>
 
@@ -847,8 +847,11 @@
             currentSpell: null,
             isGameActive: false,
             spellbookOpen: false,
-            spellbookTimer: 30,
+            spellbookTimer: 15,  // 改为15秒
+            spellbookMaxTime: 15,  // 最大时间15秒
             spellbookInterval: null,
+            spellbookTimerStarted: false,  // 标记计时器是否已经开始过
+            spellbookTimerEnded: false,  // 标记咒语书倒计时是否结束
             // 成就系统
             hasCompletedFirstSpell: false,  // 是否完成第一个咒语
             roundCorrectCount: 0,         // 本轮正确拼写次数
@@ -978,6 +981,20 @@
             document.getElementById('initialState').classList.add('hidden');
             document.getElementById('quizState').classList.remove('hidden');
             gameState.isGameActive = true;
+            // 开始挑战后才开始倒计时
+            gameState.spellbookTimerStarted = true;
+            // 重置咒语书状态
+            gameState.spellbookTimerEnded = false;
+            // 重置咒语书图标样式
+            const spellbookToggle = document.getElementById('spellbookToggle');
+            if (spellbookToggle) {
+                spellbookToggle.style.pointerEvents = 'auto';
+                spellbookToggle.style.opacity = '1';
+                spellbookToggle.style.cursor = 'pointer';
+            }
+            // 重置计时器
+            gameState.spellbookTimer = 15;
+            updateSpellbookTimer();
             pickNewSpell();
         }
 
@@ -988,6 +1005,25 @@
             document.getElementById('spellHint').textContent = `🎯 ${gameState.currentSpell.effect}`;
             document.getElementById('spellInput').value = '';
             document.getElementById('spellInput').focus();
+            // 每次换咒语后重置咒语书状态
+            gameState.spellbookTimerEnded = false;
+            // 重置咒语书图标样式
+            const spellbookToggle = document.getElementById('spellbookToggle');
+            if (spellbookToggle) {
+                spellbookToggle.style.pointerEvents = 'auto';
+                spellbookToggle.style.opacity = '1';
+                spellbookToggle.style.cursor = 'pointer';
+            }
+            // 每次换咒语后重新倒计时
+            if (gameState.spellbookTimerStarted) {
+                gameState.spellbookTimer = 15;  // 重置为15秒
+                updateSpellbookTimer();
+                // 如果咒语书是打开的，需要重新启动计时器
+                if (gameState.spellbookOpen) {
+                    stopSpellbookTimer();  // 先停止当前计时器
+                    startSpellbookTimer();  // 重新启动
+                }
+            }
         }
 
         // 提交咒语
@@ -995,7 +1031,14 @@
             if (!gameState.isGameActive) return;
 
             const input = document.getElementById('spellInput').value.trim().toLowerCase();
-            const correct = input === gameState.currentSpell.spell.toLowerCase();
+            const targetSpell = gameState.currentSpell.spell.toLowerCase();
+
+            // 更灵活的匹配：移除多余空格，忽略首尾空格，忽略多个连续空格
+            const normalizeSpaces = (str) => str.replace(/\s+/g, ' ').trim();
+            const normalizedInput = normalizeSpaces(input);
+            const normalizedTarget = normalizeSpaces(targetSpell);
+
+            const correct = normalizedInput === normalizedTarget;
 
             if (correct) {
                 // 播放成功特效
@@ -1026,8 +1069,7 @@
             }
             gameState.roundCorrectCount++;
 
-            // 检查成就（每次正确都检查）
-            checkAndUnlockCharmsAchievements();
+            // 成就检查（预留功能）
 
             // 使用 CoinManager 更新全局金币（当前金币 + 累计金币）
             if (window.CoinManager) {
@@ -1121,8 +1163,11 @@
             saveGameState();
             updateDisplays();
 
-            // 清空输入框
-            document.getElementById('spellInput').value = '';
+            // 清空输入框并随机换一个新咒语
+            setTimeout(() => {
+                document.getElementById('spellInput').value = '';
+                pickNewSpell();
+            }, 500);
         }
 
         // 金币动画
@@ -1152,6 +1197,12 @@
 
         // 切换咒语书
         function toggleSpellbook() {
+            // 如果咒语书倒计时已结束，不允许查看咒语书
+            if (gameState.spellbookTimerEnded && !gameState.spellbookOpen) {
+                alert('⏰ 咒语书查看时间已结束，不能再查看咒语书了！');
+                return;
+            }
+
             gameState.spellbookOpen = !gameState.spellbookOpen;
             const panel = document.getElementById('spellbookPanel');
 
@@ -1166,7 +1217,10 @@
 
         // 开始咒语书计时器
         function startSpellbookTimer() {
-            gameState.spellbookTimer = 30;
+            // 只有在挑战开始后才启动倒计时
+            if (!gameState.spellbookTimerStarted) {
+                return;  // 挑战还没开始，不启动倒计时
+            }
             updateSpellbookTimer();
 
             gameState.spellbookInterval = setInterval(() => {
@@ -1175,6 +1229,14 @@
 
                 if (gameState.spellbookTimer <= 0) {
                     stopSpellbookTimer();
+                    gameState.spellbookTimerEnded = true;  // 标记倒计时结束
+                    // 禁用咒语书图标
+                    const spellbookToggle = document.getElementById('spellbookToggle');
+                    if (spellbookToggle) {
+                        spellbookToggle.style.pointerEvents = 'none';
+                        spellbookToggle.style.opacity = '0.5';
+                        spellbookToggle.style.cursor = 'not-allowed';
+                    }
                     toggleSpellbook();
                 }
             }, 1000);

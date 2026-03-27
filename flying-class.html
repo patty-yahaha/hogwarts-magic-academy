@@ -1153,12 +1153,7 @@
         function showBroomSelection() {
             const ownedBrooms = getOwnedBrooms();
 
-            // 如果只有1个扫帚，不显示选择界面
-            if (ownedBrooms.length < 2) {
-                startGameDirectly();
-                return;
-            }
-
+            // 始终显示扫帚选择界面，即使只有1个扫帚
             const grid = document.getElementById('broomGrid');
             const selectedBroom = getSelectedBroom();
 

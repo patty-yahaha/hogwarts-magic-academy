@@ -165,11 +165,20 @@
             overflow: hidden;
         }
 
-        .wooden-btn:hover {
+        .wooden-btn:hover:not(:disabled) {
             background: linear-gradient(145deg, #a0522d, #8b4513);
             transform: translateY(-3px);
             box-shadow: 8px 8px 25px rgba(0, 0, 0, 0.6),
                         inset 0 2px 5px rgba(255, 255, 255, 0.15);
+        }
+
+        .wooden-btn:disabled {
+            background: linear-gradient(145deg, #654321, #52351e);
+            border-color: #8b6914;
+            cursor: not-allowed;
+            opacity: 0.5;
+            transform: none;
+            box-shadow: none;
         }
 
         .wooden-btn:active {
@@ -615,10 +624,11 @@
                         <div class="cauldron-container">
                             <div class="cauldron">🫖</div>
                         </div>
+                        <div class="recipe-timer" id="makingTimer">30</div>
                         <div class="ingredient-drawer">
                             <div class="drawer-header">
                                 <h3 class="drawer-title">选择配料</h3>
-                                <button class="wooden-btn" onclick="showRecipeStage()" style="padding: 10px 20px; font-size: 0.9rem;">← 查看配方</button>
+                                <button class="wooden-btn" id="showRecipeBtn" onclick="showRecipeStage()" style="padding: 10px 20px; font-size: 0.9rem;">← 查看配方</button>
                             </div>
                             <div class="ingredient-grid" id="ingredientGrid"></div>
                             <div style="text-align: center; margin-top: 25px;">
@@ -736,6 +746,8 @@
             currentPotion: null,
             selectedIngredients: {},
             recipeTimer: null,
+            currentTime: 10,  // 存储当前倒计时值
+            timerEnded: false,  // 标记倒计时是否结束
             isGameActive: false,
             // 成就系统：记录各难度完成的关卡
             completedBeginner: [],
@@ -832,6 +844,16 @@
 
         // 开始游戏
         function startGame(difficulty) {
+            // 重置倒计时结束状态
+            gameState.timerEnded = false;
+            // 重置查看配方按钮状态
+            const showRecipeBtn = document.getElementById('showRecipeBtn');
+            if (showRecipeBtn) {
+                showRecipeBtn.disabled = false;
+                showRecipeBtn.style.opacity = '1';
+                showRecipeBtn.style.cursor = 'pointer';
+            }
+
             gameState.currentDifficulty = difficulty;
             const potions = POTIONS_DATA[difficulty];
             const randomIndex = Math.floor(Math.random() * potions.length);
@@ -851,14 +873,22 @@
             document.getElementById('recipeContent').innerHTML = recipeText;
 
             // 设置计时器（所有难度都是10秒）
-            let timeLimit = 10;
-            document.getElementById('recipeTimer').textContent = timeLimit;
+            gameState.currentTime = 10;
+            document.getElementById('recipeTimer').textContent = gameState.currentTime;
+            // 确保制作阶段的倒计时也显示正确的值
+            document.getElementById('makingTimer').textContent = gameState.currentTime;
 
             gameState.recipeTimer = setInterval(() => {
-                timeLimit--;
-                document.getElementById('recipeTimer').textContent = timeLimit;
-                if (timeLimit <= 0) {
+                gameState.currentTime--;
+                document.getElementById('recipeTimer').textContent = gameState.currentTime;
+                document.getElementById('makingTimer').textContent = gameState.currentTime;
+                if (gameState.currentTime <= 0) {
                     clearInterval(gameState.recipeTimer);
+                    gameState.timerEnded = true;  // 标记倒计时结束
+                    // 禁用查看配方按钮
+                    document.getElementById('showRecipeBtn').disabled = true;
+                    document.getElementById('showRecipeBtn').style.opacity = '0.5';
+                    document.getElementById('showRecipeBtn').style.cursor = 'not-allowed';
                     showMakingStage();
                 }
             }, 1000);
@@ -907,6 +937,11 @@
 
         // 显示配方阶段（用于切换回配方查看）
         function showRecipeStage() {
+            // 如果倒计时已经结束，不允许查看配方
+            if (gameState.timerEnded) {
+                alert('⏰ 配方记忆时间已结束，不能再查看配方了！');
+                return;
+            }
             document.getElementById('makingSection').classList.add('hidden');
             document.getElementById('recipeSection').classList.remove('hidden');
         }
