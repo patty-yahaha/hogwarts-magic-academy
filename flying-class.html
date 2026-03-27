@@ -1264,6 +1264,7 @@
         let totalDistanceMoved = 0; // 累计移动距离（用于计算柱子生成）
         let consecutivePerfectPillars = 0; // 连续无碰撞通过的柱子数（成就系统）
         let bestConsecutivePerfect = 0; // 本局最佳连续无碰撞柱子数（成就系统）
+        let passedPillarsForCoin = 0; // 用于计算金币奖励的柱子计数器（每5根给一次）
 
         // 每日游戏次数
         let dailyGameCount = 0; // 今日游戏次数
@@ -1929,8 +1930,8 @@
             setTimeout(() => numEl.remove(), 1000);
         }
 
-        // 根据速度计算单根柱子金币
-        function calculateCoinPerPillar() {
+        // 根据速度计算每5根柱子的金币奖励
+        function calculateCoinPerFivePillars() {
             const speed = currentPillarSpeed;
             if (speed < 5) return 1;
             if (speed < 8) return 2;
@@ -2242,18 +2243,29 @@
                     const speedConfig = getSpeedConfig();
                     document.getElementById('speedHint').textContent = speedConfig.hint;
 
-                    // 计算金币奖励（防刷机制只在游戏结束时应用）
-                    let coinReward = calculateCoinPerPillar();
-                    // 连击奖励
-                    const comboBonus = calculateComboBonus(comboCount);
-                    if (comboBonus > 0) {
-                        coinReward += comboBonus;
-                        showHintMessage(comboCount + '连击！+' + comboBonus + '金币！', '#ff6b6b');
+                    // 增加柱子计数
+                    passedPillarsForCoin++;
+
+                    // 检查是否达到5根柱子，给予金币奖励
+                    let coinReward = 0;
+                    if (passedPillarsForCoin % 5 === 0) {
+                        coinReward = calculateCoinPerFivePillars();
+
+                        // 连击奖励
+                        const comboBonus = calculateComboBonus(comboCount);
+                        if (comboBonus > 0) {
+                            coinReward += comboBonus;
+                            showHintMessage(comboCount + '连击！+' + comboBonus + '金币！', '#ff6b6b');
+                        }
+
+                        // 增加金币
+                        sessionCoins += coinReward;
+                        updateGameCoinsDisplay();
+                        showNumberPop(wizard.x + 50, wizard.y - 20, coinReward, 'coin');
+
+                        // 显示每5根柱子的奖励提示
+                        showHintMessage(`🎉 穿过${passedPillarsForCoin}根柱子！+${coinReward}金币！`, '#4CAF50');
                     }
-                    // 增加金币
-                    sessionCoins += coinReward;
-                    updateGameCoinsDisplay();
-                    showNumberPop(wizard.x + 50, wizard.y - 20, coinReward, 'coin');
 
                     // 好感度：每根柱子+0.2
                     affection = Math.min(affection + 0.2, 999999);
@@ -2378,6 +2390,7 @@
             totalDistanceMoved = 0; // 重置累计移动距离
             consecutivePerfectPillars = 0; // 重置连续完美通过计数
             bestConsecutivePerfect = 0; // 重置最佳连续完美通过计数
+            passedPillarsForCoin = 0; // 重置金币奖励计数
             wizard.y = CANVAS_HEIGHT / 2;
             wizard.velocity = 0;
             wizard.x = CANVAS_WIDTH * 0.33; // 设置巫师在屏幕左侧 1/3 处
